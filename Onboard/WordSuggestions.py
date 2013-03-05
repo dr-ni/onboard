@@ -1425,7 +1425,7 @@ class WordListPanel(LayoutPanel):
         x, y = 0.0, 0.0
 
         context = Gdk.pango_context_get()
-        pango_layout = WordKey.get_pango_layout(context, None, font_size)
+        pango_layout = WordKey.get_pango_layout(None, font_size)
         button_infos = []
         filled_up = False
         for i,choice in enumerate(choices):

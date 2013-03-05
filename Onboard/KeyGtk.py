@@ -26,7 +26,7 @@ config = Config()
 PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
-    _pango_layout = None
+    _pango_layouts = None
     _label_extents = None  # resolution independent size {mod_mask: (w, h)}
 
     _shadow_steps  = 0
@@ -47,17 +47,20 @@ class Key(KeyCommon):
 
     @staticmethod
     def reset_pango_layout():
-        Key._pango_layout = None
+        Key._pango_layouts = None
 
     @staticmethod
-    def get_pango_layout(context, text, font_size):
+    def get_pango_layout(text, font_size, slot = 0):
         # work around memory leak (gnome #599730)
-        if Key._pango_layout is None:
+        if Key._pango_layouts is None:
             # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key._pango_layout = PangoCairo.create_layout(context)
+            #Key._pango_layouts = PangoCairo.create_layout(context)
+            Key._pango_layouts = (
+                Pango.Layout(context = Gdk.pango_context_get()),
+                Pango.Layout(context = Gdk.pango_context_get()),
+                Pango.Layout(context = Gdk.pango_context_get()))
 
-        layout = Key._pango_layout
+        layout = Key._pango_layouts[slot]
         Key.prepare_pango_layout(layout, text, font_size)
         return layout
 
@@ -377,34 +380,90 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             self.build_rect_path(context, rect_top, top_radius_scale)
             context.fill()
 
-    def draw_label(self, context, lod):
-        label = self.get_label()
-        if not label:
-            return
+    def get_label_runs(self):
+        runs = []
+        log_rect = self.get_label_rect()
+        canvas_rect = self.context.log_to_canvas_rect(log_rect)
+        
+        # secondary label
+        label = self.get_secondary_label()
+        if label and \
+           config.keyboard.show_secondary_labels:
+            font_size = self.font_size * 0.6
+            layout = self.get_pango_layout(label, font_size, 1)
+            src_size = layout.get_size()
+            src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+            xalign, yalign = self.align_secondary_label(src_size,
+                                                (canvas_rect.w, canvas_rect.h))
+            x = int(canvas_rect.x + xalign)
+            y = int(canvas_rect.y + yalign)
+            rgba = self.get_secondary_label_color()
 
+            runs.append((layout, x, y, rgba))
+
+        # popup indicator
+        if not self.popup_id is None:
+            label = "…"
+            font_size = self.font_size
+            layout = self.get_pango_layout(label, font_size, 2)
+            src_size = layout.get_size()
+            src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+            xalign, yalign = self.align_popup_indicator(src_size,
+                                                 (canvas_rect.w, canvas_rect.h))
+            x = int(canvas_rect.x + xalign)
+            y = int(canvas_rect.y + yalign)
+            rgba = self.get_secondary_label_color()
+
+            runs.append((layout, x, y, rgba))
+
+        # main label
+        label = self.get_label()
+        if label:
+            font_size = self.font_size
+            layout = self.get_pango_layout(label, font_size, 0)
+            src_size = layout.get_size()
+            src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+            xalign, yalign = self.align_label(src_size,
+                                                (canvas_rect.w, canvas_rect.h))
+            x = int(canvas_rect.x + xalign)
+            y = int(canvas_rect.y + yalign)
+            rgba = self.get_label_color()
+
+            runs.append((layout, x, y, rgba))
+
+        return runs
+
+    def draw_label(self, context, lod):
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
         if self.font_size == 0:
             return
 
-        layout = self.get_pango_layout(context, label, self.font_size)
-        log_rect = self.get_label_rect()
-        src_size = layout.get_size()
-        src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+        runs = self.get_label_runs()
+        if not runs:
+            return
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
-            # draw dwell progress after fake emboss, before final label
+        fill = self.get_fill_color()
+
+        for dx, dy, lum, last in self._label_iterations(lod):
+            # draw dwell progress after fake emboss, before final image
             if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
-
-            context.move_to(x, y)
-            context.set_source_rgba(*rgba)
-            PangoCairo.show_layout(context, layout)
+            for layout, x, y, rgba in runs:
+                if lum:
+                    rgba = brighten(lum, *fill) # darker
+                context.move_to(x + dx, y + dy)
+                context.set_source_rgba(*rgba)
+                PangoCairo.show_layout(context, layout)
 
     def draw_image(self, context, lod):
-        """ Draws the keys optional image. """
+        """
+        Draws the key's optional image.
+        Fixme: merge with draw_label, can't do this for 0.99 because
+        the Gdk.flush() workaround on the nexus 7 might fail.
+        """
         if not self.image_filenames:
             return
 
@@ -418,17 +477,31 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             return
 
         src_size = (pixbuf.get_width(), pixbuf.get_height())
+        log_rect = self.get_label_rect()
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
+        canvas_rect = self.context.log_to_canvas_rect(log_rect)
+        xalign, yalign = self.align_label(src_size,
+                                            (canvas_rect.w, canvas_rect.h))
+        x = int(canvas_rect.x + xalign)
+        y = int(canvas_rect.y + yalign)
+
+        label_rgba = self.get_label_color()
+        fill = self.get_fill_color()
+
+        for dx, dy, lum, last in self._label_iterations(lod):
             # draw dwell progress after fake emboss, before final image
             if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
+            if lum:
+                rgba = brighten(lum, *fill) # darker
+            else:
+                rgba = label_rgba
 
             # Draw the image in the themes label color.
             # Only the alpha channel of the image is used.
-            Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
+            Gdk.cairo_set_source_pixbuf(context, pixbuf, x + dx, y + dy)
             pattern = context.get_source()
             context.rectangle(*rect)
             context.set_source_rgba(*rgba)
@@ -626,18 +699,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return pixbuf
 
-    def _label_iterations(self, src_size, log_rect, lod):
-        canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xalign, yalign = self.align_label(src_size,
-                                            (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xalign)
-        y = int(canvas_rect.y + yalign)
-
+    def _label_iterations(self, lod):
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         if lod == LOD.FULL and \
            config.theme_settings.key_style != "flat" and stroke_gradient:
             root = self.get_layout_root()
-            fill = self.get_fill_color()
             d = 0.4  # fake-emboss distance
             #d = max(src_size[1] * 0.02, 0.0)
             max_offset = 2
@@ -648,17 +714,16 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             xo = min(int(round(xo)), max_offset)
             yo = min(int(round(yo)), max_offset)
 
+            luminosity_factor = stroke_gradient * 0.25
+
             # shadow
-            rgba = brighten(-stroke_gradient*.25, *fill) # darker
-            yield x + xo, y + yo, rgba, False
+            yield xo, yo, -luminosity_factor, False
 
             # highlight
-            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
-            yield x - xo, y - yo, rgba, False
+            yield -xo, -yo, luminosity_factor, False
 
         # normal
-        rgba = self.get_label_color()
-        yield x, y, rgba, True
+        yield 0, 0, 0, True
 
 
 class FixedFontMixin:
@@ -765,7 +830,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
     def get_layout(self):
         text, attrs = self._build_layout_contents()
-        layout = self.get_pango_layout(None, text, self.font_size)
+        layout = self.get_pango_layout(text, self.font_size)
         layout.set_attributes(attrs)
         layout.set_auto_dir(True)
         return layout

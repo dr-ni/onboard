@@ -150,6 +150,9 @@ class KeyCommon(LayoutItem):
     # label that is currently displayed by this key
     label = ""
 
+    # smaller label of a currently invisible modifier level
+    secondary_label = ""
+
     # Images displayed by this key (optional)
     image_filenames = None
 
@@ -168,15 +171,36 @@ class KeyCommon(LayoutItem):
         LayoutItem.__init__(self)
 
     def configure_label(self, mod_mask):
+        SHIFT = Modifiers.SHIFT
         labels = self.labels
 
         if labels is None:
-            self.label = ""
+            self.label = self.secondary_label = ""
             return
 
+        # primary label
         label = labels.get(mod_mask)
         if label is None:
-            label = labels.get(mod_mask & LABEL_MODIFIERS)
+            mask = mod_mask & LABEL_MODIFIERS
+            label = labels.get(mask)
+
+        # secondary label, usually the label of the shift state
+        secondary_label = None
+        if mod_mask & SHIFT:
+            mask = mod_mask & ~SHIFT
+        else:
+            mask = mod_mask | SHIFT
+
+        secondary_label = labels.get(mask)
+        if secondary_label is None:
+            mask = mask & LABEL_MODIFIERS
+            secondary_label = labels.get(mask)
+
+        # Only keep secondary labels that show different characters
+        if not secondary_label is None and \
+           not label is None and \
+           secondary_label.upper() == label.upper():
+            secondary_label = None
 
         if label is None:
             # legacy fallback for 0.98 behavior and virtkey until 0.61.0
@@ -204,12 +228,16 @@ class KeyCommon(LayoutItem):
             label = ""
 
         self.label = label
+        self.secondary_label = secondary_label
 
     def draw_label(self, context = None):
         raise NotImplementedError()
 
     def get_label(self):
         return self.label
+
+    def get_secondary_label(self):
+        return self.secondary_label
 
     def is_active(self):
         return not self.type is None
@@ -300,10 +328,31 @@ class RectKeyCommon(KeyCommon):
     def align_label(self, label_size, key_size, ltr = True):
         """ returns x- and yoffset of the aligned label """
         label_x_align = self.label_x_align
+        label_y_align = self.label_y_align
         if not ltr:  # right to left script?
             label_x_align = 1.0 - label_x_align
-        xoffset =      label_x_align * (key_size[0] - label_size[0])
-        yoffset = self.label_y_align * (key_size[1] - label_size[1])
+        xoffset = label_x_align * (key_size[0] - label_size[0])
+        yoffset = label_y_align * (key_size[1] - label_size[1])
+        return xoffset, yoffset
+
+    def align_secondary_label(self, label_size, key_size, ltr = True):
+        """ returns x- and yoffset of the aligned label """
+        label_x_align = 0.97
+        label_y_align = 0.0
+        if not ltr:  # right to left script?
+            label_x_align = 1.0 - label_x_align
+        xoffset = label_x_align * (key_size[0] - label_size[0])
+        yoffset = label_y_align * (key_size[1] - label_size[1])
+        return xoffset, yoffset
+
+    def align_popup_indicator(self, label_size, key_size, ltr = True):
+        """ returns x- and yoffset of the aligned label """
+        label_x_align = 1.0
+        label_y_align = self.label_y_align
+        if not ltr:  # right to left script?
+            label_x_align = 1.0 - label_x_align
+        xoffset = label_x_align * (key_size[0] - label_size[0])
+        yoffset = label_y_align * (key_size[1] - label_size[1])
         return xoffset, yoffset
 
     def get_style(self):
@@ -319,6 +368,9 @@ class RectKeyCommon(KeyCommon):
 
     def get_label_color(self):
         return self._get_color("label")
+
+    def get_secondary_label_color(self):
+        return self._get_color("secondary-label")
 
     def get_dwell_progress_color(self):
         return self._get_color("dwell-progress")

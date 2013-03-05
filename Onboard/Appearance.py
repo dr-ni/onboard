@@ -523,6 +523,7 @@ class ColorScheme(object):
                     "scanned":                [0.45, 0.45, 0.7, 1.0],
                     "stroke":                 [0.0,  0.0,  0.0, 1.0],
                     "label":                  [0.0,  0.0,  0.0, 1.0],
+                    "secondary-label":        [0.5,  0.5,  0.5, 1.0],
                     "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
                     "correction-label":       [1.0,  0.5,  0.5, 1.0],
                     }
@@ -596,18 +597,15 @@ class ColorScheme(object):
 
             # dim label color for insensitive keys
             if state.get("insensitive"):
-                new_state = dict(list(state.items()))
-                new_state["insensitive"] = False
-                fill = self.get_key_rgba(key, "fill", new_state)
-                rgba = self.get_key_rgba(key, "label", new_state)
+                rgba = self._get_insensitive_color(key, state, element)
 
-                h, lf, s = colorsys.rgb_to_hls(*fill[:3])
-                h, ll, s = colorsys.rgb_to_hls(*rgba[:3])
+        elif element == "secondary-label":
 
-                # Leave only one third of the lightness difference
-                # between label and fill color.
-                amount = (ll - lf) * 2.0 / 3.0
-                rgba = brighten(-amount, *rgba)
+            rgba = colors["secondary-label"]
+
+            # dim label color for insensitive keys
+            if state.get("insensitive"):
+                rgba = self._get_insensitive_color(key, state, element)
 
         elif element == "dwell-progress":
             rgba = colors["dwell-progress"]
@@ -616,6 +614,20 @@ class ColorScheme(object):
             assert(False)   # unknown element
 
         return rgba
+
+    def _get_insensitive_color(self, key, state, element):
+        new_state = state.copy()
+        new_state["insensitive"] = False
+        fill = self.get_key_rgba(key, "fill", new_state)
+        rgba = self.get_key_rgba(key, element, new_state)
+
+        h, lf, s = colorsys.rgb_to_hls(*fill[:3])
+        h, ll, s = colorsys.rgb_to_hls(*rgba[:3])
+
+        # Leave only one third of the lightness difference
+        # between label and fill color.
+        amount = (ll - lf) * 2.0 / 3.0
+        return brighten(-amount, *rgba)
 
     def get_window_rgba(self, window_type, element):
         """
@@ -1255,7 +1267,7 @@ class KeyColor(Color):
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
-            if element == "label" and \
+            if (element == "label" or element == "secondary-label") and \
                attr in ["insensitive"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False

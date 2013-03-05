@@ -175,6 +175,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Audio feedback</summary>
             <description>Play a sound when a key is pressed.</description>
         </key>
+        <key name="show-secondary-labels" type="b">
+            <default>false</default>
+            <summary>Show secondary labels</summary>
+            <description>Show additional key labels of different modifier levels.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">
