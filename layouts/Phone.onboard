@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <keyboard format="2.1" id="Phone">
   <include file="key_defs.xml"/>
+
   <!-- box containing all the keys and buttons -->
   <!-- the rows of keys on the Onboard keyboard are counted bottom to top starting with 1 -->
   <box border="1" spacing="1.5" orientation="vertical">
@@ -56,7 +57,7 @@
             <key group="alphanumeric" id="AA01" char="," label=","/>
             <key group="bottomrow" id="SPCE"/>
             <key group="alphanumeric" id="AA02" char="." label="."/>
-            <key group="bottomrow" id="RTRN"/>
+            <key group="bottomrow" id="RTRN" popup_id="RTRN_popup"/>
           </panel>
           <panel filename="Phone-Numbers.svg" layer="numbers">
             <!-- row 4 -->
@@ -96,7 +97,7 @@
             <key group="alphanumeric" id="BA01" char="," label=","/>
             <key group="bottomrow" id="SPCE"/>
             <key group="alphanumeric" id="BA02" char="." label="."/>
-            <key group="bottomrow" id="RTRN"/>
+            <key group="bottomrow" id="RTRN" popup_id="RTRN_popup"/>
           </panel>
           <panel filename="Phone-Syms.svg" layer="syms">
             <!-- row 4 -->
@@ -136,7 +137,7 @@
             <key group="alphanumeric" id="CA01" char="„" label="„"/>
             <key group="bottomrow" id="SPCE"/>
             <key group="alphanumeric" id="CA02" char="…" label="…"/>
-            <key group="bottomrow" id="RTRN"/>
+            <key group="bottomrow" id="RTRN" popup_id="RTRN_popup"/>
           </panel>
           <panel filename="Phone-Emoji.svg" layer="emoji">
             <!-- row 4 -->
@@ -176,11 +177,19 @@
             <key group="symbol" id="DA01" char="☢" label="☢"/> <!-- U+2622 RADIOACTIVE SIGN -->
             <key group="bottomrow" id="SPCE"/>
             <key group="symbol" id="DA02" char="☯" label="☯"/> <!-- U+262F YIN YANG -->
-            <key group="bottomrow" id="RTRN"/>
+            <key group="bottomrow" id="RTRN" popup_id="RTRN_popup"/>
           </panel>
         </panel>
       </box>
     </panel>
 
   </box>
+
+  <!-- popup definition -->
+  <layout id="RTRN_popup" filename="Phone-Alpha.svg">
+    <key id="settings"/>
+    <key id="move"/>
+    <key id="hide" svg_id="hide.popup" image="hide.svg"/>
+  </layout>
+
 </keyboard>
