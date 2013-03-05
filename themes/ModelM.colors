@@ -41,7 +41,7 @@
             <color element="fill" rgb="#e1e1e1"/>        
             <color element="fill" rgb="#c1c1c1" active="true"/>        
             hide, move, showclick,
-            layer0, layer1, layer2
+            layer0, layer1, layer2, layer3, layer4, layer5
         </key_group>    
     </key_group>
 </color_scheme>

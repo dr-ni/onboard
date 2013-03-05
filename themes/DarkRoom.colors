@@ -36,7 +36,7 @@
             KPSU, KPDV KPAD, KPMU,
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
             hide, showclick, move, 
-            layer0, layer1, layer2,
+            layer0, layer1, layer2, layer3, layer4, layer5,
             quit,
         </key_group>
         
