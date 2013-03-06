@@ -921,7 +921,8 @@ class LayoutLoaderSVG:
 
     @staticmethod
     def is_layout_node(dom_node):
-        return dom_node.tagName in ["box", "panel", "key"]
+        return dom_node.tagName in ["include", "key_template", "keysym_rule",
+                                    "box", "panel", "key", "layout"]
 
     @staticmethod
     def _iter_dom_nodes(dom_node):
