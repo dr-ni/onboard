@@ -44,8 +44,7 @@
             <!-- softened active color -->
             <key_group>
                 <color element="fill" active="true" locked="false" rgb="#c1c1c1"/>
-                hide, showclick, move,
-                layer0, layer1, layer2, layer3, layer4, layer5
+                hide, showclick, move, layer
             </key_group>
         </key_group>
 

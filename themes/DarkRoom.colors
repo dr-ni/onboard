@@ -35,9 +35,8 @@
             Prnt, Pause, Scroll,
             KPSU, KPDV KPAD, KPMU,
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
-            hide, showclick, move, 
-            layer0, layer1, layer2, layer3, layer4, layer5,
-            quit,
+            hide, showclick, move, layer,
+            quit
         </key_group>
         
         <key_group>

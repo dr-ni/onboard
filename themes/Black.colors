@@ -8,7 +8,7 @@
         <color element="fill"   rgb="#000000"/>
         <color element="stroke" rgb="#888888"/>
         <color element="label"  rgb="#ffffff"/>
-        layer0, layer1, layer2, layer3, layer4, layer5,
+        layer,
         icon0, icon3
         
         <key_group>

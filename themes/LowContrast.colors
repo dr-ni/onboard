@@ -17,7 +17,7 @@
         <color element="stroke" rgb="#666666"/>
         <color element="label"  rgb="#666666"/>
         <color element="dwell-progress"  rgb="#b24f59"/>
-        layer0, layer1, layer2, layer3, layer4, layer5,
+        layer,
         icon0, icon1, icon2, icon3
     </key_group>
 </color_scheme>

@@ -472,6 +472,8 @@ class ColorScheme(object):
             ids.append("prediction")
         if key.is_correction_key():
             ids.append("correction")
+        if key.is_layer_button():
+            ids.append("layer")
 
         # look for a matching key_group and color in the color scheme
         for id in ids:
