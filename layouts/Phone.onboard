@@ -9,7 +9,6 @@
     <!--- word suggestions -->
     <panel filename="Phone-Alpha.svg">
         <include file='word_suggestions.xml'/>
-        <key group="bottomrow" id="hide"/>
     </panel>
 
     <panel>

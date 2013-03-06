@@ -26,16 +26,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1215"
-     inkscape:window-height="1000"
+     inkscape:window-width="1312"
+     inkscape:window-height="766"
      id="namedview82"
      showgrid="false"
      inkscape:zoom="3.16"
-     inkscape:cx="242.30621"
-     inkscape:cy="2.5889616"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
+     inkscape:cx="162.1721"
+     inkscape:cy="63.963138"
+     inkscape:window-x="198"
+     inkscape:window-y="137"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
      inkscape:snap-global="true"
      inkscape:snap-bbox="true"
@@ -273,14 +273,6 @@
      x="0.75805342"
      inkscape:label="#layer1" />
   <rect
-     id="hide"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.15282464"
-     height="18.847176"
-     width="22.846792"
-     y="-19.424353"
-     x="216.57642"
-     inkscape:label="" />
-  <rect
      id="AA01"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
      height="22.737215"
@@ -297,11 +289,11 @@
      x="216.63158" />
   <rect
      id="wordlist"
-     height="19.004725"
-     width="215.00473"
-     y="-19.502365"
-     x="0.49763718"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99527436;stroke-miterlimit:4;stroke-dasharray:none" />
+     height="18.952211"
+     width="238.95221"
+     y="-19.476109"
+     x="0.52389407"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.04778814;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="correction"
      height="18.801407"
@@ -328,7 +320,7 @@
      height="18.358009"
      width="18.358009"
      y="-19.179007"
-     x="186.821"
+     x="210.821"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.64199018;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="AA02"
