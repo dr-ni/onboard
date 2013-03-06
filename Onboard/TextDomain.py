@@ -107,7 +107,7 @@ class TextDomain:
     def get_text_begin_marker(self):
         return ""
 
-    def can_record_insertion(self, pos, length):
+    def can_record_insertion(self, accessible, pos, length):
         return True
 
     def is_keypress_feedback_allowed(self):
@@ -215,7 +215,7 @@ class DomainTerminal(TextDomain):
 
         # remove prompt from the current or previous lines
         context, context_start, line, line_start, line_cursor = \
-                self._cut_prompt(accessible, offset)
+                self._read_after_prompt(accessible, offset)
         if context_start:
             begin_of_text = True
             begin_of_text_offset = line_start
@@ -233,7 +233,7 @@ class DomainTerminal(TextDomain):
                   begin_of_text, begin_of_text_offset)
         return result
 
-    def _cut_prompt(self, accessible, offset):
+    def _read_after_prompt(self, accessible, offset):
         r = accessible.get_text_at_offset(offset,
                             Atspi.TextBoundaryType.LINE_START)
         line = unicode_str(r.content).replace("\n","")
@@ -291,8 +291,13 @@ class DomainTerminal(TextDomain):
     def get_text_begin_marker(self):
         return "<bot:term>"
 
-    def can_record_insertion(self, offset, length):
-        return True
+    def can_record_insertion(self, accessible, offset, length):
+        # Only record (for learning) when there is a known prompt in sight.
+        # Problem: learning won't happen for uncommon prompts, but less random
+        # junk scrolling by should enter the user model in return.
+        context, context_start, line, line_start, line_cursor = \
+                self._read_after_prompt(accessible, offset)
+        return bool(context_start)
 
 
 class DomainURL(DomainGenericText):

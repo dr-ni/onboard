@@ -187,10 +187,10 @@ class AtspiTextContext(TextContext):
             return domain.get_text_begin_marker()
         return ""
 
-    def can_record_insertion(self, pos, length):
+    def can_record_insertion(self, accessible, pos, length):
         domain = self.get_text_domain()
         if domain:
-            return domain.can_record_insertion(pos, length)
+            return domain.can_record_insertion(accessible, pos, length)
         return True
 
     def get_begin_of_text_offset(self):
@@ -341,10 +341,12 @@ class AtspiTextContext(TextContext):
                     self._wp.discard_changes()
 
     def _record_text_change(self, pos, length, insert):
+        accessible = self._accessible
+
         char_count = None
-        if self._accessible:
+        if accessible:
             try:
-                char_count = self._accessible.get_character_count()
+                char_count = accessible.get_character_count()
             except: # gi._glib.GError: The application no longer exists
                     # when closing a tab in gnome-terminal.
                 char_count = None
@@ -356,7 +358,7 @@ class AtspiTextContext(TextContext):
                 #print("insert", pos, length)
 
                 if self._entering_text and \
-                   self.can_record_insertion(pos, length):
+                   self.can_record_insertion(accessible, pos, length):
                     if self._wp.is_typing() or length < 30:
                         # Remember all of the insertion, might have been
                         # a pressed snippet or wordlist button.
@@ -384,7 +386,7 @@ class AtspiTextContext(TextContext):
                 # include whole words at beginning and end.
                 begin = max(span.begin() - 100, 0)
                 end = min(span.end() + 100, char_count)
-                span.text = Atspi.Text.get_text(self._accessible, begin, end)
+                span.text = Atspi.Text.get_text(accessible, begin, end)
                 span.text_pos = begin
                 begin = span.begin()
 
