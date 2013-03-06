@@ -54,16 +54,6 @@
           <key group="alphanumeric" id="AB09" char="." label="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
           <key group="shifts" id="RTSH"/>
-          <!-- row 1 -->
-          <key group="bottomrow" id="LCTL"/>
-          <key group="bottomrow" id="LWIN"/>
-          <key group="bottomrow" id="LALT"/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
-          <key group="bottomrow" id="SPCE"/>
-          <key group="alphanumeric" id="LEFT"/>
-          <key group="alphanumeric" id="RGHT"/>
-          <key group="directions_alpha" id="UP"/>
-          <key group="directions_alpha" id="DOWN"/>
         </panel>
         <panel filename="Small-Numbers.svg" layer="numbers"> <!-- layer1 -->
           <!-- row 4, numbers layer -->
@@ -104,16 +94,6 @@
           <key group="alphanumeric" id="BB08" char="," label=","/>
           <key group="alphanumeric" id="BB09" char="." label="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
-          <!-- row 1, numbers layer -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
-          <key group="bottomrow" id="layer4" label="Fn"/>
-          <key group="bottomrow" id="layer2" label="Sym" image=""/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
-          <key group="bottomrow" id="SPCE"/>
-          <key group="alphanumeric" id="LEFT"/>
-          <key group="alphanumeric" id="RGHT"/>
-          <key group="alphanumeric" id="UP"/>
-          <key group="alphanumeric" id="DOWN"/>
         </panel>
         <panel filename="Small-Syms.svg" layer="syms"> <!-- layer2 -->
           <!-- row 4 -->
@@ -154,16 +134,6 @@
           <key group="alphanumeric" id="CB08" char="®" label="®"/>
           <key group="alphanumeric" id="CB09" char="©" label="©"/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
-          <!-- row 1 -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
-          <key group="bottomrow" id="layer4" label="Fn"/>
-          <key group="bottomrow" id="layer2" label="Sym" image=""/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
-          <key group="bottomrow" id="SPCE"/>
-          <key group="alphanumeric" id="LEFT"/>
-          <key group="alphanumeric" id="RGHT"/>
-          <key group="alphanumeric" id="UP"/>
-          <key group="alphanumeric" id="DOWN"/>
         </panel>
         <panel filename="Small-Emoji.svg" layer="emoji"> <!-- layer3 -->
           <!-- row 4 -->
@@ -204,16 +174,6 @@
           <key group="symbol" id="DB08" char="☯" label="☯"/> <!-- U+262F YIN YANG -->
           <key group="symbol" id="DB09" char="☢" label="☢"/> <!-- U+2622 RADIOACTIVE SIGN -->
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
-          <!-- row 1 -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
-          <key group="bottomrow" id="layer4" label="Fn"/>
-          <key group="bottomrow" id="layer2" label="Sym" image=""/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
-          <key group="bottomrow" id="SPCE"/>
-          <key group="alphanumeric" id="LEFT"/>
-          <key group="alphanumeric" id="RGHT"/>
-          <key group="alphanumeric" id="UP"/>
-          <key group="alphanumeric" id="DOWN"/>
         </panel>
         <panel filename="Small-Fn.svg" layer="functionkeys" border="2"> <!-- layer4 -->
           <key group="bottomrow" id="ESC"/>
@@ -242,10 +202,6 @@
 
           <key group="bottomrow" id="layer3" label="☺"/>
           <key group="bottomrow" id="layer0"/>
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
-          <key group="bottomrow" id="layer4" label="Fn"/>
-          <key group="bottomrow" id="layer2" label="Sym" image=""/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
         </panel>
         <panel filename="Small-Snippets.svg" layer="snippets"> <!-- layer5 -->
           <key group="snippets" id="m0"/>
@@ -263,20 +219,89 @@
 
           <key group="bottomrow" id="hide" expand="false"/>
           <key group="bottomrow" id="move" expand="false"/>
-          <key group="bottomrow" id="settings"/>
-          <key group="click_control" id="showclick"/>
           <key group="click_control" id="hoverclick"/>
-
-          <key group="bottomrow" id="quit"/>
 
           <key group="bottomrow" id="layer3" label="☺"/>
           <key group="bottomrow" id="layer0"/>
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
-          <key group="bottomrow" id="layer4" label="Fn"/>
-          <key group="bottomrow" id="layer2" label="Sym" image=""/>
-          <key group="bottomrow" id="layer1" label="12!@"/>
+        </panel>
+        
+        <panel>
+          <panel>
+            <panel filename="Small-Alpha.svg" layer="alpha"> <!-- layer1 -->
+              <key group="bottomrow" id="LCTL"/>
+              <key group="bottomrow" id="LWIN"/>
+              <key group="bottomrow" id="LALT"/>
+            </panel>
+            <panel filename="Small-Numbers.svg" layer="numbers">
+              <key group="bottomrow" id="layer5" image="snippets.svg"/>
+              <key group="bottomrow" id="layer4" label="Fn"/>
+              <key group="bottomrow" id="layer2" label="Sym" image=""/>
+            </panel>
+            <panel filename="Small-Syms.svg" layer="syms">
+              <key group="bottomrow" id="layer5" image="snippets.svg"/>
+              <key group="bottomrow" id="layer4" label="Fn"/>
+              <key group="bottomrow" id="layer2" label="Sym" image=""/>
+            </panel>
+            <panel filename="Small-Emoji.svg" layer="emoji">
+              <key group="bottomrow" id="layer5" image="snippets.svg"/>
+              <key group="bottomrow" id="layer4" label="Fn"/>
+              <key group="bottomrow" id="layer2" label="Sym" image=""/>
+            </panel>
+            <panel filename="Small-Fn.svg" layer="functionkeys" border="2">
+              <key group="bottomrow" id="layer5" image="snippets.svg"/>
+              <key group="bottomrow" id="layer4" label="Fn"/>
+              <key group="bottomrow" id="layer2" label="Sym" image=""/>
+            </panel>
+            <panel filename="Small-Snippets.svg" layer="snippets">
+              <key group="bottomrow" id="layer5" image="snippets.svg"/>
+              <key group="bottomrow" id="layer4" label="Fn"/>
+              <key group="bottomrow" id="layer2" label="Sym" image=""/>
+            </panel>
+          </panel>
+          <panel filename="Small-Alpha.svg">
+            <key group="bottomrow" id="layer1" label="12!@"/>
+          </panel>
+          <panel>
+            <panel filename="Small-Alpha.svg" layer="alpha">
+              <key group="bottomrow" id="SPCE"/>
+              <key group="alphanumeric" id="LEFT"/>
+              <key group="alphanumeric" id="RGHT"/>
+              <key group="directions_alpha" id="UP"/>
+              <key group="directions_alpha" id="DOWN"/>
+            </panel>
+            <panel filename="Small-Numbers.svg" layer="numbers">
+              <key group="bottomrow" id="SPCE"/>
+              <key group="alphanumeric" id="LEFT"/>
+              <key group="alphanumeric" id="RGHT"/>
+              <key group="alphanumeric" id="UP"/>
+              <key group="alphanumeric" id="DOWN"/>
+            </panel>
+            <panel filename="Small-Syms.svg" layer="syms"> 
+              <key group="bottomrow" id="SPCE"/>
+              <key group="alphanumeric" id="LEFT"/>
+              <key group="alphanumeric" id="RGHT"/>
+              <key group="alphanumeric" id="UP"/>
+              <key group="alphanumeric" id="DOWN"/>
+            </panel>
+            <panel filename="Small-Emoji.svg" layer="emoji">   
+              <key group="bottomrow" id="SPCE"/>
+              <key group="alphanumeric" id="LEFT"/>
+              <key group="alphanumeric" id="RGHT"/>
+              <key group="alphanumeric" id="UP"/>
+              <key group="alphanumeric" id="DOWN"/>
+            </panel>
+            <panel filename="Small-Fn.svg" layer="functionkeys" border="2">
+              <!-- no keys here -->
+            </panel>
+            <panel filename="Small-Snippets.svg" layer="snippets">
+              <key group="bottomrow" id="quit"/>
+              <key group="bottomrow" id="settings"/>
+              <key group="click_control" id="showclick"/>
+            </panel>
+          </panel>
         </panel>
       </panel>
+
 
       <panel filename="Small-Alpha.svg" id="click">
         <!-- Panel with the click buttons -->
@@ -295,4 +320,4 @@
     <key id="hide" svg_id="hide.popup" image="hide.svg"/>
   </layout>
 
-</keyboard>
+</keyboard>        

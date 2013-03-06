@@ -14,7 +14,7 @@
    width="318"
    version="1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Small5-Fn.svg">
+   sodipodi:docname="Small-Fn.svg">
   <defs
      id="defs24" />
   <sodipodi:namedview
@@ -31,10 +31,10 @@
      id="namedview22"
      showgrid="false"
      inkscape:zoom="3.1515393"
-     inkscape:cx="121.98865"
-     inkscape:cy="47.500064"
-     inkscape:window-x="297"
-     inkscape:window-y="84"
+     inkscape:cx="156.27278"
+     inkscape:cy="21.41742"
+     inkscape:window-x="128"
+     inkscape:window-y="105"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
      inkscape:snap-bbox="true"
@@ -58,7 +58,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="6.630815"
+     y="0.63081646"
      x="115.63173"
      inkscape:label="" />
   <rect
@@ -66,7 +66,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="6.630815"
+     y="0.63081646"
      x="91.63166"
      inkscape:label="" />
   <rect
@@ -74,7 +74,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="6.630815"
+     y="0.63081646"
      x="67.631577"
      inkscape:label="" />
   <rect
@@ -82,7 +82,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="6.630815"
+     y="0.63081646"
      x="163.63188"
      inkscape:label="" />
   <rect
@@ -90,7 +90,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="6.630815"
+     y="0.63081646"
      x="139.63181"
      inkscape:label="" />
   <rect
@@ -98,7 +98,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="30.631197"
+     y="24.631199"
      x="139.63181"
      inkscape:label="" />
   <rect
@@ -106,7 +106,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="30.631197"
+     y="24.631199"
      x="163.63188"
      inkscape:label="" />
   <rect
@@ -114,7 +114,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="30.631197"
+     y="24.631199"
      x="67.631577"
      inkscape:label="" />
   <rect
@@ -122,7 +122,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="30.631197"
+     y="24.631199"
      x="91.63166"
      inkscape:label="" />
   <rect
@@ -130,7 +130,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315987"
      height="22.737223"
      width="22.736534"
-     y="30.631197"
+     y="24.631199"
      x="115.63173"
      inkscape:label="" />
   <rect
@@ -138,7 +138,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="6.6308141"
+     y="0.63081551"
      x="187.63158"
      inkscape:label="" />
   <rect
@@ -146,7 +146,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="30.631197"
+     y="24.631199"
      x="187.63158"
      inkscape:label="" />
   <rect
@@ -154,7 +154,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316798"
      height="22.737215"
      width="22.736832"
-     y="6.6312008"
+     y="0.63120222"
      x="36.631584"
      inkscape:label="" />
   <rect
@@ -162,7 +162,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="6.6311965"
+     y="0.63119793"
      x="266.63159"
      inkscape:label="" />
   <rect
@@ -170,7 +170,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="6.6311965"
+     y="0.63119793"
      x="242.63158"
      inkscape:label="" />
   <rect
@@ -178,7 +178,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="6.6311965"
+     y="0.63119793"
      x="218.63158"
      inkscape:label="" />
   <rect
@@ -186,7 +186,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="36.630814"
+     y="24.630817"
      x="266.63159"
      inkscape:label="" />
   <rect
@@ -194,7 +194,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="36.630814"
+     y="24.630817"
      x="218.63158"
      inkscape:label="" />
   <rect
@@ -202,7 +202,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="60.631195"
+     y="48.631195"
      x="218.63158"
      inkscape:label="" />
   <rect
@@ -210,7 +210,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="60.631195"
+     y="48.631195"
      x="242.63159"
      inkscape:label="" />
   <rect
@@ -218,7 +218,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="60.631195"
+     y="48.631195"
      x="266.63159"
      inkscape:label="" />
   <rect
@@ -226,7 +226,7 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316798"
      height="22.737215"
      width="22.736832"
-     y="36.630817"
+     y="24.630821"
      x="242.63159"
      inkscape:label="" />
   <rect
