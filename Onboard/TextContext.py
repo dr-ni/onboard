@@ -290,9 +290,10 @@ class AtspiTextContext(TextContext):
         self._can_insert_text = self.get_accessible_capabilities(**state)
 
         # log accessible info
-        if 0:#_logger.isEnabledFor(logging.DEBUG):
-            print()
-            print("Accessible focused: ")
+        if _logger.isEnabledFor(logging.DEBUG):
+            log = _logger.debug
+            log("-"*70)
+            log("Accessible focused: ")
             if self._accessible:
                 state = self._state_tracker.get_state()
                 for key, value in sorted(state.items()):
@@ -301,13 +302,13 @@ class AtspiTextContext(TextContext):
                         msg += repr(AtspiStateType.to_strings(value))
                     else:
                         msg += str(value)
-                    print(msg)
-                print("text_domain", "=", self._text_domain)
-                print("can_insert_text", "=", self._can_insert_text)
-                print()
+                    log(msg)
+                log("text_domain: {}".format(self._text_domain))
+                log("can_insert_text: {}".format(self._can_insert_text))
+                log("")
             else:
-                print("None")
-                print()
+                log("None")
+                log("")
 
         self._update_context()
 
@@ -390,7 +391,7 @@ class AtspiTextContext(TextContext):
                 span.text_pos = begin
                 begin = span.begin()
 
-            print(self._changes)
+            #print(self._changes)
 
     def _update_context(self):
         self._update_context_timer.start(0.01, self.on_text_context_changed)

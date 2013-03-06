@@ -110,7 +110,7 @@ class WPLocalEngine(object):
             for model in models:
                 model.learn_tokens(tokens, allow_new_words)
                 model.modified = True
-            _logger.info("learn_text: tokens=" + repr(tokens[:10]))
+            #_logger.info("learn_text: tokens=" + repr(tokens[:10]))
 
             # debug: save all learned text for later optimization testing
             if config.log_learn:
@@ -123,14 +123,13 @@ class WPLocalEngine(object):
         tokens, spans = pypredict.tokenize_text(text)
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
-            print("scratch learn", model, tokens)
+            #print("scratch learn", model, tokens)
             model.learn_tokens(tokens, True)
 
     def clear_scratch_models(self):
         """ Count n-grams and add words to the scratch models. """
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
-            print("scratch clear", model)
             model.clear()
 
     def lookup_text(self, text):

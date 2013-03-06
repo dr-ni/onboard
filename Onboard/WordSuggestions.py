@@ -642,7 +642,6 @@ class WordSuggestions:
         Discard all changes that have accumulated for learning.
         """
         _logger.info("discarding changes")
-        print("discarding changes")
         self._learn_strategy.discard_changes()
         self._clear_changes()
 
@@ -753,7 +752,6 @@ class LearnStrategy:
             texts = self._get_learn_texts(spans, bot_marker, bot_offset)
 
             _logger.info("learning " + repr(texts))
-            print("learning", texts)
 
             engine = self._wp._wpengine
             for text in texts:
@@ -765,8 +763,6 @@ class LearnStrategy:
             engine.clear_scratch_models()
             if spans:
                 texts = self._get_learn_texts(spans)
-
-                print("scratch memory", texts)
 
                 for text in texts:
                     engine.learn_scratch_text(text)
