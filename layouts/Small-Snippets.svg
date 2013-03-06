@@ -14,7 +14,7 @@
    width="318"
    version="1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Tablet-Snippets.svg">
+   sodipodi:docname="Small-Snippets.svg">
   <defs
      id="defs24" />
   <sodipodi:namedview
@@ -33,7 +33,7 @@
      inkscape:zoom="3.1515393"
      inkscape:cx="166.19924"
      inkscape:cy="47.500064"
-     inkscape:window-x="194"
+     inkscape:window-x="116"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
@@ -211,11 +211,11 @@
      inkscape:label="" />
   <rect
      id="settings"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:0.84223956"
-     height="23.157761"
-     width="23.157761"
-     y="48.421116"
-     x="270.42111"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:1.08603048"
+     height="22.913969"
+     width="38.913971"
+     y="72.543015"
+     x="195.54301"
      inkscape:label="" />
   <rect
      id="showclick"
@@ -230,15 +230,15 @@
      style="fill:#d8cca5;stroke:#000000;stroke-width:0.84223956"
      height="23.157761"
      width="23.157761"
-     y="72.42112"
-     x="246.42113"
+     y="48.42112"
+     x="270.42111"
      inkscape:label="" />
   <rect
      id="quit"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:1.18848181"
-     height="22.811518"
-     width="46.81152"
-     y="72.594238"
-     x="180.59424"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:1.08603048"
+     height="22.913969"
+     width="38.913971"
+     y="72.543015"
+     x="140.54301"
      inkscape:label="" />
 </svg>
