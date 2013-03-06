@@ -107,6 +107,9 @@ class TextDomain:
     def get_text_begin_marker(self):
         return ""
 
+    def can_record_insertion(self, pos, length):
+        return True
+
     def is_keypress_feedback_allowed(self):
         return True
 
@@ -190,6 +193,12 @@ class DomainTerminal(TextDomain):
                              )
                             )
 
+    _prompt_blacklist_patterns = tuple(re.compile(p, re.UNICODE) for p in \
+                             (
+                              "^\(.*\)`.*': ", # bash incremental search
+                             )
+                            )
+
     def matches(self, **kwargs):
         return TextDomain.matches(self, **kwargs) and \
                kwargs.get("role") == Atspi.Role.TERMINAL
@@ -197,10 +206,34 @@ class DomainTerminal(TextDomain):
     def init_domain(self):
         pass
 
-    def read_context(self, accessible):
-        """ Extract prediction context from the accessible """
-        offset = accessible.get_caret_offset()
+    def read_context(self, accessible, offset = None):
+        """ 
+        Extract prediction context from the accessible
+        """
+        if offset is None:
+            offset = accessible.get_caret_offset()
 
+        # remove prompt from the current or previous lines
+        context, context_start, line, line_start, line_cursor = \
+                self._cut_prompt(accessible, offset)
+        if context_start:
+            begin_of_text = True
+            begin_of_text_offset = line_start
+        else:
+            begin_of_text = False
+            begin_of_text_offset = None
+
+        # remove newlines
+        context = context.replace("\n","")
+
+        #cursor_span = TextSpan(offset, 0, text, begin)
+        cursor_span = TextSpan(offset, 0, line, line_start)
+
+        result = (context, line, line_cursor, cursor_span,
+                  begin_of_text, begin_of_text_offset)
+        return result
+
+    def _cut_prompt(self, accessible, offset):
         r = accessible.get_text_at_offset(offset,
                             Atspi.TextBoundaryType.LINE_START)
         line = unicode_str(r.content).replace("\n","")
@@ -209,35 +242,33 @@ class DomainTerminal(TextDomain):
 
         # remove prompt from the current or previous lines
         context = ""
-        begin_of_text = False
-        begin_of_text_offset = None
+        context_start = None
         l = line[:line_cursor]
         for i in range(2):
-            entry_start = self._find_prompt(l)
-            context += l[entry_start:]
+
+            # blacklist matches? -> cancel whole context
+            if self._find_blacklisted_prompt(l):
+                context = ""
+                context_start = None
+                break
+
+            context_start = self._find_prompt(l)
+            context = l[context_start:] + context
             if i == 0:
-                line = line[entry_start:] # cut prompt from input line
-                line_start  += entry_start
-                line_cursor -= entry_start
-            if entry_start:
-                begin_of_text = True
-                begin_of_text_offset = line_start
+                line = line[context_start:] # cut prompt from input line
+                line_start  += context_start
+                line_cursor -= context_start
+            if context_start:
                 break
 
             # no prompt yet -> let context reach
             # across one more line break
             r = accessible.get_text_before_offset(offset,
                                 Atspi.TextBoundaryType.LINE_START)
-            l = unicode_str(r.content)
+            l = unicode_str(r.content).replace("\n","")
 
-        # remove newlines
-        context = context.replace("\n","")
-
-        #cursor_span = TextSpan(offset, 0, text, begin)
-        cursor_span = TextSpan(offset, 0, line, line_start)
-
-        return (context, line, line_cursor, cursor_span,
-                begin_of_text, begin_of_text_offset)
+        result = (context, context_start, line, line_start, line_cursor)
+        return result
 
     def _find_prompt(self, context):
         """
@@ -250,8 +281,18 @@ class DomainTerminal(TextDomain):
                 return match.end()
         return 0
 
+    def _find_blacklisted_prompt(self, context):
+        for pattern in self._prompt_blacklist_patterns:
+            match = pattern.search(context)
+            if match:
+                return match.end()
+        return None
+
     def get_text_begin_marker(self):
         return "<bot:term>"
+
+    def can_record_insertion(self, offset, length):
+        return True
 
 
 class DomainURL(DomainGenericText):

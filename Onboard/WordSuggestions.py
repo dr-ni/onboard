@@ -650,6 +650,7 @@ class WordSuggestions:
         """
         Reset all contexts and clear all changes.
         """
+        self.atspi_text_context.clear_changes()
         self.atspi_text_context.reset()
         self.input_line.reset()
 
@@ -862,7 +863,8 @@ class LearnStrategy:
                             tokens = [bot_marker] + tokens
                             spans = [(-1, -1)] + spans # dummy span, don't use
 
-            if not merged:
+            if not merged and \
+               len(tokens):
                 token_sets.append(tokens)
                 span_sets.append(spans)
 

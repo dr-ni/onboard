@@ -187,6 +187,12 @@ class AtspiTextContext(TextContext):
             return domain.get_text_begin_marker()
         return ""
 
+    def can_record_insertion(self, pos, length):
+        domain = self.get_text_domain()
+        if domain:
+            return domain.can_record_insertion(pos, length)
+        return True
+
     def get_begin_of_text_offset(self):
         return self._begin_of_text_offset \
                if self._accessible else None
@@ -348,7 +354,9 @@ class AtspiTextContext(TextContext):
             spans_to_update = []
             if insert:
                 #print("insert", pos, length)
-                if self._entering_text:
+
+                if self._entering_text and \
+                   self.can_record_insertion(pos, length):
                     if self._wp.is_typing() or length < 30:
                         # Remember all of the insertion, might have been
                         # a pressed snippet or wordlist button.
