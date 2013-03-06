@@ -672,6 +672,10 @@ class ColorScheme(object):
         opacity = None
         layers = self._root.get_layers()
 
+        # If there is no layer definition for this index,
+        # repeat the last defined layer color.
+        layer_index = min(layer_index, len(layers) - 1)
+
         if layer_index >= 0 and layer_index < len(layers):
             for item in layers[layer_index].items:
                 if item.is_color() and \
