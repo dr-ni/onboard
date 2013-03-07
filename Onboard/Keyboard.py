@@ -1254,7 +1254,8 @@ class Keyboard(WordSuggestions):
                 Sound().play(Sound.key_feedback, *point)
 
             # key label popup
-            if config.keyboard.touch_feedback_enabled and \
+            if not config.xid_mode and \
+               config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
                not key.is_modifier() and \
                not key.is_layer_button() and \
