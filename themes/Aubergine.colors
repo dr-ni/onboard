@@ -62,7 +62,8 @@
         <!-- aubergine -->
         <key_group>
             <color element="fill" rgb="#d98fb7"/>
-            BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK
+            BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK,
+            layer.like_rtrn, LFSH.like_rtrn
             <key_group>
                 <color element="stroke" rgb="#404040"/>
                 icon3
