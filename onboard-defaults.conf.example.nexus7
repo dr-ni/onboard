@@ -12,7 +12,8 @@
 #
 
 [main]
-layout=Compact
+#layout=Compact
+layout=Phone
 theme=Nightshade
 system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
 #system-theme-tracking-enabled=False
@@ -84,10 +85,13 @@ height=48
 [keyboard]
 # label popup
 touch-feedback-enabled=True
-# size of the label popup in mm
-touch-feedback-size=13.0
+# size of the label popup in pixels, 0 for default size
+touch-feedback-size=0
 
 [auto-show]
+enabled=True
+
+[word-suggestions]
 enabled=True
 
 [universal-access]
@@ -99,5 +103,4 @@ device-name=0000:0000:3
 # Work around for "Nexus7 hangs when attempting to switch apps using Alt Tab" (LP: 1082101)
 # Ignore this once the switcher can be closed by tapping the icons.
 disable-keys=[["CTRL", "LALT", "F[0-9]+"]]
-
 
