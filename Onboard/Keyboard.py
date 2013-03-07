@@ -852,19 +852,30 @@ class Keyboard(WordSuggestions):
         #self.send_punctuation_suffix()
 
         # switch to layer 0 on (almost) any key release
-        if not key.is_layer_button() and \
-           not key.id in ["move", "showclick"] and \
-           not self.editing_snippet:
-            if self.active_layer_index != 0 and not self._layer_locked:
-                self.active_layer_index = 0
-                self.update_visible_layers()
-                needs_layout_update = True
-                self.redraw()
+        needs_layout_update = self.maybe_switch_to_first_layer(key)
 
         # punctuation assistance and collapse corrections
         WordSuggestions.on_after_key_release(self, key)
 
         return needs_layout_update
+
+    def maybe_switch_to_first_layer(self, key):
+        if self.active_layer_index != 0 and \
+           not self._layer_locked and \
+           not self.editing_snippet:
+
+            unlatch = key.unlatch_layer
+            if unlatch is None:
+                # for backwards compatibility with Onboard <0.99
+                unlatch = not key.is_layer_button() and \
+                          not key.id in ["move", "showclick"]
+
+            if unlatch:
+                self.active_layer_index = 0
+                self.update_visible_layers()
+                self.redraw()
+
+            return unlatch
 
     def set_modifiers(self, mod_mask):
         """

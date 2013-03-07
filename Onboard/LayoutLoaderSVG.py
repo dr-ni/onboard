@@ -490,6 +490,9 @@ class LayoutLoaderSVG:
         if "popup_id" in attributes:
             key.popup_id = attributes["popup_id"]
 
+        if "unlatch_layer" in attributes:
+            key.unlatch_layer = attributes["unlatch_layer"] == "true"
+
         key.color_scheme = self._color_scheme
 
     def _parse_key_labels(self, attributes, key):

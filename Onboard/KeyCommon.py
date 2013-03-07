@@ -165,6 +165,11 @@ class KeyCommon(LayoutItem):
     # tooltip text
     tooltip = None
 
+    # True: allow switching back to layer 0
+    # False: dont't
+    # None:  hard-coded default-behavior for backwards compatibility <0.99
+    unlatch_layer = None
+
 ###################
 
     def __init__(self):
