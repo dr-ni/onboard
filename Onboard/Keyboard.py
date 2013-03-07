@@ -593,6 +593,7 @@ class Keyboard(WordSuggestions):
             sublayout = key.get_popup_layout()
             if sublayout:
                 view.show_popup_layout(key, sublayout)
+                long_pressed = True
 
             elif key_type == KeyCommon.BUTTON_TYPE:
                 # Buttons decide for themselves what is to happen.
