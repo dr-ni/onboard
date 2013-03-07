@@ -55,18 +55,18 @@
           </panel>
           <panel filename="Phone-Numbers.svg" layer="numbers">
             <!-- row 4 -->
-            <key group="alphanumeric" id="BD01" keysym="0x31" label="1"/>
-            <key group="alphanumeric" id="BD02" keysym="0x32" label="2"/>
-            <key group="alphanumeric" id="BD03" keysym="0x33" label="3"/>
-            <key group="alphanumeric" id="BD04" keysym="0x34" label="4"/>
-            <key group="alphanumeric" id="BD05" keysym="0x35" label="5"/>
-            <key group="alphanumeric" id="BD06" keysym="0x36" label="6"/>
-            <key group="alphanumeric" id="BD07" keysym="0x37" label="7"/>
-            <key group="alphanumeric" id="BD08" keysym="0x38" label="8"/>
-            <key group="alphanumeric" id="BD09" keysym="0x39" label="9"/>
-            <key group="alphanumeric" id="BD10" keysym="0x30" label="0"/>
+            <key group="alphanumeric" id="BD01" keysym="0x31" label="1" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD02" keysym="0x32" label="2" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD03" keysym="0x33" label="3" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD04" keysym="0x34" label="4" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD05" keysym="0x35" label="5" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD06" keysym="0x36" label="6" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD07" keysym="0x37" label="7" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD08" keysym="0x38" label="8" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD09" keysym="0x39" label="9" unlatch_layer="false"/>
+            <key group="alphanumeric" id="BD10" keysym="0x30" label="0" unlatch_layer="false"/>
             <!-- row 3 -->
-            <key group="alphanumeric" id="TAB"/>
+            <key group="alphanumeric" id="TAB" unlatch_layer="false"/>
             <key group="alphanumeric" id="BC02" char="#" label="#"/>
             <key group="alphanumeric" id="BC03" char="%" label="%"/>
             <key group="alphanumeric" id="BC04" char="&amp;" label="&amp;"/>
@@ -85,7 +85,7 @@
             <key group="alphanumeric" id="BB05" char="!" label="!"/>
             <key group="alphanumeric" id="BB06" char=":" label=":"/>
             <key group="alphanumeric" id="BB07" char="&quot;" label="&quot;" />
-            <key group="bottomrow" id="BKSP"/>
+            <key group="bottomrow" id="BKSP" unlatch_layer="false"/>
           </panel>
         </panel>
         <panel>
