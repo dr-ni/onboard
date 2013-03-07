@@ -1135,7 +1135,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if edge: # Bottom
             top    = 0
             bottom = geom.h - area.bottom() + rect.h
-            bottom = root.h - area.bottom() + rect.h
+            #bottom = root.h - area.bottom() + rect.h
             bottom_start_x = rect.left()
             bottom_end_x   = rect.right()
         else:    # Top
