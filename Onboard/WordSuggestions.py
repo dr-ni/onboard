@@ -399,6 +399,10 @@ class WordSuggestions:
                             case_insensitive = case_insensitive,
                             accent_insensitive = config.wp.accent_insensitive,
                             ignore_non_capitalized = ignore_non_caps)
+
+                # Filter out begin of text markers that sneak in as
+                # high frequency unigrams.
+                choices = [c for c in choices if not c.startswith("<bot:")]
             else:
                 choices = []
 
