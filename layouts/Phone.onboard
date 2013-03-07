@@ -66,7 +66,7 @@
             <key group="alphanumeric" id="BD09" keysym="0x39" label="9" unlatch_layer="false"/>
             <key group="alphanumeric" id="BD10" keysym="0x30" label="0" unlatch_layer="false"/>
             <!-- row 3 -->
-            <key group="alphanumeric" id="TAB" unlatch_layer="false"/>
+            <key group="alphanumeric" id="TAB"/>
             <key group="alphanumeric" id="BC02" char="#" label="#"/>
             <key group="alphanumeric" id="BC03" char="%" label="%"/>
             <key group="alphanumeric" id="BC04" char="&amp;" label="&amp;"/>
