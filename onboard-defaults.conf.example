@@ -18,8 +18,9 @@
 #
 # Examples:
 #layout=/usr/share/onboard/layouts/Classic Onboard.onboard
-#layout=Compact
 #layout=Full Keyboard
+#layout=Compact
+#layout=Phone
 
 # Default theme
 # Specify full path and filename or only the base name of the initial theme.
@@ -28,6 +29,7 @@
 #theme=/usr/share/onboard/themes/Ambiance.theme
 #theme=Ambiance
 #theme=Droid
+theme=Nightshade
 
 # Key label font
 # Family and attributes of the default font.
@@ -154,6 +156,9 @@
 [auto-show]
 #enabled=False
 #widget-clearance=(25.0, 55.0, 25.0, 40.0)
+
+[word-suggestions]
+#enabled=False
 
 [universal-access]
 # Drag threshold
