@@ -1163,7 +1163,7 @@
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkCheckButton" id="enable_word_suggestions_toggle">
-                                <property name="label" translatable="yes">_Enable word suggestions (work in progress)</property>
+                                <property name="label" translatable="yes">_Enable word suggestions (Alpha)</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
