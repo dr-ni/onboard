@@ -267,6 +267,15 @@ class KeyCommon(LayoutItem):
         id = value.split(".")[0]
         return theme_id, id
 
+    def build_theme_id(self, prefix = None):
+        if prefix is None:
+            prefix = self.id
+        theme_id = prefix
+        comps = self.theme_id.split(".")[1:]
+        if comps:
+            theme_id += "." + comps[0] 
+        return theme_id
+
     def is_layer_button(self):
         return self.id.startswith("layer")
 
