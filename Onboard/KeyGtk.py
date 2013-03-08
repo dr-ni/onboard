@@ -565,7 +565,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context = cairo.Context(surface)
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
-        self.draw_shadow_cached
         # paint the surface
         context.save()
         context.rectangle(*clip_rect)
@@ -774,7 +773,7 @@ class BarKey(FullSizeKey):
         self.draw_image(context, lod)
         self.draw_label(context, lod)
 
-    def draw_drop_shadow(self, context, canvas_rect):
+    def draw_shadow_cached(self, context):
         pass
 
 
