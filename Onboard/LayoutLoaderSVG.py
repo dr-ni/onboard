@@ -272,6 +272,8 @@ class LayoutLoaderSVG:
             item.border = float(node.attributes["border"].value)
         if node.hasAttribute("expand"):
             item.expand = node.attributes["expand"].value == "true"
+        if node.hasAttribute("unlatch_layer"):
+            item.unlatch_layer = node.attributes["unlatch_layer"].value == "true"
 
         return item
 
@@ -489,9 +491,6 @@ class LayoutLoaderSVG:
 
         if "popup_id" in attributes:
             key.popup_id = attributes["popup_id"]
-
-        if "unlatch_layer" in attributes:
-            key.unlatch_layer = attributes["unlatch_layer"] == "true"
 
         key.color_scheme = self._color_scheme
 

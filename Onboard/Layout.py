@@ -318,6 +318,12 @@ class LayoutItem(TreeItem):
     templates = None
     keysym_rules = None
 
+    # override switching back to layer 0 on key press
+    # True:  do switch to layer 0 on press
+    # False: dont't
+    # None:  maybe, hard-coded default-behavior for compatibility with <0.99
+    unlatch_layer = None
+
     def __init__(self):
         self.context = KeyContext()
 
@@ -539,11 +545,24 @@ class LayoutItem(TreeItem):
             self.parent.items.append(self)
 
     def get_filename(self):
-        """ Recursively finds the closeset definition of the svg filename """
+        """
+        Recursively finds the closeset definition of the svg filename.
+        """
         if self.filename:
             return self.filename
         if self.parent:
             return self.parent.get_filename()
+        return None
+
+    def can_unlatch_layer(self):
+        """
+        Recursively finds the closeset definition of the
+        unlatch_layer attribute.
+        """
+        if not self.unlatch_layer is None:
+            return self.unlatch_layer
+        if self.parent:
+            return self.parent.can_unlatch_layer()
         return None
 
     def is_key(self):

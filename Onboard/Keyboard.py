@@ -864,7 +864,7 @@ class Keyboard(WordSuggestions):
            not self._layer_locked and \
            not self.editing_snippet:
 
-            unlatch = key.unlatch_layer
+            unlatch = key.can_unlatch_layer()
             if unlatch is None:
                 # for backwards compatibility with Onboard <0.99
                 unlatch = not key.is_layer_button() and \
