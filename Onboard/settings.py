@@ -1762,6 +1762,7 @@ class CellRendererMapping(Gtk.CellRendererText):
 
     def do_start_editing(self, event, widget, path, bg_area, cell_area, state):
 
+        time = event.get_time()
         device = event.get_device()
         if device.get_source() == Gdk.InputSource.KEYBOARD:
             keyboard = device
@@ -1773,13 +1774,13 @@ class CellRendererMapping(Gtk.CellRendererText):
         if keyboard.grab(widget.get_window(),
                          Gdk.GrabOwnership.WINDOW, False,
                          Gdk.EventMask.KEY_PRESS_MASK,
-                         None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+                         None, time) != Gdk.GrabStatus.SUCCESS:
             return
 
         if pointer.grab(widget.get_window(),
                         Gdk.GrabOwnership.WINDOW, False,
                         Gdk.EventMask.BUTTON_PRESS_MASK,
-                        None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+                        None, time) != Gdk.GrabStatus.SUCCESS:
             keyboard.ungrab(time)
             return
 
