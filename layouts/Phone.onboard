@@ -92,9 +92,9 @@
           <panel filename="Phone-Alpha.svg">
             <!-- row 1 of the layer -->
             <key group="bottomrow" id="layer1.like_rtrn" label="12!@"/>
-            <key group="alphanumeric" id="AA01" char="," label=","/>
+            <key group="alphanumeric" id="AA01" char="," label="," unlatch_layer="false"/>
             <key group="bottomrow" id="SPCE"/>
-            <key group="alphanumeric" id="AA02" char="." label="."/>
+            <key group="alphanumeric" id="AA02" char="." label="." unlatch_layer="false"/>
             <key group="bottomrow" id="RTRN" popup_id="RTRN_popup"/>
           </panel>          
         </panel>     
