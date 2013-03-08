@@ -1761,6 +1761,8 @@ class CellRendererMapping(Gtk.CellRendererText):
         return self._sizing_label.get_preferred_width()
 
     def do_start_editing(self, event, widget, path, bg_area, cell_area, state):
+        if not event: # else SEGFAULT when pressing a keyboard key twice
+            return
 
         time = event.get_time()
         device = event.get_device()
