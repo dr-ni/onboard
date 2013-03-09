@@ -677,7 +677,7 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <description>The spell checker backend.</description>
         </key>
         <key name="auto-capitalization" type="b">
-            <default>true</default>
+            <default>false</default>
             <summary>Auto-capitalization enabled</summary>
             <description>Automatically capitalize words while typing.</description>
         </key>

@@ -1361,7 +1361,7 @@ class ConfigSpellCheck(ConfigObject):
         self.add_key("enabled", True)
         self.add_key("backend", self.DEFAULT_BACKEND, enum={"hunspell" : 0,
                                                             "aspell"   : 1})
-        self.add_key("auto-capitalization", True)
+        self.add_key("auto-capitalization", False)
 
     def notify_add(self, callback):
         self.enabled_notify_add(callback)
