@@ -142,7 +142,14 @@ class AtspiTextContext(TextContext):
         Returns the predictions context, i.e. some range of
         text before the cursor position.
         """
-        return self._context if self._accessible else ""
+        if self._accessible is None:
+            return ""
+
+        if self._entering_text or \
+           self.can_suggest_before_typing(): 
+            return self._context
+
+        return ""
 
     def get_bot_context(self):
         """
@@ -191,6 +198,12 @@ class AtspiTextContext(TextContext):
         domain = self.get_text_domain()
         if domain:
             return domain.can_record_insertion(accessible, pos, length)
+        return True
+
+    def can_suggest_before_typing(self):
+        domain = self.get_text_domain()
+        if domain:
+            return domain.can_suggest_before_typing()
         return True
 
     def get_begin_of_text_offset(self):

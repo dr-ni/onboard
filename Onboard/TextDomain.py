@@ -110,11 +110,15 @@ class TextDomain:
     def can_record_insertion(self, accessible, pos, length):
         return True
 
-    def is_keypress_feedback_allowed(self):
+    def can_give_keypress_feedback(self):
         return True
 
-    def is_spell_check_allowed(self):
+    def can_spell_check(self):
         return False
+
+    def can_suggest_before_typing(self):
+        """ Can give word suggestions before typing has started? """
+        return True
 
 
 class DomainNOP(TextDomain):
@@ -137,7 +141,7 @@ class DomainPassword(DomainNOP):
     def matches(self, **kwargs):
         return kwargs.get("role") == Atspi.Role.PASSWORD_TEXT
 
-    def is_keypress_feedback_allowed(self):
+    def can_give_keypress_feedback(self):
         return False
 
 
@@ -171,7 +175,7 @@ class DomainGenericText(TextDomain):
         return (context, line, line_cursor, cursor_span,
                 begin_of_text, begin_of_text_offset)
 
-    def is_spell_check_allowed(self):
+    def can_spell_check(self):
         return True
 
     def get_text_begin_marker(self):
@@ -299,6 +303,10 @@ class DomainTerminal(TextDomain):
                 self._read_after_prompt(accessible, offset)
         return bool(context_start)
 
+    def can_suggest_before_typing(self):
+        """ Can give word suggestions before typing has started? """
+        # Mostly prevent updates to word suggestions while text is scrolling by
+        return False
 
 class DomainURL(DomainGenericText):
     """ (Firefox) address bar """
@@ -320,7 +328,7 @@ class DomainURL(DomainGenericText):
     def get_text_begin_marker(self):
         return "<bot:url>"
 
-    def is_spell_check_allowed(self):
+    def can_spell_check(self):
         return False
 
 

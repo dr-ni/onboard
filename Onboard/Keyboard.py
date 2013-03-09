@@ -1244,7 +1244,7 @@ class Keyboard(WordSuggestions):
     def on_key_pressed(self, key, view, sequence, action):
         """ pressed state of a key instance was set """
         if sequence: # Not a simulated key press, scanner?
-            allowed = self.is_keypress_feedback_allowed()
+            allowed = self.can_give_keypress_feedback()
 
             # audio feedback
             if action and \

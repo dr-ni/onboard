@@ -351,7 +351,7 @@ class WordSuggestions:
         self._correction_span = None
         if self._spell_checker and \
            config.spell_check.enabled and \
-           self.is_spell_check_allowed():
+           self.can_spell_check():
             word_span = self._get_word_to_spell_check()
             if word_span:
                 text_begin = word_span.text_begin()
@@ -708,17 +708,17 @@ class WordSuggestions:
                 return True
         return False
 
-    def is_keypress_feedback_allowed(self):
+    def can_give_keypress_feedback(self):
         """ Password entries may block feedback to prevent eavesdropping. """
         domain = self.text_context.get_text_domain()
-        if domain and not domain.is_keypress_feedback_allowed():
+        if domain and not domain.can_give_keypress_feedback():
             return False
         return True
 
-    def is_spell_check_allowed(self):
+    def can_spell_check(self):
         """ No spell checking for passwords, URLs, etc. """
         domain = self.text_context.get_text_domain()
-        if domain and domain.is_spell_check_allowed():
+        if domain and domain.can_spell_check():
             return True
         return False
 
