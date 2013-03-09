@@ -240,7 +240,7 @@ def tokenize_sentence(sentence):
     ) |
     (                                     # word
       (?:[-]{0,2}                         # allow command line options
-        [^\W\d]\w*(?:[-'][\w]+)*[']?)     # word, not starting with a digit
+        [^\W\d]\w*(?:[-'][\w]+)*)         # word, not starting with a digit
       | <unk> | <s> | </s> | <num>        # pass through control words
       | <bot:[a-z]*>                      # pass through begin of text merkers
       | (?:^|(?<=\s))
