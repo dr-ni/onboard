@@ -929,8 +929,10 @@ class PageWordSuggestions(DialogBuilder):
                             config.wp, "auto_learn")
         self.bind_check("punctuation_assistence_toggle",
                             config.wp, "punctuation_assistance")
+        self.bind_check("auto_capitalization_toggle",
+                            config.typing_helpers, "auto_capitalization")
         self.bind_check("enable_spell_check_toggle",
-                            config.spell_check, "enabled")
+                            config.word_suggestions, "spelling_suggestions_enabled")
         #self.bind_check("show_context_line_toggle",
         #                config.word_suggestions, "show_context_line")
         self._init_spell_checker_backend_combo()
@@ -939,12 +941,12 @@ class PageWordSuggestions(DialogBuilder):
 
     def _init_spell_checker_backend_combo(self):
         combo = self.wid("spell_check_backend_combobox")
-        combo.set_active(config.spell_check.backend)
+        combo.set_active(config.typing_helpers.spell_check_backend)
         combo.connect("changed", self.on_spell_check_backend_changed)
-        config.spell_check.backend_notify_add(self._backend_notify)
+        config.typing_helpers.spell_check_backend_notify_add(self._backend_notify)
 
     def on_spell_check_backend_changed(self, widget):
-        config.spell_check.backend = widget.get_active()
+        config.typing_helpers.spell_check_backend = widget.get_active()
 
     def _backend_notify(self, mode):
         self.wid("spell_check_backend_combobox").set_active(mode)

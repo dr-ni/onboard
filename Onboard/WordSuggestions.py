@@ -199,7 +199,7 @@ class WordSuggestions:
         """
         Current language id; None for system default language.
         """
-        return config.word_suggestions.active_language
+        return config.typing_helpers.active_language
 
     def on_active_lang_id_changed(self):
         self.update_spell_checker()
@@ -207,7 +207,7 @@ class WordSuggestions:
         self.update_context_ui()
 
     def set_active_lang_id(self, lang_id):
-        config.word_suggestions.active_language = lang_id
+        config.typing_helpers.active_language = lang_id
         self.update_spell_checker()
         self.apply_prediction_profile()
 
@@ -310,9 +310,9 @@ class WordSuggestions:
 
     def update_spell_checker(self):
         # select the backend
-        backend = config.spell_check.backend \
+        backend = config.typing_helpers.spell_check_backend \
                   if config.are_word_suggestions_enabled() and \
-                     config.spell_check.enabled \
+                     config.are_spelling_suggestions_enabled() \
                   else None
         self._spell_checker.set_backend(backend)
 
@@ -361,7 +361,7 @@ class WordSuggestions:
         self._correction_span = None
 
         if self._spell_checker and \
-           config.spell_check.enabled and \
+           config.are_spelling_suggestions_enabled() and \
            self.can_spell_check():
             word_span = self._get_word_to_spell_check()
             if word_span:
@@ -721,7 +721,7 @@ class WordSuggestions:
         """ Synchronous callback for text insertion """
 
         # auto-capitalization
-        if config.spell_check.auto_capitalization and \
+        if config.typing_helpers.auto_capitalization and \
            self.can_auto_correct():
             # find position of last word end with added space
             char_before = insertion_span.get_char_before_span()

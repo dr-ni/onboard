@@ -37,9 +37,8 @@ SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
 SCHEMA_THEME            = "org.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
 SCHEMA_SCANNER          = "org.onboard.scanner"
-SCHEMA_WORD_SUGGESTIONS = "org.onboard.word-suggestions"
-SCHEMA_WORD_PREDICTION  = "org.onboard.word-suggestions.word-prediction"
-SCHEMA_SPELL_CHECK      = "org.onboard.word-suggestions.spell-check"
+SCHEMA_TYPING_HELPERS   = "org.onboard.typing-helpers"
+SCHEMA_WORD_SUGGESTIONS = "org.onboard.typing-helpers.word-suggestions"
 
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
@@ -365,7 +364,7 @@ class Config(ConfigObject):
         self.theme_settings   = ConfigTheme(self)
         self.lockdown         = ConfigLockdown(self)
         self.scanner          = ConfigScanner(self)
-        self.word_suggestions = ConfigWordSuggestions(self)
+        self.typing_helpers   = ConfigTypingHelpers(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
 
@@ -379,7 +378,7 @@ class Config(ConfigObject):
                           self.gss,
                           self.gdi,
                           self.scanner,
-                          self.word_suggestions]
+                          self.typing_helpers]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -684,6 +683,10 @@ class Config(ConfigObject):
 
     def are_word_suggestions_enabled(self):
         return self.word_suggestions.enabled and not self.xid_mode
+
+    def are_spelling_suggestions_enabled(self):
+        return self.are_word_suggestions_enabled() and \
+               self.word_suggestions.spelling_suggestions_enabled
 
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
@@ -1302,6 +1305,31 @@ class ConfigScanner(ConfigObject):
         self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
 
 
+class ConfigTypingHelpers(ConfigObject):
+    """ typing-helpers configuration keys"""
+
+    DEFAULT_BACKEND = 0
+
+    def _init_keys(self):
+        self.schema = SCHEMA_TYPING_HELPERS
+        self.sysdef_section = "typing-helpers"
+
+        self.add_key("active-language", "")
+        self.add_key("recent-languages", [], 'as')
+        self.add_key("max-recent-languages", 5)
+        self.add_key("spell-check-backend", self.DEFAULT_BACKEND,
+                                                     enum={"hunspell" : 0,
+                                                           "aspell"   : 1})
+        self.add_key("auto-capitalization", False)
+
+        self.word_suggestions  = ConfigWordSuggestions(self)
+        self.children = [self.word_suggestions]
+
+        # shortcuts in the root for convenient access
+        self.get_root().wp = self.word_suggestions
+        self.get_root().word_suggestions = self.word_suggestions
+
+
 class ConfigWordSuggestions(ConfigObject):
     """ word-suggestions configuration keys"""
 
@@ -1310,33 +1338,14 @@ class ConfigWordSuggestions(ConfigObject):
         self.sysdef_section = "word-suggestions"
 
         self.add_key("enabled", False)
-        self.add_key("active-language", "")
-        self.add_key("recent-languages", [], 'as')
-        self.add_key("max-recent-languages", 5)
-        self.add_key("show-context-line", False)
-
-        self.word_prediction  = ConfigWordPrediction(self)
-        self.spell_check      = ConfigSpellCheck(self)
-
-        self.children = [self.word_prediction, self.spell_check]
-
-        # shortcuts in the root for convenient access
-        self.get_root().wp = self.word_prediction
-        self.get_root().spell_check = self.spell_check
-
-
-class ConfigWordPrediction(ConfigObject):
-    """ word-prediction configuration keys"""
-
-    def _init_keys(self):
-        self.schema = SCHEMA_WORD_PREDICTION
-        self.sysdef_section = "word-prediction"
-
         self.add_key("auto-learn", True)
         self.add_key("punctuation-assistance", True)
         self.add_key("stealth-mode", False)
         self.add_key("accent-insensitive", True)
         self.add_key("max-word-choices", 5)
+        self.add_key("spelling-suggestions-enabled", True)
+
+        self.add_key("show-context-line", False)
 
     def word_prediction_notify_add(self, callback):
         self.auto_learn_notify_add(callback)
@@ -1344,27 +1353,8 @@ class ConfigWordPrediction(ConfigObject):
         self.stealth_mode_notify_add(callback)
 
     def can_auto_learn(self):
-        return self.parent.enabled and \
+        return self.enabled and \
                self.auto_learn and \
                not self.stealth_mode
-
-
-class ConfigSpellCheck(ConfigObject):
-    """ spell check configuration keys"""
-
-    DEFAULT_BACKEND = 0
-
-    def _init_keys(self):
-        self.schema = SCHEMA_SPELL_CHECK
-        self.sysdef_section = "spell-check"
-
-        self.add_key("enabled", True)
-        self.add_key("backend", self.DEFAULT_BACKEND, enum={"hunspell" : 0,
-                                                            "aspell"   : 1})
-        self.add_key("auto-capitalization", False)
-
-    def notify_add(self, callback):
-        self.enabled_notify_add(callback)
-        self.backend_notify_add(callback)
 
 

@@ -78,7 +78,7 @@
         <child name="theme-settings" schema="org.onboard.theme-settings" />
         <child name="lockdown" schema="org.onboard.lockdown" />
         <child name="scanner" schema="org.onboard.scanner" />
-        <child name="word-suggestions" schema="org.onboard.word-suggestions" />
+        <child name="typing-helpers" schema="org.onboard.typing-helpers" />
     </schema>
 
     <schema id="org.onboard.auto-show" path="/org/onboard/auto-show/">
@@ -602,12 +602,12 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
         </key>
     </schema>
 
-    <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
-        <key name="enabled" type="b">
-            <default>false</default>
-            <summary>Word prediction enable</summary>
-            <description>Set to 'true' to enable word prediction.</description>
-        </key>
+    <enum id="org.onboard.typing-helpers.spell-check.Backend">
+        <value nick="hunspell" value="0"/>
+        <value nick="aspell" value="1"/>
+    </enum>
+
+    <schema id="org.onboard.typing-helpers" path="/org/onboard/typing-helpers/">
         <key name="active-language" type="s">
             <default>""</default>
             <summary>Active language.</summary>
@@ -623,16 +623,31 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Maximum number of recently used languages.</summary>
             <description>The maximum number of recently used languages visible in the language menu.</description>
         </key>
-        <key name="show-context-line" type="b">
-            <default>false</default>
-            <summary>Show the context line</summary>
-            <description>Display the currently edited text line in the keyboard.</description>
+        <key name="spell-check-backend" enum="org.onboard.typing-helpers.spell-check.Backend">
+            <default>"hunspell"</default>
+            <summary>Backend</summary>
+            <description>The spell checker backend.</description>
         </key>
-        <child name="word-prediction" schema="org.onboard.word-suggestions.word-prediction" />
-        <child name="spell-check" schema="org.onboard.word-suggestions.spell-check" />
+        <key name="auto-capitalization" type="b">
+            <default>false</default>
+            <summary>Auto-capitalization enabled</summary>
+            <description>Automatically capitalize words while typing.</description>
+        </key>
+
+        <child name="word-suggestions" schema="org.onboard.typing-helpers.word-suggestions" />
     </schema>
 
-    <schema id="org.onboard.word-suggestions.word-prediction" path="/org/onboard/word-suggestions/word-prediction/">
+    <schema id="org.onboard.typing-helpers.word-suggestions" path="/org/onboard/typing-helpers/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Word suggestions enabled</summary>
+            <description>Set to 'true' to enable word suggestions.</description>
+        </key>
+        <key name="spelling-suggestions-enabled" type="b">
+            <default>true</default>
+            <summary>Spelling suggestions enabled</summary>
+            <description>Set to 'true' to enable spelling suggestions for mispelled words at or before the cursor.</description>
+        </key>
         <key name="auto-learn" type="b">
             <default>true</default>
             <summary>Enable automatic learning</summary>
@@ -658,28 +673,10 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Maximum number of predictions.</summary>
             <description>The maximum number of visible predicted words.</description>
         </key>
-    </schema>
-
-    <enum id="org.onboard.word-suggestions.spell-check.Backend">
-        <value nick="hunspell" value="0"/>
-        <value nick="aspell" value="1"/>
-    </enum>
-
-    <schema id="org.onboard.word-suggestions.spell-check" path="/org/onboard/word-suggestions/spell-check/">
-        <key name="enabled" type="b">
-            <default>true</default>
-            <summary>Spell-checking enabled</summary>
-            <description>Set to 'true' to enable spell checking.</description>
-        </key>
-        <key name="backend" enum="org.onboard.word-suggestions.spell-check.Backend">
-            <default>"hunspell"</default>
-            <summary>Backend</summary>
-            <description>The spell checker backend.</description>
-        </key>
-        <key name="auto-capitalization" type="b">
+        <key name="show-context-line" type="b">
             <default>false</default>
-            <summary>Auto-capitalization enabled</summary>
-            <description>Automatically capitalize words while typing.</description>
+            <summary>Show the context line</summary>
+            <description>Display the currently edited text line in the keyboard.</description>
         </key>
     </schema>
 </schemalist>

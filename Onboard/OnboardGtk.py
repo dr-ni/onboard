@@ -277,11 +277,11 @@ class OnboardGtk(object):
         config.word_suggestions.show_context_line_notify_add(update_ui)
         config.word_suggestions.enabled_notify_add(lambda x: \
                                  self.keyboard.on_word_suggestions_enabled(x))
-        config.word_suggestions.active_language_notify_add(lambda x: \
+        config.typing_helpers.active_language_notify_add(lambda x: \
                                  self.keyboard.on_active_lang_id_changed())
-        config.spell_check.backend_notify_add(lambda x: \
+        config.typing_helpers.spell_check_backend_notify_add(lambda x: \
                                  self.keyboard.update_spell_checker())
-        config.spell_check.enabled_notify_add(lambda x: \
+        config.word_suggestions.spelling_suggestions_enabled_notify_add(lambda x: \
                                  self.keyboard.update_spell_checker())
 
         # universal access
