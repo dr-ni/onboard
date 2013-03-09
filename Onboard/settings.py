@@ -12,7 +12,10 @@ from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 import gettext
-from dbus.mainloop.glib import DBusGMainLoop
+try:
+    import dbus.mainloop.glib
+except ImportError:
+    pass
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
@@ -151,7 +154,10 @@ class Settings(DialogBuilder):
         self.themes = {}       # cache of theme objects
 
         # Use D-bus main loop by default
-        DBusGMainLoop(set_as_default=True)
+        if "dbus" in globals():
+            dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        else:
+            _logger.warning("D-Bus bindings unavailable.")
 
         # finish config initialization
         config.init()
