@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils        import Rect, EventSource, Process
+from Onboard.utils        import Rect, EventSource, Process, unicode_str
 
 ### Logging ###
 import logging
@@ -40,7 +40,10 @@ class AtspiStateTracker(EventSource):
     _focus_event_names      = ("text-entry-activated",)
     _text_event_names       = ("text-changed", "text-caret-moved")
     _key_stroke_event_names = ("key-pressed",)
-    _event_names = ("focus-changed",) + \
+    _async_event_names      = ("async-focus-changed",
+                               "async-text-changed",
+                               "async-text-caret-moved")
+    _event_names = _async_event_names + \
                    _focus_event_names + \
                    _text_event_names + \
                    _key_stroke_event_names
@@ -51,11 +54,10 @@ class AtspiStateTracker(EventSource):
 
     _keystroke_listener = None
 
-    # synchronously accessible members
+    # asynchronously accessible members
     _focused_accessible = None   # any currently focused accessible
     _active_accessible = None    # editable focused accessible
-
-    # asynchronously accessible members
+    _last_active_accessible = None
     _state = None                # cache of various accessible properties
 
     def __new__(cls, *args, **kwargs):
@@ -79,8 +81,6 @@ class AtspiStateTracker(EventSource):
         """
         EventSource.__init__(self, self._event_names)
 
-        self._last_accessible = None
-        self._last_accessible_active = None
         self._state = {}
         self._frozen = False
 
@@ -125,17 +125,19 @@ class AtspiStateTracker(EventSource):
                                    "object:state-changed:focused",
                                    self._on_atspi_object_focus)
 
-                # private asynchronous event
-                EventSource.connect(self, "focus-changed",
-                                      self._on_focus_changed)
+                # private asynchronous events
+                for name in self._async_event_names:
+                    handler = "_on_" + name.replace("-", "_")
+                    EventSource.connect(self, name, getattr(self, handler))
             else:
                 self.atspi_disconnect("_listener_focus",
                                       "focus")
                 self.atspi_disconnect("_listener_object_focus",
                                       "object:state-changed:focused")
 
-                EventSource.disconnect(self, "focus-changed",
-                                      self._on_focus_changed)
+                for name in self._async_event_names:
+                    handler = "_on_" + name.replace("-", "_")
+                    EventSource.disconnect(self, name, getattr(self, handler))
 
             self._focus_listeners_registered = register
 
@@ -241,7 +243,48 @@ class AtspiStateTracker(EventSource):
 
     def _on_atspi_focus(self, event, focus_received = False):
         focused = bool(focus_received) or bool(event.detail1) # received focus?
-        accessible = event.source
+        ae = AsyncEvent(accessible = event.source,
+                        focused = focused)
+        self.emit_async("async-focus-changed", ae)
+
+    def _on_atspi_text_changed(self, event, user_data):
+        #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
+        insert = event.type.endswith("insert")
+        delete = event.type.endswith("delete")
+        if insert or delete:
+            ae = AsyncEvent(accessible = event.source,
+                            pos = event.detail1,
+                            length = event.detail2,
+                            insert = insert)
+            self.emit_async("async-text-changed", ae)
+        else:
+            _logger.warning("_on_atspi_text_changed: unknown event type '{}'" \
+                          .format(event.type))
+        return False
+
+    def _on_atspi_text_caret_moved(self, event, user_data):
+        #print("_on_atspi_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+        ae = AsyncEvent(accessible = event.source,
+                        caret = event.detail1)
+        self.emit_async("async-text-caret-moved", ae)
+        return False
+        
+    def _on_atspi_keystroke(self, event, user_data):
+        #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
+        #keysym = event.id # What is this? Not XK_ keysyms at least.
+        if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
+            ae = AsyncEvent(hw_code   = event.hw_code,
+                            modifiers = event.modifiers)
+            self.emit_async("key-pressed", ae)
+
+        return False # don't consume event
+
+    ########## asynchronous handlers ##########
+
+    def _on_async_focus_changed(self, event):
+        accessible = event.accessible
+        focused = event.focused
+        self._state = {}
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
@@ -249,19 +292,14 @@ class AtspiStateTracker(EventSource):
             self._log_accessible(accessible, focused)
 
             if accessible:
-                # Read the bare minimum from the accessible to keep
-                # the risk for lockups down. Do everything else in
-                # the asynchronous handler.
-                state = {}
                 try:
-                    state["role"] = accessible.get_role()
-                    state["state-set"] = accessible.get_state_set()
-                except: # private exception gi._glib.GError when
+                    self._state = self._read_accessible_state(accessible)
+                except: # Private exception gi._glib.GError when
                         # gedit became unresponsive.
-                    _logger.warning("_on_atspi_focus(): "
+                    _logger.warning("_on_focus_changed(): "
                                     "Invalid accessible, failed to read state")
 
-                editable = self._is_accessible_editable(state)
+                editable = self._is_accessible_editable(self._state)
                 activate = focused and editable
 
                 if focused:
@@ -277,58 +315,20 @@ class AtspiStateTracker(EventSource):
                     else:
                         self._active_accessible = None
 
-                    ae = AsyncEvent(accessible = self._active_accessible)
-                    self.emit_async("focus-changed", ae)
+                    print(self._active_accessible, self._last_active_accessible)
+                    if not self._active_accessible is None or \
+                       not self._last_active_accessible is None:
+                        self.emit("text-entry-activated",
+                                  self._active_accessible)
+                        self._last_active_accessible = self._active_accessible
 
-    def _on_atspi_text_changed(self, event, user_data):
-        if event.source is self._active_accessible:
-            #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
-            insert = event.type.endswith("insert")
-            delete = event.type.endswith("delete")
-            if insert or delete:
-                ae = AsyncEvent(pos    = event.detail1,
-                                length = event.detail2,
-                                insert = insert)
-                self.emit_async("text-changed", ae)
-            else:
-                _logger.error("_on_atspi_text_changed: unknown event type '{}'" \
-                              .format(event.type))
-        return False
+    def _on_async_text_changed(self, event):
+        if event.accessible is self._active_accessible:
+            self.emit("text-changed", event)
 
-    def _on_atspi_text_caret_moved(self, event, user_data):
-        if event.source is self._active_accessible:
-            #print("_on_atspi_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
-            ae = AsyncEvent(caret = event.detail1)
-            self.emit_async("text-caret-moved", ae)
-        return False
-
-    def _on_atspi_keystroke(self, event, user_data):
-        #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
-        #keysym = event.id # What is this? Not XK_ keysyms at least.
-        if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
-            ae = AsyncEvent(hw_code   = event.hw_code,
-                            modifiers = event.modifiers)
-            self.emit_async("key-pressed", ae)
-
-        return False # don't consume event
-
-    ########## asynchronous handlers ##########
-
-    def _on_focus_changed(self, event):
-        accessible = event.accessible
-        self._state = {}
-
-        if accessible:
-            try:
-                self._state = self._read_accessible_state(accessible)
-            except: # Private exception gi._glib.GError when
-                    # gedit became unresponsive.
-                _logger.warning("_on_focus_changed(): "
-                                "Invalid accessible, failed to read state")
-
-            self.emit("text-entry-activated", accessible)
-        else:
-            self.emit("text-entry-activated", None)
+    def _on_async_text_caret_moved(self, event):
+        if event.accessible is self._active_accessible:
+            self.emit("text-caret-moved", event)
 
     def get_state(self):
         """ All available state of the active accessible """
