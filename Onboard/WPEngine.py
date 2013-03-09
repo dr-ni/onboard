@@ -60,6 +60,7 @@ class WPLocalEngine(object):
         self._model_cache = ModelCache()
         self._auto_save_timer = AutoSaveTimer(self._model_cache)
         self.models = []
+        self.persistent_models = []
         self.auto_learn_models = []
         self.scratch_models = []
 
@@ -67,8 +68,10 @@ class WPLocalEngine(object):
         self._auto_save_timer.stop()
         self._model_cache.save_models()
 
-    def set_models(self, models, auto_learn_models, scratch_models):
-        self.models = models
+    def set_models(self, persistent_models, auto_learn_models, scratch_models):
+        self.models = persistent_models + scratch_models
+        self.persistent_models = persistent_models
+        self.auto_learn_models = auto_learn_models
         self.auto_learn_models = auto_learn_models
         self.scratch_models = scratch_models
 
@@ -79,7 +82,7 @@ class WPLocalEngine(object):
         """
         self._model_cache.get_models(self.models)
 
-    def predict(self, context_line, limit = 10,
+    def predict(self, context_line, limit = 20,
                 case_insensitive = False,
                 accent_insensitive = False,
                 ignore_capitalized = False,
@@ -161,6 +164,21 @@ class WPLocalEngine(object):
 
         # counts are 0 for no match, 1 for exact match or -n for partial matches
         return tokens, counts
+
+    def word_exists(self, word):
+        """
+        Does word exist in any of the non-scratch models?
+        """
+        exists = False
+        lmids = self.persistent_models
+        for i,lmid in enumerate(lmids):
+            model = self._model_cache.get_model(lmid)
+            if model:
+                count = model.lookup_word(word)
+                if count:
+                    exists = True
+                    break
+        return exists
 
     def tokenize_text(self, text):
         """

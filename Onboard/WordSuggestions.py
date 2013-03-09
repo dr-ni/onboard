@@ -145,6 +145,7 @@ class WordSuggestions:
             user_models    = ["lm:user:"   + lang_id]
             scratch_models = ["lm:mem"]
 
+            persistent_models = system_models + user_models
             models = system_models + user_models + scratch_models
             auto_learn_models = user_models
 
@@ -162,7 +163,9 @@ class WordSuggestions:
                                     "Please setup learning first.")
                     break
 
-            self._wpengine.set_models(models, auto_learn_models, scratch_models)
+            self._wpengine.set_models(persistent_models,
+                                      auto_learn_models,
+                                      scratch_models)
 
             # Make sure to load the language models, so there is no
             # delay on first key press. Don't burden the startup
@@ -241,19 +244,26 @@ class WordSuggestions:
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
-        remainder = self._get_prediction_choice_remainder(choice_index)
+        deletion, insertion = \
+                self._get_prediction_choice_remainder(choice_index)
+        print(repr(deletion), repr(insertion))
+
+        # simulate the change
+        cursor_span = self.text_context.get_span_at_cursor()
+        context = cursor_span.get_text_until_span()
+        context = context[:-len(deletion)]
+        context += insertion
 
         # should we add a separator character after the inserted word?
-        cursor_span = self.text_context.get_span_at_cursor()
-        context = cursor_span.get_text_until_span() + remainder
         separator = ""
         if config.wp.punctuation_assistance and \
            allow_separator:
             domain = self.text_context.get_text_domain()
             separator = domain.get_auto_separator(context)
 
-        # type remainder + possible separator
-        added_separator = self._insert_text_at_cursor(remainder, separator)
+        # type remainder/replace word and possibly add separator
+        added_separator = self._replace_text_at_cursor(deletion, insertion,
+                                                       separator)
         self._punctuator.set_added_separator(added_separator)
 
     def on_before_key_down(self, key):
@@ -385,23 +395,42 @@ class WordSuggestions:
             if tokens:
                 prefix = tokens[-1]
                 sentence_started = len(tokens) >= 2 and tokens[-2] == "<s>"
-                case_insensitive = sentence_started and \
-                                   bool(prefix) and prefix[0].isupper()
+                upper_case_entered = bool(prefix) and prefix[0].isupper()
 
-                ignore_non_caps  = not prefix and bool(self.mods[1])
+                capitalize       = sentence_started and \
+                                   upper_case_entered
+                ignore_non_caps  = (not prefix and bool(self.mods[1]) or
+                                   upper_case_entered)
 
-                capitalize = case_insensitive
+                case_insensitive = (sentence_started or \
+                                   not upper_case_entered) and \
+                                   not ignore_non_caps
 
             if context: # don't load models on startup
                 bot_context = text_context.get_bot_context()
-                choices = self._wpengine.predict(bot_context,
+                _choices = self._wpengine.predict(bot_context,
                             config.wp.max_word_choices,
                             case_insensitive = case_insensitive,
                             accent_insensitive = config.wp.accent_insensitive,
                             ignore_non_capitalized = ignore_non_caps)
 
-                # Filter out begin of text markers that sneak in as
-                # high frequency unigrams.
+                choices = []
+                for choice in _choices:
+                    # Filter out begin of text markers that sneak in as
+                    # high frequency unigrams.
+                    if choice.startswith("<bot:"):
+                        continue
+
+                    # Drop upper caps spelling in favor of a lower caps one.
+                    # Auto-capitalization may elect to upper caps on insertion.
+                    if not ignore_non_caps:
+                        choice_lower = choice.lower()
+                        if choice != choice_lower and \
+                           self._wpengine.word_exists(choice_lower):
+                            continue
+
+                    choices.append(choice)
+
                 choices = [c for c in choices if not c.startswith("<bot:")]
             else:
                 choices = []
@@ -454,14 +483,24 @@ class WordSuggestions:
                     seen.add(choice)
         return results
 
-    def _get_prediction_choice_remainder(self, index):
+    def _get_prediction_choice_remainder(self, choice_index):
         """ returns the rest of matches[index] that hasn't been typed yet """
-        remainder = ""
+        deletion = ""
+        insertion = ""
         if self._wpengine:
             text = self.text_context.get_context()
             word_prefix = self._wpengine.get_last_context_token(text)
-            remainder = self._prediction_choices[index][len(word_prefix):]
-        return remainder
+            choice = self._prediction_choices[choice_index]
+            remainder = choice[len(word_prefix):]
+
+            # no case change?
+            if word_prefix + remainder == choice:
+                insertion = remainder
+            else:
+                deletion = word_prefix
+                insertion = choice
+
+        return deletion, insertion
 
     def _get_word_to_spell_check(self):
         """
@@ -579,13 +618,13 @@ class WordSuggestions:
             if offset >= 0:
                 self.press_keysym("right", offset)
 
-    def _insert_text_at_cursor(self, text, auto_separator = ""):
+    def _replace_text_at_cursor(self, deletion, insertion, auto_separator = ""):
         """
         Insert a word (-remainder) and add a separator character as needed.
         """
         added_separator = ""
+        cursor_span = self.text_context.get_span_at_cursor()
         if auto_separator:
-            cursor_span = self.text_context.get_span_at_cursor()
             next_char = cursor_span.get_text(cursor_span.end(),
                                              cursor_span.end() + 1)
             remaining_line = self.text_context.get_line_past_cursor()
@@ -599,9 +638,11 @@ class WordSuggestions:
                 added_separator = auto_separator
 
         with self.suppress_modifiers():
-            if text:
-                self.press_key_string(text)
-
+            if insertion:
+                self._replace_text(cursor_span.begin() - len(deletion),
+                                   cursor_span.begin(),
+                                   cursor_span.begin(),
+                                   insertion)
             if auto_separator:
                 if added_separator:
                     self.press_key_string(auto_separator)
