@@ -40,7 +40,7 @@ class LayoutView:
         self._font_sizes_valid = False
         self._shadow_quality_valid = False
         self._last_canvas_shadow_rect = Rect()
-        
+
         self.keyboard.register_view(self)
 
     def cleanup(self):
@@ -520,10 +520,7 @@ class LayoutView:
 
         mod_mask = self.keyboard.get_mod_mask()
 
-
         if layout:
-            context = self.create_pango_context()
-
             if lod == LOD.FULL: # no label changes necessary while dragging
 
                 for key in layout.iter_keys():
@@ -535,7 +532,7 @@ class LayoutView:
             for keys in layout.get_key_groups().values():
                 max_size = 0
                 for key in keys:
-                    best_size = key.get_best_font_size(context, mod_mask)
+                    best_size = key.get_best_font_size(mod_mask)
                     if best_size:
                         if not max_size or best_size < max_size:
                             max_size = best_size

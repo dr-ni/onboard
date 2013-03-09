@@ -1204,7 +1204,7 @@ class WordListPanel(LayoutPanel):
             rect.w -= button_width
 
         # font size is based on the height of the word list background
-        font_size = WordKey.calc_font_size(key_context, rect.get_size())
+        font_size = WordKey().calc_font_size(key_context, rect.get_size())
 
         # hide the wordlist background when corrections create their own
         wordlist.set_visible(not correction_choices)

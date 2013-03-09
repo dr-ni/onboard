@@ -261,8 +261,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # parameters for the top rectangle, key face
         scale  = config.theme_settings.key_stroke_width / 100.0
         border = config.DISH_KEY_BORDER
-        border = (border[0] * scale, border[1] * scale) 
-                 
+        border = (border[0] * scale, border[1] * scale)
+
         border = self.context.scale_log_to_canvas(border)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
@@ -384,7 +384,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         runs = []
         log_rect = self.get_label_rect()
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        
+
         # secondary label
         label = self.get_secondary_label()
         if label and \
@@ -610,7 +610,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
-    def get_best_font_size(self, context, mod_mask):
+    def get_best_font_size(self, mod_mask):
         """
         Get the maximum font size that would not cause the label to
         overflow the boundaries of the key.
@@ -619,7 +619,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # doesn't influence the font_size and doesn't cause surface cache
         # misses for that minor wiggle.
         rect = self.get_label_rect(self.get_unpressed_rect())
-        label_width, label_height = self._get_label_extents(context, mod_mask)
+        label_width, label_height = \
+                      self.get_label_base_extents(mod_mask)
 
         size_for_maximum_width  = self.context.scale_log_to_canvas_x(
                                       (rect.w - config.LABEL_MARGIN[0]*2)) \
@@ -634,24 +635,27 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         else:
             return int(size_for_maximum_height)
 
-    def _get_label_extents(self, context, mod_mask):
+    def get_label_base_extents(self, mod_mask):
         """
         Update resolution independent extents of the label layout.
         """
         extents = self._label_extents.get(mod_mask)
         if not extents:
-            layout = Pango.Layout(context)
-            BASE_FONTDESCRIPTION_SIZE = 10000000
-            self.prepare_pango_layout(layout, self.get_label(),
-                                              BASE_FONTDESCRIPTION_SIZE)
-            w, h = layout.get_size()   # In Pango units
-            w = w or 1.0
-            h = h or 1.0
-            extents = (w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE),
-                       h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE))
+            extents = self.calc_label_base_extents(self.get_label())
             self._label_extents[mod_mask] = extents
 
         return extents
+
+    def calc_label_base_extents(self, label):
+        cr = Gdk.pango_context_get()
+        layout = Pango.Layout(cr)
+        BASE_FONTDESCRIPTION_SIZE = 10000000
+        self.prepare_pango_layout(layout, label, BASE_FONTDESCRIPTION_SIZE)
+        w, h = layout.get_size()   # In Pango units
+        w = w or 1.0
+        h = h or 1.0
+        return w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE), \
+               h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
 
     def invalidate_label_extents(self):
         """
@@ -729,27 +733,37 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 class FixedFontMixin:
     """ Font size independent of text length """
 
-    def get_best_font_size(self, context, mod_mask):
-        return FixedFontMixin.calc_font_size(self.context,
-                                             self.get_rect().get_size())
+    def get_best_font_size(self, mod_mask):
+        """
+        Get the maximum font size that would not cause the label to
+        overflow the height of the key.
+        """
+        return self.calc_font_size(self.context,
+                                   self.get_unpressed_rect().get_size())
 
-    @staticmethod
-    def calc_font_size(key_context, size):
+    def calc_font_size(self, context, size):
         """ Calculate font size based on the height of the key """
-        font_scale = 0.5
-        font_size = int(key_context.scale_log_to_canvas_y(
-                                 size[1] * Pango.SCALE) * font_scale)
-        return font_size
+        # Base this on the unpressed rect, so fake physical key action
+        # doesn't influence the font_size and doesn't cause surface cache
+        # misses for that minor wiggle.
+        label_width, label_height = self.get_label_base_extents(0)
 
-    @staticmethod
-    def calc_text_size(key_context, layout, size, text):
-        layout.set_text(text, -1)
-        label_width, label_height = layout.get_size()
-        log_width  = key_context.scale_canvas_to_log_x(
-                                            label_width / Pango.SCALE)
-        log_height = key_context.scale_canvas_to_log_y(
-                                            label_height / Pango.SCALE)
-        return log_width,log_height
+        size_for_maximum_height = context.scale_log_to_canvas_y(
+                                     (size[1] - config.LABEL_MARGIN[1]*2)) \
+                                  / label_height
+
+        return int(size_for_maximum_height)
+
+    def get_label_base_extents(self, mod_mask):
+        """
+        Update resolution independent extents of the label layout.
+        """
+        extents = self._label_extents.get(mod_mask)
+        if not extents:
+            extents = self.calc_label_base_extents("Mg")
+            self._label_extents[mod_mask] = extents
+
+        return extents
 
 
 class FullSizeKey(RectKey):
@@ -885,7 +899,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
                 if spell_color:
                     span += "<span underline_color='" + spell_color + "' " + \
                                  "underline='error'>"
-                span += word 
+                span += word
 
                 if spell_color:
                     span += "</span>"
@@ -897,7 +911,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
                 span = word
 
             # assemble the escaped pieces
-            if i == 0: 
+            if i == 0:
                 # add text up to the first word
                 intro = text[:wi.start]
                 markup += GLib.markup_escape_text(intro)
@@ -945,7 +959,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
         return layout, rect, cursor_rect, (xlayout, ylayout)
 
-    def _update_scroll_position(self, label_rect, text_size, 
+    def _update_scroll_position(self, label_rect, text_size,
                                 cursor_rect, xalign):
         xscroll = self._xscroll
 
