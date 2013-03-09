@@ -668,13 +668,18 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
     <schema id="org.onboard.word-suggestions.spell-check" path="/org/onboard/word-suggestions/spell-check/">
         <key name="enabled" type="b">
             <default>true</default>
-            <summary>Word prediction enable</summary>
-            <description>Set to 'true' to enable word prediction.</description>
+            <summary>Spell-checking enabled</summary>
+            <description>Set to 'true' to enable spell checking.</description>
         </key>
         <key name="backend" enum="org.onboard.word-suggestions.spell-check.Backend">
             <default>"hunspell"</default>
             <summary>Backend</summary>
             <description>The spell checker backend.</description>
+        </key>
+        <key name="auto-capitalization" type="b">
+            <default>true</default>
+            <summary>Auto-capitalization enabled</summary>
+            <description>Automatically capitalize words while typing.</description>
         </key>
     </schema>
 </schemalist>

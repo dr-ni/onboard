@@ -72,6 +72,7 @@ class WordSuggestions:
         self._wpengine  = None
 
         self._correction_choices = []
+        self._auto_capitalization = None
         self._correction_span = None
         self._prediction_choices = []
         self.word_infos = []
@@ -238,15 +239,15 @@ class WordSuggestions:
     def _insert_correction_choice(self, key, choice_index):
         """ spelling correction clicked """
         span = self._correction_span # span to correct
-        self._replace_text(span.begin(), span.end(),
-                           self.text_context.get_span_at_cursor().begin(),
-                           self._correction_choices[choice_index])
+        with self.suppress_modifiers():
+            self._replace_text(span.begin(), span.end(),
+                               self.text_context.get_span_at_cursor().begin(),
+                               self._correction_choices[choice_index])
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
         deletion, insertion = \
                 self._get_prediction_choice_remainder(choice_index)
-        print(repr(deletion), repr(insertion))
 
         # simulate the change
         cursor_span = self.text_context.get_span_at_cursor()
@@ -324,8 +325,8 @@ class WordSuggestions:
         self.update_context_ui()
 
     def update_suggestions_ui(self):
-        self._find_correction_choices()
-        self._find_prediction_choices()
+        self._update_correction_choices()
+        self._update_prediction_choices()
         keys_to_redraw = self.update_inputline()
         keys_to_redraw.extend(self.update_wordlists())
         return keys_to_redraw
@@ -355,31 +356,85 @@ class WordSuggestions:
                 item.expand_corrections(expand)
                 self.redraw([item])
 
-    def _find_correction_choices(self):
-        """ find spelling suggestions for the word at or before the cursor """
+    def _update_correction_choices(self):
         self._correction_choices = []
         self._correction_span = None
+
         if self._spell_checker and \
            config.spell_check.enabled and \
            self.can_spell_check():
             word_span = self._get_word_to_spell_check()
             if word_span:
-                text_begin = word_span.text_begin()
-                word = word_span.get_span_text()
-                cursor = self.text_context.get_cursor()
-                offset = cursor - text_begin # cursor offset into the word
+                (self._correction_choices,
+                self._correction_span,
+                auto_capitalization) = \
+                            self._find_correction_choices(word_span, False)
 
-                span, choices = \
-                        self._spell_checker.find_corrections(word, offset)
-                if choices:
-                    self._correction_choices = choices
-                    self._correction_span = TextSpan(span[0] + text_begin,
-                                                     span[1] - span[0],
-                                                     span[2],
-                                                     span[0] + text_begin)
-                #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
+    def _find_correction_choices(self, word_span, auto_capitalize):
+        """
+        Find spelling suggestions for the word at or before the cursor.
 
-    def _find_prediction_choices(self):
+        Doctests:
+        >>> wp = WordSuggestions()
+        >>> wp._spell_checker.set_backend("hunspell")
+        >>> wp._spell_checker.set_dict_ids(["en_US"])
+        True
+
+        # auto-capitalization
+        >>> wp._find_correction_choices(TextSpan(0, 7, "Jupiter"), True)
+        ([], None, None)
+        >>> wp._find_correction_choices(TextSpan(0, 7, "jupiter"), True)
+        (['Jupiter', "Jupiter's"], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        >>> wp._find_correction_choices(TextSpan(0, 7, "jupiter-orbit"), True)
+        (['Jupiter', "Jupiter's"], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        """
+        correction_choices = []
+        correction_span = None
+        auto_capitalization = None
+
+        text_begin = word_span.text_begin()
+        word = word_span.get_span_text()
+        cursor = self.text_context.get_cursor()
+        offset = cursor - text_begin # cursor offset into the word
+
+        span, choices = \
+                self._spell_checker.find_corrections(word, offset)
+        if choices:
+            correction_choices = choices
+            correction_span = TextSpan(span[0] + text_begin,
+                                       span[1] - span[0],
+                                       span[2],
+                                       span[0] + text_begin)
+
+            # See if there is a valid upper caps variant for
+            # auto-capitalization.
+            if auto_capitalize:
+                if word and word[0].islower():
+                    word_caps = word.capitalize()
+                    span, choices = self._spell_checker. \
+                            find_corrections(word_caps, offset)
+                    if not choices:
+                        auto_capitalization = word_caps
+
+        #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
+        return correction_choices, correction_span, auto_capitalization
+
+    def _auto_capitalize_at(self, cursor_span):
+        word_span = self._get_word_before_span(cursor_span)
+        if word_span:
+            (correction_choices,
+             correction_span,
+             auto_capitalization) = \
+                  self._find_correction_choices(word_span, True)
+
+            if auto_capitalization:
+                with self.suppress_modifiers():
+                    self._replace_text(correction_span.begin(),
+                                       correction_span.end(),
+                                       cursor_span.begin(),
+                                       auto_capitalization)
+
+    def _update_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
         self._prediction_choices = []
         text_context = self.text_context
@@ -517,7 +572,8 @@ class WordSuggestions:
         >>> print(wp._get_word_to_spell_check())
         None
         """
-        word_span = self._get_word_before_cursor()
+        cursor_span  = self.text_context.get_span_at_cursor()
+        word_span = self._get_word_before_span(cursor_span)
 
         # Don't pop up spelling corrections if we're
         # currently typing the word.
@@ -529,9 +585,9 @@ class WordSuggestions:
 
         return word_span
 
-    def _get_word_before_cursor(self):
+    def _get_word_before_span(self, span):
         """
-        Get the word at or before the cursor.
+        Get the word at or before the span.
 
         Doctests:
         >>> wp = WordSuggestions()
@@ -539,28 +595,24 @@ class WordSuggestions:
         >>> tc = wp.text_context
 
         # cursor right in the middle of a word
-        >>> tc.get_span_at_cursor = lambda : TextSpan(15, 0, "binomial proportion")
-        >>> wp._get_word_before_cursor()
+        >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
         TextSpan(9, 10, 'proportion', 9, None)
 
         # text at offset
-        >>> tc.get_span_at_cursor = lambda : TextSpan(25, 0, "binomial proportion", 10)
-        >>> wp._get_word_before_cursor()
+        >>> wp._get_word_before_span(TextSpan(25, 0, "binomial proportion", 10))
         TextSpan(19, 10, 'proportion', 19, None)
 
         # cursor after whitespace - get the previous word
-        >>> tc.get_span_at_cursor = lambda : TextSpan(9, 0, "binomial  proportion")
-        >>> wp._get_word_before_cursor()
+        >>> wp._get_word_before_span(TextSpan(9, 0, "binomial  proportion"))
         TextSpan(0, 8, 'binomial', 0, None)
         """
         word_span = None
-        cursor_span  = self.text_context.get_span_at_cursor()
-        if cursor_span and self._wpengine:
-            tokens, spans = self._wpengine.tokenize_text(cursor_span.get_text())
+        if span and self._wpengine:
+            tokens, spans = self._wpengine.tokenize_text(span.get_text())
 
-            cursor = cursor_span.begin()
-            text_begin = cursor_span.text_begin()
-            local_cursor = cursor_span.begin() - text_begin
+            cursor = span.begin()
+            text_begin = span.text_begin()
+            local_cursor = span.begin() - text_begin
 
             itoken = None
             for i, s in enumerate(spans):
@@ -665,8 +717,30 @@ class WordSuggestions:
         """ A different target widget has been focused """
         self._learn_strategy.on_text_entry_activated()
 
+    def on_text_inserted(self, insertion_span):
+        """ Synchronous callback for text insertion """
+
+        # auto-capitalization
+        if config.spell_check.auto_capitalization:
+            # find position of last word end with added space
+            char_before = insertion_span.get_char_before_span()
+            text = char_before + insertion_span.get_span_text()
+            match = re.search("\S\s+\S*$", text)
+            if match:
+                span = insertion_span.copy()
+                span.length = 0
+                span.pos = insertion_span.begin() + match.start() + 1
+                if char_before:
+                    span.pos -= 1
+
+                self._auto_capitalize_at(span)
+
     def on_text_context_changed(self):
-        """ The text of the target widget changed or the cursor moved """
+        """
+        Asynchronous callback for generic context changes.
+        The text of the target widget changed or the cursor moved.
+        Use this for low priority display stuff.
+        """
         self.expand_corrections(False)
         self.update_context_ui()
         self._learn_strategy.on_text_context_changed()

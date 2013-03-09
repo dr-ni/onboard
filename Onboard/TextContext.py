@@ -28,7 +28,7 @@ except ImportError as e:
                    "word suggestions not fully functional"))
 
 from Onboard.AtspiStateTracker import AtspiStateTracker, AtspiStateType
-from Onboard.TextDomain        import TextDomains 
+from Onboard.TextDomain        import TextDomains
 from Onboard.TextChanges       import TextChanges, TextSpan
 from Onboard.utils             import Timer
 from Onboard                   import KeyCommon
@@ -146,14 +146,14 @@ class AtspiTextContext(TextContext):
             return ""
 
         if self._entering_text or \
-           self.can_suggest_before_typing(): 
+           self.can_suggest_before_typing():
             return self._context
 
         return ""
 
     def get_bot_context(self):
         """
-        Returns the predictions context with 
+        Returns the predictions context with
         begin of text marker (at text begin).
         """
         context = ""
@@ -328,7 +328,13 @@ class AtspiTextContext(TextContext):
         self._wp.on_text_entry_activated()
 
     def _on_text_changed(self, event):
-        self._record_text_change(event.pos, event.length, event.insert)
+        insertion_span = self._record_text_change(event.pos,
+                                                  event.length,
+                                                  event.insert)
+        # synchrounously notify of text insertion
+        if insertion_span:
+            self._wp.on_text_inserted(insertion_span)
+
         self._update_context()
 
     def _on_text_caret_moved(self, event):
@@ -357,6 +363,7 @@ class AtspiTextContext(TextContext):
     def _record_text_change(self, pos, length, insert):
         accessible = self._accessible
 
+        insertion_span = None
         char_count = None
         if accessible:
             try:
@@ -382,6 +389,12 @@ class AtspiTextContext(TextContext):
                         # Large inserts can be paste, reload or scroll
                         # operations. Only learn the first word of these.
                         include_length = 2
+
+                    # simple span for current insertion
+                    begin = max(pos - 100, 0)
+                    end = min(pos+length + 100, char_count)
+                    text = Atspi.Text.get_text(accessible, begin, end)
+                    insertion_span = TextSpan(pos, length, text, begin)
                 else:
                     # Remember nothing, just update existing spans.
                     include_length = None
@@ -402,9 +415,9 @@ class AtspiTextContext(TextContext):
                 end = min(span.end() + 100, char_count)
                 span.text = Atspi.Text.get_text(accessible, begin, end)
                 span.text_pos = begin
-                begin = span.begin()
 
             #print(self._changes)
+        return insertion_span
 
     def _update_context(self):
         self._update_context_timer.start(0.01, self.on_text_context_changed)

@@ -47,6 +47,9 @@ class TextSpan:
         self.text_pos = text_pos
         self.last_modified = None
 
+    def copy(self):
+        return TextSpan(self.pos, self.length, self.text, self.text_pos)
+
     def begin(self):
         return self.pos
 
