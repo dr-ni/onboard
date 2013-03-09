@@ -107,6 +107,12 @@ class AutoShow(object):
         # discard pending hide/show actions.
         self._auto_show_timer.stop()
 
+        # Stop pending auto-repositioning
+        if lock:
+            window = self._keyboard_widget.get_kbd_window()
+            if window:
+                window.stop_auto_position()
+
     def _on_text_caret_moved(self, event):
         """
         Show the keyboard on click of an already focused text entry
