@@ -280,44 +280,6 @@ class AtspiStateTracker(EventSource):
                     ae = AsyncEvent(accessible = self._active_accessible)
                     self.emit_async("focus-changed", ae)
 
-    def __on_atspi_focus(self, event, focus_received = False):
-        if config.auto_show.enabled:
-            accessible = event.source
-            focused = bool(focus_received) or bool(event.detail1) # received focus?
-
-            self._log_accessible(accessible, focused)
-
-            if accessible:
-                window = self._keyboard_widget.get_kbd_window()
-                editable = self._is_accessible_editable(accessible)
-                visible =  focused and editable
-
-                show = visible
-                if focused:
-                    self._focused_accessible = accessible
-                elif not focused and self._focused_accessible == accessible:
-                    self._focused_accessible = None
-                else:
-                    show = None
-
-                # show/hide the window
-                if not show is None:
-                    # Always allow to show the window even when locked.
-                    # Mitigates right click on unity-2d launcher hiding
-                    # onboard before _lock_visible is set (Precise).
-                    if self._lock_visible:
-                        show = True
-
-                    if not self.is_frozen():
-                        self.show_keyboard(show)
-
-                    # The active accessible changed, stop trying to
-                    # track the position of the previous one.
-                    # -> less erratic movement during quick focus changes
-                    if window:
-                        window.stop_auto_position()
-
-
     def _on_atspi_text_changed(self, event, user_data):
         if event.source is self._active_accessible:
             #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
