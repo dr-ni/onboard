@@ -1218,8 +1218,7 @@
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
                                                     <property name="has_tooltip">True</property>
-                                                    <property name="tooltip_markup" translatable="yes">Remember new words, their recency and frequency to improve the prediction over time.</property>
-                                                    <property name="tooltip_text" translatable="yes">Remember new words, their recency and frequency to improve the prediction over time.</property>
+                                                    <property name="tooltip_text" translatable="yes">Remember new words, their recency and frequency to improve the suggestions over time.</property>
                                                     <property name="use_underline">True</property>
                                                     <property name="xalign">0</property>
                                                     <property name="draw_indicator">True</property>
@@ -1251,7 +1250,7 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkCheckButton" id="enable_spell_check_toggle">
-                                                    <property name="label" translatable="yes">Give spelling suggestions</property>
+                                                    <property name="label" translatable="yes">Show spelling suggestions</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
@@ -1328,8 +1327,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="has_tooltip">True</property>
-                                            <property name="tooltip_markup" translatable="yes">Add and remove spaces when inserting word suggestions followed by punctuation characters.</property>
-                                            <property name="tooltip_text" translatable="yes">Add and remove spaces when inserting word suggestions followed by punctuation characters.</property>
+                                            <property name="tooltip_text" translatable="yes">Automatically capitalize name words.</property>
                                             <property name="use_underline">True</property>
                                             <property name="xalign">0</property>
                                             <property name="draw_indicator">True</property>
