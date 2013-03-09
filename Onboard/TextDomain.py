@@ -116,6 +116,9 @@ class TextDomain:
     def can_spell_check(self):
         return False
 
+    def can_auto_correct(self):
+        return False
+
     def can_suggest_before_typing(self):
         """ Can give word suggestions before typing has started? """
         return True
@@ -176,6 +179,9 @@ class DomainGenericText(TextDomain):
                 begin_of_text, begin_of_text_offset)
 
     def can_spell_check(self):
+        return True
+
+    def can_auto_correct(self):
         return True
 
     def get_text_begin_marker(self):

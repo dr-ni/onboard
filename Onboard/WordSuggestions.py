@@ -721,7 +721,8 @@ class WordSuggestions:
         """ Synchronous callback for text insertion """
 
         # auto-capitalization
-        if config.spell_check.auto_capitalization:
+        if config.spell_check.auto_capitalization and \
+           self.can_auto_correct():
             # find position of last word end with added space
             char_before = insertion_span.get_char_before_span()
             text = char_before + insertion_span.get_span_text()
@@ -834,6 +835,13 @@ class WordSuggestions:
         """ No spell checking for passwords, URLs, etc. """
         domain = self.text_context.get_text_domain()
         if domain and domain.can_spell_check():
+            return True
+        return False
+
+    def can_auto_correct(self):
+        """ No spell checking for passwords, URLs, etc. """
+        domain = self.text_context.get_text_domain()
+        if domain and domain.can_auto_correct():
             return True
         return False
 
