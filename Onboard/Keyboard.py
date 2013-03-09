@@ -1260,6 +1260,7 @@ class Keyboard(WordSuggestions):
                not key.is_modifier() and \
                not key.is_layer_button() and \
                not key.is_word_suggestion() and \
+               not key.type is None and \
                allowed:
                 self._touch_feedback.show(key, view)
 

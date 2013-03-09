@@ -487,6 +487,7 @@ class LayoutBuilderKeySequence(LayoutBuilder):
         max_columns = LayoutBuilderAlternatives.MAX_KEY_COLUMNS
         min_columns = max_columns // 2
         add_close = False
+        fill_gaps = True
 
         # find the number of columns with the best packing,
         # i.e. the least number of empty slots.
@@ -530,6 +531,15 @@ class LayoutBuilderKeySequence(LayoutBuilder):
             key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
             key.type = KeyCommon.BUTTON_TYPE
             line.append(key)
+
+        # fill empty slots with dummy buttons
+        if fill_gaps:
+            n = len(line)
+            if n:
+                for i in range(ncolumns - n):
+                    key = RectKey("_dummy_")
+                    key.sensitive = False
+                    line.append(key)
 
         if line:
             lines.append(line)
