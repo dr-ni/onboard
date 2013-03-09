@@ -249,17 +249,11 @@ class AtspiStateTracker(EventSource):
 
     def _on_atspi_text_changed(self, event, user_data):
         #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
-        insert = event.type.endswith("insert")
-        delete = event.type.endswith("delete")
-        if insert or delete:
-            ae = AsyncEvent(accessible = event.source,
-                            pos = event.detail1,
-                            length = event.detail2,
-                            insert = insert)
-            self.emit_async("async-text-changed", ae)
-        else:
-            _logger.warning("_on_atspi_text_changed: unknown event type '{}'" \
-                          .format(event.type))
+        ae = AsyncEvent(accessible = event.source,
+                        type = event.type,
+                        pos = event.detail1,
+                        length = event.detail2)
+        self.emit_async("async-text-changed", ae)
         return False
 
     def _on_atspi_text_caret_moved(self, event, user_data):
@@ -315,7 +309,6 @@ class AtspiStateTracker(EventSource):
                     else:
                         self._active_accessible = None
 
-                    print(self._active_accessible, self._last_active_accessible)
                     if not self._active_accessible is None or \
                        not self._last_active_accessible is None:
                         self.emit("text-entry-activated",
@@ -324,7 +317,16 @@ class AtspiStateTracker(EventSource):
 
     def _on_async_text_changed(self, event):
         if event.accessible is self._active_accessible:
-            self.emit("text-changed", event)
+            type = event.type
+            insert = type.endswith("insert") or type.endswith("insert:system")
+            delete = type.endswith("delete") or type.endswith("delete:system")
+            if insert or delete:
+                event.insert = insert
+                self.emit("text-changed", event)
+            else:
+                _logger.warning("_on_async_text_changed: "
+                                "unknown event type '{}'" \
+                                .format(event.type))
 
     def _on_async_text_caret_moved(self, event):
         if event.accessible is self._active_accessible:
