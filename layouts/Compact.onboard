@@ -159,7 +159,7 @@
                 <key group='click' id='secondaryclick'/>
                 <key group='click' id='doubleclick'/>
                 <key group='click' id='dragclick'/>
-                <key group='click' id='hoverclick.bottom-row'/>
+                <key group='click' id='hoverclick.bottom-row' unlatch_layer="false"/>
             </panel>
             <panel id="paneswitch" filename="Compact-Alpha.svg">
                 <key group="bottomrow" id="hide" expand="false"/>
