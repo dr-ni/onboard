@@ -423,22 +423,6 @@ class WordSuggestions:
         #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
         return correction_choices, correction_span, auto_capitalization
 
-    def _auto_capitalize_at(self, cursor_span):
-        word_span = self._get_word_before_span(cursor_span)
-        if word_span:
-            (correction_choices,
-             correction_span,
-             auto_capitalization) = \
-                  self._find_correction_choices(word_span, True)
-
-            print(auto_capitalization)
-            if auto_capitalization:
-                with self.suppress_modifiers():
-                    self._replace_text(correction_span.begin(),
-                                       correction_span.end(),
-                                       cursor_span.begin(),
-                                       auto_capitalization)
-
     def _update_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
         self._prediction_choices = []
@@ -722,24 +706,15 @@ class WordSuggestions:
         """ A different target widget has been focused """
         self._learn_strategy.on_text_entry_activated()
 
-    def on_text_inserted(self, insertion_span):
+    def on_text_inserted(self, insertion_span, cursor_offset):
         """ Synchronous callback for text insertion """
 
         # auto-capitalization
         if config.typing_helpers.auto_capitalization and \
            self.can_auto_correct():
-            # find position of last word end with added space
-            char_before = insertion_span.get_char_before_span()
-            text = char_before + insertion_span.get_span_text()
-            match = re.search("\S\s+\S*$", text)
-            if match:
-                span = insertion_span.copy()
-                span.length = 0
-                span.pos = insertion_span.begin() + match.start() + 1
-                if char_before:
-                    span.pos -= 1
-
-                self._auto_capitalize_at(span)
+            word_span = self._get_word_to_auto_capitalize(insertion_span)
+            if word_span:
+                self._auto_capitalize_at(word_span, cursor_offset)
 
     def on_text_context_changed(self):
         """
@@ -868,6 +843,33 @@ class WordSuggestions:
         if self._focusable_count == 0:
             # Re-enable AT-SPI listeners
             AtspiStateTracker().thaw()
+
+    def _get_word_to_auto_capitalize(self, insertion_span):
+        # find position of last word end with added space
+        char_before = insertion_span.get_char_before_span()
+        text = char_before + insertion_span.get_span_text()
+        match = re.search("\S\s+\S*$", text)
+        if match:
+            span = insertion_span.copy()
+            span.length = 0
+            span.pos = insertion_span.begin() + match.start() + 1
+            if char_before:
+                span.pos -= 1
+            return self._get_word_before_span(span)
+        return None
+
+    def _auto_capitalize_at(self, word_span, cursor_offset):
+        (correction_choices,
+         correction_span,
+         auto_capitalization) = \
+              self._find_correction_choices(word_span, True)
+
+        if auto_capitalization:
+            with self.suppress_modifiers():
+                self._replace_text(correction_span.begin(),
+                                   correction_span.end(),
+                                   cursor_offset,
+                                   auto_capitalization)
 
 
 class LearnStrategy:

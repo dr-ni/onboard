@@ -333,7 +333,12 @@ class AtspiTextContext(TextContext):
                                                   event.insert)
         # synchrounously notify of text insertion
         if insertion_span:
-            self._wp.on_text_inserted(insertion_span)
+            try:
+                cursor_offset = self._accessible.get_caret_offset()
+            except: # gi._glib.GError
+                pass
+            else:
+                self._wp.on_text_inserted(insertion_span, cursor_offset)
 
         self._update_context()
 
