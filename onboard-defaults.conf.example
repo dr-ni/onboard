@@ -19,7 +19,7 @@
 # Examples:
 #layout=/usr/share/onboard/layouts/Classic Onboard.onboard
 #layout=Full Keyboard
-#layout=Compact
+layout=Compact
 #layout=Phone
 
 # Default theme
@@ -38,7 +38,7 @@ theme=Nightshade
 # Examples:
 #key-label-font=Normal bold italic condensed
 #key-label-font=Ubuntu condensed
-#key-label-font=Ubuntu
+key-label-font=Ubuntu
 
 # Super key label
 # Default label override for left and right super keys.
@@ -46,7 +46,7 @@ theme=Nightshade
 #
 # Examples:
 #superkey-label=Super
-#superkey-label=
+superkey-label=
 
 # Super key label, independent size
 # If set to True/yes/1, super keys will scale their label in their own
@@ -55,7 +55,7 @@ theme=Nightshade
 # modifier keys (Ctrl, Super, Alt).
 #
 # Examples:
-#superkey-label-independent-size=True
+superkey-label-independent-size=True
 
 # Enable embedding into gnome-screen-saver
 # If set to True, screen-saver integration will be enabled on first start.
@@ -71,7 +71,7 @@ theme=Nightshade
 # org.gnome.desktop.screensaver embedded-keyboard-enabled
 #
 # Example:
-#xembed-onboard=True
+xembed-onboard=True
 
 # Other available keys:
 #
@@ -93,10 +93,9 @@ theme=Nightshade
 
 #background-transparency=10.0
 #enable-inactive-transparency=False
-#force-to-top=False
+force-to-top=True
 #inactive-transparency=50.0
 #inactive-transparency-delay=1.0
-#keep-aspect-ratio=False
 #resize-handles=E SE S SW W NW N NE
 #transparency=0.0
 #transparent-background=False
@@ -154,8 +153,11 @@ theme=Nightshade
 #sticky-key-release-delay=0.0
 
 [auto-show]
-#enabled=False
+enabled=False
 #widget-clearance=(25.0, 55.0, 25.0, 40.0)
+
+[typing-helpers]
+#auto-capitalization=False
 
 [word-suggestions]
 #enabled=False

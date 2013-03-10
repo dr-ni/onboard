@@ -61,7 +61,7 @@ y=985
 width=735
 height=295
 dock-expand=True
-dock-height=295
+dock-height=230
 dock-width=700
 
 [icon-palette]
@@ -91,6 +91,9 @@ touch-feedback-size=0
 [auto-show]
 enabled=True
 
+[typing-helpers]
+#auto-capitalization=False
+
 [word-suggestions]
 enabled=True
 
@@ -100,7 +103,7 @@ enabled=True
 device-name=0000:0000:3
 
 [lockdown]
-# Work around for "Nexus7 hangs when attempting to switch apps using Alt Tab" (LP: 1082101)
-# Ignore this once the switcher can be closed by tapping the icons.
+# Block switching to other virtual terminals.
+# There is no way back using Onboard.
 disable-keys=[["CTRL", "LALT", "F[0-9]+"]]
 
