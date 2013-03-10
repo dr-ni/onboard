@@ -430,16 +430,18 @@ class WordSuggestions:
 
         if self._wpengine:
 
-            # Are we at the capitalized first word of a sentence?
             context = text_context.get_context()
-            tokens = self._wpengine.tokenize_context(context)
-
-            case_insensitive, ignore_non_caps, capitalize, drop_capitalized = \
-                   self._get_prediction_options(tokens, bool(self.mods[1]))
-
             if context: # don't load models on startup
                 max_choices = config.wp.max_word_choices
                 bot_context = text_context.get_bot_context()
+                bot_marker = text_context.get_text_begin_marker()
+                tokens = self._wpengine.tokenize_context(bot_context)
+
+                case_insensitive, ignore_non_caps, \
+                capitalize, drop_capitalized = \
+                       self._get_prediction_options(tokens,
+                                                    bool(self.mods[1]),
+                                                    bot_marker)
 
                 _choices = self._wpengine.predict(bot_context,
                             max_choices * 2,
@@ -465,12 +467,12 @@ class WordSuggestions:
                     choices.append(choice)
 
                 choices = choices[:max_choices]
+
+                # Make all words start upper case
+                if capitalize:
+                    choices = self._capitalize_choices(choices)
             else:
                 choices = []
-
-            # Make all words start upper case
-            if capitalize:
-                choices = self._capitalize_choices(choices)
 
             self._prediction_choices = choices
 
@@ -478,7 +480,7 @@ class WordSuggestions:
             #self.word_infos = self.get_word_infos(self.text_context.get_line())
 
     @staticmethod
-    def _get_prediction_options(tokens, shift):
+    def _get_prediction_options(tokens, shift, bot_marker = None):
         """
         Determine prediction options.
 
@@ -520,10 +522,16 @@ class WordSuggestions:
         # sentence begin, empty prefix, with shift
         >>> get_options(["<s>", ""], True)
         (True, False, True, False)
+
+        # sentence begin with bot marker.
+        >>> get_options(["<bot:txt>", "Prefix"], True, "<bot:txt>")
+        (True, False, True, False)
         """
         if tokens:
             prefix = tokens[-1]
-            sentence_begin = len(tokens) >= 2 and tokens[-2] == "<s>"
+            sentence_begin = len(tokens) >= 2 and \
+                             (tokens[-2] == "<s>" or \
+                              bool(bot_marker) and tokens[-2] == bot_marker)
             capitalized = bool(prefix) and prefix[0].isupper()
             empty_prefix = not bool(prefix)
 
@@ -579,7 +587,7 @@ class WordSuggestions:
 
         for choice in choices:
             if choice:
-                choice = choice[0].upper() + choice[1:]
+                choice = choice.capitalize()
                 if not choice in seen:
                     results.append(choice)
                     seen.add(choice)
