@@ -186,7 +186,7 @@ class WPLocalEngine(object):
             model = self._model_cache.get_model(lmid)
             if model:
                 count = model.lookup_word(word)
-                if count:
+                if count > 0:
                     exists = True
                     break
         return exists

@@ -451,9 +451,11 @@ class WordSuggestions:
                                    not ignore_non_caps
 
             if context: # don't load models on startup
+                max_choices = config.wp.max_word_choices
                 bot_context = text_context.get_bot_context()
+
                 _choices = self._wpengine.predict(bot_context,
-                            config.wp.max_word_choices,
+                            max_choices * 2,
                             case_insensitive = case_insensitive,
                             accent_insensitive = config.wp.accent_insensitive,
                             ignore_non_capitalized = ignore_non_caps)
@@ -475,7 +477,7 @@ class WordSuggestions:
 
                     choices.append(choice)
 
-                choices = [c for c in choices if not c.startswith("<bot:")]
+                choices = choices[:max_choices]
             else:
                 choices = []
 
