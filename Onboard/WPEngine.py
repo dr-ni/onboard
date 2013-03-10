@@ -101,6 +101,10 @@ class WPLocalEngine(object):
 
         context = pypredict.tokenize_context(context_line)
         choices = self._get_prediction(self.models, context, limit, options)
+        print("context_line", repr(context_line).replace("\n", "n"))
+        print("sentences", pypredict.split_sentences(context_line))
+        print("context", context)
+        print("choices", choices)
         _logger.debug("context=" + repr(context))
         _logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]

@@ -162,6 +162,17 @@ def split_tokens(tokens, separator, keep_separator = False):
 
     return token_sections
 
+
+SENTENCE_PATTERN = re.compile( \
+    """ [^\n]*?
+           (?:
+                 (?:[.;:!?](?:(?=[\s]) | \")) # punctuation
+               | (?:\\s*\\n\\s*)+(?=[\\n])    # multiples newlines
+               | <s>                          # sentence end mark
+           )
+         | .+$                                # last sentence fragment
+    """, re.UNICODE|re.DOTALL|re.VERBOSE)
+
 def split_sentences(text, disambiguate=False):
     """ Split text into sentences. """
 
@@ -169,16 +180,8 @@ def split_sentences(text, disambiguate=False):
     # Don't change the text's length, keep it in sync with spans.
     filtered = text.replace("\r"," ")
 
-
     # split into sentence fragments
-    matches = re.finditer("""  .*?
-                                 (?:
-                                   [.;:!?](?:(?=[\s])|\") # punctuation
-                                   | \s*\\n\s*\\n         # double newline
-                                   | <s>                  # sentence end mark
-                                 )
-                             | .+$                    # last sentence fragment
-                          """, filtered, re.UNICODE|re.DOTALL|re.VERBOSE)
+    matches = SENTENCE_PATTERN.finditer(filtered)
 
     # filter matches
     sentences = []
@@ -186,7 +189,7 @@ def split_sentences(text, disambiguate=False):
     for match in matches:
         sentence = match.group()
         # not only newlines? remove fragments with only double newlines
-        if not re.match("^\s*\n+\s*$", sentence, re.UNICODE):
+        if True: #not re.match("^\s*\n+\s*$", sentence, re.UNICODE):
             begin = match.start()
             end   = match.end()
 

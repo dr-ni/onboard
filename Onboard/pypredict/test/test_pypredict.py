@@ -20,6 +20,20 @@ import tempfile
 import unittest
 from Onboard.pypredict import *
 
+class _TestPatterns(unittest.TestCase):
+
+    def __init__(self, test, text, result):
+        unittest.TestCase.__init__(self, test)
+        self.text = text
+        self.result = result
+
+    def test_sentence_pattern(self):
+        result = SENTENCE_PATTERN.findall(self.text)
+        self.assertEqual(result, self.result,
+                         "test '%s': '%s' != '%s'" %
+                         (self.text, repr(result), repr(self.result)))
+
+
 class _TestTokenization(unittest.TestCase):
 
     def __init__(self, test, text, result):
@@ -249,7 +263,7 @@ class _TestModel(unittest.TestCase):
         model.save(fn)
 
         contents = [x for x in model.iter_ngrams()]
-        self.assertEqual(contents, 
+        self.assertEqual(contents,
         [(('<unk>',), 1),
          (('<s>',), 1),
          (('</s>',), 1),
@@ -265,12 +279,12 @@ class _TestModel(unittest.TestCase):
         # Reasons: - Obfuscation of the learned text on second save.
         #          - Making Dictionary::sorted redundant to save memory
         #            and improve performance by working around its insert
-        #            inefficiency (becomes crippling with very large 
+        #            inefficiency (becomes crippling with very large
         #            vocabularies, i.e. millions of words)
         model = UnigramModel()
         model.load(fn)
         contents = [x for x in model.iter_ngrams()]
-        self.assertEqual(contents, 
+        self.assertEqual(contents,
         [(('<unk>',), 1),
          (('<s>',), 1),
          (('</s>',), 1),
@@ -291,7 +305,7 @@ class _TestModel(unittest.TestCase):
         model.save(fn)
 
         contents = [x for x in model.iter_ngrams()]
-        self.assertEqual(contents, 
+        self.assertEqual(contents,
             [(('<unk>',), 1, 0),
              (('<s>',), 1, 0),
              (('</s>',), 1, 0),
@@ -316,7 +330,7 @@ class _TestModel(unittest.TestCase):
         model = DynamicModel()
         model.load(fn)
         contents = [x for x in model.iter_ngrams()]
-        self.assertEqual(contents, 
+        self.assertEqual(contents,
             [(('<unk>',), 1, 0),
              (('<s>',), 1, 0),
              (('</s>',), 1, 0),
@@ -346,13 +360,13 @@ class _TestModel(unittest.TestCase):
         tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
         model.learn_tokens(tokens)
         model.save(fn)
-        self.assertEqual(read_order(fn), 1) 
+        self.assertEqual(read_order(fn), 1)
 
         model = DynamicModel()
         tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
         model.learn_tokens(tokens)
         model.save(fn)
-        self.assertEqual(read_order(fn), 3) 
+        self.assertEqual(read_order(fn), 3)
 
 
 def suite():
@@ -406,6 +420,11 @@ def suite():
          ["sentence. sentence.", ['sentence', '<s>', 'sentence'],
              ['sentence', '<s>', 'sentence', ''],
              ['sentence.', 'sentence.']],
+         ["sentence. \nsentence.", ['sentence', '<s>', 'sentence'],
+             ['sentence', '<s>', 'sentence', ''],
+             ['sentence.', 'sentence.']],
+         ["sentence. \n", ['sentence', '<s>'], ['sentence', '<s>', ''],
+             ['sentence.', '']],
          ['sentence "quote." sentence.',
              ['sentence', 'quote', '<s>', 'sentence'],
              ['sentence', 'quote', '<s>', 'sentence', ''],
@@ -433,6 +452,10 @@ def suite():
          ["\nnewline ", ['newline'], ['newline', ''], ['newline']],
          ["double\n\nnewline ", ['double', '<s>', 'newline'],
              ['double', '<s>', 'newline', ''], ['double', 'newline']],
+         ["double_newline\n\n", ['double_newline', '<s>'],
+             ['double_newline', '<s>', ''], ['double_newline', '']],
+         ["double_newline \n \n \n", ['double_newline', '<s>'],
+             ['double_newline', '<s>', ''], ['double_newline', '']],
          ["dash-dash", ["dash-dash"], ["dash-dash"], ["dash-dash"]],
          ["dash-", ['dash'], ['dash'], ['dash-']],
          ["single quote's", ['single', "quote's"], ['single', "quote's"],
@@ -450,14 +473,38 @@ def suite():
              ['<bot:url> word']],
         ]
 
+    # Low-level regex pattern tests
+    # Important are the text and the number of resulting list elements,
+    # less so the exact distribution of whitespace.
+    sentence_pattern_tests =[
+        ["s1", ["s1"]],
+        ["s1.", ["s1."]],
+        ["s1. ", ["s1.", " "]],
+        ["s1\n", ["s1\n"]],
+        ["s1. \n", ["s1.", " \n"]],
+
+        ["s1\n\n", ["s1\n", "\n"]],
+        ["s1\n \n", ["s1\n ", "\n"]],
+        ["s1 \n \n", ["s1 \n ", "\n"]],
+
+        ["s1\n\n\n\n\n", ["s1\n\n\n\n", "\n"]],
+
+        ["s1. s2 <s> s3\n\n", ['s1.', ' s2 <s>', ' s3\n', '\n']],
+        ["s1. s2 <s> s3\n\ns4", ['s1.', ' s2 <s>', ' s3\n', '\ns4']],
+    ]
+
     suites = []
 
     suite = unittest.TestSuite()
-    test_methods = unittest.TestLoader().getTestCaseNames
     for i,a in enumerate(tests):
         suite.addTest(_TestTokenization('test_tokenize_text', a[0], a[1]))
         suite.addTest(_TestTokenization('test_tokenize_context', a[0], a[2]))
         suite.addTest(_TestTokenization('test_split_sentences', a[0], a[3]))
+    suites.append(suite)
+
+    suite = unittest.TestSuite()
+    for i,a in enumerate(sentence_pattern_tests):
+        suite.addTest(_TestPatterns('test_sentence_pattern', a[0], a[1]))
     suites.append(suite)
 
     suite = unittest.TestSuite()
