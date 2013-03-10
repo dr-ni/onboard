@@ -109,13 +109,24 @@ class WPLocalEngine(object):
         """ Count n-grams and add words to the auto-learn models. """
         if self.auto_learn_models:
             tokens, spans = pypredict.tokenize_text(text)
+
+            # Remove trailing single quote, too many false positives.
+            # Do this here, because we still want "it's", etc. to
+            # incrementally provide completions.
+            for i, token in enumerate(tokens):
+                if token.endswith("'"):
+                    token = token[:-1]
+                    if not token: # shouldn't happen
+                        token = "<unk>"
+                    tokens[i] = token
+
             models = self._model_cache.get_models(self.auto_learn_models)
             for model in models:
                 model.learn_tokens(tokens, allow_new_words)
                 model.modified = True
-            #_logger.info("learn_text: tokens=" + repr(tokens[:10]))
+            _logger.info("learn_text: tokens=" + repr(tokens[:10]))
 
-            # debug: save all learned text for later optimization testing
+            # debug: save all learned text for later parameter optimization
             if config.log_learn:
                 fn = os.path.join(config.user_dir, "learned_text.txt")
                 with open(fn, "a") as f:

@@ -883,7 +883,7 @@ class LearnStrategy:
         if config.wp.can_auto_learn():
             texts = self._get_learn_texts(spans, bot_marker, bot_offset)
 
-            _logger.info("learning " + repr(texts))
+            #_logger.info("learning " + repr(texts))
 
             engine = self._wp._wpengine
             for text in texts:
