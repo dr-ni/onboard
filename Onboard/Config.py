@@ -688,6 +688,17 @@ class Config(ConfigObject):
         return self.are_word_suggestions_enabled() and \
                self.word_suggestions.spelling_suggestions_enabled
 
+    def is_spell_checker_enabled(self):
+        return self.are_spelling_suggestions_enabled() or \
+               self.typing_helpers.auto_capitalization
+
+    def is_auto_capitalization_enabled(self):
+        return self.typing_helpers.auto_capitalization and not self.xid_mode
+
+    def are_typing_helpers_enabled(self):
+        return self.are_word_suggestions_enabled() or \
+               self.is_auto_capitalization_enabled()
+
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
            not self.gdi.toolkit_accessibility:

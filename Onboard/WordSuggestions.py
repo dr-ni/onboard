@@ -97,15 +97,6 @@ class WordSuggestions:
         self.update_spell_checker()
 
     def enable_word_suggestions(self, enable):
-        if enable:
-            # only enable if there is a wordlist in the layout
-            if self.get_word_list_bars():
-                self._wpengine = WPLocalEngine()
-                self.apply_prediction_profile()
-        else:
-            if self._wpengine:
-                self._wpengine.cleanup()
-            self._wpengine = None
 
         # show/hide word-prediction buttons
         for item in self.get_word_list_bars():
@@ -122,13 +113,27 @@ class WordSuggestions:
                 elif item.group == 'nowordlist':
                     item.visible = not enable
 
+        self.update_wp_engine()
+        self.update_spell_checker()
+
+    def update_wp_engine(self):
+        enable = config.are_typing_helpers_enabled()
+
+        if enable:
+            # only enable if there is a wordlist in the layout
+            if self.get_word_list_bars():
+                self._wpengine = WPLocalEngine()
+                self.apply_prediction_profile()
+        else:
+            if self._wpengine:
+                self._wpengine.cleanup()
+            self._wpengine = None
+
         # Init text context tracking.
         # Keep track in and write to both contexts in parallel,
         # but read only from the active one.
         self.text_context = self.atspi_text_context
         self.text_context.enable(enable) # register AT-SPI listerners
-
-        self.update_spell_checker()
 
     def on_word_suggestions_enabled(self, enabled):
         """ Config callback for word_suggestions.enabled changes. """
@@ -311,8 +316,7 @@ class WordSuggestions:
     def update_spell_checker(self):
         # select the backend
         backend = config.typing_helpers.spell_check_backend \
-                  if config.are_word_suggestions_enabled() and \
-                     config.are_spelling_suggestions_enabled() \
+                  if config.is_spell_checker_enabled() \
                   else None
         self._spell_checker.set_backend(backend)
 
@@ -427,6 +431,7 @@ class WordSuggestions:
              auto_capitalization) = \
                   self._find_correction_choices(word_span, True)
 
+            print(auto_capitalization)
             if auto_capitalization:
                 with self.suppress_modifiers():
                     self._replace_text(correction_span.begin(),
