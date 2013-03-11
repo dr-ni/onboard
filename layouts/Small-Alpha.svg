@@ -422,13 +422,6 @@
      x="55.634079"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.26815534;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
-     id="language"
-     height="18.731844"
-     width="21.46369"
-     y="-19.365921"
-     x="252.54665"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.26815534;stroke-miterlimit:4;stroke-dasharray:none" />
-  <rect
      id="layer3"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:1.28348005"
      height="22.71652"
@@ -466,6 +459,6 @@
      y="-19.049465"
      width="21.46369"
      height="18.731844"
-     id="hide"
+     id="hide.wordlist"
      inkscape:label="" />
 </svg>

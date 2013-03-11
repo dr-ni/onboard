@@ -316,13 +316,6 @@
      x="88.61142"
      style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.22284126;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
-     id="language"
-     height="18.358009"
-     width="18.358009"
-     y="-19.179007"
-     x="183.28935"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.64199018;stroke-miterlimit:4;stroke-dasharray:none" />
-  <rect
      id="AA02"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
      height="22.737215"
@@ -360,6 +353,6 @@
      y="-19.179007"
      width="18.358009"
      height="18.358009"
-     id="hide"
+     id="hide.wordlist"
      inkscape:label="" />
 </svg>
