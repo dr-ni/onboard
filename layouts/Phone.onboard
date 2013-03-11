@@ -17,7 +17,6 @@
         <panel>
           <panel filename="Phone-Alpha.svg" layer="alpha">
             <!-- row 2,3 and 4 of the layers -->
-            <key group='inputline' id='inputline'/>
             <!-- row 4 -->
             <key group="alphanumeric" id="AD01"/>
             <key group="alphanumeric" id="AD02"/>
