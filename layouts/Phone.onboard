@@ -188,7 +188,7 @@
   <layout id="RTRN_popup" filename="Phone-Alpha.svg">
     <key id="settings"/>
     <key id="move"/>
-    <key id="hide" svg_id="hide.popup" image="hide.svg"/>
+    <key id="hide" svg_id="hide.popup" image="close.svg"/>
   </layout>
 
 </keyboard>
