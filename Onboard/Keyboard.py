@@ -1258,10 +1258,7 @@ class Keyboard(WordSuggestions):
             if not config.xid_mode and \
                config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
-               not key.is_modifier() and \
-               not key.is_layer_button() and \
-               not key.is_word_suggestion() and \
-               not key.type is None and \
+               key.can_show_label_popup() and \
                allowed:
                 self._touch_feedback.show(key, view)
 

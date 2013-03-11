@@ -790,6 +790,9 @@ class BarKey(FullSizeKey):
     def draw_shadow_cached(self, context):
         pass
 
+    def can_show_label_popup(self):
+        return False
+
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):

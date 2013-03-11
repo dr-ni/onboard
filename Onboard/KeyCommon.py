@@ -165,6 +165,9 @@ class KeyCommon(LayoutItem):
     # tooltip text
     tooltip = None
 
+    # can show label popup
+    label_popup = True
+
 ###################
 
     def __init__(self):
@@ -308,6 +311,12 @@ class KeyCommon(LayoutItem):
         if self.popup_id:
             return self.find_sublayout(self.popup_id)
         return None
+
+    def can_show_label_popup(self):
+        return not self.is_modifier() and \
+               not self.is_layer_button() and \
+               not self.type is None and \
+               bool(self.label_popup)
 
 
 class RectKeyCommon(KeyCommon):
