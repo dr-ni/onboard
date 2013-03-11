@@ -1302,7 +1302,8 @@ class Punctuator:
             elif char in [".", "?", "!"]:
                 self.delete_at_cursor()
                 self._separator_removed = True
-                self._capitalize = True
+                if config.is_auto_capitalization_enabled():
+                    self._capitalize = True
 
     def on_after_release(self, key):
         """
