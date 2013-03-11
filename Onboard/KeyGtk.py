@@ -743,7 +743,7 @@ class FixedFontMixin:
         overflow the height of the key.
         """
         return self.calc_font_size(self.context,
-                                   self.get_unpressed_rect().get_size())
+                                   self.get_fullsize_rect().get_size())
 
     def calc_font_size(self, context, size):
         """ Calculate font size based on the height of the key """
