@@ -419,6 +419,14 @@ class WordSuggestions:
                     if not choices:
                         auto_capitalization = word_caps
 
+                    else:
+                        # Try one more time with all-caps
+                        word_upper = word.upper()
+                        span, choices = self._spell_checker. \
+                                find_corrections(word_upper, offset)
+                        if not choices:
+                            auto_capitalization = word_upper
+
         #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
         return correction_choices, correction_span, auto_capitalization
 
