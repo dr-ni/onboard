@@ -12,7 +12,7 @@
    width="391"
    version="1.0"
    enable-background="new"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="Full Keyboard-Alpha.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -23,18 +23,18 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1033"
-     inkscape:window-height="584"
+     inkscape:window-width="1215"
+     inkscape:window-height="1000"
      id="namedview3396"
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      inkscape:zoom="2.1892583"
-     inkscape:cx="315.72955"
-     inkscape:cy="58.446324"
-     inkscape:window-x="149"
-     inkscape:window-y="349"
-     inkscape:window-maximized="0"
+     inkscape:cx="279.18749"
+     inkscape:cy="113.25941"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
      inkscape:current-layer="full-alpha" />
   <defs
      id="defs4958">
@@ -764,25 +764,11 @@
      x="326.5"
      fill="#e5d8b2" />
   <rect
-     id="hide.wordlist"
-     height="18"
-     width="23"
-     y="0.4960022"
-     x="371.5"
-     style="fill:#e5d8b2;stroke:#000000" />
-  <rect
      id="hide"
      height="18"
      width="23"
      y="21.5"
      x="347.5"
-     style="fill:#e5d8b2;stroke:#000000" />
-  <rect
-     id="move.wordlist"
-     height="18"
-     width="23"
-     y="21.5"
-     x="371.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="move"
@@ -791,14 +777,6 @@
      y="42.5"
      x="347.5"
      style="fill:#e5d8b2;stroke:#000000" />
-  <rect
-     id="showclick.wordlist"
-     height="18"
-     width="23"
-     y="42.5"
-     x="371.5"
-     style="fill:#e5d8b2;stroke:#000000"
-     inkscape:label="#showclick.wordlist" />
   <rect
      id="showclick"
      height="18"
@@ -821,8 +799,9 @@
      y="109.009"
      x="347.5" />
   <g
-     id="layer2"
-     style="opacity:.5;filter:url(#filter3145)">
+     id="click_helper_group"
+     style="opacity:.5;filter:url(#filter3145)"
+     inkscape:label="#layer2">
     <rect
        id="middleclick"
        style="stroke:#000;fill:#e5d8b2"
@@ -881,10 +860,43 @@
      x="120.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
-     id="language"
-     height="18"
-     width="10"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1"
+     x="323.32623"
      y="0.5"
-     x="200.5"
-     style="fill:#2b2b63;stroke:#7f7f7f" />
+     width="17.272726"
+     height="18"
+     id="hide.wordlist"
+     inkscape:label="" />
+  <rect
+     id="move.wordlist"
+     height="18"
+     width="23"
+     y="21.5"
+     x="371.5"
+     style="fill:#e5d8b2;stroke:#000000"
+     inkscape:label="" />
+  <rect
+     id="showclick.wordlist"
+     height="18"
+     width="23"
+     y="42.5"
+     x="371.5"
+     style="fill:#e5d8b2;stroke:#000000"
+     inkscape:label="" />
+  <rect
+     x="371.5"
+     y="61.324417"
+     width="23"
+     height="36.910427"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
+     id="layer0.wordlist"
+     inkscape:label="" />
+  <rect
+     x="371.5"
+     y="99.589569"
+     width="22.999626"
+     height="36.910427"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     id="layer1.wordlist"
+     inkscape:label="" />
 </svg>
