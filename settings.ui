@@ -1322,12 +1322,12 @@
                                         <property name="spacing">2</property>
                                         <child>
                                           <object class="GtkCheckButton" id="auto_capitalization_toggle">
-                                            <property name="label" translatable="yes">Auto-_capitalization</property>
+                                            <property name="label" translatable="yes">Auto-capitalize while typing</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="has_tooltip">True</property>
-                                            <property name="tooltip_text" translatable="yes">Automatically capitalize name words.</property>
+                                            <property name="tooltip_text" translatable="yes">Automatically capitalize sentence begins and name words.</property>
                                             <property name="use_underline">True</property>
                                             <property name="xalign">0</property>
                                             <property name="draw_indicator">True</property>
@@ -1339,7 +1339,22 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <object class="GtkCheckButton" id="auto_correction_toggle">
+                                            <property name="label" translatable="yes">Auto-correct simple spelling mistakes</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">False</property>
+                                            <property name="no_show_all">True</property>
+                                            <property name="has_tooltip">True</property>
+                                            <property name="tooltip_text" translatable="yes">Automatically correct the last word.</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="xalign">0</property>
+                                            <property name="draw_indicator">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
                                         </child>
                                       </object>
                                     </child>
@@ -1350,7 +1365,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="ypad">1</property>
-                                    <property name="label" translatable="yes">Auto-Correction</property>
+                                    <property name="label" translatable="yes">Auto-correction</property>
                                     <property name="use_markup">True</property>
                                     <attributes>
                                       <attribute name="weight" value="bold"/>

@@ -72,7 +72,6 @@ class WordSuggestions:
         self._wpengine  = None
 
         self._correction_choices = []
-        self._auto_capitalization = None
         self._correction_span = None
         self._prediction_choices = []
         self.word_infos = []
@@ -775,12 +774,12 @@ class WordSuggestions:
     def on_text_inserted(self, insertion_span, cursor_offset):
         """ Synchronous callback for text insertion """
 
-        # auto-capitalization
-        if config.typing_helpers.auto_capitalization and \
+        # auto-correction
+        if config.is_auto_capitalization_enabled and \
            self.can_auto_correct():
-            word_span = self._get_word_to_auto_capitalize(insertion_span)
+            word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
-                self._auto_capitalize_at(word_span, cursor_offset)
+                self._auto_correct_at(word_span, cursor_offset)
 
     def on_text_context_changed(self):
         """
@@ -910,7 +909,35 @@ class WordSuggestions:
             # Re-enable AT-SPI listeners
             AtspiStateTracker().thaw()
 
-    def _get_word_to_auto_capitalize(self, insertion_span):
+    def _auto_correct_at(self, word_span, cursor_offset):
+        (correction_choices,
+         correction_span,
+         auto_capitalization) = \
+              self._find_correction_choices(word_span, True)
+
+        replacement = auto_capitalization
+        if not replacement and \
+           correction_choices and \
+           config.typing_helpers.auto_correction:
+
+            MIN_AUTO_CORRECT_LENGTH = 2
+            MAX_STRING_DISTANCE = 2
+
+            word = word_span.get_span_text()
+            if len(word) > MIN_AUTO_CORRECT_LENGTH:
+                choice = correction_choices[0] # rely on spell checker for now
+                distance = self._string_distance(word, choice)
+                if distance <= MAX_STRING_DISTANCE:
+                    replacement = choice
+
+        if replacement:
+            with self.suppress_modifiers():
+                self._replace_text(correction_span.begin(),
+                                   correction_span.end(),
+                                   cursor_offset,
+                                   replacement)
+
+    def _get_word_to_auto_correct(self, insertion_span):
         # find position of last word end with added space
         char_before = insertion_span.get_char_before_span()
         text = char_before + insertion_span.get_span_text()
@@ -924,18 +951,22 @@ class WordSuggestions:
             return self._get_word_before_span(span)
         return None
 
-    def _auto_capitalize_at(self, word_span, cursor_offset):
-        (correction_choices,
-         correction_span,
-         auto_capitalization) = \
-              self._find_correction_choices(word_span, True)
-
-        if auto_capitalization:
-            with self.suppress_modifiers():
-                self._replace_text(correction_span.begin(),
-                                   correction_span.end(),
-                                   cursor_offset,
-                                   auto_capitalization)
+    @staticmethod
+    def _string_distance(s1, s2):
+        """ Levenshtein string distance """
+        len1 = len(s1)
+        len2 = len(s2)
+        last_row = None
+        row = list(range(1, len2 + 1)) + [0]
+        for ri in range(len1):
+            last_row = row
+            row = [0] * len2 + [ri + 1]
+            for ci in range(len2):
+                d = int(s1[ri] != s2[ci])
+                row[ci] = min(row[ci - 1] + 1,
+                              last_row[ci] + 1,
+                              last_row[ci - 1] + d)
+        return row[len2 - 1]
 
 
 class LearnStrategy:

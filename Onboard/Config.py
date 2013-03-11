@@ -690,7 +690,8 @@ class Config(ConfigObject):
 
     def is_spell_checker_enabled(self):
         return self.are_spelling_suggestions_enabled() or \
-               self.typing_helpers.auto_capitalization
+               self.typing_helpers.auto_capitalization or \
+               self.typing_helpers.auto_correction
 
     def is_auto_capitalization_enabled(self):
         return self.typing_helpers.auto_capitalization and not self.xid_mode
@@ -1332,8 +1333,9 @@ class ConfigTypingHelpers(ConfigObject):
                                                      enum={"hunspell" : 0,
                                                            "aspell"   : 1})
         self.add_key("auto-capitalization", False)
+        self.add_key("auto-correction", False)
 
-        self.word_suggestions  = ConfigWordSuggestions(self)
+        self.word_suggestions = ConfigWordSuggestions(self)
         self.children = [self.word_suggestions]
 
         # shortcuts in the root for convenient access

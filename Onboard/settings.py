@@ -937,6 +937,8 @@ class PageWordSuggestions(DialogBuilder):
                             config.wp, "punctuation_assistance")
         self.bind_check("auto_capitalization_toggle",
                             config.typing_helpers, "auto_capitalization")
+        self.bind_check("auto_correction_toggle",
+                            config.typing_helpers, "auto_correction")
         self.bind_check("enable_spell_check_toggle",
                             config.word_suggestions, "spelling_suggestions_enabled")
         #self.bind_check("show_context_line_toggle",

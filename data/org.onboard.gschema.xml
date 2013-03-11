@@ -633,6 +633,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Auto-capitalization enabled</summary>
             <description>Automatically capitalize words while typing.</description>
         </key>
+        <key name="auto-correction" type="b">
+            <default>false</default>
+            <summary>Auto-correction enabled</summary>
+            <description>Automatically correct words while typing.</description>
+        </key>
 
         <child name="word-suggestions" schema="org.onboard.typing-helpers.word-suggestions" />
     </schema>
