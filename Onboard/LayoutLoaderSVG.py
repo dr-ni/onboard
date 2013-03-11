@@ -323,9 +323,10 @@ class LayoutLoaderSVG:
         # get key geometry from the closest svg file
         filename = key.get_filename()
         if not filename:
-            _logger.warning(_format("Ignoring key '{}'."
-                                    " No svg filename defined.",
-                                    key.theme_id))
+            if not attribute.get("group") == "wsbutton": 
+                _logger.warning(_format("Ignoring key '{}'."
+                                        " No svg filename defined.",
+                                        key.theme_id))
         else:
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
@@ -337,7 +338,9 @@ class LayoutLoaderSVG:
                     svg_key = svg_keys.get(key.id)
 
                 if svg_key:
-                    key.set_border_rect(svg_key.get_border_rect().copy())
+                    r = svg_key.get_border_rect()
+                    key.set_initial_border_rect(r.copy())
+                    key.set_border_rect(r.copy())
                     result = key
 
         return result  # ignore keys not found in an svg file

@@ -1372,8 +1372,9 @@ class WordListPanel(LayoutPanel):
     def are_corrections_expanded(self):
         return self._correcions_expanded
 
-    def _get_button_width(self):
-        return 10 * config.theme_settings.key_size / 100.0
+    def _get_button_width(self, button):
+        return button.get_initial_border_rect().w * \
+               config.theme_settings.key_size / 100.0
 
     def create_keys(self, correction_choices, prediction_choices):
         """
@@ -1386,7 +1387,8 @@ class WordListPanel(LayoutPanel):
                                                "prediction",
                                                "correction"]))
         fixed_buttons    = list(self.find_ids(["expand-corrections",
-                                               "language"]))
+                                               "language",
+                                               "hide"]))
         if not wordlist:
             return []
 
@@ -1394,10 +1396,18 @@ class WordListPanel(LayoutPanel):
         wordlist_rect = wordlist.get_rect()
         rect = wordlist_rect.copy()
 
-        menu_button = self._get_child_button("language")
-        button_width = self._get_button_width()
-        if menu_button:
+        buttons = []
+        button = self._get_child_button("hide")
+        if button:
+            button_width = self._get_button_width(button)
             rect.w -= button_width
+            buttons.append((button, button_width))
+
+        button = self._get_child_button("language")
+        if button:
+            button_width = self._get_button_width(button)
+            rect.w -= button_width
+            buttons.append((button, button_width))
 
         # font size is based on the height of the word list background
         font_size = WordKey().calc_font_size(key_context, rect.get_size())
@@ -1418,12 +1428,15 @@ class WordListPanel(LayoutPanel):
             keys += self._create_prediction_keys(prediction_choices, rect,
                                                  key_context, font_size)
 
-        # move the menu button to the end ot the bar
-        if menu_button:
-            r = wordlist_rect.copy()
-            r.w = button_width
-            r.x = wordlist_rect.right() - r.w
-            menu_button.set_border_rect(r)
+        # move the buttons to the end of the bar
+        if buttons:
+            rw = wordlist_rect.copy()
+            for button, button_width in buttons:
+                r = rw.copy()
+                r.w = button_width
+                r.x = rw.right() - button_width
+                button.set_border_rect(r)
+                rw.w -= button_width
 
         # finally add all keys to the panel
         color_scheme = fixed_buttons[0].color_scheme
@@ -1449,7 +1462,7 @@ class WordListPanel(LayoutPanel):
         # get button to expand/close the corrections
         button = self._get_child_button("expand-corrections")
         if button:
-            button_width = self._get_button_width()
+            button_width = self._get_button_width(button)
         show_button = len(correction_choices) > 1
         if show_button:
             choices_rect.w -= button_width + section_spacing

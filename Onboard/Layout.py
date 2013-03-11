@@ -16,6 +16,10 @@ class KeyContext(object):
     Transforms logical coordinates into canvas coordinates and vice versa.
     """
     def __init__(self):
+        # logical rectangle as defined by the keyboard layout,
+        # never changed after loading.
+        self.initial_log_rect = Rect(0.0, 0.0, 1.0, 1.0)  # includes border
+
         # logical rectangle as defined by the keyboard layout
         self.log_rect = Rect(0.0, 0.0, 1.0, 1.0)  # includes border
 
@@ -364,6 +368,18 @@ class LayoutItem(TreeItem):
     def set_border_rect(self, border_rect):
         """ Set bounding rect including border in logical coordinates """
         self.context.log_rect = border_rect
+
+    def get_initial_border_rect(self):
+        """
+        Get initial bounding rect including border in logical coordinates
+        """
+        return self.context.initial_log_rect
+
+    def set_initial_border_rect(self, border_rect):
+        """
+        Set initial bounding rect including border in logical coordinates.
+        """
+        self.context.initial_log_rect = border_rect
 
     def get_canvas_rect(self):
         """ Get bounding box in canvas coordinates """
