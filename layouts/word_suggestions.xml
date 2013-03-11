@@ -13,7 +13,7 @@
 
         <!-- wordlist buttons -->
         <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
-        <key id='hide' svg_id='hide.wordlist' group='wsbutton' image='close.svg' class='BarKey' button='true' scannable='false' tooltip='Hide Onboard'/>
+        <key id='hide.wordlist' svg_id='hide.wordlist' group='wsbutton' image='close.svg' class='BarKey' button='true' scannable='false' tooltip='Hide Onboard'/>
     </panel>
 </keyboard>
 
