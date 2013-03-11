@@ -1149,7 +1149,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def start_touch_handles_auto_hide(self):
         """ (re-) starts the timer to hide touch handles """
         if self.touch_handles.active and self.touch_handles_auto_hide:
-            self.touch_handles_hide_timer.start(5,
+            self.touch_handles_hide_timer.start(4,
                                                 self.show_touch_handles, False)
 
     def stop_touch_handles_auto_hide(self):
