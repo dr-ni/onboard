@@ -24,25 +24,25 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings schemas
-SCHEMA_ONBOARD          = "org.onboard"
-SCHEMA_KEYBOARD         = "org.onboard.keyboard"
-SCHEMA_WINDOW           = "org.onboard.window"
-SCHEMA_WINDOW_LANDSCAPE = "org.onboard.window.landscape"
-SCHEMA_WINDOW_PORTRAIT  = "org.onboard.window.portrait"
-SCHEMA_ICP              = "org.onboard.icon-palette"
-SCHEMA_ICP_LANDSCAPE    = "org.onboard.icon-palette.landscape"
-SCHEMA_ICP_PORTRAIT     = "org.onboard.icon-palette.portrait"
-SCHEMA_AUTO_SHOW        = "org.onboard.auto-show"
-SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
-SCHEMA_THEME            = "org.onboard.theme-settings"
-SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
-SCHEMA_SCANNER          = "org.onboard.scanner"
-SCHEMA_TYPING_HELPERS   = "org.onboard.typing-helpers"
-SCHEMA_WORD_SUGGESTIONS = "org.onboard.typing-helpers.word-suggestions"
+SCHEMA_ONBOARD           = "org.onboard"
+SCHEMA_KEYBOARD          = "org.onboard.keyboard"
+SCHEMA_WINDOW            = "org.onboard.window"
+SCHEMA_WINDOW_LANDSCAPE  = "org.onboard.window.landscape"
+SCHEMA_WINDOW_PORTRAIT   = "org.onboard.window.portrait"
+SCHEMA_ICP               = "org.onboard.icon-palette"
+SCHEMA_ICP_LANDSCAPE     = "org.onboard.icon-palette.landscape"
+SCHEMA_ICP_PORTRAIT      = "org.onboard.icon-palette.portrait"
+SCHEMA_AUTO_SHOW         = "org.onboard.auto-show"
+SCHEMA_UNIVERSAL_ACCESS  = "org.onboard.universal-access"
+SCHEMA_THEME             = "org.onboard.theme-settings"
+SCHEMA_LOCKDOWN          = "org.onboard.lockdown"
+SCHEMA_SCANNER           = "org.onboard.scanner"
+SCHEMA_TYPING_ASSISTANCE = "org.onboard.typing-assistance"
+SCHEMA_WORD_SUGGESTIONS  = "org.onboard.typing-assistance.word-suggestions"
 
-SCHEMA_GSS              = "org.gnome.desktop.screensaver"
-SCHEMA_GDI              = "org.gnome.desktop.interface"
-SCHEMA_GDA              = "org.gnome.desktop.a11y.applications"
+SCHEMA_GSS               = "org.gnome.desktop.screensaver"
+SCHEMA_GDI               = "org.gnome.desktop.interface"
+SCHEMA_GDA               = "org.gnome.desktop.a11y.applications"
 
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
@@ -356,17 +356,17 @@ class Config(ConfigObject):
         self.add_key("key-label-overrides", {}, "as") # default labels for all themes
         self.add_key("current-settings-page", 0)
 
-        self.keyboard         = ConfigKeyboard()
-        self.window           = ConfigWindow()
-        self.icp              = ConfigICP(self)
-        self.auto_show        = ConfigAutoShow()
-        self.universal_access = ConfigUniversalAccess(self)
-        self.theme_settings   = ConfigTheme(self)
-        self.lockdown         = ConfigLockdown(self)
-        self.scanner          = ConfigScanner(self)
-        self.typing_helpers   = ConfigTypingHelpers(self)
-        self.gss              = ConfigGSS(self)
-        self.gdi              = ConfigGDI(self)
+        self.keyboard          = ConfigKeyboard()
+        self.window            = ConfigWindow()
+        self.icp               = ConfigICP(self)
+        self.auto_show         = ConfigAutoShow()
+        self.universal_access  = ConfigUniversalAccess(self)
+        self.theme_settings    = ConfigTheme(self)
+        self.lockdown          = ConfigLockdown(self)
+        self.scanner           = ConfigScanner(self)
+        self.typing_assistance = ConfigTypingAssistance(self)
+        self.gss               = ConfigGSS(self)
+        self.gdi               = ConfigGDI(self)
 
         self.children += [self.keyboard,
                           self.window,
@@ -378,7 +378,7 @@ class Config(ConfigObject):
                           self.gss,
                           self.gdi,
                           self.scanner,
-                          self.typing_helpers]
+                          self.typing_assistance]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -690,13 +690,13 @@ class Config(ConfigObject):
 
     def is_spell_checker_enabled(self):
         return self.are_spelling_suggestions_enabled() or \
-               self.typing_helpers.auto_capitalization or \
-               self.typing_helpers.auto_correction
+               self.typing_assistance.auto_capitalization or \
+               self.typing_assistance.auto_correction
 
     def is_auto_capitalization_enabled(self):
-        return self.typing_helpers.auto_capitalization and not self.xid_mode
+        return self.typing_assistance.auto_capitalization and not self.xid_mode
 
-    def are_typing_helpers_enabled(self):
+    def is_typing_assistance_enabled(self):
         return self.are_word_suggestions_enabled() or \
                self.is_auto_capitalization_enabled()
 
@@ -1317,14 +1317,14 @@ class ConfigScanner(ConfigObject):
         self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
 
 
-class ConfigTypingHelpers(ConfigObject):
-    """ typing-helpers configuration keys"""
+class ConfigTypingAssistance(ConfigObject):
+    """ typing-assistance configuration keys"""
 
     DEFAULT_BACKEND = 0
 
     def _init_keys(self):
-        self.schema = SCHEMA_TYPING_HELPERS
-        self.sysdef_section = "typing-helpers"
+        self.schema = SCHEMA_TYPING_ASSISTANCE
+        self.sysdef_section = "typing-assistance"
 
         self.add_key("active-language", "")
         self.add_key("recent-languages", [], 'as')

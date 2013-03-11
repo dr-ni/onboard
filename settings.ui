@@ -94,7 +94,7 @@
         <col id="0" translatable="yes">Keyboard</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Typing Helpers</col>
+        <col id="0" translatable="yes">Assistance</col>
       </row>
       <row>
         <col id="0" translatable="yes">Window</col>
@@ -1129,7 +1129,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Typing Helpers</property>
+                        <property name="label" translatable="yes">Typing Assistance</property>
                         <attributes>
                           <attribute name="scale" value="1.5"/>
                         </attributes>
@@ -1182,7 +1182,7 @@
                                         <property name="spacing">2</property>
                                         <child>
                                           <object class="GtkCheckButton" id="enable_word_suggestions_toggle">
-                                            <property name="label" translatable="yes">_Suggest words</property>
+                                            <property name="label" translatable="yes">Show _suggestions</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
@@ -1231,7 +1231,7 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkCheckButton" id="punctuation_assistence_toggle">
-                                                    <property name="label" translatable="yes">_Punctuation assistance</property>
+                                                    <property name="label" translatable="yes">Insert word _separators</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>

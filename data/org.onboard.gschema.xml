@@ -78,7 +78,7 @@
         <child name="theme-settings" schema="org.onboard.theme-settings" />
         <child name="lockdown" schema="org.onboard.lockdown" />
         <child name="scanner" schema="org.onboard.scanner" />
-        <child name="typing-helpers" schema="org.onboard.typing-helpers" />
+        <child name="typing-assistance" schema="org.onboard.typing-assistance" />
     </schema>
 
     <schema id="org.onboard.auto-show" path="/org/onboard/auto-show/">
@@ -602,12 +602,12 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
         </key>
     </schema>
 
-    <enum id="org.onboard.typing-helpers.spell-check.Backend">
+    <enum id="org.onboard.typing-assistance.spell-check.Backend">
         <value nick="hunspell" value="0"/>
         <value nick="aspell" value="1"/>
     </enum>
 
-    <schema id="org.onboard.typing-helpers" path="/org/onboard/typing-helpers/">
+    <schema id="org.onboard.typing-assistance" path="/org/onboard/typing-assistance/">
         <key name="active-language" type="s">
             <default>""</default>
             <summary>Active language.</summary>
@@ -623,7 +623,7 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Maximum number of recently used languages.</summary>
             <description>The maximum number of recently used languages visible in the language menu.</description>
         </key>
-        <key name="spell-check-backend" enum="org.onboard.typing-helpers.spell-check.Backend">
+        <key name="spell-check-backend" enum="org.onboard.typing-assistance.spell-check.Backend">
             <default>"hunspell"</default>
             <summary>Backend</summary>
             <description>The spell checker backend.</description>
@@ -639,10 +639,10 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <description>Automatically correct words while typing.</description>
         </key>
 
-        <child name="word-suggestions" schema="org.onboard.typing-helpers.word-suggestions" />
+        <child name="word-suggestions" schema="org.onboard.typing-assistance.word-suggestions" />
     </schema>
 
-    <schema id="org.onboard.typing-helpers.word-suggestions" path="/org/onboard/typing-helpers/">
+    <schema id="org.onboard.typing-assistance.word-suggestions" path="/org/onboard/typing-assistance/word-suggestions/">
         <key name="enabled" type="b">
             <default>false</default>
             <summary>Word suggestions enabled</summary>

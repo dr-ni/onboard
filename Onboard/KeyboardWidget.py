@@ -1508,8 +1508,8 @@ class LanguageMenu:
     def popup(self, key, button):
         self._keyboard.on_focusable_gui_opening()
 
-        max_mru_languages = config.typing_helpers.max_recent_languages
-        all_mru_lang_ids = config.typing_helpers.recent_languages
+        max_mru_languages = config.typing_assistance.max_recent_languages
+        all_mru_lang_ids = config.typing_assistance.recent_languages
 
         languagedb = self._keyboard._languagedb
         lang_ids = set(languagedb.get_language_ids())
@@ -1586,11 +1586,11 @@ class LanguageMenu:
         self._keyboard.set_active_lang_id(lang_id)
 
     def _set_mru_lang_id(self, lang_id):
-        max_recent_languages = config.typing_helpers.max_recent_languages
-        recent_languages = config.typing_helpers.recent_languages
+        max_recent_languages = config.typing_assistance.max_recent_languages
+        recent_languages = config.typing_assistance.recent_languages
         if lang_id in recent_languages:
             recent_languages.remove(lang_id)
         recent_languages.insert(0, lang_id)
         recent_languages = recent_languages[:max_recent_languages]
-        config.typing_helpers.recent_languages = recent_languages
+        config.typing_assistance.recent_languages = recent_languages
 

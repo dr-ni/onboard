@@ -116,7 +116,7 @@ class WordSuggestions:
         self.update_spell_checker()
 
     def update_wp_engine(self):
-        enable = config.are_typing_helpers_enabled()
+        enable = config.is_typing_assistance_enabled()
 
         if enable:
             # only enable if there is a wordlist in the layout
@@ -203,7 +203,7 @@ class WordSuggestions:
         """
         Current language id; None for system default language.
         """
-        return config.typing_helpers.active_language
+        return config.typing_assistance.active_language
 
     def on_active_lang_id_changed(self):
         self.update_spell_checker()
@@ -211,7 +211,7 @@ class WordSuggestions:
         self.update_context_ui()
 
     def set_active_lang_id(self, lang_id):
-        config.typing_helpers.active_language = lang_id
+        config.typing_assistance.active_language = lang_id
         self.update_spell_checker()
         self.apply_prediction_profile()
 
@@ -314,7 +314,7 @@ class WordSuggestions:
 
     def update_spell_checker(self):
         # select the backend
-        backend = config.typing_helpers.spell_check_backend \
+        backend = config.typing_assistance.spell_check_backend \
                   if config.is_spell_checker_enabled() \
                   else None
         self._spell_checker.set_backend(backend)
@@ -918,7 +918,7 @@ class WordSuggestions:
         replacement = auto_capitalization
         if not replacement and \
            correction_choices and \
-           config.typing_helpers.auto_correction:
+           config.typing_assistance.auto_correction:
 
             MIN_AUTO_CORRECT_LENGTH = 2
             MAX_STRING_DISTANCE = 2
