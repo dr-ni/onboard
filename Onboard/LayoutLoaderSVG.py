@@ -334,8 +334,9 @@ class LayoutLoaderSVG:
             svg_key = None
             if svg_keys:
                 # try svg_id first
-                svg_key = svg_keys.get(key.svg_id)
-                if not svg_key:
+                if key.svg_id != key.id:
+                    svg_key = svg_keys.get(key.svg_id)
+                else:
                     # then the regular id
                     svg_key = svg_keys.get(key.id)
 

@@ -250,7 +250,7 @@ class KeyCommon(LayoutItem):
 
     def set_id(self, id, svg_id = None):
         self.theme_id, self.id = self.split_id(id)
-        self.svg_id   = id if not svg_id else svg_id
+        self.svg_id = self.id if not svg_id else svg_id
 
     @staticmethod
     def split_id(value):
