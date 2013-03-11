@@ -1140,7 +1140,7 @@ class TreeItem(object):
         yield self
 
         for item in self.items:
-            for child in item.iter_depth_first():
+            for child in item.iter_items():
                 yield child
 
     def iter_depth_first(self):
