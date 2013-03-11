@@ -1212,6 +1212,25 @@
                                                 <property name="orientation">vertical</property>
                                                 <property name="spacing">2</property>
                                                 <child>
+                                                  <object class="GtkCheckButton" id="enable_spell_check_toggle">
+                                                    <property name="label" translatable="yes">Show spelling suggestions</property>
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="receives_default">False</property>
+                                                    <property name="has_tooltip">True</property>
+                                                    <property name="tooltip_markup" translatable="yes">Check spelling of the word at or before the cursor.</property>
+                                                    <property name="tooltip_text" translatable="yes">Check spelling of the word at or before the cursor.</property>
+                                                    <property name="use_underline">True</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="draw_indicator">True</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
                                                   <object class="GtkCheckButton" id="auto_learn_toggle">
                                                     <property name="label" translatable="yes">_Learn from typed text</property>
                                                     <property name="visible">True</property>
@@ -1226,7 +1245,7 @@
                                                   <packing>
                                                     <property name="expand">False</property>
                                                     <property name="fill">True</property>
-                                                    <property name="position">0</property>
+                                                    <property name="position">1</property>
                                                   </packing>
                                                 </child>
                                                 <child>
@@ -1245,26 +1264,7 @@
                                                   <packing>
                                                     <property name="expand">False</property>
                                                     <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkCheckButton" id="enable_spell_check_toggle">
-                                                    <property name="label" translatable="yes">Show spelling suggestions</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">False</property>
-                                                    <property name="has_tooltip">True</property>
-                                                    <property name="tooltip_markup" translatable="yes">Check spelling of the word at or before the cursor.</property>
-                                                    <property name="tooltip_text" translatable="yes">Check spelling of the word at or before the cursor.</property>
-                                                    <property name="use_underline">True</property>
-                                                    <property name="xalign">0</property>
-                                                    <property name="draw_indicator">True</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">3</property>
+                                                    <property name="position">2</property>
                                                   </packing>
                                                 </child>
                                                 <child>
@@ -1340,7 +1340,7 @@
                                         </child>
                                         <child>
                                           <object class="GtkCheckButton" id="auto_correction_toggle">
-                                            <property name="label" translatable="yes">Auto-correct simple spelling mistakes</property>
+                                            <property name="label" translatable="yes">Auto-correct spelling</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="no_show_all">True</property>
