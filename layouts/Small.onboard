@@ -314,10 +314,12 @@
   </box>
   
   <!-- popup definition -->
-  <layout id="RTRN_popup" filename="Small-Alpha.svg">
-    <key id="settings"/>
-    <key id="move"/>
-    <key id="hide" svg_id="hide.popup" image="close.svg"/>
+  <layout id="RTRN_popup" filename="Phone-Alpha.svg">
+    <box compact="true">
+        <key id="settings"/>
+        <key id="move"/>
+        <key id="hide" svg_id="hide.popup" image="close.svg" group="nowordlist" />
+    </box>
   </layout>
 
 </keyboard>        
