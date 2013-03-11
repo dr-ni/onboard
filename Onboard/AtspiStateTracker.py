@@ -290,8 +290,8 @@ class AtspiStateTracker(EventSource):
                     self._state = self._read_accessible_state(accessible)
                 except: # Private exception gi._glib.GError when
                         # gedit became unresponsive.
-                    _logger.warning("_on_focus_changed(): "
-                                    "Invalid accessible, failed to read state")
+                    _logger.info("_on_focus_changed(): "
+                                 "Invalid accessible, failed to read state")
 
                 editable = self._is_accessible_editable(self._state)
                 activate = focused and editable
