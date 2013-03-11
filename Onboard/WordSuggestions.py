@@ -107,7 +107,7 @@ class WordSuggestions:
         # show/hide other word list dependent layout items
         layout = self.layout
         if layout:
-            for item in layout.iter_items():
+            for item in layout.iter_global_items():
                 if item.group == 'wordlist':
                     item.visible = enable
                 elif item.group == 'nowordlist':

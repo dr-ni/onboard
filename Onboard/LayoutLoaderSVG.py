@@ -289,6 +289,8 @@ class LayoutLoaderSVG:
                 node.attributes["orientation"].value.lower() == "horizontal"
         if node.hasAttribute("spacing"):
             item.spacing = float(node.attributes["spacing"].value)
+        if node.hasAttribute("compact"):
+            item.compact = node.attributes["compact"].value == "true"
         return item
 
     def _parse_panel(self, node):

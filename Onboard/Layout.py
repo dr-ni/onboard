@@ -610,6 +610,21 @@ class LayoutItem(TreeItem):
             for key in item.iter_keys(group_name):
                 yield key
 
+    def iter_global_items(self):
+        """
+        Iterates through all items of the tree including sublayouts.
+        """
+        yield self
+
+        for item in self.items:
+            for child in item.iter_global_items():
+                yield child
+
+        if self.sublayouts:
+            for item in self.sublayouts:
+                for child in item.iter_global_items():
+                    yield child
+
     def iter_global_keys(self, group_name = None):
         """
         Iterates through all keys of the layout tree including sublayouts.
@@ -725,6 +740,9 @@ class LayoutBox(LayoutItem):
     # distance between items
     spacing = 1
 
+    # Don't extend bounding box into invisibles
+    compact = False
+
     def __init__(self, horizontal = True):
         super(LayoutBox, self).__init__()
         if self.horizontal != horizontal:
@@ -739,14 +757,16 @@ class LayoutBox(LayoutItem):
         Include invisible items to stretch the visible ones into their
         space too.
         """
+        compact = self.compact
         bounds = None
         for item in self.items:
-            rect = item.get_border_rect()
-            if not rect.is_empty():
-                if bounds is None:
-                    bounds = rect
-                else:
-                    bounds = bounds.union(rect)
+            if not compact or item.visible:
+                rect = item.get_border_rect()
+                if not rect.is_empty():
+                    if bounds is None:
+                        bounds = rect
+                    else:
+                        bounds = bounds.union(rect)
 
         if bounds is None:
             return Rect()
