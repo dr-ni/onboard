@@ -535,6 +535,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         """
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
+
+        if rect.is_empty():
+            return None
+
         extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
         direction = config.theme_settings.key_gradient_direction
         alpha = pi / 2 + 2 * pi * direction / 360.0
