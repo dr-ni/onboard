@@ -605,7 +605,8 @@ class Keyboard(WordSuggestions):
                 # All other keys get hard-coded long press menus
                 # (where available).
                 action = self.get_key_action(key)
-                if action == KeyCommon.DELAYED_STROKE_ACTION:
+                if action == KeyCommon.DELAYED_STROKE_ACTION and \
+                   not key.is_word_suggestion():
                     label = key.get_label()
                     alternatives = self.find_canonical_equivalents(label)
                     if alternatives:
