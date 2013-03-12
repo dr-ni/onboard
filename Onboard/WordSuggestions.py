@@ -1399,6 +1399,10 @@ from Onboard.Layout       import LayoutBox
 class WordListPanel(LayoutPanel):
     """ Panel populated with correction and prediction keys at run-time """
 
+    # Place all dynamically created suggestions into their own 
+    # group to prevent font_size changes forced by unrelated keys.
+    SUGGESTIONS_GROUP = "_suggestion_"
+
     def __init__(self):
         LayoutPanel.__init__(self)
         self._correcions_expanded = False
@@ -1601,6 +1605,7 @@ class WordListPanel(LayoutPanel):
             r = Rect(rect.x + x, rect.y + y, w, rect.h)
             key = WordKey("", r)
             key.id = "correction" + str(i)
+            key.group = self.SUGGESTIONS_GROUP
             key.labels = {0 : bi.label[:]}
             key.font_size = font_size
             key.type = KeyCommon.CORRECTION_TYPE
@@ -1659,10 +1664,11 @@ class WordListPanel(LayoutPanel):
                 if not filled_up or bi.expand:
                     w *= scale
 
-                # create the word key with the generic id "prediction"
+                # create the word key with the generic id "prediction<n>"
                 key = WordKey("prediction" + str(i), Rect(wordlist_rect.x + x,
                                                wordlist_rect.y + y,
                                                w, wordlist_rect.h))
+                key.group = self.SUGGESTIONS_GROUP
                 key.labels = {0 : bi.label[:]}
                 key.font_size = font_size
                 key.type = KeyCommon.WORD_TYPE

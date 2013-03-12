@@ -754,7 +754,7 @@ class FixedFontMixin:
 
         size_for_maximum_height = context.scale_log_to_canvas_y(
                                      (size[1] - config.LABEL_MARGIN[1]*2)) \
-                                  / label_height
+                                  / label_height * 0.9
 
         return int(size_for_maximum_height)
 
