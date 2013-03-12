@@ -3,13 +3,13 @@
 
     <include file='key_defs.xml'/>
 
-    <box spacing="1" orientation="vertical">
+    <box border='1' spacing="1.5" orientation="vertical">
         <!--- word suggestions -->
         <panel filename='Grid-Alpha.svg'>
             <include file='word_suggestions.xml'/>
         </panel>
 
-        <panel layer='alpha' filename='Grid-Alpha.svg' border='1'>
+        <panel layer='alpha' filename='Grid-Alpha.svg'>
             <key group='alphanumeric' id='0' keycode='19'/>
             <key group='alphanumeric' id='1' keycode='10'/>
             <key group='alphanumeric' id='2' keycode='11'/>
