@@ -285,9 +285,10 @@ class AtspiStateTracker(EventSource):
         if not self._frozen:
             self._log_accessible(accessible, focused)
 
-            if accessible:
+            if not accessible is None:
                 try:
-                    self._state = self._read_accessible_state(accessible)
+                    self._state = \
+                            self._read_initial_accessible_state(accessible)
                 except Exception as ex: # Private exception gi._glib.GError when
                                         # gedit became unresponsive.
                     _logger.info("_on_focus_changed(): "
@@ -306,15 +307,33 @@ class AtspiStateTracker(EventSource):
 
                 if not activate is None:
                     if activate:
-                        self._active_accessible = self._focused_accessible
+                        active_accessible = self._focused_accessible
                     else:
-                        self._active_accessible = None
+                        active_accessible = None
 
-                    if not self._active_accessible is None or \
-                       not self._last_active_accessible is None:
-                        self.emit("text-entry-activated",
-                                  self._active_accessible)
-                        self._last_active_accessible = self._active_accessible
+                    self._set_active_accessible(active_accessible)
+
+    def _set_active_accessible(self, accessible):
+        self._active_accessible = accessible
+
+        if not self._active_accessible is None or \
+           not self._last_active_accessible is None:
+
+            if not accessible is None:
+                try:
+                    self._state.update( \
+                                self._read_remaining_accessible_state(accessible))
+                except Exception as ex: # Private exception gi._glib.GError when
+                                        # gedit became unresponsive.
+                    _logger.info("_set_active_accessible(): "
+                            "invalid accessible, failed to read remaining state: " \
+                            + unicode_str(ex))
+
+            # notify listeners
+            self.emit("text-entry-activated",
+                      self._active_accessible)
+
+            self._last_active_accessible = self._active_accessible
 
     def _on_async_text_changed(self, event):
         if event.accessible is self._active_accessible:
@@ -395,33 +414,41 @@ class AtspiStateTracker(EventSource):
                     return True
         return False
 
-    def _read_accessible_state(self, accessible):
+    def _read_initial_accessible_state(self, accessible):
         """
-        Read attributes and find out as much as we
+        Read just enough to find out if we are intereseted in this accessible.
+        """
+        state = {}
+        state["role"] = accessible.get_role()
+        state["state-set"] = accessible.get_state_set()
+        return state
+
+    def _read_remaining_accessible_state(self, accessible):
+        """
+        Read more attributes and find out as much as we
         can about the accessibles purpose.
         """
         state = {}
 
-        interfaces = accessible.get_interfaces()
-        state["id"] = accessible.get_id()
-        state["role"] = accessible.get_role()
-        state["state-set"] = accessible.get_state_set()
-        state["name"] = accessible.get_name()
         state["attributes"] = accessible.get_attributes()
-        state["interfaces"] = interfaces
+        state["interfaces"] = accessible.get_interfaces()
 
         ext = accessible.get_extents(Atspi.CoordType.SCREEN)
         state["extents"] = Rect(ext.x, ext.y, ext.width, ext.height)
 
-        pid = accessible.get_process_id()
-        state["process-id"] = pid
-        if pid != -1:
-            state["process-name"] = Process.get_process_name(pid)
+        # These are currently used only in debug output
+        if _logger.isEnabledFor(logging.DEBUG):
+            state["id"] = accessible.get_id()
+            state["name"] = accessible.get_name()
+            pid = accessible.get_process_id()
+            state["process-id"] = pid
+            if pid != -1:
+                state["process-name"] = Process.get_process_name(pid)
 
-        app = accessible.get_application()
-        if app:
-            state["app-name"] = app.get_name()
-            state["app-description"] = app.get_description()
+            app = accessible.get_application()
+            if app:
+                state["app-name"] = app.get_name()
+                state["app-description"] = app.get_description()
 
         return state
 
