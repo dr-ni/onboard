@@ -16,6 +16,13 @@
         icon1, icon2,
         LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid
 
+	<!-- word suggestions -->
+	<key_group>
+	    <color element="fill" rgb="#111930"/>
+	    <color element="label"  rgb="#eeeeee"/>
+	    wordlist, prediction, hide.wordlist
+	</key_group>
+
         <!-- left pinkie -->
         <key_group>
             <color element="fill"   rgb="#d24949"/>

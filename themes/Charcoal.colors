@@ -39,7 +39,6 @@
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
-                <color element="label" rgb="#d2d6d9"/>
                 wordlist, prediction
             </key_group>
         </key_group>

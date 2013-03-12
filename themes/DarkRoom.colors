@@ -48,6 +48,12 @@
             <color element="fill" rgb="#7f0000"/>
             settings
         </key_group>
+
+	<!-- word suggestions -->
+	<key_group>
+            <color element="fill" rgb="#242010"/>
+	    wordlist, prediction
+	</key_group>
     </key_group>
 </color_scheme>
 

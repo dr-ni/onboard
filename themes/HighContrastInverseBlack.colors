@@ -20,6 +20,12 @@
         <color element="label"  rgb="#ffffff"/>
         layer,
         icon0, icon1, icon2, icon3
+
+	<!-- word suggestions -->
+	<key_group>
+	    <color element="stroke" rgb="#dddddd"/>
+	    wordlist, prediction
+	</key_group>
     </key_group>
 </color_scheme>
 

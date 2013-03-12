@@ -34,6 +34,12 @@
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
             hide, showclick, move, layer,
             quit
+
+            <!-- word suggestions -->
+            <key_group>
+                <color element="fill" rgb="#111920"/>
+                wordlist, prediction
+            </key_group>
         </key_group>
         
         <!-- snippets -->
