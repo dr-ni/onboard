@@ -67,8 +67,8 @@ class SpellChecker(object):
 
     def _find_matching_dict(self, dict_id):
         """
-        Tries to match up the given dict_id with the available dictionaries.
-        Looks for alternatives if there is no direct match.
+        Try to match up the given dict_id with the available dictionaries.
+        Look for alternatives if there is no direct match.
         """
         available_dict_ids = self.get_supported_dict_ids()
 

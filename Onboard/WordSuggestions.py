@@ -378,18 +378,23 @@ class WordSuggestions:
         Find spelling suggestions for the word at or before the cursor.
 
         Doctests:
-        >>> wp = WordSuggestions()
-        >>> wp._spell_checker.set_backend("hunspell")
-        >>> wp._spell_checker.set_dict_ids(["en_US"])
+        >>> ws = WordSuggestions()
+        >>> f = ws._find_correction_choices
+        >>> ws._spell_checker.set_backend(0)
+        >>> ws._spell_checker.set_dict_ids(["en_US"])
         True
 
         # auto-capitalization
-        >>> wp._find_correction_choices(TextSpan(0, 7, "Jupiter"), True)
+        >>> f(TextSpan(0, 7, "Jupiter"), True)
         ([], None, None)
-        >>> wp._find_correction_choices(TextSpan(0, 7, "jupiter"), True)
-        (['Jupiter', "Jupiter's"], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
-        >>> wp._find_correction_choices(TextSpan(0, 7, "jupiter-orbit"), True)
-        (['Jupiter', "Jupiter's"], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        >>> f(TextSpan(0, 7, "jupiter"), True)             # doctest: +ELLIPSIS
+        (['Jupiter', ...], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        >>> f(TextSpan(0, 7, "jupiter-orbit"), True)       # doctest: +ELLIPSIS
+        (['Jupiter', ...], TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        >>> f(TextSpan(0, 3, "usa"), True)                 # doctest: +ELLIPSIS
+        (['USA', ...], TextSpan(0, 3, 'usa', 0, None), 'USA')
+        >>> f(TextSpan(0, 3, "Usa"), True)                 # doctest: +ELLIPSIS
+        (['USA', ...], TextSpan(0, 3, 'Usa', 0, None), 'USA')
         """
         correction_choices = []
         correction_span = None
@@ -412,20 +417,18 @@ class WordSuggestions:
             # See if there is a valid upper caps variant for
             # auto-capitalization.
             if auto_capitalize:
-                if word and word[0].islower():
+                choice = correction_choices[0]
+                choice_upper = choice.upper()
+                word_upper = word.upper()
+                if word_upper == choice_upper:
+                    auto_capitalization = choice
+
+                elif word and word[0].islower():
                     word_caps = word.capitalize()
                     span, choices = self._spell_checker. \
                             find_corrections(word_caps, offset)
                     if not choices:
                         auto_capitalization = word_caps
-
-                    else:
-                        # Try one more time with all-caps
-                        word_upper = word.upper()
-                        span, choices = self._spell_checker. \
-                                find_corrections(word_upper, offset)
-                        if not choices:
-                            auto_capitalization = word_upper
 
         #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
         return correction_choices, correction_span, auto_capitalization
@@ -918,15 +921,47 @@ class WordSuggestions:
             AtspiStateTracker().thaw()
 
     def _auto_correct_at(self, word_span, cursor_offset):
+        """
+        Auto-capitalize/correct test a word_span,
+        return cursor to cursor_offset.
+        """
+        correction_span, replacement = \
+            self._find_auto_correction(word_span,
+                                       True,
+                                       config.typing_assistance.auto_correction)
+        if replacement:
+            with self.suppress_modifiers():
+                self._replace_text(correction_span.begin(),
+                                   correction_span.end(),
+                                   cursor_offset,
+                                   replacement)
+
+    def _find_auto_correction(self, word_span, auto_capitalize, auto_correct):
+        """
+        Doctests:
+        >>> wp = WordSuggestions()
+        >>> wp._spell_checker.set_backend(0)
+        >>> wp._spell_checker.set_dict_ids(["en_US"])
+        True
+
+        # auto-capitalization
+        >>> wp._find_auto_correction(TextSpan(0, 7, "jupiter ..."), True, False)
+        (TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
+        >>> wp._find_auto_correction(TextSpan(0, 3, "usa ..."), True, False)
+        (TextSpan(0, 3, 'usa', 0, None), 'USA')
+        >>> wp._find_auto_correction(TextSpan(2, 3, "  Usa ..."), True, False)
+        (TextSpan(0, 3, 'Usa', 0, None), 'USA')
+        """
+
         (correction_choices,
          correction_span,
          auto_capitalization) = \
-              self._find_correction_choices(word_span, True)
+              self._find_correction_choices(word_span, auto_capitalize)
 
         replacement = auto_capitalization
         if not replacement and \
            correction_choices and \
-           config.typing_assistance.auto_correction:
+           auto_correct:
 
             MIN_AUTO_CORRECT_LENGTH = 2
             MAX_STRING_DISTANCE = 2
@@ -938,12 +973,7 @@ class WordSuggestions:
                 if distance <= MAX_STRING_DISTANCE:
                     replacement = choice
 
-        if replacement:
-            with self.suppress_modifiers():
-                self._replace_text(correction_span.begin(),
-                                   correction_span.end(),
-                                   cursor_offset,
-                                   replacement)
+        return correction_span, replacement
 
     def _get_word_to_auto_correct(self, insertion_span):
         # find position of last word end with added space
@@ -1399,7 +1429,7 @@ from Onboard.Layout       import LayoutBox
 class WordListPanel(LayoutPanel):
     """ Panel populated with correction and prediction keys at run-time """
 
-    # Place all dynamically created suggestions into their own 
+    # Place all dynamically created suggestions into their own
     # group to prevent font_size changes forced by unrelated keys.
     SUGGESTIONS_GROUP = "_suggestion_"
 
