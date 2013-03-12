@@ -420,6 +420,16 @@ def suite():
          ["sentence. sentence.", ['sentence', '<s>', 'sentence'],
              ['sentence', '<s>', 'sentence', ''],
              ['sentence.', 'sentence.']],
+         ["sentence. sentence. ", ['sentence', '<s>', 'sentence', '<s>'],
+             ['sentence', '<s>', 'sentence', '<s>', ''],
+             ['sentence.', 'sentence.', '']],
+         ["sentence.\n sentence. ", ['sentence', '<s>', 'sentence', '<s>'],
+             ['sentence', '<s>', 'sentence', '<s>', ''],
+             ['sentence.', 'sentence.', '']],
+         ["<bot:txt> sentence. sentence. ", 
+             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>'],
+             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>', ''],
+             ['<bot:txt> sentence.', 'sentence.', '']],
          ["sentence. \nsentence.", ['sentence', '<s>', 'sentence'],
              ['sentence', '<s>', 'sentence', ''],
              ['sentence.', 'sentence.']],
@@ -480,6 +490,9 @@ def suite():
         ["s1", ["s1"]],
         ["s1.", ["s1."]],
         ["s1. ", ["s1.", " "]],
+        ["s1. s2. ", ["s1.", " s2.", " "]],
+        ["<bot:txt> s1. s2. ", ['<bot:txt> s1.', ' s2.', ' ']],
+
         ["s1\n", ["s1\n"]],
         ["s1. \n", ["s1.", " \n"]],
 
@@ -488,6 +501,12 @@ def suite():
         ["s1 \n \n", ["s1 \n ", "\n"]],
 
         ["s1\n\n\n\n\n", ["s1\n\n\n\n", "\n"]],
+
+        ["s1.\ns2. ", ["s1.", "\ns2.", " "]],
+        ["s1.\ns2.\ns3. ", ["s1.", "\ns2.", "\ns3.", " "]],
+
+        ["s1. \ns2. ", ["s1.", " \ns2.", " "]],
+        ["s1. \ns2. \ns3. ", ["s1.", " \ns2.", " \ns3.", " "]],
 
         ["s1. s2 <s> s3\n\n", ['s1.', ' s2 <s>', ' s3\n', '\n']],
         ["s1. s2 <s> s3\n\ns4", ['s1.', ' s2 <s>', ' s3\n', '\ns4']],

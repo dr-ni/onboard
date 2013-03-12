@@ -164,7 +164,7 @@ def split_tokens(tokens, separator, keep_separator = False):
 
 
 SENTENCE_PATTERN = re.compile( \
-    """ [^\n]*?
+    """ .*?
            (?:
                  (?:[.;:!?](?:(?=[\s]) | \")) # punctuation
                | (?:\\s*\\n\\s*)+(?=[\\n])    # multiples newlines
@@ -291,7 +291,7 @@ def tokenize_text(text):
     tokens = []
     spans = []
     sentences, sentence_spans = split_sentences(text)
-    for i,sentence in enumerate(sentences):
+    for i, sentence in enumerate(sentences):
         ts, ss = tokenize_sentence(sentence)
 
         sbegin = sentence_spans[i][0]
