@@ -428,20 +428,22 @@ class AtspiTextContext(TextContext):
         self._update_context_timer.start(0.01, self.on_text_context_changed)
 
     def on_text_context_changed(self):
-        (self._context,
-         self._line,
-         self._line_cursor,
-         self._span_at_cursor,
-         self._begin_of_text,
-         self._begin_of_text_offset) \
-                = self._text_domain.read_context(self._accessible)
+        result = self._text_domain.read_context(self._accessible)
+        if not result is None:
+            (self._context,
+             self._line,
+             self._line_cursor,
+             self._span_at_cursor,
+             self._begin_of_text,
+             self._begin_of_text_offset) = result
 
-        context = self.get_bot_context() # make sure to include bot-markers
-        if self._last_context != context or \
-           self._last_line != self._line:
-            self._last_context = context
-            self._last_line    = self._line
-            self._wp.on_text_context_changed()
+            context = self.get_bot_context() # make sure to include bot-markers
+            if self._last_context != context or \
+               self._last_line != self._line:
+                self._last_context = context
+                self._last_line    = self._line
+                self._wp.on_text_context_changed()
+
         return False
 
 

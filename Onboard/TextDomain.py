@@ -156,14 +156,20 @@ class DomainGenericText(TextDomain):
 
     def read_context(self, accessible):
         """ Extract prediction context from the accessible """
-        offset = accessible.get_caret_offset()
-        r = accessible.get_text_at_offset(offset,
-                            Atspi.TextBoundaryType.LINE_START)
+        try:
+            offset = accessible.get_caret_offset()
+            r = accessible.get_text_at_offset(offset,
+                                Atspi.TextBoundaryType.LINE_START)
+            count = accessible.get_character_count()
+        except Exception as ex: # Private exception gi._glib.GError when
+                                # gedit became unresponsive.
+            _logger.info("DomainGenericText.read_context(): " \
+                         + unicode_str(ex))
+            return None
 
         line = unicode_str(r.content).replace("\n","")
         line_cursor = max(offset - r.start_offset, 0)
 
-        count = accessible.get_character_count()
         begin = max(offset - 256, 0)
         end   = min(offset + 100, count)
         text = Atspi.Text.get_text(accessible, begin, end)
@@ -221,7 +227,13 @@ class DomainTerminal(TextDomain):
         Extract prediction context from the accessible
         """
         if offset is None:
-            offset = accessible.get_caret_offset()
+            try:
+                offset = accessible.get_caret_offset()
+            except Exception as ex: # Private exception gi._glib.GError when
+                                    # gedit became unresponsive.
+                _logger.info("DomainTerminal.read_context(): " \
+                             + unicode_str(ex))
+                return None
 
         # remove prompt from the current or previous lines
         context, context_start, line, line_start, line_cursor = \
