@@ -22,6 +22,9 @@
 layout=Compact
 #layout=Phone
 
+#system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
+system-theme-tracking-enabled=False
+
 # Default theme
 # Specify full path and filename or only the base name of the initial theme.
 #
@@ -80,8 +83,6 @@ xembed-onboard=True
 #show-tooltips=True
 #snippets={0 : ["Onboard\\nHome", "https\\://launchpad.net/onboard"], 1 : ["Example", "Create your macros here."]}
 #start-minimized=False
-#system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
-#system-theme-tracking-enabled=True
 #key-label-overrides={"LWIN": ["win", "super"]}
 
 [window]
