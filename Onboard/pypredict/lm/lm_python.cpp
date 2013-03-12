@@ -96,7 +96,7 @@ void HeapFree(void* p)
 
 // Non-virtual helper class to protect the vtable of LanguageModels.
 // The vtable pointer is located in the first 8(4) byte of the object.
-// However that is where python expects PyObject_HEAD to reside and 
+// However that is where python expects PyObject_HEAD to reside and
 // therefor the vtable is destroyed when python touches the objects
 // reference count. Wrapping LanguageModels in this class keeps
 // the vtable safe.
@@ -408,7 +408,7 @@ pyseqence_to_objects(PyObject* sequence, vector<T*>& results, PYTYPE* type)
 //------------------------------------------------------------------------
 // LanguageModel - python interface for LanguageModel
 //------------------------------------------------------------------------
-// Abstract base class of all python accessible language models. 
+// Abstract base class of all python accessible language models.
 
 bool check_error(const LMError err, const char* filename = NULL)
 {
@@ -1992,7 +1992,7 @@ moduleinit (void)
         PyModule_AddObject(module, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
         Py_INCREF(&CachedDynamicModelType);
         PyModule_AddObject(module, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
-    
+
         // add constants
         PyDict_SetItemString(LanguageModelType.tp_dict, "CASE_INSENSITIVE",
                              PyInt_FromLong(LanguageModel::CASE_INSENSITIVE));

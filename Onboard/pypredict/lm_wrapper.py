@@ -30,10 +30,15 @@ from pypredict.lm import overlay, linint, loglinint
 
 class _BaseModel:
 
+    modified = False
+    load_error = False
+
     def learn_tokens(self, tokens, allow_new_words=True):
         """ Extract n-grams from tokens and count them. """
         for ngram in self._extract_ngrams(tokens):
             self.count_ngram(ngram, allow_new_words)
+
+        self.modified = True
 
     def _extract_ngrams(self, tokens):
         """
@@ -100,26 +105,34 @@ class _BaseModel:
 
         return model
 
+    def load(self, filename):
+        self.load_error = False
+        self.modified = False
+        try:
+            super(_BaseModel, self).load(filename)
+        except IOError as e:
+            self.load_error = True
+            raise e
 
-class LanguageModel(lm.LanguageModel, _BaseModel):
+
+class LanguageModel(_BaseModel, lm.LanguageModel):
     """ Keep this to access the class constants. """
     def __init__(self):
         raise NotImplementedError()
 
-
-class UnigramModel(lm.UnigramModel, _BaseModel):
+class UnigramModel(_BaseModel, lm.UnigramModel):
     pass
 
 
-class DynamicModel(lm.DynamicModel, _BaseModel):
+class DynamicModel(_BaseModel, lm.DynamicModel):
     pass
 
 
-class DynamicModelKN(lm.DynamicModelKN, _BaseModel):
+class DynamicModelKN(_BaseModel, lm.DynamicModelKN):
     pass
 
 
-class CachedDynamicModel(lm.CachedDynamicModel, _BaseModel):
+class CachedDynamicModel(_BaseModel, lm.CachedDynamicModel):
     pass
 
 

@@ -101,8 +101,8 @@ class WPLocalEngine(object):
 
         context = pypredict.tokenize_context(context_line)
         choices = self._get_prediction(self.models, context, limit, options)
-        _logger.debug("context=" + repr(context))
-        _logger.debug("choices=" + repr(choices[:5]))
+        #_logger.debug("context=" + repr(context))
+        #_logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
     def learn_text(self, text, allow_new_words):
@@ -123,7 +123,6 @@ class WPLocalEngine(object):
             models = self._model_cache.get_models(self.auto_learn_models)
             for model in models:
                 model.learn_tokens(tokens, allow_new_words)
-                model.modified = True
             _logger.info("learn_text: tokens=" + repr(tokens[:10]))
 
             # debug: save all learned text for later parameter optimization
@@ -370,33 +369,43 @@ class ModelCache:
             elif class_ == "mem":
                 model = pypredict.DynamicModel()
             else:
-                _logger.error("unknown class component '{}' in lmid '{}'" \
+                _logger.error("Unknown class component '{}' in lmid '{}'" \
                               .format(class_, lmid))
                 return None
         else:
-            _logger.error("unknown type component '{}' in lmid '{}'" \
+            _logger.error("Unknown type component '{}' in lmid '{}'" \
                           .format(type_, lmid))
             return None
 
         if filename:
-            self.do_load_model(model, filename)
+            self.do_load_model(model, filename, class_)
 
         return model
 
     @staticmethod
-    def do_load_model(model, filename):
-        _logger.info("loading language model '{}'".format(filename))
-        try:
-            model.modified = False
-            model.load(filename)
-        except IOError as e:
-            errno = 0
-            errstr = ""
-            if not e.errno is None: # not n-gram count mismatch
-                errno = e.errno
-                errstr = os.strerror(errno)
-            _logger.warning("Failed to load language model '{}': {} ({})" \
-                            .format(filename, errstr, errno))
+    def do_load_model(model, filename, class_):
+        _logger.info("Loading language model '{}'.".format(filename))
+
+        if not os.path.exists(filename):
+            if class_ == "system":
+                _logger.warning("System language model '{}' "
+                                "doesn't exist, skipping." \
+                                .format(filename))
+        else:
+            try:
+                model.load(filename)
+            except IOError as ex:
+                if not ex.errno is None: # not n-gram count mismatch
+                    errno = ex.errno
+                    errstr = os.strerror(errno)
+                    _logger.error("Failed to load language model '{}': {} ({})" \
+                                .format(filename, errstr, errno))
+                else:
+                    _logger.error(utils.unicode_str(ex))
+
+                if class_ == "user":
+                    _logger.error("Saving word suggestions disabled "
+                                  "to prevent further data loss.")
 
     def save_models(self):
         for lmid, model in list(self._language_models.items()):
@@ -415,28 +424,34 @@ class ModelCache:
         if filename and \
            (model.modified or \
             not os.path.exists(filename)):
-            _logger.info("saving language model '{}'".format(filename))
-            try:
-                # create the path
-                path = os.path.dirname(filename)
-                if not os.path.exists(path):
-                    os.makedirs(path)
 
-                if 1:
-                    # save to temp file
-                    basename, ext = os.path.splitext(filename)
-                    tempfile = basename + ".tmp"
-                    model.save(tempfile)
+            if model.load_error:
+                _logger.warning("Not saving modified language model '{}' "
+                                "due to previous error on load." \
+                                .format(filename))
+            else:
+                _logger.info("Saving language model '{}'".format(filename))
+                try:
+                    # create the path
+                    path = os.path.dirname(filename)
+                    if not os.path.exists(path):
+                        os.makedirs(path)
 
-                    # rename to final file
-                    if os.path.exists(filename):
-                        os.rename(filename, filename + ".bak")
-                    os.rename(tempfile, filename)
+                    if 1:
+                        # save to temp file
+                        basename, ext = os.path.splitext(filename)
+                        tempfile = basename + ".tmp"
+                        model.save(tempfile)
 
-                model.modified = False
-            except (IOError, OSError) as e:
-                _logger.warning("Failed to save language model '{}': {} ({})" \
-                                .format(filename, os.strerror(e.errno), e.errno))
+                        # rename to final file
+                        if os.path.exists(filename):
+                            os.rename(filename, filename + ".bak")
+                        os.rename(tempfile, filename)
+
+                    model.modified = False
+                except (IOError, OSError) as e:
+                    _logger.warning("Failed to save language model '{}': {} ({})" \
+                                    .format(filename, os.strerror(e.errno), e.errno))
 
     @staticmethod
     def get_filename(lmid):

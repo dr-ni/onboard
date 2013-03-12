@@ -37,8 +37,7 @@ StrConv::StrConv()
     if (cd_mb_wc == (iconv_t) -1)
     {
         if (errno == EINVAL)
-            error (0, 0,
-                    "conversion from UTF-8 to wchar_t not available");
+            error (0, 0, "conversion from UTF-8 to wchar_t not available");
         else
             perror ("iconv_open mb2wc");
     }
@@ -46,8 +45,7 @@ StrConv::StrConv()
     if (cd_wc_mb == (iconv_t) -1)
     {
         if (errno == EINVAL)
-            error (0, 0,
-                  "conversion from wchar_t to UTF-8 not available");
+            error (0, 0, "conversion from wchar_t to UTF-8 not available");
         else
             perror ("iconv_open wc2mb");
     }

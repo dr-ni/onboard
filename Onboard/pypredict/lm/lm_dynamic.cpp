@@ -90,7 +90,7 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                     if (ngrams_read != ngrams_expected)
                     {
                         error (0, 0, "unexpected n-gram count for level %d: "
-                                     "expected %d n-grams, but read %d\n",
+                                     "expected %d n-grams, but read %d",
                               current_level,
                               ngrams_expected, ngrams_read);
                         err_code = ERR_COUNT; // count doesn't match number of unique ngrams
@@ -104,7 +104,7 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                     {
                         err_code = ERR_NUMTOKENS; // too few tokens for cur. level
                         error (0, 0, "too few tokens for n-gram level %d: "
-                              "line %d, tokens found %d/%d\n",
+                              "line %d, tokens found %d/%d",
                               current_level,
                               line_number, ntoks, current_level+1);
                         break;
@@ -223,7 +223,7 @@ LMError DynamicModelBase::save_arpac(const char* filename)
     if (!f)
     {
         #ifndef NDEBUG
-        printf( "Error opening %s\n", filename);
+        printf( "Error opening %s", filename);
         #endif
         return ERR_FILE;
     }
