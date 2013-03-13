@@ -264,9 +264,11 @@ class AtspiStateTracker(EventSource):
         return False
         
     def _on_atspi_keystroke(self, event, user_data):
-        #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
-        #keysym = event.id # What is this? Not XK_ keysyms at least.
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
+            _logger.debug("key-stroke {} {} {} {}" \
+                          .format(event.modifiers,
+                                  event.hw_code, event.id, event.is_text))
+            #keysym = event.id # What is this? Not XK_ keysyms apparently.
             ae = AsyncEvent(hw_code   = event.hw_code,
                             modifiers = event.modifiers)
             self.emit_async("key-pressed", ae)
@@ -338,8 +340,9 @@ class AtspiStateTracker(EventSource):
     def _on_async_text_changed(self, event):
         if event.accessible is self._active_accessible:
             type = event.type
-            insert = type.endswith("insert") or type.endswith("insert:system")
-            delete = type.endswith("delete") or type.endswith("delete:system")
+            insert = type.endswith(("insert", "insert:system"))
+            delete = type.endswith(("delete", "delete:system"))
+            #print(event.accessible.get_id(), type, insert)
             if insert or delete:
                 event.insert = insert
                 self.emit("text-changed", event)
