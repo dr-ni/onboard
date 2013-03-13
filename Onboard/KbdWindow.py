@@ -81,7 +81,7 @@ class KbdWindowBase:
 
         self.detect_window_manager()
         self.check_alpha_support()
-        self.update_unrealized_options()
+        self.update_unrealize_options()
 
         self.add(self.keyboard_widget)
 
@@ -164,6 +164,7 @@ class KbdWindowBase:
 
     def _init_window(self):
         self.update_window_options()
+        self.keyboard_widget.prepare_initial_drawing(self.get_size())
         self.show()
 
     def _cb_realize_event(self, user_data):
@@ -190,14 +191,15 @@ class KbdWindowBase:
 
         # set min window size for unity MT grab handles
         geom = Gdk.Geometry()
-        geom.min_width, geom.min_height = self.keyboard_widget.get_min_window_size()
+        geom.min_width, geom.min_height = \
+                self.keyboard_widget.get_min_window_size()
         self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
 
     def _cb_unrealize_event(self, user_data):
         """ Gdk window destroyed """
-        self.update_unrealized_options()
+        self.update_unrealize_options()
 
-    def update_unrealized_options(self):
+    def update_unrealize_options(self):
         if not config.xid_mode:   # not when embedding
             self.set_decorated(config.window.window_decoration)
 
@@ -388,7 +390,7 @@ class KbdWindowBase:
             if was_visible != visible:
                 if visible:
                     # Hiding may have left the window opacity at 0.
-                    # Ramp up the opacity when unminimized by
+                    # Ramp up the opacity when it was unminimized by
                     # clicking the (unity) launcher.
                     self.keyboard_widget.update_transparency()
 

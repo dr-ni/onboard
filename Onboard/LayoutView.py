@@ -166,6 +166,33 @@ class LayoutView:
         if window:
             window.process_updates(True)
 
+    def render(self):
+        """ Pre-render key surfaces for instant initial drawing. """
+
+        # lazily update font sizes and labels
+        if not self._font_sizes_valid:
+            self.update_labels()
+
+        layout = self.get_layout()
+        if not layout:
+            return
+
+        win = self.get_window()
+        if win:
+            context = win.cairo_create()
+
+            # auto-select shadow quality
+            if not self._shadow_quality_valid:
+                quality = self.probe_shadow_performance(context)
+                Key.set_shadow_quality(quality)
+                self._shadow_quality_valid = True
+
+            # run through all visible layout items
+            for item in layout.iter_visible_items():
+                if item.is_key():
+                    item.draw_shadow_cached(context)
+                    item.draw_cached(context)
+
     def draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return

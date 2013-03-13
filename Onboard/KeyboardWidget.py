@@ -333,6 +333,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Be sure to initially show/hide window and icon palette
         win.set_visible(visible)
 
+    def prepare_initial_drawing(self, size):
+        canvas_rect = Rect(0, 0, size[0], size[1])
+        self.realize()
+        self.update_layout(canvas_rect)
+        self.render()
+
     def update_ui(self):
         """
         Force update of everything.
@@ -351,15 +357,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """
         self.update_layout()
 
-    def update_layout(self):
+    def update_layout(self, canvas_rect = None):
         layout = self.get_layout()
         if not layout:
             return
 
-        # recalculate items rectangles
-        self.canvas_rect = Rect(0, 0,
-                                self.get_allocated_width(),
-                                self.get_allocated_height())
+        # recalculate item rectangles
+        if canvas_rect is None:
+            self.canvas_rect = Rect(0, 0,
+                                    self.get_allocated_width(),
+                                    self.get_allocated_height())
+        else:
+            self.canvas_rect = canvas_rect
+
         rect = self.canvas_rect.deflate(self.get_frame_width())
         #keep_aspect = config.xid_mode and self.supports_alpha()
         keep_aspect = False
