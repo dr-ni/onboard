@@ -418,9 +418,7 @@ class WordSuggestions:
             # auto-capitalization.
             if auto_capitalize:
                 choice = correction_choices[0]
-                choice_upper = choice.upper()
-                word_upper = word.upper()
-                if word_upper == choice_upper:
+                if word.upper() == choice.upper():
                     auto_capitalization = choice
 
                 elif word and word[0].islower():

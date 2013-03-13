@@ -141,7 +141,7 @@ class OnboardGtk(object):
         config.init()
 
         # Release pressed keys when onboard is killed.
-        # Don't keep enter key stuck when being killed from lightdm.
+        # Don't keep enter key stuck when being killed by lightdm.
         self._osk_util = osk.Util()
         self._osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
         self._osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)

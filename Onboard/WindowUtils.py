@@ -639,6 +639,7 @@ class Orientation:
     class LANDSCAPE: pass
     class PORTRAIT: pass
 
+
 class WindowRectTracker:
     """
     Keeps track of the window rectangle when moving/resizing.
@@ -662,17 +663,9 @@ class WindowRectTracker:
         self._save_position_timer.finish()
 
     def move(self, x, y):
-        """
-        Overload Gtk.Window.move to reliably keep track of
-        the window position.
-        """
         Gtk.Window.move(self, x, y)
 
     def resize(self, w, h):
-        """
-        Overload Gtk.Window.size to reliably keep track of
-        the window size.
-        """
         Gtk.Window.resize(self, w, h)
 
     def move_resize(self, x, y, w, h):
@@ -694,10 +687,13 @@ class WindowRectTracker:
 
     def get_origin(self):
         if self._origin is None:
-            origin = self.get_window().get_origin()
-            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                origin = origin[1:]
-            return origin
+            win = self.get_window()
+            if win:
+                origin = win.get_origin()
+                if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                    origin = origin[1:]
+                return origin
+            return 0
         else:
             return self._origin
 
@@ -716,7 +712,7 @@ class WindowRectTracker:
 
         # Give the screen time to settle, the window manager
         # may block the move to previously invalid positions and
-        # when docked the slide transition may be drowned out by all
+        # when docked, the slide animation may be drowned out by all
         # the action in other processes.
         Timer(1.5, self.on_screen_size_changed_delayed, screen)
 

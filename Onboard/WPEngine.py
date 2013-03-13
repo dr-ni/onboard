@@ -101,8 +101,8 @@ class WPLocalEngine(object):
 
         context = pypredict.tokenize_context(context_line)
         choices = self._get_prediction(self.models, context, limit, options)
-        #_logger.debug("context=" + repr(context))
-        #_logger.debug("choices=" + repr(choices[:5]))
+        _logger.debug("context=" + repr(context))
+        _logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
     def learn_text(self, text, allow_new_words):
