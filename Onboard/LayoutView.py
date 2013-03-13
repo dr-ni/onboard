@@ -41,6 +41,9 @@ class LayoutView:
         self._shadow_quality_valid = False
         self._last_canvas_shadow_rect = Rect()
 
+        self._starting_up = True
+        self._keys_pre_rendered = False
+
         self.keyboard.register_view(self)
 
     def cleanup(self):
@@ -181,11 +184,7 @@ class LayoutView:
         if win:
             context = win.cairo_create()
 
-            # auto-select shadow quality
-            if not self._shadow_quality_valid:
-                quality = self.probe_shadow_performance(context)
-                Key.set_shadow_quality(quality)
-                self._shadow_quality_valid = True
+            self._auto_select_shadow_quality(context)
 
             # run through all visible layout items
             for item in layout.iter_visible_items():
@@ -193,11 +192,27 @@ class LayoutView:
                     item.draw_shadow_cached(context)
                     item.draw_cached(context)
 
+        self._keys_pre_rendered = True
+
+    def _can_draw_cached(self, lod):
+        """
+        Draw cached key surfaces?
+
+        On first startup draw cached only if keys were pre-rendered, i.e. the
+        time to render keys was hidden before the window was shown.
+
+        We can't easily pre-render keys in xembed mode because the window size
+        is unknown in advance. Draw there once uncached instead (faster).
+        """
+        return (lod == LOD.FULL) and \
+               (not self._starting_up or self._keys_pre_rendered)
+
     def draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
 
         lod = self._lod
+        draw_cached = self._can_draw_cached(lod)
 
         # lazily update font sizes and labels
         if not self._font_sizes_valid:
@@ -232,10 +247,12 @@ class LayoutView:
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                if lod == LOD.FULL:
+                if draw_cached:
                     item.draw_cached(context)
                 else:
                     item.draw(context, lod)
+
+        self._starting_up = False
 
         return decorated
 
@@ -425,11 +442,7 @@ class LayoutView:
         if not config.theme_settings.key_shadow_strength:
             return
 
-        # auto-select shadow quality
-        if not self._shadow_quality_valid:
-            quality = self.probe_shadow_performance(context)
-            Key.set_shadow_quality(quality)
-            self._shadow_quality_valid = True
+        self._auto_select_shadow_quality(context)
 
         # draw shadows
         context.save()
@@ -443,9 +456,16 @@ class LayoutView:
 
         context.restore()
 
-    def probe_shadow_performance(self, context):
+    def _auto_select_shadow_quality(self, context):
+        """ auto-select shadow quality """
+        if not self._shadow_quality_valid:
+            quality = self._probe_shadow_performance(context)
+            Key.set_shadow_quality(quality)
+            self._shadow_quality_valid = True
+
+    def _probe_shadow_performance(self, context):
         """
-        Select shadow quality based on the estimated render time of
+        Determine shadow quality based on the estimated render time of
         the first layer's shadows.
         """
         probe_begin = time.time()
@@ -470,9 +490,9 @@ class LayoutView:
                 estimate = elapsed / len(keys) * num_first_layer_keys
                 _logger.debug("Probing shadow performance: "
                               "estimated full refresh time {:6.1f}ms "
-                              "at quality {}." \
+                              "at quality {}, {} steps." \
                               .format(estimate * 1000,
-                                      quality))
+                                      quality, steps))
                 if estimate > max_total_time:
                     break
 

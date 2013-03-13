@@ -162,7 +162,7 @@ class KbdWindowBase:
                            " screen doesn't support alpha channels"))
         return False
 
-    def _init_window(self):
+    def _show_first_time(self):
         self.update_window_options()
         self.keyboard_widget.prepare_initial_drawing(self.get_size())
         self.show()
@@ -275,7 +275,7 @@ class KbdWindowBase:
         # Lazily show the window for smooth startup,
         # in particular with force-to-top mode enabled.
         if not self.get_realized():
-            self._init_window()
+            self._show_first_time()
 
         # Make sure the move button stays visible
         # Do this on hiding the window, because the window position
