@@ -61,8 +61,8 @@ class AutoReleaseTimer(Timer):
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys()
         self._keyboard.active_layer_index = 0
-        self._keyboard.update_ui_no_resize()
-        self._keyboard.redraw()
+        self._keyboard.invalidate_ui_no_resize()
+        self._keyboard.commit_ui_updates()
         return False
 
 class InactivityTimer(Timer):
@@ -333,29 +333,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Be sure to initially show/hide window and icon palette
         win.set_visible(visible)
 
-    def prepare_initial_drawing(self, size):
-        canvas_rect = Rect(0, 0, size[0], size[1])
-        self.realize()
-        self.update_layout(canvas_rect)
-        self.render()
+    def prepare_initial_drawing(self, window, size):
+        self.update_layout(Rect(0, 0, size[0], size[1]))
 
-    def update_ui(self):
-        """
-        Force update of everything.
-        Relatively expensive, don't call this while typing.
-        """
-        self.update_layout()
-        self.invalidate_font_sizes()
-        self.invalidate_keys()
-        self.invalidate_shadows()
-        #self.invalidate_label_extents()
-
-    def update_ui_no_resize(self):
-        """
-        Update everything assuming key sizes don't change.
-        Doesn't invalidate cached surfaces.
-        """
-        self.update_layout()
+        win = window.get_window()
+        if win:
+            context = win.cairo_create()
+            self.render(context)
 
     def update_layout(self, canvas_rect = None):
         layout = self.get_layout()
@@ -1329,7 +1313,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         Key.reset_pango_layout()
         self.invalidate_label_extents()
-        self.keyboard.update_ui()
+        self.keyboard.invalidate_ui()
+        self.keyboard.commit_ui_updates()
 
     def edit_snippet(self, snippet_id):
         dialog = Gtk.Dialog(_("New snippet"),

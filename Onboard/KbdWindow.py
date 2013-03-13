@@ -164,7 +164,7 @@ class KbdWindowBase:
 
     def _show_first_time(self):
         self.update_window_options()
-        self.keyboard_widget.prepare_initial_drawing(self.get_size())
+        self.keyboard_widget.prepare_initial_drawing(self, self.get_size())
         self.show()
 
     def _cb_realize_event(self, user_data):

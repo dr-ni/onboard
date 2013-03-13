@@ -17,6 +17,8 @@ from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
 from Onboard.TouchInput    import InputEventSourceEnum
 
+import Onboard.Keyboard
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("LayoutView")
@@ -154,11 +156,12 @@ class LayoutView:
     def show_touch_handles(self, show, auto_hide):
         pass
 
-    def update_ui(self):
-        pass
-
-    def update_ui_no_resize(self):
-        pass
+    def apply_ui_updates(self, mask):
+        if mask & Onboard.Keyboard.UIMask.SIZE:
+            self.invalidate_font_sizes()
+            self.invalidate_keys()
+            self.invalidate_shadows()
+            #self.invalidate_label_extents()
 
     def update_layout(self):
         pass
@@ -169,7 +172,7 @@ class LayoutView:
         if window:
             window.process_updates(True)
 
-    def render(self):
+    def render(self, context):
         """ Pre-render key surfaces for instant initial drawing. """
 
         # lazily update font sizes and labels
@@ -180,17 +183,13 @@ class LayoutView:
         if not layout:
             return
 
-        win = self.get_window()
-        if win:
-            context = win.cairo_create()
+        self._auto_select_shadow_quality(context)
 
-            self._auto_select_shadow_quality(context)
-
-            # run through all visible layout items
-            for item in layout.iter_visible_items():
-                if item.is_key():
-                    item.draw_shadow_cached(context)
-                    item.draw_cached(context)
+        # run through all visible layout items
+        for item in layout.iter_visible_items():
+            if item.is_key():
+                item.draw_shadow_cached(context)
+                item.draw_cached(context)
 
         self._keys_pre_rendered = True
 

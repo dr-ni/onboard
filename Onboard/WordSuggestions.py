@@ -93,7 +93,6 @@ class WordSuggestions:
         self._word_list_bars = self.find_items_from_classes((WordListPanel,))
         self._text_displays = self.find_items_from_ids(("inputline",))
         self.enable_word_suggestions(config.are_word_suggestions_enabled())
-        self.update_spell_checker()
 
     def enable_word_suggestions(self, enable):
 
@@ -137,8 +136,8 @@ class WordSuggestions:
     def on_word_suggestions_enabled(self, enabled):
         """ Config callback for word_suggestions.enabled changes. """
         self.enable_word_suggestions(config.are_word_suggestions_enabled())
-        self.update_ui()
-        self.redraw()
+        self.invalidate_ui()
+        self.commit_ui_updates()
 
     def apply_prediction_profile(self):
         if self._wpengine:
@@ -208,7 +207,8 @@ class WordSuggestions:
     def on_active_lang_id_changed(self):
         self.update_spell_checker()
         self.apply_prediction_profile()
-        self.update_context_ui()
+        self.invalidate_context_ui()
+        self.commit_ui_updates()
 
     def set_active_lang_id(self, lang_id):
         config.typing_assistance.active_language = lang_id
@@ -312,6 +312,10 @@ class WordSuggestions:
         self.mods[1] = 1   # shift
         self.redraw_labels(False)
 
+    def on_spell_checker_changed(self):
+        self.update_spell_checker()
+        self.commit_ui_updates()
+
     def update_spell_checker(self):
         # select the backend
         backend = config.typing_assistance.spell_check_backend \
@@ -325,7 +329,7 @@ class WordSuggestions:
             dict_ids = [lang_id] if lang_id else []
             self._spell_checker.set_dict_ids(dict_ids)
 
-        self.update_context_ui()
+        self.invalidate_context_ui()
 
     def update_suggestions_ui(self):
         self._update_correction_choices()
@@ -797,7 +801,8 @@ class WordSuggestions:
         Use this for low priority display stuff.
         """
         self.expand_corrections(False)
-        self.update_context_ui()
+        self.invalidate_context_ui()
+        self.commit_ui_updates()
         self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
@@ -1333,7 +1338,8 @@ class LearnStrategyLRU(LearnStrategy):
 
         # reflect the model change in the wordlist, e.g. when deleting new words
         if update_ui:
-            self._wp.update_context_ui()
+            self._wp.invalidate_context_ui()
+            self._wp.commit_ui_updates()
 
 
 class Punctuator:

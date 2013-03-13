@@ -280,11 +280,11 @@ class OnboardGtk(object):
         config.typing_assistance.active_language_notify_add(lambda x: \
                                  self.keyboard.on_active_lang_id_changed())
         config.typing_assistance.spell_check_backend_notify_add(lambda x: \
-                                 self.keyboard.update_spell_checker())
+                                 self.keyboard.on_spell_checker_changed())
         config.typing_assistance.auto_capitalization_notify_add(lambda x: \
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.word_suggestions.spelling_suggestions_enabled_notify_add(lambda x: \
-                                 self.keyboard.update_spell_checker())
+                                 self.keyboard.on_spell_checker_changed())
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
@@ -476,12 +476,12 @@ class OnboardGtk(object):
         return True
 
     def _update_ui(self):
-        self.keyboard.update_ui()
-        self.keyboard.redraw()
+        self.keyboard.invalidate_ui()
+        self.keyboard.commit_ui_updates()
 
     def _update_ui_no_resize(self):
-        self.keyboard.update_ui_no_resize()
-        self.keyboard.redraw()
+        self.keyboard.invalidate_ui_no_resize()
+        self.keyboard.commit_ui_updates()
 
     def _update_window_options(self, value = None):
         window = self._window
@@ -498,8 +498,8 @@ class OnboardGtk(object):
 
     def _update_docking_delayed(self):
         self._window.on_docking_notify()
-        self.keyboard.update_ui() # show/hide the move button
-        self.keyboard.redraw()
+        self.keyboard.invalidate_ui()  # show/hide the move button
+        self.keyboard.commit_ui_updates()
 
     def on_gtk_theme_changed(self, gtk_theme = None):
         """

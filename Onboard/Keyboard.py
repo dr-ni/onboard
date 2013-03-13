@@ -54,6 +54,17 @@ class DockMode:
     ) = range(3)
 
 
+class UIMask:
+    CONTROLLERS = 1<<0
+    SUGGESTIONS = 1<<1
+    LAYOUT      = 1<<2
+    LAYERS      = 1<<3
+    SIZE        = 1<<4
+    REDRAW      = 1<<5
+
+    ALL = CONTROLLERS | SUGGESTIONS | LAYOUT | LAYERS | SIZE | REDRAW
+
+
 class UnpressTimers:
     """ Redraw keys unpressed after a short while. """
 
@@ -290,6 +301,8 @@ class Keyboard(WordSuggestions):
         self._key_synth_virtkey = None
         self._key_synth_atspi = None
 
+        self._invalidated_ui = 0
+
         self.reset()
 
     def reset(self):
@@ -362,8 +375,8 @@ class Keyboard(WordSuggestions):
 
         self.update_scanner()
 
-        self.update_ui()
-        self.redraw()
+        self.invalidate_ui()
+        self.commit_ui_updates()
 
     def init_key_synth(self, vk):
         self._key_synth_virtkey = KeySynthVirtkey(vk)
@@ -453,7 +466,8 @@ class Keyboard(WordSuggestions):
         dialog.destroy()
 
     def _on_mods_changed(self):
-        self.update_context_ui()
+        self.invalidate_context_ui()
+        self.commit_ui_updates()
 
     def get_pressed_key(self):
         return self._pressed_key
@@ -546,7 +560,8 @@ class Keyboard(WordSuggestions):
                 # responsiveness on slow systems.
                 if update or \
                    key.type == KeyCommon.BUTTON_TYPE:
-                    self.update_context_ui()
+                    self.invalidate_context_ui()
+                    self.commit_ui_updates()
 
             # Is the key still nothing but pressed?
             extend_pressed_state = extend_pressed_state and \
@@ -1184,26 +1199,51 @@ class Keyboard(WordSuggestions):
     def find_canonical_equivalents(self, char):
         return canonical_equivalents["all"].get(char)
 
-    def update_ui(self):
+    def invalidate_ui(self):
         """
-        Force update of everything.
+        Update everything.
         Relatively expensive, don't call this while typing.
         """
-        self.update_context_ui()
-        self.update_visible_layers()
+        self._invalidated_ui = UIMask.ALL
 
-        for view in self._layout_views:
-            view.update_ui()
-
-    def update_ui_no_resize(self):
+    def invalidate_ui_no_resize(self):
         """
         Update everything assuming key sizes don't change.
         Doesn't invalidate cached surfaces.
         """
-        self.update_context_ui()
-        self.update_visible_layers()
+        self._invalidated_ui = UIMask.ALL & ~UIMask.SIZE
+
+    def invalidate_context_ui(self):
+        """ Update text-context dependent ui """
+        self._invalidated_ui = UIMask.CONTROLLERS | \
+                               UIMask.SUGGESTIONS | \
+                               UIMask.LAYOUT
+
+    def commit_ui_updates(self):
+        keys = None
+        mask = self._invalidated_ui
+
+        if mask & UIMask.CONTROLLERS:
+            # update buttons
+            for controller in list(self.button_controllers.values()):
+                controller.update()
+
+        if mask & UIMask.SUGGESTIONS:
+            keys = WordSuggestions.update_suggestions_ui(self)
+
+        if mask & UIMask.LAYOUT:
+            self.update_layout()   # after suggestions!
+
+        if mask & UIMask.LAYERS:
+            self.update_visible_layers()
+
         for view in self._layout_views:
-            view.update_ui_no_resize()
+            view.apply_ui_updates(mask)
+
+        if mask & UIMask.REDRAW:
+            self.redraw()
+        elif keys:
+            self.redraw(keys)
 
     def update_layout(self):
         """
@@ -1211,18 +1251,6 @@ class Keyboard(WordSuggestions):
         """
         for view in self._layout_views:
             view.update_layout()
-
-    def update_context_ui(self):
-        """ Update text-context dependent ui """
-        # update buttons
-        for controller in list(self.button_controllers.values()):
-            controller.update()
-
-        keys = WordSuggestions.update_suggestions_ui(self)
-
-        self.update_layout()
-
-        self.redraw(keys)
 
     def update_visible_layers(self):
         """ show/hide layers """
