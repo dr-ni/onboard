@@ -313,11 +313,11 @@ class LayoutLoaderSVG:
         # find template attributes
         attributes = {}
         if node.hasAttribute("id"):
-            ids = RectKey.split_id(node.attributes["id"].value)
-            attributes = self.find_template(parent, RectKey, ids)
+            theme_id, id = RectKey.split_id(node.attributes["id"].value)
+            attributes.update(self.find_template(parent, RectKey, [id]))
 
         # let current node override any preceding templates
-        attributes.update(dict(list(node.attributes.items())))
+        attributes.update(dict(node.attributes.items()))
 
         # set up the key
         self._init_key(key, attributes)
@@ -352,7 +352,8 @@ class LayoutLoaderSVG:
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
         full_id = attributes["id"]
-        key.set_id(full_id, attributes.get("svg_id"))
+        svg_id = attributes.get("svg_id")
+        key.set_id(full_id, svg_id)
 
         value = attributes.get("modifier")
         if value:
