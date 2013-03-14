@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Low Contrast" format="1.1">
+<theme name="Low Contrast" format="1.3">
     <color_scheme>LowContrast</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>30</roundrect_radius>

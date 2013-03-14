@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="High Contrast, Inverse" format="1.1">
+<theme name="High Contrast, Inverse" format="1.3">
     <color_scheme>HighContrastInverseBlack</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>30</roundrect_radius>

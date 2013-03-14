@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<theme format="1.2" name="Model M">
+<theme format="1.3" name="Model M">
   <color_scheme>ModelM</color_scheme>
   <background_gradient>0.0</background_gradient>
   <key_style>dish</key_style>

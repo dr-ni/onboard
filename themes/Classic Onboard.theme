@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Classic Onboard" format="1.1">
+<theme name="Classic Onboard" format="1.3">
     <color_scheme>Classic Onboard</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>0</roundrect_radius>

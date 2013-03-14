@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<theme format="1.2" name="Nightshade">
+<theme format="1.3" name="Nightshade">
   <color_scheme>Charcoal</color_scheme>
   <background_gradient>0.0</background_gradient>
   <key_style>gradient</key_style>

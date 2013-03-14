@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<theme format="1.2" name="DarkRoom">
+<theme format="1.3" name="DarkRoom">
   <color_scheme>DarkRoom</color_scheme>
   <background_gradient>0.0</background_gradient>
   <key_style>gradient</key_style>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Typist" format="1.2">
+<theme name="Typist" format="1.3">
     <color_scheme>Typist</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>25</roundrect_radius>
