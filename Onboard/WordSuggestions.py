@@ -1582,16 +1582,14 @@ class WordListPanel(LayoutPanel):
 
             r = wordlist_rect.copy()
             r.w = x_split - r.x
-            key = FullSizeKey("corrections-bg", r)
-            key.theme_id = "wordlist" # same colors as wordlist
+            key = FullSizeKey("correctionsbg", r)
             key.sensitive = False
             bg_keys.append(key)
 
             r = wordlist_rect.copy()
             r.w = r.right() - x_split - section_spacing
             r.x = x_split + section_spacing
-            key = FullSizeKey("wordlist-remaining-bg", r)
-            key.theme_id = "wordlist" # same colors as wordlist
+            key = FullSizeKey("predictionsbg", r)
             key.sensitive = False
             bg_keys.append(key)
 
