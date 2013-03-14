@@ -468,11 +468,15 @@ class ColorScheme(object):
         # Let numbered keys fall back to their base id, e.g. instead
         # of prediction0, prediction1,... have only "prediction" in
         # the color scheme.
-        if key.is_prediction_key():
+        if key.id == "correctionsbg":
+            ids.append("wordlist")
+        elif key.id == "predictionsbg":
+            ids.append("wordlist")
+        elif key.is_prediction_key():
             ids.append("prediction")
-        if key.is_correction_key():
+        elif key.is_correction_key():
             ids.append("correction")
-        if key.is_layer_button():
+        elif key.is_layer_button():
             ids.append(key.build_theme_id("layer"))
             ids.append("layer")
 
