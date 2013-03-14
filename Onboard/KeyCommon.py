@@ -447,7 +447,7 @@ class RectKeyCommon(KeyCommon):
 
         # fake physical key action
         if self.pressed:
-            key_style = config.theme_settings.key_style
+            key_style = self.get_style()
             if key_style == "gradient":
                 k = 0.2
                 rect.x += k
@@ -487,7 +487,8 @@ class RectKeyCommon(KeyCommon):
         """ Label area in logical coordinates """
         if rect is None:
             rect = self.get_rect()
-        if config.theme_settings.key_style == "dish":
+        style = self.get_style()
+        if style == "dish":
             rect = rect.deflate(*config.DISH_KEY_BORDER)
             rect.y -= config.DISH_KEY_Y_OFFSET
             return rect
