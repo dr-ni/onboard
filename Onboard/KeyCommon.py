@@ -253,8 +253,10 @@ class KeyCommon(LayoutItem):
     def get_id(self):
         return ""
 
-    def set_id(self, id, svg_id = None):
+    def set_id(self, id, theme_id = None, svg_id = None):
         self.theme_id, self.id = self.split_id(id)
+        if theme_id:
+            self.theme_id = theme_id
         self.svg_id = self.id if not svg_id else svg_id
 
     @staticmethod

@@ -329,7 +329,7 @@ class LayoutLoaderSVG:
             if not attribute.get("group") == "wsbutton": 
                 _logger.warning(_format("Ignoring key '{}'."
                                         " No svg filename defined.",
-                                        key.theme_id))
+                                        key.id))
         else:
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
@@ -353,8 +353,9 @@ class LayoutLoaderSVG:
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
         full_id = attributes["id"]
+        theme_id = attributes.get("theme_id")
         svg_id = attributes.get("svg_id")
-        key.set_id(full_id, svg_id)
+        key.set_id(full_id, theme_id, svg_id)
 
         value = attributes.get("modifier")
         if value:
