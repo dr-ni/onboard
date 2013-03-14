@@ -299,13 +299,14 @@ class KbdWindowBase:
         visible_before = self._visible
         self._visible = visible
 
-        if visible:
-            self.set_icp_visible(False)
-            self.update_sticky_state()
-        else:
-            # show the icon palette
-            if config.is_icon_palette_in_use():
-                self.set_icp_visible(True)
+        if not self._screen_resizing:
+            if visible:
+                self.set_icp_visible(False)
+                self.update_sticky_state()
+            else:
+                # show the icon palette
+                if config.is_icon_palette_in_use():
+                    self.set_icp_visible(True)
 
         # update indicator menu for unity and unity2d
         # not necessary but doesn't hurt in gnome-shell, gnome classic
@@ -494,6 +495,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def __init__(self, keyboard_widget, icp):
         self._last_ignore_configure_time = None
         self._last_configures = []
+        self._was_visible = False
+        self._screen_resizing = False
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
@@ -1038,7 +1041,12 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # Can't correctly position the window while struts are active
             # -> turn them off for a moment
             self.clear_struts()
+
+            # Attempt to hide the keyboard now. This won't work that well
+            # as the system doesn't refresh the screen anymore until
+            # after the rotation.
             self._was_visible = self.is_visible()
+            self._screen_resizing = True
             keyboard_widget = self.keyboard_widget
             if keyboard_widget:
                 keyboard_widget.transition_visible_to(False, 0.0)
@@ -1048,6 +1056,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_screen_size_changed_delayed(self, screen):
         if config.is_docking_enabled():
+            self._screen_resizing = False
             self.reset_monitor_workarea()
 
             # The keyboard size may have changed, draw with the new size now,
