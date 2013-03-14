@@ -1204,20 +1204,24 @@ class Keyboard(WordSuggestions):
         Update everything.
         Relatively expensive, don't call this while typing.
         """
-        self._invalidated_ui = UIMask.ALL
+        self._invalidated_ui |= UIMask.ALL
 
     def invalidate_ui_no_resize(self):
         """
         Update everything assuming key sizes don't change.
         Doesn't invalidate cached surfaces.
         """
-        self._invalidated_ui = UIMask.ALL & ~UIMask.SIZE
+        self._invalidated_ui |= UIMask.ALL & ~UIMask.SIZE
 
     def invalidate_context_ui(self):
         """ Update text-context dependent ui """
-        self._invalidated_ui = UIMask.CONTROLLERS | \
-                               UIMask.SUGGESTIONS | \
-                               UIMask.LAYOUT
+        self._invalidated_ui |= UIMask.CONTROLLERS | \
+                                UIMask.SUGGESTIONS | \
+                                UIMask.LAYOUT
+
+    def invalidate_redraw(self):
+        """ Just redraw everything """
+        self._invalidated_ui |= UIMask.REDRAW
 
     def commit_ui_updates(self):
         keys = None
