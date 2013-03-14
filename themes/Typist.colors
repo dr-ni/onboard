@@ -18,8 +18,7 @@
 
 	<!-- word suggestions -->
 	<key_group>
-	    <color element="fill" rgb="#111930"/>
-	    <color element="label"  rgb="#eeeeee"/>
+            <color element="fill" opacity="0.9"/>
 	    wordlist, prediction, hide.wordlist
 	</key_group>
 

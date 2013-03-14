@@ -3,7 +3,7 @@
     <!--- word suggestions -->
     <panel id='wordlistbar' group="wordlist" class="WordListPanel">
         <!-- area of word suggestions -->
-        <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
+        <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false' class='WordlistKey'/>
 
         <!-- template for spelling suggestions -->
         <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>

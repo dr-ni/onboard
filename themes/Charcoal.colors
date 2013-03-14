@@ -39,7 +39,11 @@
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
-                wordlist, prediction
+                prediction
+                <key_group>
+                    <color element="fill" rgb="#111920" opacity="0.8"/>
+                    wordlist
+                </key_group>
             </key_group>
         </key_group>
 

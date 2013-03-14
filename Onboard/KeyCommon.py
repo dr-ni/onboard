@@ -6,6 +6,8 @@ UI-specific keys should be defined in KeyGtk or KeyKDE files.
 
 from __future__ import division, print_function, unicode_literals
 
+from math import pi
+
 from Onboard.utils import Rect, brighten, \
                           LABEL_MODIFIERS, Modifiers
 from Onboard.Layout import LayoutItem
@@ -380,6 +382,9 @@ class RectKeyCommon(KeyCommon):
         if not self.style is None:
             return self.style
         return config.theme_settings.key_style
+
+    def get_light_direction(self):
+        return config.theme_settings.key_gradient_direction * pi / 180.0
 
     def get_fill_color(self):
         return self._get_color("fill")

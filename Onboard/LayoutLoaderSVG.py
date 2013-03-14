@@ -16,7 +16,8 @@ from xml.dom import minidom
 from Onboard                 import Exceptions
 from Onboard                 import KeyCommon
 from Onboard.KeyCommon       import StickyBehavior, ImageSlot
-from Onboard.KeyGtk          import RectKey, BarKey, WordKey, InputlineKey
+from Onboard.KeyGtk          import RectKey, WordlistKey, BarKey, \
+                                    WordKey, InputlineKey
 from Onboard.Layout          import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils           import hexstring_to_float, modifiers, Rect, \
                                     toprettyxml, Version, open_utf8, \

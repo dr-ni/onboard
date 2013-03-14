@@ -256,7 +256,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         base_rgba = brighten(-0.200, *fill)
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
+        light_dir = self.get_light_direction()
 
         # parameters for the top rectangle, key face
         scale  = config.theme_settings.key_stroke_width / 100.0
@@ -540,8 +540,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             return None
 
         extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
-        direction = config.theme_settings.key_gradient_direction
-        alpha = pi / 2 + 2 * pi * direction / 360.0
+        alpha = pi / 2 + self.get_light_direction()
 
         shadow_opacity = config.theme_settings.key_shadow_strength * \
                          shadow_alpha
@@ -612,7 +611,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.rectangle(*rect)
 
     def get_gradient_angle(self):
-        return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
+        return -pi/2.0 + self.get_light_direction()
 
     def get_best_font_size(self, mod_mask):
         """
@@ -710,7 +709,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def _label_iterations(self, lod):
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         if lod == LOD.FULL and \
-           config.theme_settings.key_style != "flat" and stroke_gradient:
+           self.get_style() != "flat" and stroke_gradient:
             root = self.get_layout_root()
             d = 0.4  # fake-emboss distance
             #d = max(src_size[1] * 0.02, 0.0)
@@ -770,7 +769,18 @@ class FixedFontMixin:
         return extents
 
 
-class FullSizeKey(RectKey):
+class WordlistKey(RectKey):
+
+    def get_style(self):
+        style = super(WordlistKey, self).get_style()
+        if style == "dish":
+            style = "gradient"
+        return style
+
+    def get_light_direction(self):
+        return -0.75 * pi / 180
+
+class FullSizeKey(WordlistKey):
     def __init__(self, id = "", border_rect = None):
         super(FullSizeKey, self).__init__(id, border_rect)
 
