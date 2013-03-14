@@ -43,6 +43,8 @@ class KbdWindowBase:
         self._iconified = False
         self._maximized = False
 
+        self._screen_resizing = False
+
         self._docking_enabled = False
         self._docking_edge = None
         self._docking_rect = Rect()
@@ -496,7 +498,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
         self._was_visible = False
-        self._screen_resizing = False
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
