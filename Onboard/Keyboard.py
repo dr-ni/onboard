@@ -638,9 +638,6 @@ class Keyboard(WordSuggestions):
                         not key.action == KeyCommon.DELAYED_STROKE_ACTION and \
                         not key.type == KeyCommon.WORD_TYPE
         if can_send_key:
-            if not key.is_modifier() and not key.is_button():
-                # punctuation duties before keypress is sent
-                WordSuggestions.on_before_key_down(self, key)
             self.send_key_down(key, view, button, event_type)
 
         # Modifier keys may change multiple keys
@@ -769,6 +766,10 @@ class Keyboard(WordSuggestions):
         """ Actually generate a fake key press """
         activated = True
         key_type = key.type
+
+        # punctuation duties before keypress is sent
+        if not key.is_modifier() and not key.is_button():
+            WordSuggestions.on_before_key_down(self, key)
 
         if key_type == KeyCommon.KEYCODE_TYPE:
             self._key_synth.press_keycode(key.code)
