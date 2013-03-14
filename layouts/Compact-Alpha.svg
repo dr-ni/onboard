@@ -45,7 +45,8 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:snap-global="false">
     <sodipodi:guide
        orientation="1,0"
        position="-8.8560886,101.84502"
@@ -643,4 +644,52 @@
      width="246"
      y="20.5"
      x="0.5" />
+  <rect
+     x="331.5"
+     y="20.5"
+     width="22"
+     height="18"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     id="move.wordlist"
+     inkscape:label="" />
+  <rect
+     inkscape:label=""
+     id="showclick.wordlist"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     height="18"
+     width="22"
+     y="39.5"
+     x="331.5" />
+  <rect
+     x="331.5"
+     y="58.5"
+     width="22"
+     height="18"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     id="layer0.wordlist"
+     inkscape:label="" />
+  <rect
+     x="331.5"
+     y="77.5"
+     width="22"
+     height="18"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     id="layer1.wordlist"
+     inkscape:label="" />
+  <rect
+     x="331.5"
+     y="96.5"
+     width="22"
+     height="18"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     id="layer2.wordlist"
+     inkscape:label="" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     x="308.63654"
+     y="3.5000002"
+     width="18"
+     height="16"
+     id="hide.wordlist"
+     inkscape:label="" />
 </svg>

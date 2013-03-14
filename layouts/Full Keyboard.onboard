@@ -179,7 +179,6 @@
 
             <!--- side bar -->
 	    <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-	
 		<box compact="true" orientation='vertical'>
 		    <panel group='nowordlist'>
 			<key group='bottomrow' id='hide'/>
