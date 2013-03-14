@@ -164,8 +164,15 @@ class KbdWindowBase:
 
     def _show_first_time(self):
         self.update_window_options()
-        self.keyboard_widget.prepare_initial_drawing(self, self.get_size())
         self.show()
+
+    def move_resize(self, x, y, w, h):
+        if not self.keyboard_widget.is_drag_initiated():
+            self.pre_render_keys(w, h)
+        super(KbdWindowBase, self).move_resize(x, y, w, h)
+
+    def pre_render_keys(self, w, h):
+        self.keyboard_widget.pre_render_keys(self, w, h)
 
     def _cb_realize_event(self, user_data):
         """ Gdk window created """
@@ -584,7 +591,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
            not config.is_docking_enabled() and \
            not config.xid_mode:
             rect = self.get_current_rect()
-            if not rect is None: # shouldn't happen, fix this later
+            if not rect is None: # shouldn't happen, fix this
                 self.move_resize(*rect) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
@@ -1095,6 +1102,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
              bool(self._current_struts) != shrink)
            ):
             self.enable_docking(enable)
+
             self._shrink_work_area = shrink
             self._dock_expand = expand
             self._docking_edge = edge

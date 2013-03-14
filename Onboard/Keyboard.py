@@ -1245,6 +1245,8 @@ class Keyboard(WordSuggestions):
         elif keys:
             self.redraw(keys)
 
+        self._invalidated_ui = 0
+
     def update_layout(self):
         """
         Update layout, key sizes are probably changing.

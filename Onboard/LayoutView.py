@@ -68,6 +68,13 @@ class LayoutView:
     def get_color_scheme(self):
         return self.keyboard.color_scheme
 
+    def invalidate_for_resize(self, lod = LOD.FULL):
+        self.invalidate_keys()
+        if self._lod == LOD.FULL:
+            self.invalidate_shadows()
+        self.invalidate_font_sizes()
+        #self.invalidate_label_extents()
+
     def invalidate_font_sizes(self):
         """
         Update font_sizes at the next possible chance.
@@ -111,9 +118,7 @@ class LayoutView:
         """ Reset to full level of detail """
         if self._lod != LOD.FULL:
             self._lod = LOD.FULL
-            self.invalidate_keys()
-            self.invalidate_shadows()
-            self.invalidate_font_sizes()
+            self.invalidate_for_resize()
             self.redraw()
 
     def redraw(self, items = None, invalidate = True):
@@ -122,8 +127,10 @@ class LayoutView:
         """
         if items is None:
             self.queue_draw()
+
         elif len(items) == 0:
             pass
+
         else:
             area = None
             for item in items:
@@ -158,10 +165,7 @@ class LayoutView:
 
     def apply_ui_updates(self, mask):
         if mask & Onboard.Keyboard.UIMask.SIZE:
-            self.invalidate_font_sizes()
-            self.invalidate_keys()
-            self.invalidate_shadows()
-            #self.invalidate_label_extents()
+            self.invalidate_for_resize()
 
     def update_layout(self):
         pass

@@ -246,8 +246,8 @@ class OnboardGtk(object):
         # window
         config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
-        config.window.window_decoration_notify_add(self._update_window_options)
-        config.window.force_to_top_notify_add(self._update_window_options)
+        config.window.window_decoration_notify_add(self._on_window_options_changed)
+        config.window.force_to_top_notify_add(self._on_window_options_changed)
         config.window.keep_aspect_ratio_notify_add(update_ui)
 
         config.window.transparency_notify_add(update_transparency)
@@ -483,23 +483,28 @@ class OnboardGtk(object):
         self.keyboard.invalidate_ui_no_resize()
         self.keyboard.commit_ui_updates()
 
+    def _on_window_options_changed(self, value = None):
+        self._update_window_options()
+        self.keyboard.commit_ui_updates()
+
     def _update_window_options(self, value = None):
         window = self._window
         if window:
             window.update_window_options()
             if window.icp:
                 window.icp.update_window_options()
-            self._update_ui()
+            self.keyboard.invalidate_ui()
 
     def _update_docking(self, value = None):
         self._update_window_options()
-        # give WM time to settle or move to the strut might fail
+
+        # give WM time to settle, else move to the strut position may fail
         GLib.idle_add(self._update_docking_delayed)
 
     def _update_docking_delayed(self):
         self._window.on_docking_notify()
         self.keyboard.invalidate_ui()  # show/hide the move button
-        self.keyboard.commit_ui_updates()
+#        self.keyboard.commit_ui_updates() # redundant
 
     def on_gtk_theme_changed(self, gtk_theme = None):
         """

@@ -333,13 +333,20 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Be sure to initially show/hide window and icon palette
         win.set_visible(visible)
 
-    def prepare_initial_drawing(self, window, size):
-        self.update_layout(Rect(0, 0, size[0], size[1]))
+    def pre_render_keys(self, window, w, h):
+        if self.is_new_layout_size(w, h):
+            self.update_layout(Rect(0, 0, w, h))
 
-        win = window.get_window()
-        if win:
-            context = win.cairo_create()
-            self.render(context)
+            self.invalidate_for_resize()
+
+            win = window.get_window()
+            if win:
+                context = win.cairo_create()
+                self.render(context)
+
+    def is_new_layout_size(self, w, h):
+        return self.canvas_rect.w != w or \
+               self.canvas_rect.h != h
 
     def update_layout(self, canvas_rect = None):
         layout = self.get_layout()
@@ -737,14 +744,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         return hit
 
     def _on_configure_event(self, widget, user_data):
-        if self.canvas_rect.w != self.get_allocated_width() or \
-           self.canvas_rect.h != self.get_allocated_height():
+        if self.is_new_layout_size(self.get_allocated_width(),
+                                   self.get_allocated_height()):
             self.update_layout()
             self.touch_handles.update_positions(self.canvas_rect)
-            self.invalidate_keys()
-            if self._lod == LOD.FULL:
-                self.invalidate_shadows()
-            self.invalidate_font_sizes()
+            self.invalidate_for_resize(self._lod)
 
     def on_enter_notify(self, widget, event):
         self._update_double_click_time()
