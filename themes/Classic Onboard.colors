@@ -57,7 +57,7 @@
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
             <color element="label" rgb="#C00000"/>
-            corrections-bg,
+            correctionsbg,
             correction
         </key_group>
     </key_group>

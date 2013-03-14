@@ -21,6 +21,13 @@
             <color element="fill" opacity="0.9"/>
 	    wordlist, prediction, hide.wordlist
 	</key_group>
+        <key_group>
+            <color element="fill"  rgb="#e5c6b2"/>
+            <color element="label" rgb="#C00000"/>
+            correctionsbg,
+            correction
+        </key_group>
+
 
         <!-- left pinkie -->
         <key_group>
