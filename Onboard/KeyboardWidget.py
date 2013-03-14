@@ -1388,9 +1388,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         result = LayoutBuilderAlternatives \
                     .build(key, self.get_color_scheme(), alternatives)
         popup.set_layout(*result)
-        self._show_key_popup(popup, key)
 
+        self._show_key_popup(popup, key)
         self._key_popup = popup
+
+        self.keyboard.hide_touch_feedback()
 
     def show_popup_layout(self, key, layout):
         """
@@ -1401,8 +1403,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                     .build(key, self.get_color_scheme(), layout)
         popup.set_layout(*result)
         self._show_key_popup(popup, key)
-
         self._key_popup = popup
+
+        self.keyboard.hide_touch_feedback()
 
     def close_key_popup(self):
         if self._key_popup:
