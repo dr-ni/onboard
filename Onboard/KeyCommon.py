@@ -162,6 +162,9 @@ class KeyCommon(LayoutItem):
     # vertical label alignment
     label_y_align = config.DEFAULT_LABEL_Y_ALIGN
 
+    # label margin (x, y)
+    label_margin = config.LABEL_MARGIN
+
     # tooltip text
     tooltip = None
 
@@ -482,7 +485,7 @@ class RectKeyCommon(KeyCommon):
             rect.y -= config.DISH_KEY_Y_OFFSET
             return rect
         else:
-            return rect.deflate(*config.LABEL_MARGIN)
+            return rect.deflate(*self.label_margin)
 
     def get_canvas_label_rect(self):
         log_rect = self.get_label_rect()

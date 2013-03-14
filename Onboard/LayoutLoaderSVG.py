@@ -459,6 +459,13 @@ class LayoutLoaderSVG:
         if "label_y_align" in attributes:
             key.label_y_align = float(attributes["label_y_align"])
 
+        if "label_margin" in attributes:
+            values = attributes["label_margin"].split()
+            margin = [float(x) for x in values[:2]]
+            margin += margin[:1]*(2 - len(margin))
+            if margin:
+                key.label_margin = margin
+
         if "sticky" in attributes:
             sticky = attributes["sticky"].lower()
             if sticky == "true":
