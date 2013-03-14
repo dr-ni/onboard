@@ -27,7 +27,7 @@ except ImportError as e:
                    "word suggestions not fully functional"))
 
 from Onboard.TextChanges  import TextSpan
-from Onboard.utils        import unicode_str
+from Onboard.utils        import KeyCode, Modifiers, unicode_str
 
 ### Logging ###
 import logging
@@ -123,6 +123,8 @@ class TextDomain:
         """ Can give word suggestions before typing has started? """
         return True
 
+    def handle_key_press(self, keycode, mod_mask):
+        return True, None  # entering_text, end_of_editing
 
 class DomainNOP(TextDomain):
     """ Do-nothing domain, no focused accessible. """
@@ -223,7 +225,7 @@ class DomainTerminal(TextDomain):
         pass
 
     def read_context(self, accessible, offset = None):
-        """ 
+        """
         Extract prediction context from the accessible
         """
         if offset is None:
@@ -326,6 +328,21 @@ class DomainTerminal(TextDomain):
         # Mostly prevent updates to word suggestions while text is scrolling by
         return False
 
+    def handle_key_press(self, keycode, mod_mask):
+        """
+        End recording and learn when pressing [Return]
+        because text that is scrolled out of view is
+        lost in a terminal.
+        """
+        if keycode == KeyCode.Return or \
+           keycode == KeyCode.KP_Enter:
+            return False, True
+        elif keycode == KeyCode.C and mod_mask & Modifiers.CTRL:
+            return False, False
+
+        return True, None  # entering_text, end_of_editing
+
+
 class DomainURL(DomainGenericText):
     """ (Firefox) address bar """
 
@@ -393,7 +410,7 @@ class PartialURLParser:
                "tz", "ua", "ug", "uk", "us", "uy", "uz", "va", "vc", "ve",
                "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "yu", "za",
                "zm", "zw"]
-    _TLDs = frozenset(_gTLDs + _usTLDs + _ccTLDs) 
+    _TLDs = frozenset(_gTLDs + _usTLDs + _ccTLDs)
 
     _schemes = ["http", "https", "ftp", "file"]
     _protocols = ["mailto", "apt"]
@@ -409,8 +426,8 @@ class PartialURLParser:
                      for group in match.groups() if not group is None]
 
     def is_maybe_url(self, context):
-        """ 
-        Is this maybe something looking like an URL? 
+        """
+        Is this maybe something looking like an URL?
 
         Doctests:
         >>> d = PartialURLParser()
@@ -454,7 +471,7 @@ class PartialURLParser:
         ''
         """
         separator = " " # may be entering search terms, keep space as default
-              
+
         SCHEME, PROTOCOL, DOMAIN, PATH = range(4)
         component = SCHEME
         last_septok = ""

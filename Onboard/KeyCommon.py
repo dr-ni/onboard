@@ -310,6 +310,21 @@ class KeyCommon(LayoutItem):
                                      self.locked or \
                                      self.scanned)
 
+    def is_text_changing(self):
+        return not self.is_modifier() and \
+               self.type in [KEYCODE_TYPE,
+                             KEYSYM_TYPE,
+                             CHAR_TYPE,
+                             KEYPRESS_NAME_TYPE,
+                             MACRO_TYPE,
+                             WORD_TYPE,
+                             CORRECTION_TYPE]
+
+    def is_return(self):
+        id = self.id
+        return id == "RTRN" or \
+               id == "KPEN"
+
     def get_layer_index(self):
         assert(self.is_layer_button())
         return int(self.id[5:])

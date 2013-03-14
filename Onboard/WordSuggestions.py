@@ -273,6 +273,7 @@ class WordSuggestions:
 
     def on_before_key_down(self, key):
         self._punctuator.on_before_press(key)
+        self.text_context.on_onboard_key_down(key, self.get_mod_mask())
 
     def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
@@ -929,9 +930,9 @@ class WordSuggestions:
         return cursor to cursor_offset.
         """
         correction_span, replacement = \
-            self._find_auto_correction(word_span,
-                                       True,
-                                       config.typing_assistance.auto_correction)
+           self._find_auto_correction(word_span,
+                                      True,
+                                      config.typing_assistance.auto_correction)
         if replacement:
             with self.suppress_modifiers():
                 self._replace_text(correction_span.begin(),

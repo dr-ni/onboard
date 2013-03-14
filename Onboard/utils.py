@@ -22,6 +22,12 @@ _logger = logging.getLogger("utils")
 ###############
 
 
+# keycodes
+class KeyCode:
+    Return   = 36
+    KP_Enter = 104
+    C        = 54
+
 class Modifiers:
     # 1      2     4    8    16     32    64     128
     SHIFT, CAPS, CTRL, ALT, NUMLK, MOD3, SUPER, ALTGR = \

@@ -30,7 +30,7 @@ except ImportError as e:
 from Onboard.AtspiStateTracker import AtspiStateTracker, AtspiStateType
 from Onboard.TextDomain        import TextDomains
 from Onboard.TextChanges       import TextChanges, TextSpan
-from Onboard.utils             import Timer
+from Onboard.utils             import Timer, KeyCode, Modifiers
 from Onboard                   import KeyCommon
 
 ### Config Singleton ###
@@ -42,18 +42,6 @@ config = Config()
 import logging
 _logger = logging.getLogger(__name__)
 ###############
-
-# keycodes
-class KeyCode:
-    Return   = 36
-    KP_Enter = 104
-    C        = 54
-
-# modifiers
-class Mod:
-    CAPS     = 0x1
-    SHIFT    = 0x2
-    CTRL     = 0x4
 
 
 class TextContext:
@@ -256,12 +244,12 @@ class AtspiTextContext(TextContext):
             st.connect("text-entry-activated", self._on_text_entry_activated)
             st.connect("text-changed", self._on_text_changed)
             st.connect("text-caret-moved", self._on_text_caret_moved)
-            st.connect("key-pressed", self._on_key_pressed)
+            #st.connect("key-pressed", self._on_atspi_key_pressed)
         else:
             st.disconnect("text-entry-activated", self._on_text_entry_activated)
             st.disconnect("text-changed", self._on_text_changed)
             st.disconnect("text-caret-moved", self._on_text_caret_moved)
-            st.disconnect("key-pressed", self._on_key_pressed)
+            #st.disconnect("key-pressed", self._on_atspi_key_pressed)
 
     def get_accessible_capabilities(accessible, **kwargs):
         can_insert_text = False
@@ -345,26 +333,37 @@ class AtspiTextContext(TextContext):
     def _on_text_caret_moved(self, event):
         self._update_context()
 
-    def _on_key_pressed(self, event):
-        keycode = event.hw_code
+    def _on_atspi_key_pressed(self, event):
+        """ disabled, Francesco didn't receive any AT-SPI key-strokes. """
+        keycode = event.hw_code # uh oh, only keycodes...
+                                # hopefully "c" doesn't move around a lot.
         modifiers = event.modifiers
+        #self._handle_key_press(keycode, modifiers)
 
+    def on_onboard_key_down(self, key, mod_mask):
+        if key.is_text_changing():
+            keycode = 0
+            if key.is_return():
+                keycode = KeyCode.KP_Enter 
+            else:
+                label = key.get_label()
+                if label == "C" or label == "c":
+                    keycode = KeyCode.C 
+
+            self._handle_key_press(keycode, mod_mask)
+
+    def _handle_key_press(self, keycode, modifiers):
         if self._accessible:
-            role = self._state_tracker.get_role()
+            domain = self.get_text_domain()
+            if domain:
+                self._entering_text, end_of_editing = \
+                        domain.handle_key_press(keycode, modifiers)
 
-            # End recording and learn when pressing [Return]
-            # in a terminal because text that is scrolled out of view
-            # is lost. Also don't record and learn terminal output.
-            self._entering_text = True
-            if role == Atspi.Role.TERMINAL:
-                if keycode == KeyCode.Return or \
-                   keycode == KeyCode.KP_Enter:
-                    self._entering_text = False
+                if end_of_editing == True:
                     self._wp.commit_changes()
-                elif keycode == KeyCode.C and modifiers & Mod.CTRL:
-                    self._entering_text = False
+                elif end_of_editing == False:
                     self._wp.discard_changes()
-
+ 
     def _record_text_change(self, pos, length, insert):
         accessible = self._accessible
 

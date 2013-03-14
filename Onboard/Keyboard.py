@@ -907,7 +907,7 @@ class Keyboard(WordSuggestions):
 
     def set_modifier(self, mod_bit, active):
         """
-        Update Onboard to reflect the state of the given modifier.
+        Update Onboard to reflect the state of the given modifier in the ui.
         """
         # find all keys assigned to the modifier bit
         keys = []
