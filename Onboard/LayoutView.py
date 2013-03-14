@@ -119,7 +119,9 @@ class LayoutView:
         if self._lod != LOD.FULL:
             self._lod = LOD.FULL
             self.invalidate_for_resize()
-            self.redraw()
+            self.keyboard.invalidate_context_ui()
+            self.keyboard.invalidate_redraw()
+            self.keyboard.commit_ui_updates()
 
     def redraw(self, items = None, invalidate = True):
         """
