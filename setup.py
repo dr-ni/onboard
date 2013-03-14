@@ -237,6 +237,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('onboard-defaults.conf.example')),
                   ('share/onboard', glob.glob('onboard-defaults.conf.example.nexus7')),
                   ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/*')),
+                  ('share/icons/HighContrast/scalable/apps', glob.glob('icons/HighContrast/*')),
                   ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
                   ('share/sounds/freedesktop/stereo', glob.glob('sounds/*')),
