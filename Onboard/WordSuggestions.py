@@ -146,7 +146,7 @@ class WordSuggestions:
                              .find_system_model_language_id(lang_id)
 
             system_models  = ["lm:system:" + system_lang_id]
-            user_models    = ["lm:user:"   + lang_id]
+            user_models    = ["lm:user:user"]
             scratch_models = ["lm:mem"]
 
             persistent_models = system_models + user_models
@@ -926,8 +926,7 @@ class WordSuggestions:
 
     def _auto_correct_at(self, word_span, cursor_offset):
         """
-        Auto-capitalize/correct test a word_span,
-        return cursor to cursor_offset.
+        Auto-capitalize/correct a word_span.
         """
         correction_span, replacement = \
            self._find_auto_correction(word_span,
