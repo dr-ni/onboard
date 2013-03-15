@@ -11,7 +11,7 @@
         <panel filename="Small-Alpha.svg" layer="alpha">
           <!-- layer1 -->
           <!-- row 4 -->
-          <key group="misc" id="ESC"/>
+          <key group="bottomrow" id="ESC" label_margin=", 1.5"/>
           <key group="alphanumeric" id="AD01"/>
           <key group="alphanumeric" id="AD02"/>
           <key group="alphanumeric" id="AD03"/>
@@ -286,7 +286,7 @@
             </panel>
           </panel>
           <panel filename="Small-Alpha.svg">
-            <key group="bottomrow" id="layer1" label="12!@"/>
+            <key group="bottomrow" id="layer1" label="12?"/>
           </panel>
           <panel>
             <panel filename="Small-Alpha.svg" layer="alpha">
