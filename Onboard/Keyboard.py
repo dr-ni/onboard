@@ -743,6 +743,16 @@ class Keyboard(WordSuggestions):
 
         self.maybe_send_alt_release(key, view, button, event_type)
 
+        # Check modifier counts for plausibility.
+        # There might be a bug lurking that gets certain modifers stuck
+        # with negative counts. Work around this and be verbose about it
+        # so we can fix it evetually.
+        for mod, nkeys in self._mods.items():   
+            if nkeys < 0:
+                _logger.warning("Negative count {} for modifier {}, reset." \
+                                .format(self.mods[modifier], modifier))
+                self.mods[mod] = 0
+
     def maybe_send_alt_press(self, key, view, button, event_type):
         # handle delayed Alt press
         if self.mods[8] and \
