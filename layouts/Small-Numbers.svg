@@ -14,7 +14,7 @@
    width="318"
    version="1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Small5-Numbers.svg">
+   sodipodi:docname="Small7-Numbers.svg">
   <defs
      id="defs49" />
   <sodipodi:namedview
@@ -33,7 +33,7 @@
      inkscape:zoom="2.96"
      inkscape:cx="137.55696"
      inkscape:cy="47.514912"
-     inkscape:window-x="98"
+     inkscape:window-x="69"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
@@ -56,13 +56,13 @@
     </rdf:RDF>
   </metadata>
   <rect
-     id="TAB"
+     id="layer4"
      style="fill:#d8cca5;stroke:#000000;stroke-width:1.02345657"
      height="22.976543"
      width="22.976543"
      y="0.51134443"
      x="0.51172781"
-     inkscape:label="#TAB" />
+     inkscape:label="" />
   <rect
      id="LEFT"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
@@ -92,16 +92,16 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26314688"
      height="22.736814"
      width="22.736477"
-     y="48.631989"
-     x="204.63231"
+     y="48.631611"
+     x="207.63194"
      inkscape:label="" />
   <rect
      id="BB09"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315665"
      height="22.736803"
      width="22.736843"
-     y="48.631996"
-     x="228.63194"
+     y="48.631618"
+     x="231.63158"
      inkscape:label="" />
   <rect
      id="RGHT"
@@ -112,44 +112,44 @@
      x="222.63228"
      inkscape:label="" />
   <rect
-     id="layer0"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:1.25232244"
-     height="22.747677"
-     width="34.747677"
-     y="48.62616"
-     x="0.62616122"
+     id="layer5"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:1.30293679"
+     height="22.697063"
+     width="37.697063"
+     y="48.651085"
+     x="0.6514684"
      inkscape:label="" />
   <rect
-     id="layer2"
+     id="layer3"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:1.04142213"
      height="22.958578"
      width="22.958578"
-     y="72.520721"
-     x="54.52034"
+     y="72.520714"
+     x="48.52071"
      inkscape:label="" />
   <rect
      height="22.624437"
-     id="layer4"
+     id="layer2"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:1.37556171"
      width="22.624437"
-     x="30.687775"
-     y="72.688156"
+     x="24.68778"
+     y="72.687782"
      inkscape:label="" />
   <rect
-     y="72.768669"
-     x="0.76867115"
-     width="28.462658"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.53734231"
-     id="layer5"
-     height="22.462656"
+     y="72.687782"
+     x="0.68778086"
+     width="22.624437"
+     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.37556171"
+     id="layer0"
+     height="22.624437"
      inkscape:label="" />
   <rect
      id="layer1"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.40496576"
-     height="22.595036"
-     width="34.595036"
-     y="72.702492"
-     x="78.70211"
+     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.14833903"
+     height="22.851662"
+     width="22.851662"
+     y="72.574173"
+     x="72.574173"
      inkscape:label="" />
   <rect
      id="BKSP"
@@ -160,11 +160,11 @@
      x="264.68878" />
   <rect
      id="RTRN"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.66736054"
-     height="22.333021"
-     width="40.332638"
-     y="48.833675"
-     x="252.83405"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.60758305"
+     height="22.392799"
+     width="37.392418"
+     y="48.80341"
+     x="255.80379"
      inkscape:label="#RTRN" />
   <rect
      id="DELE"
@@ -178,50 +178,50 @@
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="36.632694" />
+     y="48.631195"
+     x="39.632324" />
   <rect
      id="BB05"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="132.63271" />
+     y="48.631195"
+     x="135.63234" />
   <rect
      id="BB04"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="108.63269" />
+     y="48.631195"
+     x="111.63232" />
   <rect
      id="BB06"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="156.63269" />
+     y="48.631195"
+     x="159.63232" />
   <rect
      id="BB03"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="84.632706" />
+     y="48.631195"
+     x="87.632332" />
   <rect
      id="BB02"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="60.63269" />
+     y="48.631195"
+     x="63.63232" />
   <rect
      id="BB07"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
      height="22.737225"
      width="22.73646"
-     y="48.631573"
-     x="180.63269" />
+     y="48.631195"
+     x="183.63232" />
   <rect
      id="BC04"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
@@ -365,13 +365,13 @@
      x="192.63159" />
   <rect
      id="SPCE"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.03459501"
-     height="22.965405"
-     width="82.965408"
-     y="72.517731"
-     x="114.51799" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.13816512"
+     height="22.861834"
+     width="100.86253"
+     y="72.569519"
+     x="96.569084" />
   <rect
-     id="layer3"
+     id="TAB"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:1.28348005"
      height="22.71652"
      width="28.71652"
