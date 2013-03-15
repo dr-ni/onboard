@@ -465,7 +465,6 @@ class LayoutLoaderSVG:
             values = attributes["label_margin"].replace(" ","").split(",")
             margin = [float(x) if x else key.label_margin[i] \
                       for i, x in enumerate(values[:2])]
-            print(margin)
             margin += margin[:1]*(2 - len(margin))
             if margin:
                 key.label_margin = margin
