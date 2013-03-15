@@ -1,15 +1,24 @@
 <?xml version="1.0" ?>
 <keyboard format="2.1" id="Small">
   <include file="key_defs.xml"/>
+
   <box border="1" orientation="vertical" spacing="1.5">
+
     <!--- word suggestions -->
     <panel filename="Small-Alpha.svg">
       <include file="word_suggestions.xml"/>
     </panel>
+
+    <key_template button="true" id="layer1" label="12?"/>
+    <key_template button="true" id="layer2" label="Sym2"/>
+    <key_template button="true" id="layer3" label="Fn" image="" />
+    <key_template button="true" id="layer4" label=""   image="snippets.svg"/>
+    <key_template button="true" id="layer5" label="☺"/>
+
     <box>
       <panel>
+        <!-- layer0 -->
         <panel filename="Small-Alpha.svg" layer="alpha">
-          <!-- layer1 -->
           <!-- row 4 -->
           <key group="bottomrow" id="ESC" label_margin=", 1.5"/>
           <key group="alphanumeric" id="AD01"/>
@@ -52,10 +61,11 @@
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
           <key group="shifts" id="RTSH"/>
         </panel>
+
+        <!-- layer1 -->
         <panel filename="Small-Numbers.svg" layer="numbers">
-          <!-- layer1 -->
           <!-- row 4, numbers layer -->
-          <key group="bottomrow" id="layer4" label="Fn"/>
+          <key group="bottomrow" id="ESC"/>
           <key group="alphanumeric" id="BD01" keysym="0x31" label="1"/>
           <key group="alphanumeric" id="BD02" keysym="0x32" label="2"/>
           <key group="alphanumeric" id="BD03" keysym="0x33" label="3"/>
@@ -67,6 +77,7 @@
           <key group="alphanumeric" id="BD09" keysym="0x39" label="9"/>
           <key group="alphanumeric" id="BD10" keysym="0x30" label="0"/>
           <key group="bottomrow" id="BKSP"/>
+
           <!-- row 3, numbers layer -->
           <key group="bottomrow" id="TAB"/>
           <key char="#" group="alphanumeric" id="BC01" label="#"/>
@@ -80,8 +91,9 @@
           <key char="(" group="alphanumeric" id="BC09" label="("/>
           <key char=")" group="alphanumeric" id="BC10" label=")"/>
           <key group="bottomrow" id="DELE"/>
+
           <!-- row 2, numbers layer -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
+          <key group="bottomrow" id="layer5"/>
           <key char="@" group="alphanumeric" id="BB01" label="@"/>
           <key char="=" group="alphanumeric" id="BB02" label="="/>
           <key char="&quot;" group="alphanumeric" id="BB03" label="&quot;"/>
@@ -93,10 +105,11 @@
           <key char="." group="alphanumeric" id="BB09" label="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
+
+        <!-- layer2 -->
         <panel filename="Small-Syms.svg" layer="syms">
-          <!-- layer2 -->
           <!-- row 4 -->
-          <key group="bottomrow" id="layer4" label="Fn"/>
+          <key group="bottomrow" id="ESC"/>
           <key char="`" group="alphanumeric" id="CD01" label="`"/>
           <key char="~" group="alphanumeric" id="CD02" label="~"/>
           <key char="_" group="alphanumeric" id="CD03" label="_"/>
@@ -122,7 +135,7 @@
           <key char="…" group="alphanumeric" id="CC10" label="…"/>
           <key group="bottomrow" id="DELE"/>
           <!-- row 2 -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
+          <key group="bottomrow" id="layer5"/>
           <key char="„" group="alphanumeric" id="CB01" label="„"/>
           <key char="”" group="alphanumeric" id="CB02" label="”"/>
           <key char="«" group="alphanumeric" id="CB03" label="«"/>
@@ -134,10 +147,60 @@
           <key char="©" group="alphanumeric" id="CB09" label="©"/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
+
+        <!-- layer3 -->
+        <panel filename="Small-Fn.svg" layer="functionkeys">
+          <key group="bottomrow" id="ESC"/>
+          <key group="fkeys" id="F1.rows_of_six"/>
+          <key group="fkeys" id="F2.rows_of_six"/>
+          <key group="fkeys" id="F3.rows_of_six"/>
+          <key group="fkeys" id="F4.rows_of_six"/>
+          <key group="fkeys" id="F5.rows_of_six"/>
+          <key group="fkeys" id="F6.rows_of_six"/>
+          <key group="fkeys" id="F7.rows_of_six"/>
+          <key group="fkeys" id="F8.rows_of_six"/>
+          <key group="fkeys" id="F9.rows_of_six"/>
+          <key group="fkeys" id="F10.rows_of_six"/>
+          <key group="fkeys" id="F11.rows_of_six"/>
+          <key group="fkeys" id="F12.rows_of_six" label_margin="2"/>
+          <key group="editing" id="Prnt" scan_priority="1"/>
+          <key group="editing" id="Pause" scan_priority="1"/>
+          <key group="editing" id="Scroll" scan_priority="1"/>
+          <key group="editing" id="INS"/>
+          <key group="editing" id="HOME"/>
+          <key group="editing" id="PGUP"/>
+          <key group="editing" id="DELE" image="" label="Del"/>
+          <key group="editing" id="END"/>
+          <key group="editing" id="PGDN"/>
+          <key group="bottomrow" id="TAB"/>
+          <key group="bottomrow" id="layer5"/>
+        </panel>
+
+        <!-- layer4 -->
+        <panel filename="Small-Snippets.svg" layer="snippets">
+          <key group="snippets" id="m0"/>
+          <key group="snippets" id="m1"/>
+          <key group="snippets" id="m2"/>
+          <key group="snippets" id="m3"/>
+          <key group="snippets" id="m4"/>
+          <key group="snippets" id="m5"/>
+          <key group="snippets" id="m6"/>
+          <key group="snippets" id="m7"/>
+          <key group="snippets" id="m8"/>
+          <key group="snippets" id="m9"/>
+          <key group="snippets" id="m10"/>
+          <key group="snippets" id="m11"/>
+          <key expand="false" group="bottomrow" id="hide"/>
+          <key expand="false" group="bottomrow" id="move"/>
+          <key group="click_control" id="hoverclick" unlatch_layer="false"/>
+          <key group="bottomrow" id="layer5" label="☺"/>
+          <key group="bottomrow" id="layer0"/>
+        </panel>
+
+        <!-- layer5 -->
         <panel filename="Small-Emoji.svg" layer="emoji">
-          <!-- layer3 -->
           <!-- row 4 -->
-          <key group="bottomrow" id="layer4" label="Fn"/>
+          <key group="bottomrow" id="ESC"/>
           <key char="☺" group="symbol" id="DD01" label="☺" tooltip="Smiling face"/>
           <!-- U+263A -->
           <key char="😊" group="symbol" id="DD02" label="😊" tooltip="Smiling face with smiling eyes"/>
@@ -183,7 +246,7 @@
           <!-- U+263E -->
           <key group="bottomrow" id="DELE"/>
           <!-- row 2 -->
-          <key group="bottomrow" id="layer5" image="snippets.svg"/>
+          <key group="bottomrow" id="layer5"/>
           <key char="♡" group="symbol" id="DB01" label="♡" tooltip="White heart suit"/>
           <!-- U+2661 -->
           <key char="♫" group="symbol" id="DB02" label="♫" tooltip="Beamed eighth note"/>
@@ -204,53 +267,7 @@
           <!-- U+2622 -->
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
-        <panel filename="Small-Fn.svg" layer="functionkeys">
-          <!-- layer4 -->
-          <key group="bottomrow" id="ESC"/>
-          <key group="fkeys" id="F1.rows_of_six"/>
-          <key group="fkeys" id="F2.rows_of_six"/>
-          <key group="fkeys" id="F3.rows_of_six"/>
-          <key group="fkeys" id="F4.rows_of_six"/>
-          <key group="fkeys" id="F5.rows_of_six"/>
-          <key group="fkeys" id="F6.rows_of_six"/>
-          <key group="fkeys" id="F7.rows_of_six"/>
-          <key group="fkeys" id="F8.rows_of_six"/>
-          <key group="fkeys" id="F9.rows_of_six"/>
-          <key group="fkeys" id="F12.rows_of_six"/>
-          <key group="fkeys" id="F10.rows_of_six"/>
-          <key group="fkeys" id="F11.rows_of_six"/>
-          <key group="editing" id="Prnt" scan_priority="1"/>
-          <key group="editing" id="Pause" scan_priority="1"/>
-          <key group="editing" id="Scroll" scan_priority="1"/>
-          <key group="editing" id="INS"/>
-          <key group="editing" id="HOME"/>
-          <key group="editing" id="PGUP"/>
-          <key group="editing" id="DELE" image="" label="Del"/>
-          <key group="editing" id="END"/>
-          <key group="editing" id="PGDN"/>
-          <key group="bottomrow" id="layer3" label="☺"/>
-          <key group="bottomrow" id="layer0"/>
-        </panel>
-        <panel filename="Small-Snippets.svg" layer="snippets">
-          <!-- layer5 -->
-          <key group="snippets" id="m0"/>
-          <key group="snippets" id="m1"/>
-          <key group="snippets" id="m2"/>
-          <key group="snippets" id="m3"/>
-          <key group="snippets" id="m4"/>
-          <key group="snippets" id="m5"/>
-          <key group="snippets" id="m6"/>
-          <key group="snippets" id="m7"/>
-          <key group="snippets" id="m8"/>
-          <key group="snippets" id="m9"/>
-          <key group="snippets" id="m10"/>
-          <key group="snippets" id="m11"/>
-          <key expand="false" group="bottomrow" id="hide"/>
-          <key expand="false" group="bottomrow" id="move"/>
-          <key group="click_control" id="hoverclick" unlatch_layer="false"/>
-          <key group="bottomrow" id="layer3" label="☺"/>
-          <key group="bottomrow" id="layer0"/>
-        </panel>
+
         <panel>
           <panel>
             <panel filename="Small-Alpha.svg" layer="alpha">
@@ -260,33 +277,34 @@
               <key group="bottomrow" id="LALT"/>
             </panel>
             <panel filename="Small-Numbers.svg" layer="numbers">
-              <key group="bottomrow" id="layer0"/>
-              <key group="bottomrow" id="layer3" label="☺"/>
-              <key group="bottomrow" id="layer2" image="" label="Sym"/>
+              <key group="bottomrow" id="layer4"/>
+              <key group="bottomrow" id="layer3"/>
+              <key group="bottomrow" id="layer2"/>
             </panel>
             <panel filename="Small-Syms.svg" layer="syms">
-              <key group="bottomrow" id="layer0"/>
-              <key group="bottomrow" id="layer3" label="☺"/>
-              <key group="bottomrow" id="layer2" image="" label="Sym"/>
-            </panel>
-            <panel filename="Small-Emoji.svg" layer="emoji">
-              <key group="bottomrow" id="layer0"/>
-              <key group="bottomrow" id="layer3" label="☺"/>
-              <key group="bottomrow" id="layer2" image="" label="Sym"/>
+              <key group="bottomrow" id="layer4"/>
+              <key group="bottomrow" id="layer3"/>
+              <key group="bottomrow" id="layer2"/>
             </panel>
             <panel filename="Small-Fn.svg" layer="functionkeys">
-              <key group="bottomrow" id="layer0"/>
-              <key group="bottomrow" id="layer3" label="☺"/>
-              <key group="bottomrow" id="layer2" image="" label="Sym"/>
+              <key group="bottomrow" id="layer4"/>
+              <key group="bottomrow" id="layer3"/>
+              <key group="bottomrow" id="layer2"/>
             </panel>
             <panel filename="Small-Snippets.svg" layer="snippets">
-              <key group="bottomrow" id="layer0"/>
-              <key group="bottomrow" id="layer3" label="☺"/>
-              <key group="bottomrow" id="layer2" image="" label="Sym"/>
+              <key group="bottomrow" id="layer4"/>
+              <key group="bottomrow" id="layer3"/>
+              <key group="bottomrow" id="layer2"/>
+            </panel>
+            <panel filename="Small-Emoji.svg" layer="emoji">
+              <key group="bottomrow" id="layer4"/>
+              <key group="bottomrow" id="layer3"/>
+              <key group="bottomrow" id="layer2"/>
             </panel>
           </panel>
+
           <panel filename="Small-Alpha.svg">
-            <key group="bottomrow" id="layer1" label="12?"/>
+            <key group="bottomrow" id="layer1"/>
           </panel>
           <panel>
             <panel filename="Small-Alpha.svg" layer="alpha">
@@ -317,8 +335,12 @@
               <key group="alphanumeric" id="UP"/>
               <key group="alphanumeric" id="DOWN"/>
             </panel>
-            <panel border="2" filename="Small-Fn.svg" layer="functionkeys">
-              <!-- no keys here -->
+            <panel filename="Small-Fn.svg" layer="functionkeys">
+              <key group="bottomrow" id="SPCE"/>
+              <key group="alphanumeric" id="LEFT"/>
+              <key group="alphanumeric" id="RGHT"/>
+              <key group="alphanumeric" id="UP"/>
+              <key group="alphanumeric" id="DOWN"/>
             </panel>
             <panel filename="Small-Snippets.svg" layer="snippets">
               <key group="bottomrow" id="quit"/>
@@ -328,8 +350,9 @@
           </panel>
         </panel>
       </panel>
+
+      <!-- Panel with the click buttons -->
       <panel filename="Small-Alpha.svg" id="click">
-        <!-- Panel with the click buttons -->
         <key group="click" id="middleclick"/>
         <key group="click" id="secondaryclick"/>
         <key group="click" id="doubleclick"/>
@@ -337,6 +360,8 @@
       </panel>
     </box>
   </box>
+
+
   <!-- popup definition -->
   <layout filename="Small-Alpha.svg" id="RTRN_popup">
     <box compact="true">
@@ -345,4 +370,5 @@
       <key group="nowordlist" id="hide" image="close.svg" svg_id="hide.popup"/>
     </box>
   </layout>
+
 </keyboard>
