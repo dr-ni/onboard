@@ -778,8 +778,7 @@ class Keyboard(WordSuggestions):
         key_type = key.type
 
         # punctuation duties before keypress is sent
-        if not key.is_modifier() and not key.is_button():
-            WordSuggestions.on_before_key_down(self, key)
+        WordSuggestions.on_before_key_press(self, key)
 
         if key_type == KeyCommon.KEYCODE_TYPE:
             self._key_synth.press_keycode(key.code)

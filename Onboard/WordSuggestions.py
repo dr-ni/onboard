@@ -233,47 +233,23 @@ class WordSuggestions:
         return self._spell_checker.get_supported_dict_ids()
 
     def send_key_up(self, key, button, event_type):
-        if key.type == KeyCommon.CORRECTION_TYPE:
+        key_type = key.type
+        if key_type == KeyCommon.CORRECTION_TYPE:
             self._insert_correction_choice(key, key.code)
 
-        elif key.type == KeyCommon.WORD_TYPE:
+        elif key_type == KeyCommon.WORD_TYPE:
             # no punctuation assistance on right click
             self._insert_prediction_choice(key, key.code, button != 3)
 
-    def _insert_correction_choice(self, key, choice_index):
-        """ spelling correction clicked """
-        span = self._correction_span # span to correct
-        with self.suppress_modifiers():
-            self._replace_text(span.begin(), span.end(),
-                               self.text_context.get_span_at_cursor().begin(),
-                               self._correction_choices[choice_index])
+        if key_type in [KeyCommon.WORD_TYPE, 
+                        KeyCommon.CORRECTION_TYPE, 
+                        KeyCommon.MACRO_TYPE]:
+            self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
-    def _insert_prediction_choice(self, key, choice_index, allow_separator):
-        """ prediction choice clicked """
-        deletion, insertion = \
-                self._get_prediction_choice_remainder(choice_index)
-
-        # simulate the change
-        cursor_span = self.text_context.get_span_at_cursor()
-        context = cursor_span.get_text_until_span()
-        context = context[:-len(deletion)]
-        context += insertion
-
-        # should we add a separator character after the inserted word?
-        separator = ""
-        if config.wp.punctuation_assistance and \
-           allow_separator:
-            domain = self.text_context.get_text_domain()
-            separator = domain.get_auto_separator(context)
-
-        # type remainder/replace word and possibly add separator
-        added_separator = self._replace_text_at_cursor(deletion, insertion,
-                                                       separator)
-        self._punctuator.set_added_separator(added_separator)
-
-    def on_before_key_down(self, key):
-        self._punctuator.on_before_press(key)
-        self.text_context.on_onboard_key_down(key, self.get_mod_mask())
+    def on_before_key_press(self, key):
+        if not key.is_modifier() and not key.is_button():
+            self._punctuator.on_before_press(key)
+        self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
     def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
@@ -363,6 +339,37 @@ class WordSuggestions:
             if item.are_corrections_expanded():
                 item.expand_corrections(expand)
                 self.redraw([item])
+
+    def _insert_correction_choice(self, key, choice_index):
+        """ spelling correction clicked """
+        span = self._correction_span # span to correct
+        with self.suppress_modifiers():
+            self._replace_text(span.begin(), span.end(),
+                               self.text_context.get_span_at_cursor().begin(),
+                               self._correction_choices[choice_index])
+
+    def _insert_prediction_choice(self, key, choice_index, allow_separator):
+        """ prediction choice clicked """
+        deletion, insertion = \
+                self._get_prediction_choice_remainder(choice_index)
+
+        # simulate the change
+        cursor_span = self.text_context.get_span_at_cursor()
+        context = cursor_span.get_text_until_span()
+        context = context[:-len(deletion)]
+        context += insertion
+
+        # should we add a separator character after the inserted word?
+        separator = ""
+        if config.wp.punctuation_assistance and \
+           allow_separator:
+            domain = self.text_context.get_text_domain()
+            separator = domain.get_auto_separator(context)
+
+        # type remainder/replace word and possibly add separator
+        added_separator = self._replace_text_at_cursor(deletion, insertion,
+                                                       separator)
+        self._punctuator.set_added_separator(added_separator)
 
     def _update_correction_choices(self):
         self._correction_choices = []

@@ -103,6 +103,7 @@ class AtspiTextContext(TextContext):
 
         self._changes = TextChanges()
         self._entering_text = False
+        self._text_changed = False
 
         self._context = ""
         self._line = ""
@@ -133,7 +134,9 @@ class AtspiTextContext(TextContext):
         if self._accessible is None:
             return ""
 
+        # Don't update suggestions in scrolling terminals
         if self._entering_text or \
+           not self._text_changed or \
            self.can_suggest_before_typing():
             return self._context
 
@@ -280,6 +283,7 @@ class AtspiTextContext(TextContext):
         # keep track of the active accessible asynchronously
         self._accessible = accessible
         self._entering_text = False
+        self._text_changed = False
 
         # select text domain matching this accessible
         state = self._state_tracker.get_state() \
@@ -340,7 +344,7 @@ class AtspiTextContext(TextContext):
         modifiers = event.modifiers
         #self._handle_key_press(keycode, modifiers)
 
-    def on_onboard_key_down(self, key, mod_mask):
+    def on_onboard_typing(self, key, mod_mask):
         if key.is_text_changing():
             keycode = 0
             if key.is_return():
@@ -420,7 +424,10 @@ class AtspiTextContext(TextContext):
                 span.text = Atspi.Text.get_text(accessible, begin, end)
                 span.text_pos = begin
 
-            #print(self._changes)
+           #print(self._changes)
+
+        self._text_changed = True
+
         return insertion_span
 
     def _update_context(self):
