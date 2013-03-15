@@ -461,35 +461,30 @@ class AtspiStateTracker(EventSource):
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:
+                name = "unknown"
+                role = None
+                role_name = None
+                editable = None
+                states = None
+                extents = None
+
                 try:
+                    name = accessible.get_name()
                     role = accessible.get_role()
-                except: # private exception gi._glib.GError when gedit became unresponsive
-                    role = None
-
-                try:
                     role_name = accessible.get_role_name()
-                except: # private exception gi._glib.GError when gedit became unresponsive
-                    role_name = None
-
-                try:
                     state_set = accessible.get_state_set()
                     states = state_set.states
                     editable = state_set.contains(Atspi.StateType.EDITABLE) \
                                if state_set else None
-                except: # private exception gi._glib.GError when gedit became unresponsive
-                    states = None
-                    editable = None
-
-                try:
                     ext = accessible.get_extents(Atspi.CoordType.SCREEN)
                     extents   = Rect(ext.x, ext.y, ext.width, ext.height)
                 except: # private exception gi._glib.GError when gedit became unresponsive
-                    extents = None
+                    pass
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
-                        .format(name=accessible.get_name(),
+                        .format(name=name,
                                 role = role,
                                 role_name = role_name,
                                 editable = editable,
