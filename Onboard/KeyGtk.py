@@ -742,20 +742,29 @@ class FixedFontMixin:
         overflow the height of the key.
         """
         return self.calc_font_size(self.context,
-                                   self.get_fullsize_rect().get_size())
+                                   self.get_fullsize_rect().get_size(),
+                                   True)
 
-    def calc_font_size(self, context, size):
+    def calc_font_size(self, context, size, use_width = False):
         """ Calculate font size based on the height of the key """
         # Base this on the unpressed rect, so fake physical key action
         # doesn't influence the font_size and doesn't cause surface cache
         # misses for that minor wiggle.
         label_width, label_height = self.get_label_base_extents(0)
 
+        size_for_maximum_width  = context.scale_log_to_canvas_x(
+                                     (size[0] - config.LABEL_MARGIN[0]*2)) \
+                                  / label_width
+
         size_for_maximum_height = context.scale_log_to_canvas_y(
                                      (size[1] - config.LABEL_MARGIN[1]*2)) \
-                                  / label_height * 0.9
+                                 / label_height
 
-        return int(size_for_maximum_height)
+        font_size = size_for_maximum_height
+        if use_width and size_for_maximum_width < font_size:
+            font_size = size_for_maximum_width
+
+        return int(font_size * 0.9)
 
     def get_label_base_extents(self, mod_mask):
         """
