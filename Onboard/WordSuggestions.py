@@ -1401,7 +1401,10 @@ class Punctuator:
             self._added_separator = False
 
             char = key.get_label()
-            if   char in [",", ":", ";"]:
+            if   char in [",", ":", ";", ")", "}", "]",
+                          "’",
+                          "”", "»", '›', # language dependent :/
+                         ]:
                 self.delete_at_cursor()
                 self._separator_removed = True
 

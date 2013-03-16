@@ -688,8 +688,11 @@ class Keyboard(WordSuggestions):
         else:
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
+                WordSuggestions.on_before_key_press(self, key)
                 self.maybe_send_alt_press(key, view, button, event_type)
+
                 self.send_key_press(key, view, button, event_type)
+
             if action == KeyCommon.DOUBLE_STROKE_ACTION: # e.g. CAPS
                 self.send_key_release(key, view, button, event_type)
 
@@ -721,6 +724,7 @@ class Keyboard(WordSuggestions):
             if action == KeyCommon.DOUBLE_STROKE_ACTION or \
                action == KeyCommon.DELAYED_STROKE_ACTION:
 
+                WordSuggestions.on_before_key_press(self, key)
                 self.maybe_send_alt_press(key, view, button, event_type)
 
                 if key_type == KeyCommon.CHAR_TYPE:
@@ -776,9 +780,6 @@ class Keyboard(WordSuggestions):
         """ Actually generate a fake key press """
         activated = True
         key_type = key.type
-
-        # punctuation duties before keypress is sent
-        WordSuggestions.on_before_key_press(self, key)
 
         if key_type == KeyCommon.KEYCODE_TYPE:
             self._key_synth.press_keycode(key.code)
