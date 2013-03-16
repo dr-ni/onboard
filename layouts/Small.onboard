@@ -10,7 +10,7 @@
     </panel>
 
     <key_template button="true" id="layer1" label="12?"/>
-    <key_template button="true" id="layer2" label="Sym2"/>
+    <key_template button="true" id="layer2" label="Sym"/>
     <key_template button="true" id="layer3" label="Fn" image="" />
     <key_template button="true" id="layer4" label=""   image="snippets.svg"/>
     <key_template button="true" id="layer5" label="☺"/>
@@ -20,7 +20,7 @@
         <!-- layer0 -->
         <panel filename="Small-Alpha.svg" layer="alpha">
           <!-- row 4 -->
-          <key group="bottomrow" id="ESC" label_margin=", 1.5"/>
+          <key group="bottomrow" id="ESC"/>
           <key group="alphanumeric" id="AD01"/>
           <key group="alphanumeric" id="AD02"/>
           <key group="alphanumeric" id="AD03"/>
@@ -192,7 +192,7 @@
           <key group="snippets" id="m11"/>
           <key expand="false" group="bottomrow" id="hide"/>
           <key expand="false" group="bottomrow" id="move"/>
-          <key group="click_control" id="hoverclick" unlatch_layer="false"/>
+          <key group="click_control" id="showclick"/>
           <key group="bottomrow" id="layer5" label="☺"/>
           <key group="bottomrow" id="layer0"/>
         </panel>
@@ -345,7 +345,7 @@
             <panel filename="Small-Snippets.svg" layer="snippets">
               <key group="bottomrow" id="quit"/>
               <key group="bottomrow" id="settings"/>
-              <key group="click_control" id="showclick"/>
+              <key group="click_control" id="hoverclick" unlatch_layer="false"/>
             </panel>
           </panel>
         </panel>
@@ -367,7 +367,8 @@
     <box compact="true">
       <key id="settings"/>
       <key id="move"/>
-      <key group="nowordlist" id="hide" image="close.svg" svg_id="hide.popup"/>
+      <key id="showclick"/>
+      <key id="hide" image="close.svg" svg_id="hide.popup" group="nowordlist" />
     </box>
   </layout>
 
