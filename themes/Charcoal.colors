@@ -56,7 +56,7 @@
 
         <!-- red preferences -->
         <key_group>
-            <color element="fill" rgb="#7f0000"/>
+            <color element="fill" rgb="#700000"/>
             <color element="stroke" rgb="#805060"/>
             settings
         </key_group>
