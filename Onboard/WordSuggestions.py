@@ -822,7 +822,7 @@ class WordSuggestions:
         """ Synchronous callback for text insertion """
 
         # auto-correction
-        if config.is_auto_capitalization_enabled and \
+        if config.is_auto_capitalization_enabled() and \
            self.can_auto_correct():
             word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
