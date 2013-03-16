@@ -241,8 +241,8 @@ class WordSuggestions:
             # no punctuation assistance on right click
             self._insert_prediction_choice(key, key.code, button != 3)
 
-        if key_type in [KeyCommon.WORD_TYPE, 
-                        KeyCommon.CORRECTION_TYPE, 
+        if key_type in [KeyCommon.WORD_TYPE,
+                        KeyCommon.CORRECTION_TYPE,
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
@@ -353,16 +353,14 @@ class WordSuggestions:
         deletion, insertion = \
                 self._get_prediction_choice_remainder(choice_index)
 
-        # simulate the change
-        cursor_span = self.text_context.get_span_at_cursor()
-        context = cursor_span.get_text_until_span()
-        context = context[:-len(deletion)]
-        context += insertion
-
-        # should we add a separator character after the inserted word?
         separator = ""
         if config.wp.punctuation_assistance and \
            allow_separator:
+            # simulate the change
+            cursor_span = self.text_context.get_span_at_cursor()
+            context = self._simulate_insertion(cursor_span, deletion, insertion)
+
+            # should we add a separator character after the inserted word?
             domain = self.text_context.get_text_domain()
             separator = domain.get_auto_separator(context)
 
@@ -370,6 +368,34 @@ class WordSuggestions:
         added_separator = self._replace_text_at_cursor(deletion, insertion,
                                                        separator)
         self._punctuator.set_added_separator(added_separator)
+
+    def _simulate_insertion(self, cursor_span, deletion, insertion):
+        """
+        Return the context up to cursor_span with deletion
+        and insertion applied.
+
+        Doctests:
+        >>> ws = WordSuggestions()
+        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "", "")
+        ''
+        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "", "local")
+        'local'
+        >>> ws._simulate_insertion(TextSpan(8, 0, ""), "log", "")
+        ''
+        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "log", "local")
+        'local'
+        >>> ws._simulate_insertion(TextSpan(6, 0, "/var/l"), "", "og")
+        '/var/log'
+        >>> ws._simulate_insertion(TextSpan(8, 0, "/var/log"), "log", "local")
+        '/var/local'
+        >>> ws._simulate_insertion(TextSpan(8, 0, "/var/log"), "log", "")
+        '/var/'
+        """
+        context = cursor_span.get_text_until_span()
+        if deletion:
+            context = context[:-len(deletion)]
+        context += insertion
+        return context
 
     def _update_correction_choices(self):
         self._correction_choices = []
