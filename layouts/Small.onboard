@@ -20,7 +20,7 @@
         <!-- layer0 -->
         <panel filename="Small-Alpha.svg" layer="alpha">
           <!-- row 4 -->
-          <key group="bottomrow" id="ESC" label_margin=", 3"/>
+          <key group="bottomrow" id="ESC" label_margin=", 2"/>
           <key group="alphanumeric" id="AD01"/>
           <key group="alphanumeric" id="AD02"/>
           <key group="alphanumeric" id="AD03"/>

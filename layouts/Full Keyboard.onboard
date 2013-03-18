@@ -191,7 +191,7 @@
 		    </panel>
 		    <panel group='wordlist'>
 			<key group='bottonrow' id='move' svg_id='move.wordlist' expand='false'/>
-			<box group='wordlist' orientation='vertical'>
+			<box orientation='vertical'>
 			    <key group='bottomrow' id='showclick' svg_id='showclick.wordlist' expand='false'/>
 			    <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='3'/>
 			    <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
