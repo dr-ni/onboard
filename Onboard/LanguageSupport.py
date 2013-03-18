@@ -69,6 +69,12 @@ class LanguageDB:
         self._locale_ids = []
         self._iso_codes = ISOCodes()
 
+    def get_language_full_name_or_id(self, lang_id):
+        full_name = self.get_language_full_name(lang_id)
+        if full_name:
+            return full_name
+        return lang_id
+
     def get_language_full_name(self, lang_id):
         lang_code, country_code = self.split_lang_id(lang_id)
         name = self._iso_codes.get_translated_language_name(lang_code)
@@ -78,6 +84,15 @@ class LanguageDB:
                 country = country_code
             name += " (" + country + ")"
         return name
+
+    def get_language_name(self, lang_id):
+        lang_code, country_code = self.split_lang_id(lang_id)
+        name = self._iso_codes.get_translated_language_name(lang_code)
+        return name
+
+    def get_language_code(self, lang_id):
+        lang_code, country_code = self.split_lang_id(lang_id)
+        return lang_code
 
     def find_system_model_language_id(self, lang_id):
         """

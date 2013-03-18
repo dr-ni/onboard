@@ -1497,17 +1497,27 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Delay this until the dialog is really gone.
         GLib.idle_add(self.on_focusable_gui_closed)
 
-    def show_language_menu(self, key, button):
-        self._language_menu.popup(key, button)
+    def show_language_menu(self, key, button, closure = None):
+        self._language_menu.popup(key, button, closure)
+
+    def is_language_menu_showing(self):
+        return self._language_menu.is_showing()
 
 
 class LanguageMenu:
     """ Popup menu for the language button """
 
-    def __init__(self, keyboard):
-        self._keyboard = keyboard
+    def __init__(self, keyboard_widget):
+        self._keyboard_widget = keyboard_widget
+        self._keyboard = self._keyboard_widget.keyboard
+        self._menu = None
+        self._closure = None
 
-    def popup(self, key, button):
+    def is_showing(self):
+        return not self._menu is None
+
+    def popup(self, key, button, closure = None):
+        self._closure = closure
         self._keyboard.on_focusable_gui_opening()
 
         max_mru_languages = config.typing_assistance.max_recent_languages
@@ -1521,8 +1531,9 @@ class LanguageMenu:
                           [:max_mru_languages]
         other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
 
-        other_lang_names = [languagedb.get_language_full_name(id) \
+        other_lang_names = [languagedb.get_language_full_name_or_id(id) \
                            for id in other_lang_ids]
+
         # language sub menu
         lang_menu = Gtk.Menu()
         for name, lang_id in sorted(zip(other_lang_names, other_lang_ids)):
@@ -1543,7 +1554,7 @@ class LanguageMenu:
         menu.append(item)
 
         for lang_id in mru_lang_ids:
-            name = languagedb.get_language_full_name(lang_id)
+            name = languagedb.get_language_full_name_or_id(lang_id)
             item = Gtk.CheckMenuItem.new_with_label(name)
             item.set_draw_as_radio(True)
             item.set_active(lang_id == active_lang_id)
@@ -1562,21 +1573,24 @@ class LanguageMenu:
             item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
 
-        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_Auto-detect Language"))
-        menu.append(item)
-
         menu.connect("unmap", self._language_menu_unmap)
+        self._menu = menu
+
         menu.show_all()
 
         menu.popup(None, None, self._language_menu_positioning_func,
                    key, button, Gtk.get_current_event_time())
 
+
     def _language_menu_unmap(self, menu):
         Timer(0.5, self._keyboard.on_focusable_gui_closed)
+        self._menu = None
+        if self._closure:
+            self._closure()
 
     def _language_menu_positioning_func(self, menu, key):
-        r = self._keyboard.get_key_screen_rect(key)
-        x = r.right() - menu.get_allocated_width()
+        r = self._keyboard_widget.get_key_screen_rect(key)
+        x = r.left()
         return x, r.bottom(), True
 
     def _on_language_activated(self, menu, lang_id):
@@ -1589,7 +1603,7 @@ class LanguageMenu:
 
     def _set_mru_lang_id(self, lang_id):
         max_recent_languages = config.typing_assistance.max_recent_languages
-        recent_languages = config.typing_assistance.recent_languages
+        recent_languages = config.typing_assistance.recent_languages[:]
         if lang_id in recent_languages:
             recent_languages.remove(lang_id)
         recent_languages.insert(0, lang_id)

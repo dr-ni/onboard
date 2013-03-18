@@ -639,4 +639,3 @@ class GSKey:
             else:
                 self.settings[self.key] = value
 
-

@@ -405,6 +405,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # popup indicator
         if not self.popup_id is None:
             label = "…"
+            label = "︙"
             font_size = self.font_size
             layout = self.get_pango_layout(label, font_size, 2)
             src_size = layout.get_size()

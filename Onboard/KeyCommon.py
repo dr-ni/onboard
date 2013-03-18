@@ -241,6 +241,10 @@ class KeyCommon(LayoutItem):
     def draw_label(self, context = None):
         raise NotImplementedError()
 
+    def set_labels(self, labels):
+        self.labels = labels
+        self.configure_label(0)
+
     def get_label(self):
         return self.label
 

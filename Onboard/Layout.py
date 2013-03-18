@@ -876,6 +876,9 @@ class LayoutPanel(LayoutItem):
     Group of keys layed out at fixed positions relative to each other.
     """
 
+    # Don't extend bounding box into invisibles
+    compact = False
+
     def _fit_inside_canvas(self, canvas_border_rect):
         """
         Scale panel to fit inside the given canvas_rect.
@@ -905,14 +908,16 @@ class LayoutPanel(LayoutItem):
         if all(not item.is_visible() for item in self.items):
             return Rect()
 
+        compact = self.compact
         bounds = None
         for item in self.items:
-            rect = item.get_border_rect()
-            if not rect.is_empty():
-                if bounds is None:
-                    bounds = rect
-                else:
-                    bounds = bounds.union(rect)
+            if not compact or item.visible:
+                rect = item.get_border_rect()
+                if not rect.is_empty():
+                    if bounds is None:
+                        bounds = rect
+                    else:
+                        bounds = bounds.union(rect)
 
         if bounds is None:
             return Rect()

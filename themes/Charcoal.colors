@@ -34,7 +34,7 @@
             Prnt, Pause, ESC, Scroll,
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
             hide, showclick, move, layer,
-            quit, inputline
+            quit, inputline,
 
             <!-- word suggestions -->
             <key_group>
@@ -42,7 +42,7 @@
                 prediction
                 <key_group>
                     <color element="fill" rgb="#111920" opacity="0.8"/>
-                    wordlist
+                    wordlist, language.wordlist, hide.wordlist
                 </key_group>
             </key_group>
         </key_group>

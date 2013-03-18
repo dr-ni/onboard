@@ -55,14 +55,16 @@ class DockMode:
 
 
 class UIMask:
-    CONTROLLERS = 1<<0
-    SUGGESTIONS = 1<<1
-    LAYOUT      = 1<<2
-    LAYERS      = 1<<3
-    SIZE        = 1<<4
-    REDRAW      = 1<<5
+    (
+        CONTROLLERS,
+        SUGGESTIONS,
+        LAYOUT,
+        LAYERS,
+        SIZE,
+        REDRAW,
+    ) = (1<<bit for bit in range(6))
 
-    ALL = CONTROLLERS | SUGGESTIONS | LAYOUT | LAYERS | SIZE | REDRAW
+    ALL = -1
 
 
 class UnpressTimers:
@@ -233,14 +235,14 @@ class Keyboard(WordSuggestions):
 
     def _push_and_clear_modifiers(self):
         self._suppress_modifiers_stack.append(self._mods.copy())
-        for mod, nkeys in self._mods.items():   
+        for mod, nkeys in self._mods.items():
             if nkeys:
                 self._mods[mod] = 0
                 self._key_synth.unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
         self._mods = self._suppress_modifiers_stack.pop()
-        for mod, nkeys in self._mods.items():   
+        for mod, nkeys in self._mods.items():
             if nkeys:
                 self._key_synth.lock_mod(mod)
 
@@ -393,7 +395,7 @@ class Keyboard(WordSuggestions):
 
         # connect button controllers to button keys
         types = { type.id : type for type in \
-                   [BCMiddleClick, BCSingleClick, BCSecondaryClick, 
+                   [BCMiddleClick, BCSingleClick, BCSecondaryClick,
                     BCDoubleClick, BCDragClick, BCHoverClick,
                     BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
                     BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
@@ -616,6 +618,10 @@ class Keyboard(WordSuggestions):
                 if controller:
                     controller.long_press(view, button)
 
+            elif key.is_prediction_key():
+                view.show_language_menu(key, button)
+                long_pressed = True
+
             else:
                 # All other keys get hard-coded long press menus
                 # (where available).
@@ -628,6 +634,9 @@ class Keyboard(WordSuggestions):
                         self._touch_feedback.hide(key)
                         view.show_popup_alternative_chars(key, alternatives)
                     long_pressed = True
+
+        if long_pressed:
+            key.activated = True # no more drag selection
 
         return long_pressed
 
@@ -646,6 +655,11 @@ class Keyboard(WordSuggestions):
         # -> redraw asynchronously
         if can_send_key and key.is_modifier():
             self.redraw_labels(False)
+
+        if key.type == KeyCommon.BUTTON_TYPE:
+            controller = self.button_controllers.get(key)
+            if controller:
+                key.activated = controller.is_activated_on_press()
 
     def _do_key_up_action(self, key, view, button, event_type):
         update = False
@@ -751,7 +765,7 @@ class Keyboard(WordSuggestions):
         # There might be a bug lurking that gets certain modifers stuck
         # with negative counts. Work around this and be verbose about it
         # so we can fix it evetually.
-        for mod, nkeys in self._mods.items():   
+        for mod, nkeys in self._mods.items():
             if nkeys < 0:
                 _logger.warning("Negative count {} for modifier {}, reset." \
                                 .format(self.mods[modifier], modifier))
@@ -1230,21 +1244,29 @@ class Keyboard(WordSuggestions):
                                 UIMask.SUGGESTIONS | \
                                 UIMask.LAYOUT
 
+    def invalidate_layout(self):
+        """
+        Update everything assuming key sizes don't change.
+        Doesn't invalidate cached surfaces.
+        """
+        self._invalidated_ui |= UIMask.LAYOUT
+
     def invalidate_redraw(self):
         """ Just redraw everything """
         self._invalidated_ui |= UIMask.REDRAW
 
     def commit_ui_updates(self):
-        keys = None
+        keys = set()
         mask = self._invalidated_ui
 
         if mask & UIMask.CONTROLLERS:
             # update buttons
             for controller in list(self.button_controllers.values()):
                 controller.update()
+            mask = self._invalidated_ui  # may have changed by controllers
 
         if mask & UIMask.SUGGESTIONS:
-            keys = WordSuggestions.update_suggestions_ui(self)
+            keys.update(WordSuggestions.update_suggestions_ui(self))
 
         if mask & UIMask.LAYOUT:
             self.update_layout()   # after suggestions!
@@ -1258,7 +1280,7 @@ class Keyboard(WordSuggestions):
         if mask & UIMask.REDRAW:
             self.redraw()
         elif keys:
-            self.redraw(keys)
+            self.redraw(list(keys))
 
         self._invalidated_ui = 0
 
@@ -1412,8 +1434,8 @@ class ButtonController(object):
         return False
 
     def is_activated_on_press(self):
-        """ Can ignore already called press() without consequences? """
-        return True
+        """ Cannot already called press() without consequences? """
+        return False
 
     def set_visible(self, visible):
         if self.key.visible != visible:
@@ -1610,7 +1632,7 @@ class BCMove(ButtonController):
                          not config.xid_mode)
 
     def is_activated_on_press(self):
-        return False # dragging is already in progress on press
+        return True # dragging is already in progress on press
 
 
 class BCLayer(ButtonController):
@@ -1745,9 +1767,36 @@ class BCLanguage(ButtonController):
 
     def __init__(self, keyboard, key):
         ButtonController.__init__(self, keyboard, key)
-
+        self._opened_on_long_press = False
 
     def release(self, view, button, event_type):
-        self.keyboard.show_language_menu(self.key, button)
+        if not self._opened_on_long_press:
+            self.set_active(not self.key.active)
+            if self.key.active:
+                self._show_menu(view, self.key, button)
+        self._opened_on_long_press = False
 
+    def long_press(self, view, button):
+        self._opened_on_long_press = True
+        self._show_menu(view, self.key, button)
+
+    def _show_menu(self, view, key, button):
+        self.keyboard.hide_touch_feedback()
+        view.show_language_menu(key, button, self._on_menu_closed)
+
+    def _on_menu_closed(self):
+        self.set_active(False)
+
+    def update(self):
+        if config.are_word_suggestions_enabled():
+            key = self.key
+            keyboard = self.keyboard
+
+            lang_id = keyboard.get_active_lang_id()
+            visible = bool(lang_id)
+            label = keyboard._languagedb.get_language_code(lang_id)
+            if key.visible != visible or label != key.get_label():
+                key.set_labels({0: label})
+                self.set_visible(visible)
+                keyboard.invalidate_ui()
 

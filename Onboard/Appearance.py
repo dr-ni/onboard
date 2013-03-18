@@ -522,17 +522,17 @@ class ColorScheme(object):
 
     def get_key_default_rgba(self, key, element, state):
         colors = {
-                    "fill":                   [0.9,  0.85, 0.7, 1.0],
-                    "prelight":               [0.0,  0.0,  0.0, 1.0],
-                    "pressed":                [0.6,  0.6,  0.6, 1.0],
-                    "active":                 [0.5,  0.5,  0.5, 1.0],
-                    "locked":                 [1.0,  0.0,  0.0, 1.0],
-                    "scanned":                [0.45, 0.45, 0.7, 1.0],
-                    "stroke":                 [0.0,  0.0,  0.0, 1.0],
-                    "label":                  [0.0,  0.0,  0.0, 1.0],
-                    "secondary-label":        [0.5,  0.5,  0.5, 1.0],
-                    "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
-                    "correction-label":       [1.0,  0.5,  0.5, 1.0],
+                    "fill":                     [0.9,  0.85, 0.7, 1.0],
+                    "prelight":                 [0.0,  0.0,  0.0, 1.0],
+                    "pressed":                  [0.6,  0.6,  0.6, 1.0],
+                    "active":                   [0.5,  0.5,  0.5, 1.0],
+                    "locked":                   [1.0,  0.0,  0.0, 1.0],
+                    "scanned":                  [0.45, 0.45, 0.7, 1.0],
+                    "stroke":                   [0.0,  0.0,  0.0, 1.0],
+                    "label":                    [0.0,  0.0,  0.0, 1.0],
+                    "secondary-label":          [0.5,  0.5,  0.5, 1.0],
+                    "dwell-progress":           [0.82, 0.19, 0.25, 1.0],
+                    "correction-label":         [1.0,  0.5,  0.5, 1.0],
                     }
 
         rgba = [0.0, 0.0, 0.0, 1.0]

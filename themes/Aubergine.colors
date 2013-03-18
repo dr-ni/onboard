@@ -16,7 +16,16 @@
         INS, DELE, HOME, END, PGUP, PGDN,
         KPSU, KPDV KPAD, KPMU,
         middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick,
-        LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid
+        LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid,
+        hide.wordlist
+
+        <!-- spelling suggestions -->
+        <key_group>
+            <color element="fill"  rgb="#e5c6b2"/>
+            <color element="label" rgb="#C00000"/>
+            correctionsbg,
+            correction
+        </key_group>
 
         <!-- black stroke -->
         <key_group>

@@ -146,7 +146,7 @@ class WordSuggestions:
                              .find_system_model_language_id(lang_id)
 
             system_models  = ["lm:system:" + system_lang_id]
-            user_models    = ["lm:user:user"]
+            user_models    = ["lm:user:" + lang_id]
             scratch_models = ["lm:mem"]
 
             persistent_models = system_models + user_models
@@ -212,8 +212,7 @@ class WordSuggestions:
 
     def set_active_lang_id(self, lang_id):
         config.typing_assistance.active_language = lang_id
-        self.update_spell_checker()
-        self.apply_prediction_profile()
+        self.on_active_lang_id_changed()
 
     def get_word_list_bars(self):
         """
@@ -332,6 +331,12 @@ class WordSuggestions:
             key.configure_label(0)
 
         return items + keys_to_redraw
+
+    def update_language_ui(self):
+        return []
+
+    def _has_suggestions(self):
+        return bool(self._correction_choices or self._prediction_choices)
 
     def expand_corrections(self, expand):
         # collapse all expanded corrections
@@ -1512,16 +1517,18 @@ class WordListPanel(LayoutPanel):
 
         buttons = []
         button = self._get_child_button("hide")
-        if button:
+        if button and button.visible:
             button_width = self._get_button_width(button)
             rect.w -= button_width
-            buttons.append((button, button_width))
+            buttons.append((button, button_width, 1))
 
-        button = self._get_child_button("language")
-        if button:
-            button_width = self._get_button_width(button)
-            rect.w -= button_width
-            buttons.append((button, button_width))
+        if 0:
+            button = self._get_child_button("language")
+            if button and button.visible:
+                button_width = self._get_button_width(button)
+                rect.w -= button_width
+                #rect.x += button_width
+                buttons.append((button, button_width, -1))
 
         # font size is based on the height of the word list background
         font_size = WordKey().calc_font_size(key_context, rect.get_size())
@@ -1545,12 +1552,17 @@ class WordListPanel(LayoutPanel):
         # move the buttons to the end of the bar
         if buttons:
             rw = wordlist_rect.copy()
-            for button, button_width in buttons:
+            for button, button_width, align in buttons:
                 r = rw.copy()
                 r.w = button_width
-                r.x = rw.right() - button_width
+                if align == -1:
+                    r.x = rw.left() - button_width
+                    rw.x += button_width
+                    rw.w -= button_width
+                elif align == 1:
+                    r.x = rw.right() - button_width
+                    rw.w -= button_width
                 button.set_border_rect(r)
-                rw.w -= button_width
 
         # finally add all keys to the panel
         color_scheme = fixed_buttons[0].color_scheme

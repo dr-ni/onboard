@@ -296,6 +296,8 @@ class LayoutLoaderSVG:
 
     def _parse_panel(self, node):
         item = self._parse_dom_node_item(node, LayoutPanel)
+        if node.hasAttribute("compact"):
+            item.compact = node.attributes["compact"].value == "true"
         return item
 
     def _parse_key(self, node, parent):

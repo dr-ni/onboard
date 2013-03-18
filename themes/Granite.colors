@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <color_scheme name="Granite" format="2.1">
     <window type="key-popup">
-        <color element="border" rgb="#d2d6d9" opacity="1.0"/>
+        <color element="border" rgb="#515967" opacity="1.0"/>
     </window>
 
     <layer> <color element="background" rgb="#000e29" opacity="1.0"/> </layer>
@@ -38,7 +38,7 @@
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
-                wordlist, prediction
+                wordlist, prediction, language.wordlist, hide.wordlist
             </key_group>
         </key_group>
         

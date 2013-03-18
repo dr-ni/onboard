@@ -289,7 +289,7 @@
      x="216.63158" />
   <rect
      id="wordlist"
-     height="18.952211"
+     height="18.952213"
      width="238.95221"
      y="-19.476109"
      x="0.52389407"
@@ -299,21 +299,21 @@
      height="18.801407"
      width="46.801407"
      y="-19.400705"
-     x="0.59929627"
+     x="30.599297"
      style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.19859254;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="expand-corrections"
      height="18.358009"
      width="18.358009"
      y="-19.179007"
-     x="58.820992"
+     x="88.820992"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.6419903;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="prediction"
      height="18.777159"
      width="48.777161"
      y="-19.388578"
-     x="88.61142"
+     x="118.61142"
      style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.22284126;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="AA02"
@@ -349,10 +349,18 @@
      inkscape:label="" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.64199018;stroke-miterlimit:4;stroke-dasharray:none"
-     x="212.40327"
-     y="-19.179007"
+     x="220.821"
+     y="-19.179008"
      width="18.358009"
      height="18.358009"
      id="hide.wordlist"
      inkscape:label="" />
+  <rect
+     inkscape:label=""
+     id="language.wordlist"
+     height="18.358009"
+     width="18.358009"
+     y="-19.17977"
+     x="0.82099509"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.64199018;stroke-miterlimit:4;stroke-dasharray:none" />
 </svg>

@@ -17,7 +17,8 @@
         <color element="label"  rgb="#000000"/>
         <color element="dwell-progress"  rgb="#f19671"/>
         F5.rows_of_six, F6.rows_of_six, F7.rows_of_six, F8.rows_of_six,
-        icon1, icon2
+        icon1, icon2,
+        language.wordlist, hide.wordlist
 
 	<!-- word suggestions -->
         <key_group>
