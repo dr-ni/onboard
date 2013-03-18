@@ -403,7 +403,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             runs.append((layout, x, y, rgba))
 
         # popup indicator
-        if not self.popup_id is None:
+        if not self.popup_id is None and \
+           not config.xid_mode:
             label = "…"
             label = "︙"
             font_size = self.font_size
