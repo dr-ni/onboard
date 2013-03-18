@@ -51,7 +51,7 @@ class ConfigObject(object):
         self.gskeys = {}           # key-value objects {property name, GSKey()}
         self.sysdef_section = None # system defaults section name
         self.system_defaults = {}  # system defaults {property name, value}
-        self._osk_dconf = None 
+        self._osk_dconf = None
 
         # add keys in here
         self._init_keys()
@@ -182,7 +182,7 @@ class ConfigObject(object):
                             for callback in callbacks:
                                 callback(value)
 
-                        GLib.idle_add(notify, 
+                        GLib.idle_add(notify,
                                         getattr(self, _NOTIFY_CALLBACKS.format(prop)),
                                         value)
                     else:
@@ -235,7 +235,8 @@ class ConfigObject(object):
         self.init_from_gsettings()
 
         # let system defaults override gsettings
-        if self.use_system_defaults:
+        if self.use_system_defaults or \
+           self._check_hints_file():
             self.init_from_system_defaults()
             self.use_system_defaults = False    # write to gsettings
 
@@ -245,6 +246,26 @@ class ConfigObject(object):
                 value = getattr(options, gskey.prop)
                 if not value is None:
                     gskey.value = value
+
+    def _check_hints_file(self):
+        """
+        Use system defaults if this file exists, then delete it.
+        Workaround for the difficult to access gsettings/dconf
+        database when running Onboard in lightdm."
+        """
+        filename = "/tmp/onboard-use-system-defaults"
+        if os.path.exists(filename):
+            _logger.warning("Hint file '{}' exists; applying system defaults." \
+                         .format(filename))
+            try:
+                os.remove(filename)
+            except IOError as ex:
+                errno = ex.errno
+                errstr = os.strerror(errno)
+                _logger.error("failed to remove hint file '{}': {} ({})" \
+                            .format(filename, errstr, errno))
+            return True
+        return False
 
     def init_from_gsettings(self):
         """ init propertiy values from gsettings """
@@ -451,7 +472,7 @@ class ConfigObject(object):
         """ very crude hard coded behavior, fixme as needed """
         if type_spec == "a{ss}":
             _dict = ConfigObject._list_to_dict(_list, str, num_values = 1)
-            return dict([key, value[0]] for key, value in _dict.items())  
+            return dict([key, value[0]] for key, value in _dict.items())
 
         if type_spec == "a{s[ss]}":
             return ConfigObject._list_to_dict(_list, str, num_values = 2)
