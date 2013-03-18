@@ -32,7 +32,7 @@
      showgrid="false"
      inkscape:zoom="3.16"
      inkscape:cx="163.2025"
-     inkscape:cy="93.483069"
+     inkscape:cy="17.533702"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -396,11 +396,11 @@
      x="96.569038" />
   <rect
      id="wordlist"
-     height="18.835773"
-     width="296.83578"
-     y="-19.417887"
-     x="20.582113"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.16422749;stroke-miterlimit:4;stroke-dasharray:none" />
+     height="18.798454"
+     width="316.79846"
+     y="-19.399227"
+     x="0.60077327"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.20154655;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="prediction"
      height="18.904217"
@@ -472,7 +472,7 @@
      x="376.6308" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.18966973;stroke-miterlimit:4;stroke-dasharray:none"
-     x="0.59483486"
+     x="278.59485"
      y="-19.405165"
      width="18.810329"
      height="18.810331"

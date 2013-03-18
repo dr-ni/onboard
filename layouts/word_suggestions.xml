@@ -1,22 +1,20 @@
 <?xml version="1.0" ?>
 <keyboard id="Compact" format="3.0">
     <!--- word suggestions -->
-    <box group="wordlist" id='wordlistbar'>
-        <key group='wsbutton' id='language.wordlist' svg_id='language.wordlist' label='' button='true' class='WordlistKey' scannable='false'/>
-        <panel id='wordlistbar' group="wordlist" class="WordListPanel">
-            <!-- area of word suggestions -->
-            <key id='wordlist' group='wordlist' label='' sensitive='false' scannable='false' class='WordlistKey'/>
+    <panel id='wordlistbar' group="wordlist" class="WordListPanel">
+        <!-- area of word suggestions -->
+        <key id='wordlist' group='wordlist' label='' sensitive='false' scannable='false' class='WordlistKey'/>
 
-            <!-- template for spelling suggestions -->
-            <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
+        <!-- template for spelling suggestions -->
+        <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
 
-            <!-- template for predictions -->
-            <key id='prediction' label=' ' visible='false' scannable='false'/>
+        <!-- template for predictions -->
+        <key id='prediction' label=' ' visible='false' scannable='false'/>
 
-            <!-- wordlist buttons -->
-            <key group='wordlist' id='expand-corrections' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
-            <key group='wsbutton' id='hide.wordlist' svg_id='hide.wordlist' image='close.svg' button='true' class='BarKey' scannable='false' tooltip='Hide Onboard'/>
-        </panel>
-    </box>
+        <!-- wordlist buttons -->
+        <key group='wordlist' id='expand-corrections' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
+        <key group='wsbutton' id='language.wordlist' svg_id='language.wordlist' label='' button='true' class='BarKey' scannable='false'/>
+        <key group='wsbutton' id='hide.wordlist' svg_id='hide.wordlist' image='close.svg' button='true' class='BarKey' scannable='false' tooltip='Hide Onboard'/>
+    </panel>
 </keyboard>
 

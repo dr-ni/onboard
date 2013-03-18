@@ -1522,13 +1522,13 @@ class WordListPanel(LayoutPanel):
             rect.w -= button_width
             buttons.append((button, button_width, 1))
 
-        if 0:
+        if 1:
             button = self._get_child_button("language")
             if button and button.visible:
                 button_width = self._get_button_width(button)
                 rect.w -= button_width
                 #rect.x += button_width
-                buttons.append((button, button_width, -1))
+                buttons.append((button, button_width, 1))
 
         # font size is based on the height of the word list background
         font_size = WordKey().calc_font_size(key_context, rect.get_size())

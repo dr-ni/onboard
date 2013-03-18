@@ -59,11 +59,11 @@
   </metadata>
   <rect
      id="wordlist"
-     height="17.99159"
-     width="350.99158"
-     y="0.50420523"
-     x="19.504206"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.00841045" />
+     height="17.965445"
+     width="369.96542"
+     y="0.51727772"
+     x="0.51727772"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.03455544" />
   <rect
      id="inputline"
      style="stroke:#000;fill:#e5d8b2"
@@ -904,7 +904,7 @@
      id="language.wordlist"
      height="17.980282"
      width="17.980282"
-     y="0.50985867"
-     x="0.50985867"
+     y="0.50986046"
+     x="333.50986"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.01971734" />
 </svg>
