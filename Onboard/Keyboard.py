@@ -1632,7 +1632,7 @@ class BCMove(ButtonController):
                          not config.xid_mode)
 
     def is_activated_on_press(self):
-        return True # dragging is already in progress on press
+        return False # dragging is already in progress on press
 
 
 class BCLayer(ButtonController):
