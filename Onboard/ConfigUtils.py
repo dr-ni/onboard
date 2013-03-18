@@ -235,8 +235,9 @@ class ConfigObject(object):
         self.init_from_gsettings()
 
         # let system defaults override gsettings
-        if self.use_system_defaults or \
-           self._check_hints_file():
+        use_system_defaults = self.use_system_defaults or \
+                              self._check_hints_file()
+        if use_system_defaults:
             self.init_from_system_defaults()
             self.use_system_defaults = False    # write to gsettings
 
@@ -246,6 +247,9 @@ class ConfigObject(object):
                 value = getattr(options, gskey.prop)
                 if not value is None:
                     gskey.value = value
+
+        return use_system_defaults
+
 
     def _check_hints_file(self):
         """

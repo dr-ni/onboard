@@ -269,7 +269,7 @@ class Config(ConfigObject):
         self.load_system_defaults(paths)
 
         # initialize all property values
-        self.init_properties(self.options)
+        used_system_defaults = self.init_properties(self.options)
 
         # Make sure there is a 'Default' entry when tracking the system theme.
         # 'Default' is the theme used when encountering an so far unknown
@@ -281,16 +281,20 @@ class Config(ConfigObject):
             self.system_theme_associations = theme_assocs
 
         # remember command line theme for system theme tracking
-        if self.options.theme:
+        # remember the initial theme from system defaults
+        if self.options.theme or \
+           used_system_defaults and "theme" in self.system_defaults:
             self.remember_theme(self.theme)
 
         # load theme
         global Theme
         from Onboard.Appearance import Theme
-        self.apply_theme()
 
         # give gtk theme a chance to take over
-        self.update_theme_from_system_theme()
+        if not self.update_theme_from_system_theme():
+
+            # else use the theme key
+            self.apply_theme()
 
         # misc initializations
         self._last_snippets = dict(self.snippets)  # store a copy
@@ -606,6 +610,8 @@ class Config(ConfigObject):
 
             self.theme = new_theme
             self.apply_theme()
+            return True
+        return False
 
     def get_gtk_theme(self):
         gtk_settings = Gtk.Settings.get_default()
