@@ -628,11 +628,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                       self.get_label_base_extents(mod_mask)
 
         size_for_maximum_width  = self.context.scale_log_to_canvas_x(
-                                      (rect.w - config.LABEL_MARGIN[0]*2)) \
+                                      (rect.w - self.label_margin[0]*2)) \
                                   / label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
-                                     (rect.h - config.LABEL_MARGIN[1]*2)) \
+                                     (rect.h - self.label_margin[1]*2)) \
                                   / label_height
 
         if size_for_maximum_width < size_for_maximum_height:
@@ -755,11 +755,11 @@ class FixedFontMixin:
         label_width, label_height = self.get_label_base_extents(0)
 
         size_for_maximum_width  = context.scale_log_to_canvas_x(
-                                     (size[0] - config.LABEL_MARGIN[0]*2)) \
+                                     (size[0] - self.label_margin[0]*2)) \
                                   / label_width
 
         size_for_maximum_height = context.scale_log_to_canvas_y(
-                                     (size[1] - config.LABEL_MARGIN[1]*2)) \
+                                     (size[1] - self.label_margin[1]*2)) \
                                  / label_height
 
         font_size = size_for_maximum_height
