@@ -240,9 +240,11 @@ class LayoutView:
             alpha = self.get_background_rgba()[3]
         else:
             alpha = 1.0
-        self._draw_layer_key_background(context, alpha, None, lod)
+        self._draw_layer_key_background(context, alpha,
+                                        None, None, lod)
         if layer_ids:
-            self._draw_layer_key_background(context, alpha, layer_ids[0], lod)
+            self._draw_layer_key_background(context, alpha,
+                                            None, layer_ids[0], lod)
 
         # run through all visible layout items
         for item in layout.iter_visible_items():
@@ -411,14 +413,15 @@ class LayoutView:
             context.fill()
 
             # per-layer key background
-            self._draw_layer_key_background(context, 1.0, item.layer_id)
+            self._draw_layer_key_background(context, 1.0, item, item.layer_id)
 
-    def _draw_layer_key_background(self, context, alpha = 1.0,
+    def _draw_layer_key_background(self, context, alpha = 1.0, item = None,
                                    layer_id = None, lod = LOD.FULL):
-        self._draw_dish_key_background(context, alpha, layer_id)
+        self._draw_dish_key_background(context, alpha, item, layer_id)
         self._draw_shadows(context, layer_id, lod)
 
-    def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
+    def _draw_dish_key_background(self, context, alpha = 1.0, item = None,
+                                  layer_id = None):
         """
         Black background following the contours of key clusters
         to simulate the opening in the keyboard plane.
@@ -431,8 +434,11 @@ class LayoutView:
             enlargement = layout.context.scale_log_to_canvas((0.8, 0.8))
             corner_radius = layout.context.scale_log_to_canvas_x(2.4)
 
-            for item in layout.iter_layer_keys(layer_id):
-                rect = item.get_canvas_fullsize_rect()
+            if item is None:
+                item = layout
+
+            for key in item.iter_layer_keys(layer_id):
+                rect = key.get_canvas_fullsize_rect()
                 rect = rect.inflate(*enlargement)
                 roundrect_curve(context, rect, corner_radius)
                 context.fill()
