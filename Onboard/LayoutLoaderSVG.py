@@ -49,11 +49,15 @@ class LayoutLoaderSVG:
     # allow (i.e. have by default) keycodes for modifiers.
     LAYOUT_FORMAT_2_2         = Version(2, 2)
 
-    # onboard 0.99, key_templates in key_def.xml and include tags
+    # onboard 0.99, key_templates in key_def.xml and include tags.
     LAYOUT_FORMAT_3_0         = Version(3, 0)
 
+    # sub-layouts for popups, various new key attributes,
+    # label_margin, theme_id, popup_id
+    LAYOUT_FORMAT_3_1         = Version(3, 1)
+
     # current format
-    LAYOUT_FORMAT             = LAYOUT_FORMAT_3_0
+    LAYOUT_FORMAT             = LAYOUT_FORMAT_3_1
 
     # precalc mask permutations
     _label_modifier_masks = permute_mask(LABEL_MODIFIERS)

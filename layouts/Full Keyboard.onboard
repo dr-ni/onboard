@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<keyboard id='Full Keyboard' format='3.0'>
+<keyboard id='Full Keyboard' format='3.1'>
 
     <include file='key_defs.xml'/>
 

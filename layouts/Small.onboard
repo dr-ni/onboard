@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<keyboard format="2.1" id="Small">
+<keyboard id="Small" format="3.1">
   <include file="key_defs.xml"/>
 
   <box border="1" orientation="vertical" spacing="1.5">
