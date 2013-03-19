@@ -89,8 +89,8 @@ class TouchFeedback:
         return None
 
     def _get_popup_size(self, window):
-        DEFAULT_POPUP_SIZE_MM = 17.0
-        MAX_POPUP_SIZE_PIX = 100.0  # fall-back if phys. monitor  size unavail.
+        DEFAULT_POPUP_SIZE_MM = 18.0
+        MAX_POPUP_SIZE_PX = 120.0  # fall-back if phys. monitor  size unavail.
 
         w = config.keyboard.touch_feedback_size
         if w == 0:
@@ -99,9 +99,9 @@ class TouchFeedback:
                 if sz[0] and sz_mm[0]:
                     w = sz[0] * DEFAULT_POPUP_SIZE_MM / sz_mm[0]
                 else:
-                    w = min(sz[0] / 14.0, MAX_POPUP_SIZE_PIX)
+                    w = min(sz[0] / 12.0, MAX_POPUP_SIZE_PX)
             else:
-                w = MAX_POPUP_SIZE_PIX
+                w = MAX_POPUP_SIZE_PX
 
         return w, w * (1.0 + LabelPopup.ARROW_HEIGHT)
 
