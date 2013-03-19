@@ -57,6 +57,10 @@ typedef uint32_t WordId;
 //typedef uint16_t WordId;
 #define WIDNONE ((WordId)-1)
 
+// Number of sub-nodes type
+//typedef uint16_t InplaceSize;
+typedef uint32_t InplaceSize;
+
 // count (ngram frequency) type
 typedef uint32_t CountType;
 

@@ -97,7 +97,7 @@ class inplace_vector
         }
 
     public:
-        uint16_t num_items;
+        InplaceSize num_items;
 };
 
 
