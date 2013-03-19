@@ -64,7 +64,7 @@ class TouchFeedback:
 
             popup.set_key(key)
             popup.position_at(root_rect.x + root_rect.w * 0.5,
-                              root_rect.y, 0.5, 1.05)
+                              root_rect.y, 0.5, 1)
             popup.supports_alpha = view.supports_alpha
             if popup.supports_alpha:
                 popup.set_opacity(toplevel.get_opacity())
@@ -103,7 +103,7 @@ class TouchFeedback:
             else:
                 w = MAX_POPUP_SIZE_PIX
 
-        return w, w
+        return w, w * (1.0 + LabelPopup.ARROW_HEIGHT)
 
 
 class KeyboardPopup(Gtk.Window):
@@ -161,6 +161,10 @@ class KeyboardPopup(Gtk.Window):
 class LabelPopup(KeyboardPopup):
     """ Ephemeral popup displaying a key label without user interaction. """
 
+    ARROW_HEIGHT = 0.13
+    ARROW_WIDTH  = 0.3
+    LABEL_MARGIN = 0.1
+
     _pango_layout = None
     _osk_util = osk.Util()
 
@@ -178,12 +182,19 @@ class LabelPopup(KeyboardPopup):
         self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
     def _on_draw(self, widget, context):
+
         if not LabelPopup._pango_layout:
             LabelPopup._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
 
         rect = Rect(0, 0, self.get_allocated_width(),
                           self.get_allocated_height())
-        label_rect = rect.deflate(rect.w/10.0)
+        content_rect = Rect(rect.x, rect.y, rect.w,
+                            rect.h - rect.h * self.ARROW_HEIGHT)
+        arrow_rect   = Rect(rect.x, content_rect.bottom(), rect.w,
+                            rect.h * self.ARROW_HEIGHT) \
+                       .deflate((rect.w - rect.w * self.ARROW_WIDTH) / 2.0, 0)
+
+        label_rect = content_rect.deflate(rect.w * self.LABEL_MARGIN)
 
         # background
         fill = self._key.get_fill_color()
@@ -191,8 +202,16 @@ class LabelPopup(KeyboardPopup):
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
         context.restore()
+
         context.set_source_rgba(*fill)
-        roundrect_arc(context, rect, config.CORNER_RADIUS)
+        roundrect_arc(context, content_rect, config.CORNER_RADIUS)
+        context.fill()
+
+        l, t, r, b = arrow_rect.to_extents()
+        t -= 1
+        context.move_to(l, t)
+        context.line_to(r, t)
+        context.line_to((l+r) / 2, b)
         context.fill()
 
         # draw label/image
