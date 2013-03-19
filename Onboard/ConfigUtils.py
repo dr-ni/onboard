@@ -411,7 +411,7 @@ class ConfigObject(object):
         """
 
         filepath = filename
-        if filename and not os.path.exists(filename):
+        if filename and not os.path.isfile(filename):
             # assume filename is just a basename instead of a full file path
             _logger.debug(_format("{description} '{filename}' not found yet, "
                                   "retrying in default paths", \
@@ -419,12 +419,12 @@ class ConfigObject(object):
 
             if user_filename_func:
                 filepath = user_filename_func(filename)
-                if not os.path.exists(filepath):
+                if not os.path.isfile(filepath):
                     filepath = ""
 
             if  not filepath and system_filename_func:
                 filepath = system_filename_func(filename)
-                if not os.path.exists(filepath):
+                if not os.path.isfile(filepath):
                     filepath = ""
 
             if not filepath:
@@ -435,7 +435,7 @@ class ConfigObject(object):
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 
-        if not os.path.exists(filepath):
+        if not os.path.isfile(filepath):
             _logger.error(_format("failed to find {description} '{filename}'",
                                   description=description, filename=filename))
             filepath = ""
