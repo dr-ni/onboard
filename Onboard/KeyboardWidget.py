@@ -705,34 +705,21 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         in canvas coordinates.
         Overload for WindowManipulator
         """
+        bounds = None
         if config.is_docking_enabled():
-            bounds = self.canvas_rect
+            pass
         else:
             keys = self.keyboard.find_items_from_ids(["move"])
-            bounds = None
             for key in keys:
-                r = key.get_canvas_border_rect()
-                if not bounds:
-                    bounds = r
-                else:
-                    bounds = bounds.union(r)
+                if key.is_visible():
+                    r = key.get_canvas_border_rect()
+                    if not bounds:
+                        bounds = r
+                    else:
+                        bounds = bounds.union(r)
 
-        return bounds
-
-    def get_move_button_rect(self):
-        """
-        Returns the bounding rectangle of all move buttons
-        in canvas coordinates.
-        Overload for WindowManipulator
-        """
-        keys = self.keyboard.find_items_from_ids(["move"])
-        bounds = None
-        for key in keys:
-            r = key.get_canvas_border_rect()
-            if not bounds:
-                bounds = r
-            else:
-                bounds = bounds.union(r)
+        if bounds is None:
+            bounds = self.canvas_rect
 
         return bounds
 
