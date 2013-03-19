@@ -406,7 +406,7 @@
      height="18.904217"
      width="38.904217"
      y="-19.45211"
-     x="102.54789"
+     x="100.54789"
      style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.09578323;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="correction"
@@ -418,10 +418,10 @@
   <rect
      id="expand-corrections"
      height="18.731846"
-     width="10.731845"
+     width="17.886408"
      y="-19.365923"
-     x="80.634079"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.26815534;stroke-miterlimit:4;stroke-dasharray:none" />
+     x="75.818588"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.63718152;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="TAB"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:1.28348005"

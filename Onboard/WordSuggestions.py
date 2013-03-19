@@ -1586,11 +1586,11 @@ class WordListPanel(LayoutPanel):
             section_spacing = max(section_spacing, wordlist_rect.h * 0.1)
 
         # get button to expand/close the corrections
-        button = self._get_child_button("expand-corrections")
-        if button:
-            button_width = self._get_button_width(button)
         show_button = len(correction_choices) > 1
-        if show_button:
+        button_width = 0
+        button = self._get_child_button("expand-corrections")
+        if button and show_button:
+            button_width = self._get_button_width(button)
             choices_rect.w -= button_width + section_spacing
 
         # get template key for tooltips
