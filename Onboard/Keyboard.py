@@ -619,8 +619,9 @@ class Keyboard(WordSuggestions):
                     controller.long_press(view, button)
 
             elif key.is_prediction_key():
-                view.show_language_menu(key, button)
-                long_pressed = True
+                pass
+                #view.show_language_menu(key, button)
+                #long_pressed = True
 
             else:
                 # All other keys get hard-coded long press menus
