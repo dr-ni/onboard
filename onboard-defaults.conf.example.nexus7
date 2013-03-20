@@ -51,18 +51,18 @@ resize-handles=SE SW NW NE
 x=65
 y=500
 width=1215
-height=300
+height=330
 dock-expand=True
-dock-height=300
+dock-height=330
 dock-width=1150
 
 [window.portrait]
 x=65
 y=985
 width=735
-height=295
+height=330
 dock-expand=True
-dock-height=230
+dock-height=330
 dock-width=700
 
 [icon-palette]
@@ -88,7 +88,7 @@ height=48
 # label popup
 touch-feedback-enabled=True
 # size of the label popup in pixels, 0 for default size
-touch-feedback-size=0
+touch-feedback-size=100
 
 [auto-show]
 enabled=True
