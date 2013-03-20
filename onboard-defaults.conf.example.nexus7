@@ -13,7 +13,8 @@
 
 [main]
 #layout=Compact
-layout=Phone
+#layout=Phone
+layout=Small
 theme=Nightshade
 system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
 #system-theme-tracking-enabled=False
