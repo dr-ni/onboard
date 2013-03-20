@@ -1159,7 +1159,9 @@ class Keyboard(WordSuggestions):
             else:
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
-                if len(label) == 1 and label.isalnum() or bool(alternatives):
+                if (len(label) == 1 and label.isalnum()) or \
+                   key.id == "SPCE" or \
+                   bool(alternatives):
                     action = config.keyboard.default_key_action
                 else:
                     action = KeyCommon.SINGLE_STROKE_ACTION

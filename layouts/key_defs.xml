@@ -67,7 +67,7 @@
     <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0' action='single-stroke'/>
     <key_template id='MENU' keycode='135' label='Menu'  action='delayed-stroke'/>
 
-    <key_template id='SPCE' keycode='65' action='single-stroke'/>
+    <key_template id='SPCE' keycode='65'/>
 
     <key_template id='Prnt'   keysym='65377' label='Prnt' action='single-stroke'/>
     <key_template id='Pause'  keysym='65299' label='Pause' action='single-stroke'/>
