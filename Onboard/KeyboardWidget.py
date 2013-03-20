@@ -1518,8 +1518,9 @@ class LanguageMenu:
                           [:max_mru_languages]
         other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
 
-        other_lang_names = [languagedb.get_language_full_name_or_id(id) \
+        other_lang_names = [languagedb.get_language_full_name(id) \
                            for id in other_lang_ids]
+        other_lang_names = [name for name in other_lang_names if name]
 
         # language sub menu
         lang_menu = Gtk.Menu()
@@ -1541,12 +1542,13 @@ class LanguageMenu:
         menu.append(item)
 
         for lang_id in mru_lang_ids:
-            name = languagedb.get_language_full_name_or_id(lang_id)
-            item = Gtk.CheckMenuItem.new_with_label(name)
-            item.set_draw_as_radio(True)
-            item.set_active(lang_id == active_lang_id)
-            item.connect("activate", self._on_language_activated, lang_id)
-            menu.append(item)
+            name = languagedb.get_language_full_name(lang_id)
+            if name:
+                item = Gtk.CheckMenuItem.new_with_label(name)
+                item.set_draw_as_radio(True)
+                item.set_active(lang_id == active_lang_id)
+                item.connect("activate", self._on_language_activated, lang_id)
+                menu.append(item)
 
         if other_lang_ids:
             if mru_lang_ids:
