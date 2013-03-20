@@ -166,6 +166,7 @@ class KbdWindowBase:
 
     def _show_first_time(self):
         self.update_window_options()
+        self.pre_render_keys(*self.get_size())
         self.show()
 
     def move_resize(self, x, y, w, h):
