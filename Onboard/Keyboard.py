@@ -857,7 +857,7 @@ class Keyboard(WordSuggestions):
             # Don't allow to open multiple dialogs in force-to-top mode.
             elif not config.xid_mode and \
                 not self.editing_snippet:
-                view.edit_snippet(snippet_id)
+                view.show_snippets_dialog(snippet_id)
                 self.editing_snippet = True
 
         elif key_type == KeyCommon.SCRIPT_TYPE:
