@@ -1158,12 +1158,12 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             bottom = geom.h - area.bottom() + rect.h
             #bottom = root.h - area.bottom() + rect.h
             bottom_start_x = rect.left()
-            bottom_end_x   = rect.right()
+            bottom_end_x   = rect.right() - 1
         else:    # Top
             top    = area.top() + rect.h
             bottom = 0
             top_start_x = rect.left()
-            top_end_x   = rect.right()
+            top_end_x   = rect.right() - 1
 
         struts = [0, 0, top, bottom, 0, 0, 0, 0,
                   top_start_x, top_end_x, bottom_start_x, bottom_end_x]
