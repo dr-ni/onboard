@@ -36,7 +36,8 @@ Depends: ${python3:Depends},
          libcanberra0,
          iso-codes
 Recommends: gir1.2-appindicator3-0.1,
-            gir1.2-atspi-2.0
+            gir1.2-atspi-2.0,
+            hunspell
 Suggests: mousetweaks (>= 3.3.90)
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
