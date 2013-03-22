@@ -52,18 +52,18 @@ resize-handles=SE SW NW NE
 x=65
 y=500
 width=1215
-height=320
+height=300
 dock-expand=True
-dock-height=320
+dock-height=300
 dock-width=1150
 
 [window.portrait]
 x=65
 y=985
 width=735
-height=320
+height=300
 dock-expand=True
-dock-height=320
+dock-height=300
 dock-width=700
 
 [icon-palette]
@@ -98,7 +98,7 @@ enabled=True
 #auto-capitalization=False
 
 [word-suggestions]
-enabled=True
+#enabled=False
 
 [universal-access]
 
