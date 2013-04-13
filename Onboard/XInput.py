@@ -265,8 +265,7 @@ class XIDeviceManager(EventSource):
             source_device = None
         event.set_source_device(source_device)
 
-        # update our device objects on changes to the device hierarchy
-
+        # forward the event to all listeners
         self.emit("device-event", event)
 
 
