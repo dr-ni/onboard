@@ -902,6 +902,9 @@ class Keyboard(WordSuggestions):
         return needs_layout_update
 
     def maybe_switch_to_first_layer(self, key):
+        """
+        Activate the first layer if key allows it.
+        """
         if self.active_layer_index != 0 and \
            not self._layer_locked and \
            not self.editing_snippet:
@@ -914,14 +917,15 @@ class Keyboard(WordSuggestions):
 
             if unlatch:
                 self.active_layer_index = 0
-                self.update_visible_layers()
-                self.redraw()
+                self.invalidate_visible_layers()
+                self.invalidate_canvas()
+                self.commit_ui_updates()
 
             return unlatch
 
     def set_modifiers(self, mod_mask):
         """
-        Sync Onboard with modifiers from the given modifier mask.
+        Sync Onboard with modifiers of the given modifier mask.
         Used to sync changes to system modifier state with Onboard.
         """
         for mod_bit in (1<<bit for bit in range(8)):
@@ -1254,7 +1258,13 @@ class Keyboard(WordSuggestions):
         """
         self._invalidated_ui |= UIMask.LAYOUT
 
-    def invalidate_redraw(self):
+    def invalidate_visible_layers(self):
+        """
+        Update the layout tree when the active layer changed.
+        """
+        self._invalidated_ui |= UIMask.LAYERS
+
+    def invalidate_canvas(self):
         """ Just redraw everything """
         self._invalidated_ui |= UIMask.REDRAW
 
@@ -1665,8 +1675,8 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
-            keyboard.update_visible_layers()
-            keyboard.redraw()
+            keyboard.invalidate_visible_layers()
+            keyboard.invalidate_canvas()
 
     def update(self):
         # don't show active state for layer 0, it'd be visible all the time
