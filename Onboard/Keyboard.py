@@ -375,7 +375,7 @@ class Keyboard(WordSuggestions):
             mod_mask = keymap.get_modifier_state()
             self.set_modifiers(mod_mask)
 
-        self.update_scanner()
+        self.update_scanner_enabled()
 
         self.invalidate_ui()
         self.commit_ui_updates()
@@ -412,7 +412,7 @@ class Keyboard(WordSuggestions):
                 if type:
                     self.button_controllers[key] = type(self, key)
 
-    def update_scanner(self):
+    def update_scanner_enabled(self):
         """ Enable keyboard scanning if it is enabled in gsettings. """
         self.update_input_event_source()
         self.enable_scanner(config.scanner.enabled)
@@ -434,7 +434,7 @@ class Keyboard(WordSuggestions):
 
     def _on_scanner_enabled(self, enabled):
         """ Config callback for scanner.enabled changes. """
-        self.update_scanner()
+        self.update_scanner_enabled()
         self.update_transparency()
 
     def _on_scanner_redraw(self, keys):
@@ -1281,11 +1281,14 @@ class Keyboard(WordSuggestions):
         if mask & UIMask.SUGGESTIONS:
             keys.update(WordSuggestions.update_suggestions_ui(self))
 
+        if mask & UIMask.LAYERS:
+            self.update_visible_layers()
+
         if mask & UIMask.LAYOUT:
             self.update_layout()   # after suggestions!
 
-        if mask & UIMask.LAYERS:
-            self.update_visible_layers()
+        if mask & (UIMask.SUGGESTIONS | UIMask.LAYERS):
+            self.update_scanner()
 
         for view in self._layout_views:
             view.apply_ui_updates(mask)
@@ -1312,10 +1315,13 @@ class Keyboard(WordSuggestions):
             if layers:
                 layout.set_visible_layers([layers[0], self.active_layer])
 
+    def update_scanner(self):
+        """ tell scanner to update on layout changes """
         # notify the scanner about layer changes
         if self.scanner:
+            layout = self.layout
             if layout:
-                self.scanner.update_layer(layout, self.active_layer)
+                self.scanner.update_layer(layout, self.active_layer, True)
             else:
                 _logger.warning("Failed to update scanner. No layout.")
 

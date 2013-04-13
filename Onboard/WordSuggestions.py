@@ -1495,12 +1495,16 @@ class WordListPanel(LayoutPanel):
         return button.get_initial_border_rect().w * \
                config.theme_settings.key_size / 100.0
 
+    def _get_spacing(self):
+        return config.WORDLIST_BUTTON_SPACING[0] \
+               * 2*(2.0 - config.theme_settings.key_size / 100.0)
+
     def create_keys(self, correction_choices, prediction_choices):
         """
         Dynamically create a variable number of buttons
         for word correction and prediction.
         """
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        spacing = self._get_spacing()
         wordlist = self._get_child_button("wordlist")
         fixed_background = list(self.find_ids(["wordlist",
                                                "prediction",
@@ -1671,7 +1675,7 @@ class WordListPanel(LayoutPanel):
         """
         Dynamically create a variable number of buttons for word correction.
         """
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        spacing = self._get_spacing()
         button_infos, filled_up, xend = self._fill_rect_with_choices(choices,
                                                 rect, key_context, font_size)
 
@@ -1710,7 +1714,7 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons for word prediction.
         """
         keys = []
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        spacing = self._get_spacing()
 
         button_infos, filled_up, xend = self._fill_rect_with_choices( \
                                 choices, wordlist_rect, key_context, font_size)
@@ -1760,7 +1764,7 @@ class WordListPanel(LayoutPanel):
         return keys
 
     def _fill_rect_with_choices(self, choices, rect, key_context, font_size):
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        spacing = self._get_spacing()
         x, y = 0.0, 0.0
 
         context = Gdk.pango_context_get()
