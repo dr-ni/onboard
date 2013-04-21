@@ -124,7 +124,7 @@
           <!-- row 3 -->
           <key group="bottomrow" id="TAB"/>
           <key char="$" group="alphanumeric" id="CC01" label="$"/>
-          <key char="€" group="alphanumeric" id="CC02" label="€"/>
+          <key group="alphanumeric" id="CC02" keysym="8364" label="€"/>
           <key char="£" group="alphanumeric" id="CC03" label="£"/>
           <key char="¥" group="alphanumeric" id="CC04" label="¥"/>
           <key char="¢" group="alphanumeric" id="CC05" label="¢"/>

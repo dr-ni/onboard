@@ -112,7 +112,7 @@
         <key group="alphanumeric" id="CD10" char="]" label="]"/>
         <!-- row 3 -->
         <key group="alphanumeric" id="CC01" char="$" label="$"/>
-        <key group="alphanumeric" id="CC02" char="€" label="€"/>
+        <key group="alphanumeric" id="CC02" keysym="8364" label="€"/>
         <key group="alphanumeric" id="CC03" char="£" label="£"/>
         <key group="alphanumeric" id="CC04" char="¥" label="¥"/>
         <key group="alphanumeric" id="CC05" char="¢" label="¢"/>
