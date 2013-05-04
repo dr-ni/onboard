@@ -162,11 +162,11 @@
             </panel>
 
             <!--- side bar -->
-            <panel id="paneswitch" filename="Compact-Alpha.svg">	
-		<box compact="true" orientation='vertical'>
-		    <panel group='nowordlist'>
-			<key group='bottomrow' id='hide'/>
-			<box orientation='vertical'>
+            <panel id="paneswitch" filename="Compact-Alpha.svg">        
+                <box compact="true" orientation='vertical'>
+                    <panel group='nowordlist'>
+                        <key group='bottomrow' id='hide'/>
+                        <box orientation='vertical'>
                             <box orientation="horizontal" expand="false">
                                 <key group="bottomrow" id="showclick"/>
                                 <key group="bottomrow" id="move"/>
@@ -174,18 +174,18 @@
                             <key group="bottomrow" id="layer0" scan_priority="3"/>
                             <key group="bottomrow" id="layer1" scan_priority="3"/>
                             <key group="bottomrow" id="layer2" scan_priority="3"/>
-			</box>
-		    </panel>
-		    <panel group='wordlist'>
-			<box orientation='vertical'>
+                        </box>
+                    </panel>
+                    <panel group='wordlist'>
+                        <box orientation='vertical'>
                             <key group='sidebar' id='move' svg_id='move.wordlist' expand='false' label_margin='2.5'/>
-			    <key group='sidebar' id='showclick' svg_id='showclick.wordlist' label_margin='2' expand='false'/>
-			    <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='3'/>
-			    <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
+                            <key group='sidebar' id='showclick' svg_id='showclick.wordlist' label_margin='2' expand='false'/>
+                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='3'/>
+                            <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
                             <key group="bottomrow" id="layer2" svg_id='layer2.wordlist' scan_priority="3"/>
-			</box>
-		    </panel>
-		</box>
+                        </box>
+                    </panel>
+                </box>
             </panel>
 
         </box>
