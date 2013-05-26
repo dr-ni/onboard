@@ -6,7 +6,7 @@
     <box border="1" spacing="1.5" orientation="vertical">
 
         <!--- word suggestions -->
-        <panel filename='Compact-Alpha.svg'>
+        <panel filename='Compact-Alpha.svg' scan_priority='1'>
             <include file='word_suggestions.xml'/>
         </panel>
 
