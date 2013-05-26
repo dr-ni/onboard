@@ -6,7 +6,7 @@
     <box border='1' spacing='3' orientation="vertical">
 
         <!--- word suggestions -->
-        <panel filename='Full Keyboard-Alpha.svg'>
+        <panel filename='Full Keyboard-Alpha.svg' scan_priority="1">
             <include file='word_suggestions.xml'/>
         </panel>
 
@@ -81,36 +81,36 @@
                     <key id='SPCE' group='bottomrow'/>
                     <key group='bottomrow' id='LWIN'/>
 
-                    <key id='Prnt' group='printblock' scan_priority='2'/>
-                    <key id='Pause' group='printblock' scan_priority='2'/>
-                    <key id='Scroll' group='printblock' scan_priority='2'/>
+                    <key id='Prnt' group='printblock' scan_priority='3'/>
+                    <key id='Pause' group='printblock' scan_priority='3'/>
+                    <key id='Scroll' group='printblock' scan_priority='3'/>
 
-                    <key id='LEFT' group='directions' scan_priority='2'/>
-                    <key id='RGHT' group='directions' scan_priority='2'/>
-                    <key id='UP'   group='directions' scan_priority='2'/>
-                    <key id='DOWN' group='directions' scan_priority='2'/>
-                    <key id='INS'  group='editing' scan_priority='2'/>
-                    <key id='DELE' group='editing' scan_priority='2' label='Del' image=''/>
-                    <key id='HOME' group='editing' scan_priority='2'/>
-                    <key id='END'  group='editing' scan_priority='2'/>
-                    <key id='PGUP' group='editing' scan_priority='2'/>
-                    <key id='PGDN' group='editing' scan_priority='2'/>
+                    <key id='LEFT' group='directions' scan_priority='3'/>
+                    <key id='RGHT' group='directions' scan_priority='3'/>
+                    <key id='UP'   group='directions' scan_priority='3'/>
+                    <key id='DOWN' group='directions' scan_priority='3'/>
+                    <key id='INS'  group='editing' scan_priority='3'/>
+                    <key id='DELE' group='editing' scan_priority='3' label='Del' image=''/>
+                    <key id='HOME' group='editing' scan_priority='3'/>
+                    <key id='END'  group='editing' scan_priority='3'/>
+                    <key id='PGUP' group='editing' scan_priority='3'/>
+                    <key id='PGDN' group='editing' scan_priority='3'/>
 
                     <!-- function key row with click buttons visible -->
                     <box group='click' orientation='horizontal'>
-                        <key group='bottomrow' id='ESC' scan_priority='1'/>
-                        <key group='fkeys' id='F1' scan_priority='1'/>
-                        <key group='fkeys' id='F2' scan_priority='1'/>
-                        <key group='fkeys' id='F3' scan_priority='1'/>
-                        <key group='fkeys' id='F4' scan_priority='1'/>
-                        <key group='fkeys' id='F5' scan_priority='1'/>
-                        <key group='fkeys' id='F6' scan_priority='1'/>
-                        <key group='fkeys' id='F7' scan_priority='1'/>
-                        <key group='fkeys' id='F8' scan_priority='1'/>
-                        <key group='fkeys' id='F9' scan_priority='1'/>
-                        <key group='fkeys' id='F10' scan_priority='1'/>
-                        <key group='fkeys' id='F11' scan_priority='1'/>
-                        <key group='fkeys' id='F12' scan_priority='1'/>
+                        <key group='bottomrow' id='ESC' scan_priority='2'/>
+                        <key group='fkeys' id='F1' scan_priority='2'/>
+                        <key group='fkeys' id='F2' scan_priority='2'/>
+                        <key group='fkeys' id='F3' scan_priority='2'/>
+                        <key group='fkeys' id='F4' scan_priority='2'/>
+                        <key group='fkeys' id='F5' scan_priority='2'/>
+                        <key group='fkeys' id='F6' scan_priority='2'/>
+                        <key group='fkeys' id='F7' scan_priority='2'/>
+                        <key group='fkeys' id='F8' scan_priority='2'/>
+                        <key group='fkeys' id='F9' scan_priority='2'/>
+                        <key group='fkeys' id='F10' scan_priority='2'/>
+                        <key group='fkeys' id='F11' scan_priority='2'/>
+                        <key group='fkeys' id='F12' scan_priority='2'/>
                         <key group='click' id='middleclick'/>
                         <key group='click' id='secondaryclick'/>
                     </box>
@@ -119,24 +119,24 @@
                     <key group='click' id='hoverclick' border='2'/>
 
                     <!-- function key row with click buttons invisible -->
-                    <panel group='noclick'>
-                        <key group='bottomrow' id='ESC' scan_priority='1'/>
-                        <key group='fkeys' id='F1' scan_priority='1'/>
-                        <key group='fkeys' id='F2' scan_priority='1'/>
-                        <key group='fkeys' id='F3' scan_priority='1'/>
-                        <key group='fkeys' id='F4' scan_priority='1'/>
-                        <key group='fkeys' id='F5' scan_priority='1'/>
-                        <key group='fkeys' id='F6' scan_priority='1'/>
-                        <key group='fkeys' id='F7' scan_priority='1'/>
-                        <key group='fkeys' id='F8' scan_priority='1'/>
-                        <key group='fkeys' id='F9' scan_priority='1'/>
-                        <key group='fkeys' id='F10' scan_priority='1'/>
-                        <key group='fkeys' id='F11' scan_priority='1'/>
-                        <key group='fkeys' id='F12' scan_priority='1'/>
+                    <panel group='noclick' scan_priority='2'>
+                        <key group='bottomrow' id='ESC'/>
+                        <key group='fkeys' id='F1'/>
+                        <key group='fkeys' id='F2'/>
+                        <key group='fkeys' id='F3'/>
+                        <key group='fkeys' id='F4'/>
+                        <key group='fkeys' id='F5'/>
+                        <key group='fkeys' id='F6'/>
+                        <key group='fkeys' id='F7'/>
+                        <key group='fkeys' id='F8'/>
+                        <key group='fkeys' id='F9'/>
+                        <key group='fkeys' id='F10'/>
+                        <key group='fkeys' id='F11'/>
+                        <key group='fkeys' id='F12'/>
                     </panel>
 
                 </panel>
-                <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border='2' >
+                <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border='2'>
                     <key group='keypadmisc' id='NMLK' scan_priority='1'/>
                     <key id='KPSU' group='keypadoperators' scan_priority='1'/>
                     <key id='KPDV' group='keypadoperators' scan_priority='1'/>
@@ -185,16 +185,16 @@
                         <box orientation='vertical'>
                             <key group='bottonrow' id='move' expand='false'/>
                             <key group='bottomrow' id='showclick' expand='false'/>
-                            <key group='bottomrow' id='layer0' scan_priority='3'/>
-                            <key group='bottomrow' id='layer1' scan_priority='3'/>
+                            <key group='bottomrow' id='layer0' scan_priority='4'/>
+                            <key group='bottomrow' id='layer1' scan_priority='4'/>
                         </box>
                     </panel>
                     <panel group='wordlist'>
                         <key group='bottonrow' id='move' svg_id='move.wordlist' expand='false'/>
                         <box orientation='vertical'>
                             <key group='bottomrow' id='showclick' svg_id='showclick.wordlist' expand='false'/>
-                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='3'/>
-                            <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
+                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='4'/>
+                            <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='4'/>
                         </box>
                     </panel>
                 </box>
