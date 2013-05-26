@@ -248,8 +248,10 @@ class FlatChunker(Chunker):
         """
         Create a list of scannable keys and sort it.
         """
-        self._chunks = [k for k in layout.iter_layer_keys(layer) if k.scannable]
-        self._chunks.extend([k for k in layout.iter_layer_keys(None) if k.scannable])
+        self._chunks = [k for k in layout.iter_layer_keys(layer) \
+                        if k.is_path_scannable()]
+        self._chunks.extend([k for k in layout.iter_layer_keys(None) \
+                             if k.is_path_scannable()])
         self._chunks.sort(key=cmp_to_key(self.compare_keys))
         self._length = len(self._chunks)
 
@@ -262,7 +264,7 @@ class GroupChunker(FlatChunker):
         """
         Sort keys by priority and location.
         """
-        p = a.scan_priority - b.scan_priority
+        p = a.get_path_scan_priority() - b.get_path_scan_priority()
         if p != 0:
             return p
 
@@ -284,8 +286,9 @@ class GroupChunker(FlatChunker):
         # A list of 'priority groups' where each members is a
         # list of 'scan rows' in which each member is a key.
         for key in self._chunks:
-            if key.scan_priority != last_priority:
-                last_priority = key.scan_priority
+            scan_priority = key.get_path_scan_priority()
+            if scan_priority != last_priority:
+                last_priority = scan_priority
                 last_y = None
                 group = []
                 chunks.append(group)

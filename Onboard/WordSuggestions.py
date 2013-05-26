@@ -1636,6 +1636,7 @@ class WordListPanel(LayoutPanel):
             r.w = x_split - r.x
             key = FullSizeKey("correctionsbg", r)
             key.sensitive = False
+            key.scannable = False
             bg_keys.append(key)
 
             r = wordlist_rect.copy()
@@ -1643,6 +1644,7 @@ class WordListPanel(LayoutPanel):
             r.x = x_split + section_spacing
             key = FullSizeKey("predictionsbg", r)
             key.sensitive = False
+            key.scannable = False
             bg_keys.append(key)
 
             used_rect.w += section_spacing

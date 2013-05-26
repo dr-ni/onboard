@@ -328,6 +328,13 @@ class LayoutItem(TreeItem):
     # None:  maybe, hard-coded default-behavior for compatibility with <0.99
     unlatch_layer = None
 
+    # False if the key should be ignored by the scanner
+    scannable = True
+
+    # Determines scanning order
+    scan_priority = None
+
+
     def __init__(self):
         self.context = KeyContext()
 
@@ -468,7 +475,7 @@ class LayoutItem(TreeItem):
         return self.visible
 
     def is_path_visible(self):
-        """ Are all items in the path to the root visible?  """
+        """ Are all items in the path to the root visible? """
         item = self
         while item:
             if not item.visible:
@@ -485,6 +492,24 @@ class LayoutItem(TreeItem):
             if item.is_key():
                 return True
         return False
+
+    def is_path_scannable(self):
+        """ Are all items in the path to the root scannable? """
+        item = self
+        while item:
+            if not item.scannable:
+                return False
+            item = item.parent
+        return True
+
+    def get_path_scan_priority(self):
+        """ Return the closeset scan_priority in the path to the root. """
+        item = self
+        while item:
+            if not item.scan_priority is None:
+                return item.scan_priority
+            item = item.parent
+        return 0
 
     def get_layout_root(self):
         """ Return the root layout item """

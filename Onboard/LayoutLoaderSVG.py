@@ -141,7 +141,7 @@ class LayoutLoaderSVG:
         return layout
 
     def _parse_dom_node(self, dom_node, parent_item):
-        """ Recursively parse the dom nodes of the layout tree. """
+        """ Recursively traverse the dom nodes of the layout tree. """
         loaded_ids = set()
 
         for child in dom_node.childNodes:
@@ -169,6 +169,8 @@ class LayoutLoaderSVG:
 
                 if can_load:
                     tag = child.tagName
+
+                    # rule and control tags
                     if tag == "include":
                         self._parse_include(child, parent_item)
                     elif tag == "key_template":
@@ -180,7 +182,7 @@ class LayoutLoaderSVG:
                         parent_item.append_sublayout(item)
                         self._parse_dom_node(child, item)
                     else:
-                        # items part of the layout tree
+                        # actual items that make up the layout tree
                         if tag == "box":
                             item = self._parse_box(child)
                         elif tag == "panel":
@@ -231,7 +233,7 @@ class LayoutLoaderSVG:
 
     def _parse_keysym_rule(self, node, parent):
         """
-        Keysym rules link attributes like labels, images
+        Keysym rules link attributes like "label", "image"
         to certain keysyms.
         """
         attributes = dict(list(node.attributes.items()))
@@ -247,12 +249,12 @@ class LayoutLoaderSVG:
             if keysym:
                 parent.update_keysym_rules({keysym : attributes})
 
-    def _parse_dom_node_item(self, node, item_class):
-        """ Parses common properties of all LayoutItems """
+    def _init_item(self, attributes, item_class):
+        """ Parses attributes common to all LayoutItems """
 
         # allow to override the item's default class
-        if node.hasAttribute("class"):
-            class_name = node.attributes["class"].value
+        if "class" in attributes:
+            class_name = attributes["class"]
             try:
                 item_class = globals()[class_name]
             except KeyError:
@@ -261,34 +263,65 @@ class LayoutLoaderSVG:
         # create the item
         item = item_class()
 
-        if node.hasAttribute("id"):
-            item.id = node.attributes["id"].value
-        if node.hasAttribute("group"):
-            item.group = node.attributes["group"].value
-        if node.hasAttribute("layer"):
-            item.layer_id = node.attributes["layer"].value
-        if node.hasAttribute("filename"):
-            item.filename = node.attributes["filename"].value
-        if node.hasAttribute("visible"):
-            item.visible = node.attributes["visible"].value == "true"
-        if node.hasAttribute("sensitive"):
-            item.sensitive = node.attributes["sensitive"].value == "true"
-        if node.hasAttribute("border"):
-            item.border = float(node.attributes["border"].value)
-        if node.hasAttribute("expand"):
-            item.expand = node.attributes["expand"].value == "true"
-        if node.hasAttribute("unlatch_layer"):
-            item.unlatch_layer = node.attributes["unlatch_layer"].value == "true"
+        value = attributes.get("id")
+        if not value is None:
+            item.id = value
+
+        value = attributes.get("group")
+        if not value is None:
+            item.group = value
+
+        value = attributes.get("layer")
+        if not value is None:
+            item.layer_id = value
+
+        value = attributes.get("filename")
+        if not value is None:
+            item.filename = value
+
+        value = attributes.get("visible")
+        if not value is None:
+            item.visible = value == "true"
+
+        value = attributes.get("sensitive")
+        if not value is None:
+            item.sensitive = value == "true"
+
+        value = attributes.get("border")
+        if not value is None:
+            item.border = float(value)
+
+        value = attributes.get("expand")
+        if not value is None:
+            item.expand = value == "true"
+
+        value = attributes.get("unlatch_layer")
+        if not value is None:
+            item.unlatch_layer = value == "true"
+
+        value = attributes.get("scannable")
+        if value and value.lower() == 'false':
+            item.scannable = False
+
+        value = attributes.get("unlatch_layer")
+        if not value is None:
+            item.unlatch_layer = value == "true"
+
+        value = attributes.get("scan_priority")
+        if not value is None:
+            item.scan_priority = int(value)
 
         return item
 
     def _parse_sublayout(self, node, parent):
-        item = self._parse_dom_node_item(node, LayoutPanel)
+        attributes = dict(node.attributes.items())
+        item = self._init_item(attributes, LayoutPanel)
         item.sublayout_parent = parent # make templates accessible in the subl.
         return item
 
     def _parse_box(self, node):
-        item = self._parse_dom_node_item(node, LayoutBox)
+        attributes = dict(node.attributes.items())
+        item = self._init_item(attributes, LayoutBox)
         if node.hasAttribute("orientation"):
             item.horizontal = \
                 node.attributes["orientation"].value.lower() == "horizontal"
@@ -299,7 +332,8 @@ class LayoutLoaderSVG:
         return item
 
     def _parse_panel(self, node):
-        item = self._parse_dom_node_item(node, LayoutPanel)
+        attributes = dict(node.attributes.items())
+        item = self._init_item(attributes, LayoutPanel)
         if node.hasAttribute("compact"):
             item.compact = node.attributes["compact"].value == "true"
         return item
@@ -313,10 +347,6 @@ class LayoutLoaderSVG:
         else:
             item_class = RectKey
 
-        # parse standard layout-item attributes
-        key = self._parse_dom_node_item(node, item_class)
-        key.parent = parent # assign parent early to make get_filename() work
-
         # find template attributes
         attributes = {}
         if node.hasAttribute("id"):
@@ -326,7 +356,11 @@ class LayoutLoaderSVG:
         # let current node override any preceding templates
         attributes.update(dict(node.attributes.items()))
 
-        # set up the key
+        # handle common layout-item attributes
+        key = self._init_item(attributes, item_class)
+        key.parent = parent # assign early to have get_filename() work
+
+        # handle key-specific attributes
         self._init_key(key, attributes)
 
         # get key geometry from the closest svg file
@@ -501,13 +535,6 @@ class LayoutLoaderSVG:
                 (strerror) = ex
                 raise Exceptions.LayoutFileError("Unrecognized sticky behavior {} in" \
                     "definition of {}".format(strerror, full_id))
-
-        if "scannable" in attributes:
-            if attributes["scannable"].lower() == 'false':
-                key.scannable = False
-
-        if "scan_priority" in attributes:
-            key.scan_priority = int(attributes["scan_priority"])
 
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]

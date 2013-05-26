@@ -134,12 +134,6 @@ class KeyCommon(LayoutItem):
     # True when Onboard is in scanning mode and key is highlighted
     scanned = False
 
-    # False if the key should be ignored by the scanner
-    scannable = True
-
-    # Determines scanning order
-    scan_priority = 0
-
     # True when action was triggered e.g. key-strokes were sent on press
     activated = False
 
