@@ -766,6 +766,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                                   GdkEvent  *gdk_event,
                                   OskUtil   *util)
 {
+    PyGILState_STATE state = PyGILState_Ensure();
     XEvent *event = gdk_xevent;
 
     if (event->type == PropertyNotify)
@@ -776,6 +777,9 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
             raise_windows_to_top(util);
         }
     }
+
+    PyGILState_Release(state);
+
     return GDK_FILTER_CONTINUE;
 }
 
@@ -821,6 +825,7 @@ event_filter_root_property_notify (GdkXEvent *gdk_xevent,
                                    GdkEvent  *gdk_event,
                                    OskUtil   *util)
 {
+    PyGILState_STATE state = PyGILState_Ensure ();
     XEvent *event = gdk_xevent;
 
     if (event->type == PropertyNotify)
@@ -845,6 +850,9 @@ event_filter_root_property_notify (GdkXEvent *gdk_xevent,
         }
 
     }
+
+    PyGILState_Release(state);
+
     return GDK_FILTER_CONTINUE;
 }
 
