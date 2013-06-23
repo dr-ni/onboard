@@ -42,10 +42,10 @@ typedef struct {
     unsigned int click_type;
     unsigned int drag_started;
     unsigned int drag_button;
-    int          drag_last_x; 
-    int          drag_last_y; 
-    gint64       drag_last_time; 
-    gint64       drag_slowdown_time; 
+    int          drag_last_x;
+    int          drag_last_y;
+    gint64       drag_last_time;
+    gint64       drag_slowdown_time;
     unsigned int modifier;
     Bool         enable_conversion;
     PyObject*    exclusion_rects;
@@ -268,7 +268,7 @@ on_drag_polling (DragPollingData *data)
     if (elapsed > DRAG_END_DELAY)
     {
         XTestFakeButtonEvent (dpy, info->drag_button, False, CurrentTime);
-        
+
         PyObject* callback = info->click_done_callback;
         Py_XINCREF(callback);
 
@@ -276,7 +276,7 @@ on_drag_polling (DragPollingData *data)
 
         notify_click_done(callback);
         Py_XDECREF(callback);
-        
+
         g_slice_free (DragPollingData, data);
         return FALSE;
     }
@@ -336,8 +336,8 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                     stop_grab(info);
 
                     /* Move the pointer to the actual click position.
-                     * Else faked button presses on the touch screen of 
-                     * the Nexus 7 are offset by a couple of hundred pixels.
+                     * Else faked button presses on the touch screen of
+                     * the Nexus 7 are offset by a couple hundred pixels.
                      */
                     XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
 
@@ -441,7 +441,7 @@ gboolean grab_release_timer_callback(gpointer user_data)
         button = info->drag_button;
     XTestFakeButtonEvent (xdisplay, button, False, CurrentTime);
 
-    stop_convert_click(info);    
+    stop_convert_click(info);
 
     info->grab_release_timer = 0;
 
@@ -650,7 +650,7 @@ get_xid_of_gtkwidget(PyObject* widget)
         {
             if (gdk_win != Py_None)
             {
-                PyObject* _xid = PyObject_CallMethod(gdk_win, 
+                PyObject* _xid = PyObject_CallMethod(gdk_win,
                                                     "get_xid", NULL);
                 if (_xid)
                 {
@@ -966,7 +966,7 @@ osk_util_get_current_wm_name (PyObject *self)
     if (xdisplay == NULL)
         Py_RETURN_NONE;
 
-    Atom _NET_SUPPORTING_WM_CHECK = 
+    Atom _NET_SUPPORTING_WM_CHECK =
                         XInternAtom(xdisplay, "_NET_SUPPORTING_WM_CHECK", True);
     if (_NET_SUPPORTING_WM_CHECK != None)
     {
@@ -977,7 +977,7 @@ osk_util_get_current_wm_name (PyObject *self)
         Window        *xwindows;
 
         XGetWindowProperty (xdisplay, GDK_WINDOW_XID(root),
-                            _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False, 
+                            _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False,
                             XA_WINDOW, &actual_type, &actual_format,
                             &nwindows, &nleft, (unsigned char **) &xwindows);
         if (actual_type == XA_WINDOW && nwindows > 0 && xwindows[0] != None)
@@ -1023,8 +1023,8 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
         Atom         *states;
 
         // Get all current states
-        XGetWindowProperty (xdisplay, xwindow, property_atom, 
-                            0L, 12L, False, 
+        XGetWindowProperty (xdisplay, xwindow, property_atom,
+                            0L, 12L, False,
                             XA_ATOM, &actual_type, &actual_format,
                             &nstates, &nleft, (unsigned char **) &states);
         if (actual_type == XA_ATOM)
