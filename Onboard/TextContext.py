@@ -383,6 +383,7 @@ class AtspiTextContext(TextContext):
         if not char_count is None:
             # record the change
             spans_to_update = []
+
             if insert:
                 #print("insert", pos, length)
 
@@ -401,21 +402,23 @@ class AtspiTextContext(TextContext):
                     # simple span for current insertion
                     begin = max(pos - 100, 0)
                     end = min(pos+length + 100, char_count)
-                    text = Atspi.Text.get_text(accessible, begin, end)
-                    insertion_span = TextSpan(pos, length, text, begin)
+                    text = self._state_tracker.get_accessible_text(accessible,
+                                                                   begin, end)
+                    if not text is None:
+                        insertion_span = TextSpan(pos, length, text, begin)
                 else:
                     # Remember nothing, just update existing spans.
                     include_length = None
 
                 spans_to_update = self._changes.insert(pos, length,
-                                                      include_length)
+                                                       include_length)
 
             else:
                 #print("delete", pos, length)
                 spans_to_update = self._changes.delete(pos, length,
                                                        self._entering_text)
 
-            # update text of the modified spans
+            # update text of all modified spans
             for span in spans_to_update:
                 # Get some more text around the span to hopefully
                 # include whole words at beginning and end.

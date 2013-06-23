@@ -262,7 +262,7 @@ class AtspiStateTracker(EventSource):
                         caret = event.detail1)
         self.emit_async("async-text-caret-moved", ae)
         return False
-        
+
     def _on_atspi_keystroke(self, event, user_data):
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
             _logger.debug("key-stroke {} {} {} {}" \
@@ -383,11 +383,25 @@ class AtspiStateTracker(EventSource):
             ext = accessible.get_extents(Atspi.CoordType.SCREEN)
         except Exception as ex: # private exception gi._glib.GError when
                 # right clicking onboards unity2d launcher (Precise)
-            _logger.info("AutoShow: Invalid accessible,"
+            _logger.info("Invalid accessible,"
                          " failed to get extents: " + unicode_str(ex))
             return Rect()
 
         return Rect(ext.x, ext.y, ext.width, ext.height)
+
+    @staticmethod
+    def get_accessible_text(accessible, begin, end):
+        """ Text of the given accessible, no caching """
+        try:
+            text = Atspi.Text.get_text(accessible, begin, end)
+        except Exception as ex: # private exception
+                                # gi._glib.GError: timeout from dbind
+                                # with web search in firefox.
+            _logger.info("Invalid accessible,"
+                         " failed to get text: " + unicode_str(ex))
+            return None
+
+        return text
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
