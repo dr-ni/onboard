@@ -1457,15 +1457,16 @@ class LanguageMenu:
 
         mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
                           [:max_mru_languages]
-        other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
-
-        other_lang_names = [languagedb.get_language_full_name(id) \
-                           for id in other_lang_ids]
-        other_lang_names = [name for name in other_lang_names if name]
+        other_lang_ids  = set(lang_ids).difference(mru_lang_ids)
+        other_langs = []
+        for lang_id in other_lang_ids:
+            name = languagedb.get_language_full_name(lang_id)
+            if name:
+                other_langs.append((name, lang_id))
 
         # language sub menu
         lang_menu = Gtk.Menu()
-        for name, lang_id in sorted(zip(other_lang_names, other_lang_ids)):
+        for name, lang_id in sorted(other_langs):
             item = Gtk.MenuItem.new_with_label(name)
             item.connect("activate", self._on_other_language_activated, lang_id)
             lang_menu.append(item)
@@ -1491,7 +1492,7 @@ class LanguageMenu:
                 item.connect("activate", self._on_language_activated, lang_id)
                 menu.append(item)
 
-        if other_lang_ids:
+        if other_langs:
             if mru_lang_ids:
                 item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
             else:
