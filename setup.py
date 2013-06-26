@@ -109,6 +109,7 @@ class Extension_osk(Extension):
                'osk_dconf.c',
                'osk_struts.c',
                'osk_audio.c',
+               'osk_hunspell.c',
               ]
 
     depends = ['osk_module.h',
@@ -117,6 +118,7 @@ class Extension_osk(Extension):
                'osk_dconf.h',
                'osk_struts.h',
                'osk_audio.h',
+               'osk_hunspell.h',
               ]
 
     # even MINOR numbers for stable versions
@@ -145,7 +147,7 @@ class Extension_osk(Extension):
                            define_macros = defines,
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
-                                       'dconf', 'libcanberra')
+                                       'dconf', 'libcanberra', 'hunspell')
                           )
 
 extension_osk = Extension_osk()

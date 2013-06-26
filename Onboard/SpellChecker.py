@@ -6,11 +6,15 @@ from __future__ import division, print_function, unicode_literals
 import os
 import subprocess
 import time
+import re
+import glob
 
-### Logging ###
+from Onboard.utils import unicode_str
+
+import Onboard.osk as osk
+
 import logging
-_logger = logging.getLogger("SpellChecker")
-###############
+_logger = logging.getLogger(__name__)
 
 
 class SpellChecker(object):
@@ -31,7 +35,7 @@ class SpellChecker(object):
             if backend == 0:
                 _class = hunspell
             else:
-                _class = aspell
+                _class = aspell_cmd
 
             if not self._backend or \
                not type(self._backend) == _class:
@@ -171,7 +175,7 @@ class SpellChecker(object):
 
 
 class SCBackend(object):
-    """ Base class of all spellchecker backends """
+    """ Abstract base class of all spellchecker backends """
 
     def __init__(self, dict_ids = None):
         self._active_dicts = None
@@ -183,13 +187,13 @@ class SCBackend(object):
                      .format(backend=type(self), dicts=dict_ids))
 
     def stop(self):
-        if self._p:
+        if self.is_running():
             _logger.info("stopping '{backend}'" \
                          .format(backend=type(self)))
-            self._p.terminate()
-            self._p.wait()
-            self._p = None
             self._active_dicts = None
+
+    def is_running(self):
+        return NotImplementedError()
 
     def query(self, text):
         """
@@ -197,22 +201,6 @@ class SCBackend(object):
         Text may contain one or more words. Each word generates its own
         list of suggestions. The spell checker backend decides about
         word boundaries.
-
-        Doctests:
-        # one prediction token, two words for the spell checker
-        >>> sp = hunspell(["en_US"])
-        >>> q = sp.query("conter_trop")
-        >>> q  # doctest: +ELLIPSIS
-        [[[0, 6, 'conter'], [...
-        >>> len(q)
-        2
-
-        # unrecognized word returns error span with zero choices (# mark)
-        >>> q = sp.query("ἄναρχος")
-        >>> q  # doctest:
-        [[[0, 7, 'ἄναρχος'], []]]
-        >>> len(q)
-        1
         """
         results = []
 
@@ -271,7 +259,7 @@ class SCBackend(object):
 
 class hunspell(SCBackend):
     """
-    Hunspell backend.
+    Hunspell backend using the C API.
 
     Doctests:
     # known word
@@ -285,12 +273,312 @@ class hunspell(SCBackend):
     [[...
     """
     def __init__(self, dict_ids = None):
+        self._osk_hunspell = None
         SCBackend.__init__(self, dict_ids)
         if dict_ids:
             self.start(dict_ids)
 
     def start(self, dict_ids = None):
         super(hunspell, self).start(dict_ids)
+
+        if dict_ids:
+            dic, aff = self._search_dict_files(dict_ids[0])
+            _logger.info("using hunspell files '{}', '{}'" \
+                            .format(dic, aff))
+            if dic:
+                try:
+                    self._osk_hunspell = osk.Hunspell(aff, dic)
+                    _logger.info("dictionary encoding '{}'" \
+                                 .format(self._osk_hunspell.get_encoding()))
+                except Exception as e:
+                    _logger.error("failed to create hunspell backend: " + \
+                                  unicode_str(e))
+                    self._osk_hunspell = None
+
+    def stop(self):
+        super(hunspell, self).stop()
+        if self.is_running():
+            self._osk_hunspell = None
+            self._active_dicts = None
+
+    def is_running(self):
+        return not self._osk_hunspell is None
+
+    SPLITWORDS = re.compile("[^-_\s]+", re.UNICODE|re.DOTALL)
+
+    def query(self, text):
+        """
+        Query for spelling suggestions.
+        Text may contain one or more words. Each word generates its own
+        list of suggestions. Word boundaries are choses to match the bahavior
+        of the hunspell command line tool, i.e. split at '-','_' and whitespace.
+
+        Doctests:
+        # one prediction token, two words for the spell checker
+        >>> sp = hunspell(["en_US"])
+        >>> q = sp.query("conter_trop")
+        >>> q  # doctest: +ELLIPSIS
+        [[[0, 6, 'conter'], [...
+        >>> len(q)
+        2
+
+        # unrecognized word returns error span with zero choices (# mark)
+        >>> q = sp.query("ἄναρχος")
+        >>> q  # doctest:
+        [[[0, 7, 'ἄναρχος'], []]]
+        >>> len(q)
+        1
+
+        # dictionaries come in various encodings, spot-check German
+        >>> sp = hunspell(["de_DE"])
+        >>> sp.query("Frühstück")
+        []
+        >>> sp.query("Früstück")   # doctest: +ELLIPSIS
+        [[[0, 8, 'Früstück'], ['Frühstück', ...
+
+        # dictionaries come in various encodings, spot-check Spanish
+        >>> sp = hunspell(["es_ES"])
+        >>> sp.query("situación")
+        []
+        >>> sp.query("situción")   # doctest: +ELLIPSIS
+        [[[0, 8, 'situción'], ['situación', ...
+
+        # dictionaries come in various encodings, spot-check Portuguese
+        >>> sp = hunspell(["pt_PT"])
+        >>> sp.query("questão")
+        []
+        >>> sp.query("quetão")   # doctest: +ELLIPSIS
+        [[[0, 6, 'quetão'], ['questão', ...
+
+        # dictionaries come in various encodings, spot-check French
+        >>> sp = hunspell(["fr_FR"])
+        >>> sp.query("garçon")
+        []
+        >>> sp.query("garçoon")   # doctest: +ELLIPSIS
+        [[[0, 7, 'garçoon'], ['garçon', ...
+
+        # dictionaries come in various encodings, spot-check Russian
+        >>> sp = hunspell(["ru_RU"])
+        >>> sp.query("ОБЕДЕННЫЙ") # dinner
+        []
+        >>> sp.query("ОБЕДЕНЫЙ")   # doctest: +ELLIPSIS
+        [[[0, 8, 'ОБЕДЕНЫЙ'], ['ОБЕДЕННЫЙ', ...
+
+        """
+        results = []
+
+        if self._osk_hunspell:
+            matches = self.SPLITWORDS.finditer(text)
+            for match in matches:
+                word = match.group()
+                begin = match.start()
+                end   = match.end()
+                span = [begin, end, word] # begin, end, word
+
+                try:
+                    if self._osk_hunspell.spell(word) == 0:
+                        suggestions = list(self._osk_hunspell.suggest(text))
+                        results.append([span, suggestions])
+                except UnicodeEncodeError:
+                    # Assume the offending character isn't part of the
+                    # target language and consider this word to be not
+                    # in the dictionary, i.e. misspelled without suggestions.
+                    results.append([span, []])
+
+        return results
+
+    def get_supported_dict_ids(self):
+        """
+        Return raw supported dictionary ids.
+        They may not all be valid language ids, e.g. en-GB for myspell dicts.
+
+        Doctests:
+        # Just check it does something at all
+        >>> sp = hunspell(["en_US"])
+        >>> sp.get_supported_dict_ids()   # doctest: +ELLIPSIS
+        ['...
+        """
+        dict_ids = []
+
+        # search for dictionary files
+        filenames = []
+        paths = self._get_dict_paths()
+        for path in paths:
+            fn = os.path.join(path, "*" + os.path.extsep + "dic")
+            filenames.extend(glob.glob(fn))
+
+        # extract language ids
+        for fn in filenames:
+            lang_id, _ext = os.path.splitext(os.path.basename(fn))
+            if not lang_id.lower().startswith("hyph"):
+                dict_ids.append(lang_id)
+
+        return dict_ids
+
+    def _search_dict_files(self, dict_id):
+        """ Locate dictionary and affix files for the given dict_id """
+        paths = self._get_dict_paths()
+        aff = self._find_file_in_paths(paths, dict_id, "aff")
+        dic = self._find_file_in_paths(paths, dict_id, "dic")
+        return dic, aff
+
+    @staticmethod
+    def _find_file_in_paths(paths, name, extension):
+        """ Search for a file name in multiple paths. """
+        for path in paths:
+            file = os.path.join(path, name + os.path.extsep + extension)
+            if os.path.exists(file):
+                return file
+        return None
+
+
+    def _get_dict_paths(self):
+        paths = []
+
+        # path logic taken from the source of the hunspell command line tool
+        pathsep = os.path.pathsep
+        LIBDIRS = [
+            "/usr/share/hunspell",
+            "/usr/share/myspell",
+            "/usr/share/myspell/dicts",
+            "/Library/Spelling"]
+        USEROOODIRS = [
+            ".openoffice.org/3/user/wordbook",
+            ".openoffice.org2/user/wordbook",
+            ".openoffice.org2.0/user/wordbook",
+            "Library/Spelling"]
+        OOODIRS = [
+            "/opt/openoffice.org/basis3.0/share/dict/ooo",
+            "/usr/lib/openoffice.org/basis3.0/share/dict/ooo",
+            "/opt/openoffice.org2.4/share/dict/ooo,"
+            "/usr/lib/openoffice.org2.4/share/dict/ooo,",
+            "/opt/openoffice.org2.3/share/dict/ooo",
+            "/usr/lib/openoffice.org2.3/share/dict/ooo",
+            "/opt/openoffice.org2.2/share/dict/ooo",
+            "/usr/lib/openoffice.org2.2/share/dict/ooo",
+            "/opt/openoffice.org2.1/share/dict/ooo,"
+            "/usr/lib/openoffice.org2.1/share/dict/ooo",
+            "/opt/openoffice.org2.0/share/dict/ooo",
+            "/usr/lib/openoffice.org2.0/share/dict/ooo"]
+        paths.append(".")
+
+        dicpath = os.getenv("DICPATH")
+        if dicpath:
+            paths.extend(dicpath.split(pathsep))
+
+        paths.extend(LIBDIRS)
+
+        home = os.getenv("HOME")
+        if home:
+            paths.append(home)
+            paths.extend(USEROOODIRS)
+
+        paths.extend(OOODIRS)
+
+        return paths
+
+
+class SCBackend_cmd(SCBackend):
+    """ Abstract base class of command line backends """
+
+    def __init__(self, dict_ids = None):
+        super(SCBackend_cmd, self).__init__(dict_ids)
+        self._p = None
+
+    def stop(self):
+        super(SCBackend_cmd, self).__init__(dict_ids)
+        if self.is_running():
+            self._p.terminate()
+            self._p.wait()
+            self._p = None
+
+    def is_running(self):
+        return not self._p is None
+
+    def query(self, text):
+        """
+        Query for spelling suggestions.
+        Text may contain one or more words. Each word generates its own
+        list of suggestions. The spell checker backend decides about
+        word boundaries.
+        """
+        results = []
+
+        # Check if the process is still running, it might have
+        # exited on start due to an unknown dictinary name.
+        if self._p and not self._p.poll() is None:
+            self._p = None
+
+        if self._p:
+
+            # unicode?
+            if type(text) == type(""):
+                line = "^" + text + "\n"
+                line = line.encode("UTF-8")
+            else: # already UTF-8 byte array
+                line = b"^" + text + b"\n"
+
+            self._p.stdin.write(line)
+            self._p.stdin.flush()
+            while True:
+                s = self._p.stdout.readline().decode("UTF-8")
+                s = s.strip()
+                if not s:
+                    break
+                if s[:1] == "&":
+                    sections = s.split(":")
+                    a = sections[0].split()
+                    begin = int(a[3]) - 1 # -1 for the prefixed ^
+                    end   = begin + len(a[1])
+                    span = [begin, end, a[1]] # begin, end, word
+                    suggestions = sections[1].strip().split(', ')
+                    results.append([span, suggestions])
+                if s[:1] == "#":
+                    sections = s.split(":")
+                    a = sections[0].split()
+                    begin = int(a[2]) - 1 # -1 for the prefixed ^
+                    end   = begin + len(a[1])
+                    span = [begin, end, a[1]] # begin, end, word
+                    suggestions = []
+                    results.append([span, suggestions])
+
+        return results
+
+    def get_supported_dict_ids(self):
+        """
+        Return raw supported dictionary ids.
+        """
+        raise NotImplementedError()
+
+    def get_active_dict_ids(self):
+        """
+        Return active dictionary ids.
+        """
+        return self._active_dicts
+
+
+class hunspell_cmd(SCBackend_cmd):
+    """
+    Hunspell backend, using the "hunspell" command.
+
+    Doctests:
+    # known word
+    >>> sp = hunspell_cmd(["en_US"])
+    >>> sp.query("test")
+    []
+
+    # unknown word
+    >>> sp = hunspell_cmd(["en_US"])
+    >>> sp.query("jdaskljasd")  # doctest: +ELLIPSIS
+    [[...
+    """
+    def __init__(self, dict_ids = None):
+        SCBackend.__init__(self, dict_ids)
+        if dict_ids:
+            self.start(dict_ids)
+
+    def start(self, dict_ids = None):
+        super(hunspell_cmd, self).start(dict_ids)
 
         args = ["hunspell", "-a", "-i", "UTF-8"]
         if dict_ids:
@@ -344,18 +632,18 @@ class hunspell(SCBackend):
         return dict_ids
 
 
-class aspell(SCBackend):
+class aspell_cmd(SCBackend):
     """
     Aspell backend.
 
     Doctests:
     # known word
-    >>> sp = aspell(["en_US"])
+    >>> sp = aspell_cmd(["en_US"])
     >>> sp.query("test")
     []
 
     # unknown word
-    >>> sp = aspell(["en_US"])
+    >>> sp = aspell_cmd(["en_US"])
     >>> sp.query("jdaskljasd")  # doctest: +ELLIPSIS
     [[...
     """
@@ -365,7 +653,7 @@ class aspell(SCBackend):
             self.start(dict_ids)
 
     def start(self, dict_ids = None):
-        super(aspell, self).start(dict_ids)
+        super(aspell_cmd, self).start(dict_ids)
 
         args = ["aspell", "-a"]
         if dict_ids:
