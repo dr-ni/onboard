@@ -143,15 +143,7 @@ static void
 notify_click_done(PyObject* callback)
 {
     if (callback)
-    {
         osk_util_idle_call(callback, NULL);
-        /*
-        PyObject* arglist = NULL; //Py_BuildValue("(i)", arg);
-        PyObject* result  = PyObject_CallObject(callback, arglist);
-        Py_XDECREF(arglist);
-        Py_XDECREF(result);
-        */
-    }
 }
 
 static Bool
