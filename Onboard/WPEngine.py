@@ -99,7 +99,7 @@ class WPLocalEngine(object):
         if ignore_non_capitalized:
             options |= LanguageModel.IGNORE_NON_CAPITALIZED
 
-        context = pypredict.tokenize_context(context_line)
+        context, spans = pypredict.tokenize_context(context_line)
         choices = self._get_prediction(self.models, context, limit, options)
         _logger.debug("context=" + repr(context))
         _logger.debug("choices=" + repr(choices[:5]))
@@ -212,19 +212,24 @@ class WPLocalEngine(object):
 
     def tokenize_context(self, text):
         """ let the service find the words in text """
-        tokens = pypredict.tokenize_context(text)
-        return tokens
+        return pypredict.tokenize_context(text)
 
     def get_model_names(self, _class):
         """ Return the names of the available models. """
         names = self._model_cache.find_available_model_names(_class)
         return names
 
-    def get_last_context_token(self, text):
-        """ return the very last (partial) word in text """
-        tokens = self.tokenize_context(text[-1024:])
-        if len(tokens):
-            return tokens[-1]
+    def get_last_context_fragment(self, text):
+        """
+        Return the very last (partial) word in text.
+        """
+        text = text[-1024:]
+        tokens, spans = self.tokenize_context(text)
+        if len(spans):
+            # Don't return the the token itself as it won't include
+            # trailing dashes. Catch the text until its very end.
+            begin = spans[-1][0]
+            return text[begin:]
         else:
             return ""
 

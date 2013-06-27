@@ -320,7 +320,7 @@ def tokenize_text(text):
     return tokens, spans
 
 def tokenize_context(text):
-    """ Split text into word tokens + prefix.
+    """ Split text into word tokens + completion prefix.
         The result is ready for use in predict().
     """
     tokens, spans = tokenize_text(text)
@@ -330,8 +330,11 @@ def tokenize_context(text):
                 | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$  # operator, equal sign
                 | .*(\S)\\1{3,}$                  # anything repeated > 3 times
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
-        tokens += [""]
-    return tokens
+        tokens.append("")
+        tend = len(text)
+        spans.append([tend, tend]) # empty span
+
+    return tokens, spans
 
 def read_order(filename, encoding=None):
     """
@@ -470,7 +473,7 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
 
         cursor = 0
         while cursor < len(sentence):
-            context = tokenize_context(". " + inputline) # simulate sentence begin
+            context, spans = tokenize_context(". " + inputline) # simulate sentence begin
             prefix = context[len(context)-1] if context else ""
             prefix_to_end = sentence[len(inputline)-len(prefix):]
             target_word = re.search("^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
@@ -503,7 +506,7 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
 
         # learn the sentence
         if learn_model:
-            tokens = tokenize_context(sentence)
+            tokens, spans = tokenize_context(sentence)
             learn_model.learn_tokens(tokens)
 
         # progress feedback

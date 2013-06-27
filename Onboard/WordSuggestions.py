@@ -356,16 +356,17 @@ class WordSuggestions:
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
         deletion, insertion = \
-                self._get_prediction_choice_remainder(choice_index)
+                self._get_prediction_choice_changes(choice_index)
 
         separator = ""
         if config.wp.punctuation_assistance and \
            allow_separator:
-            # simulate the change
+            # Simulate the change and determine the final text 
+            # before the cursor.
             cursor_span = self.text_context.get_span_at_cursor()
             context = self._simulate_insertion(cursor_span, deletion, insertion)
 
-            # should we add a separator character after the inserted word?
+            # Should we add a separator character after the inserted word?
             domain = self.text_context.get_text_domain()
             separator = domain.get_auto_separator(context)
 
@@ -486,7 +487,7 @@ class WordSuggestions:
                 max_choices = config.wp.max_word_choices
                 bot_context = text_context.get_bot_context()
                 bot_marker = text_context.get_text_begin_marker()
-                tokens = self._wpengine.tokenize_context(bot_context)
+                tokens, spans = self._wpengine.tokenize_context(bot_context)
 
                 case_insensitive, ignore_non_caps, \
                 capitalize, drop_capitalized = \
@@ -644,13 +645,16 @@ class WordSuggestions:
                     seen.add(choice)
         return results
 
-    def _get_prediction_choice_remainder(self, choice_index):
-        """ returns the rest of matches[index] that hasn't been typed yet """
+    def _get_prediction_choice_changes(self, choice_index):
+        """
+        Determines the text changes necessary when inserting
+        the prediction choice at choice_index.
+        """
         deletion = ""
         insertion = ""
         if self._wpengine:
-            text = self.text_context.get_context()
-            word_prefix = self._wpengine.get_last_context_token(text)
+            context = self.text_context.get_context()
+            word_prefix = self._wpengine.get_last_context_fragment(context)
             choice = self._prediction_choices[choice_index]
             remainder = choice[len(word_prefix):]
 

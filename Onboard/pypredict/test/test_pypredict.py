@@ -48,7 +48,7 @@ class _TestTokenization(unittest.TestCase):
                          (self.training_text, repr(tokens), repr(self.result)))
 
     def test_tokenize_context(self):
-        tokens = tokenize_context(self.training_text)
+        tokens, spans = tokenize_context(self.training_text)
         self.assertEqual(tokens, self.result,
                          "test '%s': '%s' != '%s'" %
                          (self.training_text, repr(tokens), repr(self.result)))
