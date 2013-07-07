@@ -496,10 +496,11 @@ class WordSuggestions:
                                                     bot_marker)
 
                 _choices = self._wpengine.predict(bot_context,
-                            max_choices * 2,
-                            case_insensitive = case_insensitive,
-                            accent_insensitive = config.wp.accent_insensitive,
-                            ignore_non_capitalized = ignore_non_caps)
+                       max_choices * 2,
+                       case_insensitive = case_insensitive,
+                       accent_insensitive = False,
+                       accent_insensitive_smart = config.wp.accent_insensitive,
+                       ignore_non_capitalized = ignore_non_caps)
 
                 choices = []
                 for choice in _choices:

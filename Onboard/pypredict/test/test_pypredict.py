@@ -225,12 +225,26 @@ class _TestModel(unittest.TestCase):
     def test_accent_insensitive(self):
         model = DynamicModel()
         model.count_ngram(['ÉéÈèñ'], 1)
+        model.count_ngram(['früh', 'fruchtig'], 1)
 
         choices = model.predict(['EeEen'])
         self.assertEqual(choices, [])
 
         choices = model.predict(['EeEen'], options = model.ACCENT_INSENSITIVE)
         self.assertEqual(choices, ['ÉéÈèñ'])
+
+    def test_accent_insensitive_smart(self):
+        model = DynamicModel()
+        model.count_ngram(['früh', 'fruchtig'], 1)
+
+        choices = model.predict(['fru'])
+        self.assertEqual(choices, ['fruchtig'])
+
+        choices = model.predict(['fru'], options = model.ACCENT_INSENSITIVE_SMART)
+        self.assertEqual(choices, ['früh', 'fruchtig'])
+
+        choices = model.predict(['frü'], options = model.ACCENT_INSENSITIVE_SMART)
+        self.assertEqual(choices, ['früh'])
 
     def test_ignore_capitalized(self):
         model = DynamicModel()

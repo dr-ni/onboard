@@ -1998,6 +1998,8 @@ moduleinit (void)
                              PyInt_FromLong(LanguageModel::CASE_INSENSITIVE));
         PyDict_SetItemString(LanguageModelType.tp_dict, "ACCENT_INSENSITIVE",
                              PyInt_FromLong(LanguageModel::ACCENT_INSENSITIVE));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "ACCENT_INSENSITIVE_SMART",
+                             PyInt_FromLong(LanguageModel::ACCENT_INSENSITIVE_SMART));
         PyDict_SetItemString(LanguageModelType.tp_dict, "IGNORE_CAPITALIZED",
                              PyInt_FromLong(LanguageModel::IGNORE_CAPITALIZED));
         PyDict_SetItemString(LanguageModelType.tp_dict, "IGNORE_NON_CAPITALIZED",

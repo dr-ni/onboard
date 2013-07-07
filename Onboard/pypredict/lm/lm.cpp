@@ -101,9 +101,15 @@ class PrefixCmp
             options = _options;
 
             if (options & LanguageModel::CASE_INSENSITIVE)
-                transform (prefix.begin(), prefix.end(), prefix.begin(), op_lower);
+                transform (prefix.begin(), prefix.end(), prefix.begin(),
+                           op_lower);
+
+            if (options & LanguageModel::ACCENT_INSENSITIVE_SMART)
+                ;
+            else
             if (options & LanguageModel::ACCENT_INSENSITIVE)
-                transform (prefix.begin(), prefix.end(), prefix.begin(), op_remove_accent);
+                transform (prefix.begin(), prefix.end(), prefix.begin(),
+                           op_remove_accent);
         }
 
         int matches(const char* s)
@@ -138,12 +144,23 @@ class PrefixCmp
             do
             {
                 c1 = (wint_t) *s++;
-                if (options & LanguageModel::CASE_INSENSITIVE)
-                    c1 = (wint_t) towlower(c1);
-                if (options & LanguageModel::ACCENT_INSENSITIVE)
-                    c1 = (wint_t) op_remove_accent(c1);
-
                 c2 = (wint_t) *p++;
+
+                if (options & LanguageModel::CASE_INSENSITIVE)
+                {
+                    c1 = (wint_t) towlower(c1);
+                }
+
+                if (options & LanguageModel::ACCENT_INSENSITIVE_SMART)
+                {
+                    if (!has_accent(c2))
+                        c1 = (wint_t) op_remove_accent(c1);
+                }
+                else
+                if (options & LanguageModel::ACCENT_INSENSITIVE)
+                {
+                    c1 = (wint_t) op_remove_accent(c1);
+                }
 
                 if (c1 == L'\0' || c1 != c2)
                     return false;
@@ -160,15 +177,20 @@ class PrefixCmp
 
         static wint_t op_remove_accent(wint_t c)
         {
-            if (c <= 0x7f)
-                return c;
-
-            wint_t i = lookup_transform(c, _accent_transform,
-                                            ALEN(_accent_transform));
-            if (i<ALEN(_accent_transform) &&
-                _accent_transform[i][0] == c)
-                return _accent_transform[i][1];
+            if (c > 0x7f)
+            {
+                wint_t i = lookup_transform(c, _accent_transform,
+                                                ALEN(_accent_transform));
+                if (i<ALEN(_accent_transform) &&
+                    _accent_transform[i][0] == c)
+                    return _accent_transform[i][1];
+            }
             return c;
+        }
+
+        static wint_t has_accent(wint_t c)
+        {
+            return op_remove_accent(c) != c;
         }
 
         static int lookup_transform(wint_t c, wint_t table[][2], int len)

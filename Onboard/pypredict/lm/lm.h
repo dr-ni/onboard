@@ -316,16 +316,18 @@ class LanguageModel
     public:
         enum PredictOptions
         {
-            CASE_INSENSITIVE       = 1<<0, // case insensitive completion,
-                                           // affects all characters
-            ACCENT_INSENSITIVE     = 1<<1, // accent insensitive completion
-                                           // affects all characters
-            IGNORE_CAPITALIZED     = 1<<2, // ignore capitalized words,
-                                           // only affects first character
-            IGNORE_NON_CAPITALIZED = 1<<3, // ignore non-capitalized words
-                                           // only affects first character
-            INCLUDE_CONTROL_WORDS  = 1<<4, // include <s>, <num>, ...
-            NO_SORT                = 1<<5, // don't sort by weight
+            CASE_INSENSITIVE         = 1<<0, // case insensitive completion,
+                                             // affects all characters
+            ACCENT_INSENSITIVE       = 1<<1, // accent insensitive completion
+                                             // affects all characters
+            ACCENT_INSENSITIVE_SMART = 1<<2, // accent insensitive completion
+                                             // only for non-accent characters
+            IGNORE_CAPITALIZED       = 1<<3, // ignore capitalized words,
+                                             // only affects first character
+            IGNORE_NON_CAPITALIZED   = 1<<4, // ignore non-capitalized words
+                                             // only affects first character
+            INCLUDE_CONTROL_WORDS    = 1<<5, // include <s>, <num>, ...
+            NO_SORT                  = 1<<6, // don't sort by weight
 
             // Default to not do explicit normalization for performance
             // reasons. Often results will be implicitely normalized already
@@ -337,6 +339,7 @@ class LanguageModel
                                            // else ought to be normalized already.
             FILTER_OPTIONS         = CASE_INSENSITIVE |
                                      ACCENT_INSENSITIVE |
+                                     ACCENT_INSENSITIVE_SMART |
                                      IGNORE_CAPITALIZED |
                                      IGNORE_NON_CAPITALIZED,
             DEFAULT_OPTIONS        = 0

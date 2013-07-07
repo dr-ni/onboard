@@ -85,6 +85,7 @@ class WPLocalEngine(object):
     def predict(self, context_line, limit = 20,
                 case_insensitive = False,
                 accent_insensitive = False,
+                accent_insensitive_smart = False,
                 ignore_capitalized = False,
                 ignore_non_capitalized = False):
         """ Find completion/prediction choices. """
@@ -94,6 +95,8 @@ class WPLocalEngine(object):
             options |= LanguageModel.CASE_INSENSITIVE
         if accent_insensitive:
             options |= LanguageModel.ACCENT_INSENSITIVE
+        if accent_insensitive_smart:
+            options |= LanguageModel.ACCENT_INSENSITIVE_SMART
         if ignore_capitalized:
             options |= LanguageModel.IGNORE_CAPITALIZED
         if ignore_non_capitalized:
