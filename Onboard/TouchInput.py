@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-""" Touch input """
+"""
+Touch input
+
+Unify pointer and touch events and translate them into multi-touch
+capable InputSequences.
+"""
 
 from __future__ import division, print_function, unicode_literals
 
@@ -25,8 +30,9 @@ BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
 
-DRAG_GESTURE_THRESHOLD2 = 40**2
-
+DRAG_GESTURE_THRESHOLD2 = 40**2  # square of the distance in pixels until
+                                 # a drag gesture is detected.
+# gesture type
 (
     NO_GESTURE,
     TAP_GESTURE,
@@ -34,7 +40,7 @@ DRAG_GESTURE_THRESHOLD2 = 40**2
     FLICK_GESTURE,
 ) = range(4)
 
-# sequence id of core pointer events
+# sequence id of core pointer events (single-touch/click events)
 POINTER_SEQUENCE = 0
 
 class InputEventSourceEnum:
@@ -95,7 +101,7 @@ class InputEventSource:
         """
         self._xi_drag_active = active
 
-        # release slave device grab when the simulated grab ends
+        # release simulated slave device grab when the drag operation ends
         if not active and \
            self._xi_drag_events_selected and \
            self._device_manager:
@@ -193,9 +199,10 @@ class InputEventSource:
         return success
 
     def select_xinput_devices(self):
-        """ Select events of all slave pointer devices. """
+        """ Select pointer devices and their events we want to listen to. """
 
-        # select events for the master pointer
+        # Select events for the master pointer.
+        # Enter/leave events aren't supported by the slaves.
         event_mask = XIEventMask.EnterMask | \
                      XIEventMask.LeaveMask
         device = self._device_manager.get_client_pointer()
@@ -213,7 +220,7 @@ class InputEventSource:
         self._master_device = device
         self._master_device_id = device.id
 
-        # select events for all attached (non-floating) slave pointers
+        # Select events for all attached (non-floating) slave pointers.
         event_mask = XIEventMask.ButtonPressMask | \
                      XIEventMask.ButtonReleaseMask | \
                      XIEventMask.EnterMask | \
@@ -242,7 +249,7 @@ class InputEventSource:
     def _select_xi_drag_events(self, select):
         """
         Select events for the root window to simulate a pointer grab.
-        Only relevant when a drag was initiated, i.e. moving/resizing
+        Only relevant when a drag was initiated, e.g. moving/resizing
         the keyboard.
         """
         if select:
@@ -284,7 +291,7 @@ class InputEventSource:
             self.select_xinput_devices()
             return
 
-        # check device_id, stop duplicate and unknown events
+        # check device_id, discard duplicate and unknown events
         if event_type == XIEventType.Enter or \
            event_type == XIEventType.Leave:
 
@@ -297,15 +304,18 @@ class InputEventSource:
             if not event.device_id in self._slave_device_ids:
                 return
 
+        # bail if the window isn't realized yet
         win = self.get_window()
         if not win:
             return
+
 
         # Slaves aren't grabbed for moving/resizing when simulating a drag
         # operation (drag click button), or multiple slave devices are
         # involved (one for button press, another for motion).
         # None of these problems are assumed to exist for touch devices.
-        # -> select root events we can track even outside the keyboard window.
+        # -> Simulate pointer grab, select root events we can track even 
+        #    outside the keyboard window.
         if self._xi_drag_active and \
            (event_type == XIEventType.Motion or \
             event_type == XIEventType.ButtonRelease):
@@ -314,19 +324,18 @@ class InputEventSource:
 
             #print(self._xi_drag_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
 
-            # We don't get window coordinates for root window events,
-            # so convert them from the root window coordinates.
+            # We only get root window coordinates for root window events,
+            # so convert them to our target window's coordinates.
             rx, ry = win.get_root_coords(0, 0)
             event.x = event.x_root - rx
             event.y = event.y_root - ry
 
         else:
-
             # Is self the hit window?
-            # We need this only for the multi touch case with open
-            # long press popup, e.g. while shift is held down, touching
-            # anything in a long press popup must not also affect
-            # the keyboard below.
+            # We need this only for the multi-touch case with open
+            # long press popup, e.g. while shift is held down with
+            # one finger, touching anything in a long press popup must 
+            # not also affect the keyboard below.
             xid_event = event.xid_event
             if xid_event != 0 and \
                 xid_event != win.get_xid():
