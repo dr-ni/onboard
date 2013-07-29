@@ -603,11 +603,15 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
 static gboolean
 signal_handler(gpointer user_data)
 {
+    PyGILState_STATE state = PyGILState_Ensure();
     PyObject* callback = (PyObject*) user_data;
     PyObject* arglist = NULL;
+
     PyObject* result  = PyObject_CallObject(callback, arglist);
     Py_XDECREF(arglist);
     Py_XDECREF(result);
+
+    PyGILState_Release(state);
     return True;
 }
 
