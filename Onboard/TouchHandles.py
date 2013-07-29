@@ -62,9 +62,11 @@ class TouchHandle(object):
         return min(w, h) / 2.0
 
     def get_shadow_rect(self):
-        rect = self.get_rect().inflate(self._shadow_size+1)
-        rect.w += self._shadow_offset[0]
-        rect.h += self._shadow_offset[1]
+        rect = self.get_rect()
+        if rect:
+            rect = rect.inflate(self._shadow_size+1)
+            rect.w += self._shadow_offset[0]
+            rect.h += self._shadow_offset[1]
         return rect
 
     def get_arrow_angle(self):
