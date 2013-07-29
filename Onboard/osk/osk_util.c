@@ -289,6 +289,7 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                        GdkEvent        *gdk_event,
                        OskUtilGrabInfo *info)
 {
+    PyGILState_STATE state = PyGILState_Ensure();
     XEvent *event = gdk_xevent;
 
     if (event->type == ButtonPress || event->type == ButtonRelease)
@@ -372,6 +373,9 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
             Py_XDECREF(callback);
         }
     }
+
+    PyGILState_Release(state);
+
     return GDK_FILTER_CONTINUE;
 }
 
