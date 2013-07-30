@@ -357,6 +357,13 @@ class hunspell(SCBackend):
         >>> sp.query("garçoon")   # doctest: +ELLIPSIS
         [[[0, 7, 'garçoon'], ['garçon', ...
 
+        # dictionaries come in various encodings, spot-check Italian
+        >>> sp = hunspell(["it_IT"])
+        >>> sp.query("parlerò")
+        []
+        >>> sp.query("parllerò")   # doctest: +ELLIPSIS
+        [[[0, 8, 'parllerò'], ['parlerò', ...
+
         # dictionaries come in various encodings, spot-check Russian
         >>> sp = hunspell(["ru_RU"])
         >>> sp.query("ОБЕДЕННЫЙ") # dinner
@@ -373,7 +380,7 @@ class hunspell(SCBackend):
                 word = match.group()
                 begin = match.start()
                 end   = match.end()
-                span = [begin, end, word] # begin, end, word
+                span = [begin, end, word]
 
                 try:
                     if self._osk_hunspell.spell(word) == 0:
@@ -431,11 +438,13 @@ class hunspell(SCBackend):
                 return file
         return None
 
-
     def _get_dict_paths(self):
+        """
+        Return all paths where dictionaries may be located.
+        Path logic taken from the source of the hunspell command line tool.
+        """
         paths = []
 
-        # path logic taken from the source of the hunspell command line tool
         pathsep = os.path.pathsep
         LIBDIRS = [
             "/usr/share/hunspell",
