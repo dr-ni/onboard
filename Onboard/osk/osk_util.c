@@ -25,7 +25,6 @@
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
-#include <X11/extensions/XTest.h>
 #include <X11/extensions/shape.h>
 
 #ifdef USE_LANGUAGE_CLASSIFIER
