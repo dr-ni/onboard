@@ -43,11 +43,12 @@ Suggests: mousetweaks (>= 3.3.90)
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
 
-Package: onboard-prediction-data
+Package: onboard-data
 Architecture: any
 Depends: ${python3:Depends},
          ${misc:Depends},
-         onboard (> 0.97.1)
+         onboard (>= 0.98.0)
+Replaces: onboard-prediction-data
 Description: Language model files for the prediction feature of Onboard
  This package installs default language model files for various
  languages. The prediction feature of Onboard uses these files (and
