@@ -1040,7 +1040,7 @@ class ThemeDialog(DialogBuilder):
         self.superkey_label_model = builder.get_object("superkey_label_model")
 
         def on_key_stroke_width_value_changed(value):
-            self.theme.background_gradient = value
+            self.theme.key_stroke_width = value
             self.update_sensivity()
         self.bind_scale("key_stroke_width_scale",
                         config.theme_settings, "key_stroke_width",
