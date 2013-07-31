@@ -888,12 +888,14 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
             break;
         if (!PyUnicode_Check(property))
         {
+            Py_DECREF(property);
             PyErr_SetString(PyExc_ValueError, "elements must be unicode strings");
             return NULL;
         }
         PyObject* str_prop = PyUnicode_AsUTF8String(property);
         if (!str_prop)
         {
+            Py_DECREF(property);
             PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
             return NULL;
         }
