@@ -931,17 +931,16 @@ get_window_name(Display* display, Window window)
     int len;
     char **list = NULL;
     PyObject* result = NULL;
+    Status stat;
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
     gdk_error_trap_push ();
-    if(!XGetTextProperty(display, window, &prop, _NET_WM_NAME) || prop.nitems == 0)
-        if(!XGetWMName(display, window, &prop) || prop.nitems == 0)
-            return NULL;
-
-    if (gdk_error_trap_pop ())
-    {
+    stat = XGetTextProperty(display, window, &prop, _NET_WM_NAME);
+    if (stat != Success || prop.nitems == 0)
+        stat = XGetWMName(display, window, &prop);
+    gdk_error_trap_pop_ignored ();
+    if (stat != Success || prop.nitems == 0)
         Py_RETURN_NONE;
-    }
 
     if(prop.encoding == XA_STRING)
     {
@@ -954,7 +953,10 @@ get_window_name(Display* display, Window window)
     }
     XFree(prop.value);
 
-    return result;
+    if (result)
+        return result;
+
+    Py_RETURN_NONE;
 }
 
 static PyObject *
