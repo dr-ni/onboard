@@ -1984,11 +1984,11 @@ moduleinit (void)
         // add top level objects to be instantiated from python
         Py_INCREF(&LanguageModelType);
         PyModule_AddObject(module, "LanguageModel", (PyObject *)&LanguageModelType);
-        Py_INCREF(&DynamicModelType);
+        Py_INCREF(&UnigramModelType);
         PyModule_AddObject(module, "UnigramModel", (PyObject *)&UnigramModelType);
         Py_INCREF(&DynamicModelType);
         PyModule_AddObject(module, "DynamicModel", (PyObject *)&DynamicModelType);
-        Py_INCREF(&DynamicModelType);
+        Py_INCREF(&DynamicModelKNType);
         PyModule_AddObject(module, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
         Py_INCREF(&CachedDynamicModelType);
         PyModule_AddObject(module, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
