@@ -293,7 +293,7 @@ pyseqence_to_strings(PyObject* sequence, vector<wchar_t*>& strings)
     if (!PySequence_Check(sequence))
     {
         PyErr_SetString(PyExc_ValueError, "expected sequence type");
-        return false;
+        error = 1;
     }
     else
     {
@@ -307,23 +307,23 @@ pyseqence_to_strings(PyObject* sequence, vector<wchar_t*>& strings)
             {
                 PyErr_SetString(PyExc_ValueError, "bad item in sequence");
                 error = 1;
-                break;
             }
             if (!PyUnicode_Check(item))
             {
                 PyErr_SetString(PyExc_ValueError, "item is not a unicode string");
                 error = 1;
-                break;
             }
             wchar_t* s = pyunicode_to_wstr(item);
             if (!s)
             {
                 error = 1;
-                break;
             }
-            strings.push_back(s);
+            Py_XDECREF(item);
 
-            Py_DECREF(item); /* Discard reference ownership */
+            if (error)
+                break;
+
+            strings.push_back(s);
         }
     }
 
@@ -591,7 +591,10 @@ LanguageModel_lookup_word(PyLanguageModel* self, PyObject* value)
 {
     wchar_t* word = pyunicode_to_wstr(value);
     if (!word)
+    {
+        PyErr_SetString(PyExc_ValueError, "parameter must be unicode string");
         return NULL;
+    }
 
     int result = (*self)->lookup_word(word);
 
@@ -760,6 +763,7 @@ NGramIter_dealloc(NGramIter* self)
 static PyObject *
 NGramIter_iter(PyObject *self)
 {
+    Py_INCREF(self);
     return self;  // python iterator interface: iter() on iterators returns self
 }
 
@@ -1179,7 +1183,6 @@ DynamicModel_iter_ngrams(PyDynamicModel *self)
     if (!iter)
         return NULL;
     iter = new(iter) NGramIter(self->o);   // placement new
-    Py_INCREF(iter);
 
     #ifndef NDEBUG
     printf("DynamicModel_iter_ngrams: NGramIter=%p, ob_refcnt=%d\n", iter, (int)((PyObject*)iter)->ob_refcnt);
@@ -1481,9 +1484,13 @@ CachedDynamicModel_set_recency_halflife(PyCachedDynamicModel *self, PyObject *va
         return -1;
     }
 
+    long halflife = 0;
     PyObject* o = PyNumber_Int(value);
-    long halflife = PyInt_AsLong(o);
-    Py_DECREF(o);
+    if (o)
+    {
+        halflife = PyInt_AsLong(o);
+        Py_DECREF(o);
+    }
 
     if (halflife <= 0)
     {
@@ -1868,10 +1875,12 @@ overlay(PyDynamicModel *self, PyObject* args)
 
     PyOverlayModel* model = PyObject_New(PyOverlayModel, &OverlayModelType);
     if (!model)
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to allocate PyOverlayModel");
         return NULL;
+    }
 
     model = new(model) PyOverlayModel(models);   // placement new
-    Py_INCREF(model);
 
     return (PyObject*) model;
 }
@@ -1886,11 +1895,13 @@ linint(PyDynamicModel *self, PyObject* args)
 
     PyLinintModel* model = PyObject_New(PyLinintModel, &LinintModelType);
     if (!model)
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to allocate PyLinintModel");
         return NULL;
+    }
 
     model = new(model) PyLinintModel(models);   // placement new
     (*model)->set_weights(weights);
-    Py_INCREF(model);
 
     return (PyObject*) model;
 }
@@ -1906,11 +1917,14 @@ loglinint(PyDynamicModel *self, PyObject* args)
     PyLoglinintModel* model = PyObject_New(PyLoglinintModel,
                                            &LoglinintModelType);
     if (!model)
+    {
+        PyErr_SetString(PyExc_MemoryError,
+                        "failed to allocate PyLoglinintModel");
         return NULL;
+    }
 
     model = new(model) PyLoglinintModel(models);   // placement new
     (*model)->set_weights(weights);
-    Py_INCREF(model);
 
     return (PyObject*) model;
 }
