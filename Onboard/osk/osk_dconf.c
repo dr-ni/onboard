@@ -131,12 +131,14 @@ unpack_variant(GVariant* value)
                     {
                         Py_XDECREF(key_val);
                         Py_XDECREF(val_val);
-                        Py_XDECREF(result);
+                        Py_DECREF(result);
                         result = NULL;
                         break;
                     }
 
                     PyDict_SetItem(result, key_val, val_val);
+                    Py_DECREF(key_val);
+                    Py_DECREF(val_val);
                 }
             }
             else
@@ -182,12 +184,9 @@ unpack_variant(GVariant* value)
         }
 
         default:
-        {
-            char msg[256];
-            snprintf(msg, sizeof(msg) / sizeof(*msg),
-                    "unsupported variant class '%c'", class);
-            PyErr_SetString(PyExc_TypeError, msg);
-        }
+            PyErr_Format(PyExc_TypeError,
+                         "unsupported variant class '%c'",
+                         class);
     }
 
     return result;

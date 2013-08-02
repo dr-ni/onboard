@@ -58,6 +58,7 @@ osk_struts_set (PyObject *self, PyObject *args)
     if (PySequence_Fast_GET_SIZE (seq) != 12)
     {
         PyErr_SetString (PyExc_ValueError, "expected 12 values");
+        Py_DECREF (seq);
         return NULL;
     }
 

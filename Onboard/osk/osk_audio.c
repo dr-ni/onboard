@@ -37,8 +37,10 @@ static int
 osk_audio_init(OskAudio* audio, PyObject* args, PyObject* kwds)
 {
     if (!osk_audio_init_canberra(audio))
+    {
+        PyErr_SetString(OSK_EXCEPTION, "failed to initialize canberra");
         return -1;
-
+    }
     return 0;
 }
 
@@ -62,14 +64,12 @@ osk_audio_init_canberra(OskAudio* audio)
     if (ca_context_create(&audio->ca) != CA_SUCCESS)
         return FALSE;
 
-    if (ca_proplist_create(&props) != CA_SUCCESS)
-        return FALSE;
-
     screen = gdk_screen_get_default();
     nr = gdk_screen_get_number(screen);
     name = gdk_display_get_name(gdk_screen_get_display(screen));
 
     /* Set default application properties */
+    ca_proplist_create(&props);
     ca_proplist_sets(props, CA_PROP_APPLICATION_NAME, "Onboard");
     ca_proplist_sets(props, CA_PROP_APPLICATION_ID, "org.onboard.Onboard");
     ca_proplist_sets(props, CA_PROP_APPLICATION_ICON_NAME, "onboard");
@@ -94,14 +94,13 @@ osk_audio_play(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, "sff", &event_id, &x, &y))
         return NULL;
 
-    if (ca_proplist_create(&props) != CA_SUCCESS)
-        return NULL;
-
     screen = gdk_screen_get_default();
     sw = gdk_screen_get_width(screen);
     sh = gdk_screen_get_height(screen);
 
+    ca_proplist_create(&props);
     ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
+
     if (x != -1 && y != -1)
     {
         ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_X, "%0.0f", x);
@@ -192,13 +191,9 @@ osk_audio_cache_sample(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, "s", &event_id))
         return NULL;
 
-    if (ca_proplist_create(&props) != CA_SUCCESS)
-        return NULL;
-
+    ca_proplist_create(&props);
     ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
-
     ret = ca_context_cache_full(audio->ca, props);
-
     ca_proplist_destroy(props);
 
     if (ret < 0)
