@@ -113,18 +113,11 @@ class Extension_osk(Extension):
                'osk_hunspell.c',
               ]
 
-    depends = ['osk_module.h',
-               'osk_devices.h',
-               'osk_util.h',
-               'osk_dconf.h',
-               'osk_struts.h',
-               'osk_audio.h',
-               'osk_hunspell.h',
-              ]
+    depends = ['osk_module.h']
 
     # even MINOR numbers for stable versions
     defines = [('MAJOR_VERSION', '0'),
-               ('MINOR_VERSION', '2'),
+               ('MINOR_VERSION', '4'),
                ('MICRO_VERSION', '0'),
               ]
 
