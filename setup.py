@@ -60,7 +60,7 @@ def pkgconfig(*packages, **kw):
 
     if status != 0:
         print('setup.py: pkg-config returned exit code %d' % status, file=sys.stderr)
-        print('setup.py: sdist needs libgtk-3-dev, libxtst-dev and libdconf-dev')
+        print('setup.py: sdist needs libgtk-3-dev, libxkbfile-dev, libxtst-dev and libdconf-dev')
         sys.exit(1)
 
 
@@ -104,6 +104,7 @@ MODULE_NAME_OSK = 'Onboard.osk'
 
 class Extension_osk(Extension):
     sources = ['osk_module.c',
+               'osk_virtkey.c',
                'osk_devices.c',
                'osk_util.c',
                'osk_dconf.c',
@@ -146,7 +147,7 @@ class Extension_osk(Extension):
                            depends = depends,
                            define_macros = defines,
 
-                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
+                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'xkbfile',
                                        'dconf', 'libcanberra', 'hunspell')
                           )
 
