@@ -183,4 +183,6 @@ __##__type_name##_register_type (PyObject *module) \
  */
 #define OSK_FINISH_DEALLOC(o) (Py_TYPE(o)->tp_free ((PyObject *) (o)))
 
+int __osk_virtkey_register_type (PyObject *module);
+
 #endif /* __OSK_MODULE__ */

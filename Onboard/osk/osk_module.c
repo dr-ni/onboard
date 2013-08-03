@@ -77,6 +77,9 @@ moduleinit (void)
 
     gdk_init (NULL, NULL);
 
+    if (__osk_virtkey_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"Virtkey\" type.\n");
+
     if (__osk_devices_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Devices\" type.\n");
 
