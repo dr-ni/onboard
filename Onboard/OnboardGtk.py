@@ -22,8 +22,6 @@ except ImportError:
 
 from gi.repository import GLib, Gdk, Gtk
 
-import virtkey
-
 from Onboard.KbdWindow       import KbdWindow, KbdPlugWindow
 from Onboard.Keyboard        import Keyboard
 from Onboard.KeyboardWidget  import KeyboardWidget
@@ -547,7 +545,7 @@ class OnboardGtk(object):
                 vk.reload() # reload keyboard names
                 keyboard_state = (vk.get_layout_symbols(),
                                   vk.get_current_group_name())
-            except virtkey.error:
+            except osk.error:
                 self.reset_vk()
                 force_update = True
                 _logger.warning("Keyboard layout changed, but retrieving "
@@ -597,9 +595,9 @@ class OnboardGtk(object):
         if not self._vk:
             try:
                 # may fail if there is no X keyboard (LP: 526791)
-                self._vk = virtkey.virtkey()
+                self._vk = osk.Virtkey()
 
-            except virtkey.error as e:
+            except osk.error as e:
                 t = time.time()
                 if t > self._vk_error_time + .2: # rate limit to once per 200ms
                     _logger.warning("vk: " + unicode_str(e))
