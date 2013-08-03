@@ -18,9 +18,8 @@
 #ifndef __OSK_MODULE__
 #define __OSK_MODULE__
 
-#include <string.h>
 #include <Python.h>
-#include "structmember.h"
+#include <structmember.h>
 
 /**
  * Python2 to Python3 conversion
