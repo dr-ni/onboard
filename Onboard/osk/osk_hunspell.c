@@ -16,7 +16,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_hunspell.h"
 
 #include <hunspell/hunspell.h>
 

@@ -16,7 +16,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_audio.h"
 
 #include <gdk/gdkx.h>
 #include <canberra.h>

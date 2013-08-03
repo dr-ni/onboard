@@ -38,14 +38,9 @@
 /**
  * Get the module exception object.
  */
-PyObject * __osk_exception_get_object (void);
-
-#define OSK_EXCEPTION (__osk_exception_get_object ())
-
+#define OSK_EXCEPTION (__osk_error)
 
 #define OSK_DEFINE_TYPE(__TypeName, __type_name, __PyName) \
-static PyMethodDef __type_name##_methods[]; \
-\
 static PyTypeObject __type_name##_type = { \
     PyVarObject_HEAD_INIT(&PyType_Type, 0) \
     "osk." __PyName,                          /* tp_name */ \
@@ -66,7 +61,7 @@ static PyTypeObject __type_name##_type = { \
     0,                                        /* tp_getattro */ \
     0,                                        /* tp_setattro */ \
     0,                                        /* tp_as_buffer */ \
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */ \
+    Py_TPFLAGS_DEFAULT,                       /* tp_flags */ \
     __PyName " objects",                      /* tp_doc */ \
     0,                                        /* tp_traverse */ \
     0,                                        /* tp_clear */ \
@@ -84,11 +79,10 @@ static PyTypeObject __type_name##_type = { \
     0,                                        /* tp_dictoffset */ \
     (initproc) __type_name##_init,            /* tp_init */ \
     0,                                        /* tp_alloc */ \
-    __type_name##_new,                        /* tp_new */ \
+    PyType_GenericNew,                        /* tp_new */ \
 };
 
 #define OSK_DEFINE_TYPE_WITH_MEMBERS(__TypeName, __type_name, __PyName) \
-static PyMethodDef __type_name##_methods[]; \
 static PyMemberDef __type_name##_members[]; \
 static PyGetSetDef __type_name##_getsetters[]; \
 \
@@ -130,35 +124,22 @@ static PyTypeObject __type_name##_type = { \
     0,                                        /* tp_dictoffset */ \
     (initproc) __type_name##_init,            /* tp_init */ \
     0,                                        /* tp_alloc */ \
-    __type_name##_new,                        /* tp_new */ \
+    PyType_GenericNew,                        /* tp_new */ \
 };
 
 #define OSK_REGISTER_TYPE_BEGIN(__TypeName, __type_name) \
-\
 static int __type_name##_init (__TypeName *self, PyObject *args, PyObject *kwds); \
 static void __type_name##_dealloc (__TypeName *self); \
-\
-static PyObject *\
-__type_name##_new (PyTypeObject *type, PyObject *args, PyObject *kwds) \
-{ \
-    PyObject* p = type->tp_alloc (type, 0);\
-    return p; \
-}
+static PyMethodDef __type_name##_methods[];
 
 #define OSK_REGISTER_TYPE_END(__type_name, __PyName) \
-int \
-__##__type_name##_register_type (PyObject *module) \
+void __##__type_name##_register_type (PyObject *module) \
 { \
     if (PyType_Ready (&__type_name##_type) < 0) \
-        return -1;\
-\
+        Py_FatalError ("osk: Cannot initialize " __PyName " type."); \
+    if (PyModule_AddObject (module, __PyName, (PyObject *) &__type_name##_type) < 0) \
+        Py_FatalError ("osk: Cannot add " __PyName " object."); \
     Py_INCREF (&__type_name##_type); \
-\
-    if (PyModule_AddObject (module, __PyName, \
-                            (PyObject *) &__type_name##_type) < 0) \
-        return -1; \
-\
-    return 0; \
 }
 
 /**
@@ -182,6 +163,17 @@ __##__type_name##_register_type (PyObject *module) \
  */
 #define OSK_FINISH_DEALLOC(o) (Py_TYPE(o)->tp_free ((PyObject *) (o)))
 
-int __osk_virtkey_register_type (PyObject *module);
+extern PyObject *__osk_error;
+
+void    __osk_virtkey_register_type      (PyObject *module);
+void    __osk_audio_register_type        (PyObject *module);
+void    __osk_dconf_register_type        (PyObject *module);
+void    __osk_devices_register_type      (PyObject *module);
+void    __osk_device_event_register_type (PyObject *module);
+void    __osk_hunspell_register_type     (PyObject *module);
+void    __osk_struts_register_type       (PyObject *module);
+void    __osk_util_register_type         (PyObject *module);
+
+void osk_util_idle_call (PyObject *callback, PyObject *arglist);
 
 #endif /* __OSK_MODULE__ */

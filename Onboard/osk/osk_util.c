@@ -17,7 +17,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_util.h"
 
 #include <signal.h>
 #include <glib-unix.h>
@@ -63,6 +62,20 @@ typedef struct {
 
     OskUtilGrabInfo *info;
 } OskUtil;
+
+enum
+{
+    PRIMARY_BUTTON   = 1,
+    MIDDLE_BUTTON    = 2,
+    SECONDARY_BUTTON = 3,
+};
+
+enum
+{
+    CLICK_TYPE_SINGLE = 3,
+    CLICK_TYPE_DOUBLE = 2,
+    CLICK_TYPE_DRAG   = 1,
+};
 
 static void stop_convert_click(OskUtilGrabInfo* info);
 static Display* get_x_display(OskUtil* util);

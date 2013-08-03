@@ -16,7 +16,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_dconf.h"
 
 #include <dconf.h>
 

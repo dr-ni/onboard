@@ -15,30 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "osk_module.h"
-#include "osk_devices.h"
-#include "osk_util.h"
-#include "osk_dconf.h"
-#include "osk_struts.h"
-#include "osk_audio.h"
-#include "osk_hunspell.h"
-
 #include <gdk/gdk.h>
+
+#include "osk_module.h"
+
+PyObject *__osk_error;
 
 static PyMethodDef osk_methods[] = {
     { NULL, NULL, 0, NULL }
 };
-
-PyObject *
-__osk_exception_get_object (void)
-{
-    static PyObject *error = NULL;
-
-    if (error == NULL)
-        error = PyErr_NewException ("osk.error", NULL, NULL);
-
-    return error;
-}
 
 #if PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {
@@ -58,7 +43,6 @@ static PyObject *
 moduleinit (void)
 {
     PyObject *module;
-    PyObject *error;
 
     #if PY_MAJOR_VERSION >= 3
         module = PyModule_Create(&moduledef);
@@ -66,40 +50,25 @@ moduleinit (void)
         module = Py_InitModule("osk", osk_methods);
     #endif
     if (module == NULL)
-    {
-        fprintf (stderr, "Error: Failed to initialize the \"osk\" module.\n");
-        return NULL;
-    }
+        Py_FatalError ("Failed to initialize the \"osk\" module.");
 
-    error = __osk_exception_get_object ();
-    Py_INCREF (error);
-    PyModule_AddObject (module, "error", error);
+    __osk_error = PyErr_NewException ("osk.error", NULL, NULL);
+    if (__osk_error == NULL)
+        Py_FatalError ("Failed to create the \"osk.error\" exception.");
+
+    Py_INCREF (__osk_error);
+    PyModule_AddObject (module, "error", __osk_error);
 
     gdk_init (NULL, NULL);
 
-    if (__osk_virtkey_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Virtkey\" type.\n");
-
-    if (__osk_devices_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Devices\" type.\n");
-
-    if (__osk_device_event_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"DeviceEvent\" type.\n");
-
-    if (__osk_util_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Util\" type.\n");
-
-    if (__osk_dconf_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"DConf\" type.\n");
-
-    if (__osk_struts_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Struts\" type.\n");
-
-    if (__osk_audio_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Audio\" type.\n");
-
-    if (__osk_hunspell_register_type (module) < 0)
-        fprintf (stderr, "Error: Failed to register \"Hunspell\" type.\n");
+    __osk_virtkey_register_type (module);
+    __osk_devices_register_type (module);
+    __osk_device_event_register_type (module);
+    __osk_util_register_type (module);
+    __osk_dconf_register_type (module);
+    __osk_struts_register_type (module);
+    __osk_audio_register_type (module);
+    __osk_hunspell_register_type (module);
 
     return module;
 }
