@@ -281,14 +281,14 @@ class dictproperty(object):
 def show_error_dialog(error_string):
     """ Show an error dialog """
 
-    error_dlg = Gtk.MessageDialog(type=Gtk.MessageType.ERROR,
+    error_dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.ERROR,
                                   message_format=error_string,
                                   buttons=Gtk.ButtonsType.OK)
     error_dlg.run()
     error_dlg.destroy()
 
 def show_ask_string_dialog(question, parent=None):
-    question_dialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
+    question_dialog = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
                                         buttons=Gtk.ButtonsType.OK_CANCEL)
     if parent:
         question_dialog.set_transient_for(parent)
@@ -307,7 +307,7 @@ def show_confirmation_dialog(question, parent=None):
     """
     Show this dialog to ask confirmation before executing a task.
     """
-    dlg = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
+    dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
                             message_format=question,
                             buttons=Gtk.ButtonsType.YES_NO)
     if parent:
