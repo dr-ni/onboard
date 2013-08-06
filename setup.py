@@ -11,6 +11,7 @@ from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
 from contextlib import contextmanager
+from subprocess import getstatusoutput
 
 # Building in pbuilder for Precise with Python 3.2 and
 # python3-distutils-extra 2.34-0ubuntu0.1
@@ -20,13 +21,6 @@ if sys.version_info.major == 3 and \
    sys.version_info.minor <= 2:
     import locale
     locale.getpreferredencoding = lambda *x: 'UTF-8'
-
-try:
-    # try python 3
-    from subprocess import getstatusoutput
-except:
-    # python 2 fallback
-    from commands import getstatusoutput
 
 try:
     import DistUtilsExtra.auto
@@ -189,7 +183,7 @@ class Extension_lm(Extension):
 extension_lm = Extension_lm("Onboard", "Onboard")
 
 
-#### custom test command ####'
+#### custom test command ####
 
 class TestCommand(Command):
 

@@ -2,79 +2,34 @@
 
 DH_VERBOSE=1
 
-TARGET_PYTHON2=$(shell grep -c X-Python-Version debian/control)
-
-ifeq ($(TARGET_PYTHON2), 1)  # pbuilder fails with python2,python3
-	THE_DH_OPTIONS= --with python2
-else
-	THE_DH_OPTIONS= --with python3 --without python-support
-endif
-
 %:
-	dh $@ $(THE_DH_OPTIONS)
+	dh $@ --with python3 --without python-support
 	rm -f po/*.pot
 
 # python3 needs some manual work, see 
 # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=597105
 override_dh_auto_clean:
-ifeq ($(TARGET_PYTHON2), 1)
-	dh_auto_clean
-else
 	set -ex; for python in $(shell py3versions -r); do \
 	    $$python setup.py clean ; \
 	done
-endif
 	rm -rf build
 	rm -rf Onboard/osk*.so
 	rm -rf Onboard/pypredict/lm*.so
 	find . -name __pycache__ -prune | xargs rm -rf
 
 override_dh_auto_build:
-ifeq ($(TARGET_PYTHON2), 1)
-	dh_auto_build
-else
 	set -ex; for python in $(shell py3versions -r); do \
 	    $$python setup.py build ; \
 	done
-endif
 
 override_dh_auto_install:
-ifeq ($(TARGET_PYTHON2), 1)
-	dh_auto_install
-else
 	set -ex; for python in $(shell py3versions -r); do \
 	    $$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
 	done
-endif
 
 override_dh_install:
 	dh_install --fail-missing --autodest
 
 override_dh_python3:
 	dh_python3 --shebang=/usr/bin/python3
-
-# Optional python2 support, not called automagically.
-# The default in trunk is always python3, but we need to keep python2
-# as an option for upgrades in Precise.
-PYTHON_SCRIPTS=setup.py \
-		onboard \
-		onboard-settings \
-		scripts/sokSettings.py \
-		Onboard/settings.py \
-		data/layoutstrings.py
-python2:
-	@echo "############ Switching build to python2 #############"
-	@echo "# Please note: Don't commit python2 related changes #"
-	@echo "# to trunk, as the default there is python3.        #"
-	@echo "#####################################################"
-	cp debian/control_python2.in debian/control
-	sed -i -e '1 s/\/usr\/bin\/python3/\/usr\/bin\/python/' $(PYTHON_SCRIPTS)
-	sed -i -e 's/PYTHON_EXECUTABLE.*"python3"/PYTHON_EXECUTABLE = "python"/' scripts/sokSettings.py
-
-python3:
-	@echo "############ Switching build to python3 #############"
-	cp debian/control_python3.in debian/control
-	sed -i -e '1 s/\/usr\/bin\/python$$/\/usr\/bin\/python3/' $(PYTHON_SCRIPTS)
-	sed -i -e 's/PYTHON_EXECUTABLE.*"python"/PYTHON_EXECUTABLE = "python3"/' scripts/sokSettings.py
-
 

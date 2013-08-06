@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-PYTHON_EXECUTABLE = "python3"  # don't touch this, it's modified by debian rules
+PYTHON_EXECUTABLE = "python3"
 
 from gi.repository import GLib
 
