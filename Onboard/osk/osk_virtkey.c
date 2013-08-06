@@ -64,6 +64,17 @@ vk_init_keyboard (OskVirtkey *vk)
     vk->kbd = XkbGetKeyboard (vk->display,
                               XkbCompatMapMask | XkbNamesMask | XkbGeometryMask,
                               XkbUseCoreKbd);
+#ifdef NDEBUG
+    /* test missing keyboard (LP:#526791) keyboard on/off every 10 seconds */
+    if (getenv ("VIRTKEY_DEBUG"))
+    {
+        if (vk->kbd && time(NULL) % 20 < 10)
+        {
+            XkbFreeKeyboard (vk->kbd, XkbAllComponentsMask, True);
+            vk->kbd = NULL;
+        }
+    }
+#endif
     if (!vk->kbd)
     {
         PyErr_SetString (OSK_EXCEPTION, "XkbGetKeyboard failed.");
