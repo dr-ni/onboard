@@ -134,22 +134,28 @@ class KeySynthVirtkey(object):
         self._vk.release_unicode(code_point)
 
     def press_keysym(self, keysym):
-        self._vk.press_keysym(keysym)
+        if self._vk:
+            self._vk.press_keysym(keysym)
 
     def release_keysym(self, keysym):
-        self._vk.release_keysym(keysym)
+        if self._vk:
+            self._vk.release_keysym(keysym)
 
     def press_keycode(self, keycode):
-        self._vk.press_keycode(keycode)
+        if self._vk:
+            self._vk.press_keycode(keycode)
 
     def release_keycode(self, keycode):
-        self._vk.release_keycode(keycode)
+        if self._vk:
+            self._vk.release_keycode(keycode)
 
     def lock_mod(self, mod):
-        self._vk.lock_mod(mod)
+        if self._vk:
+            self._vk.lock_mod(mod)
 
     def unlock_mod(self, mod):
-        self._vk.unlock_mod(mod)
+        if self._vk:
+            self._vk.unlock_mod(mod)
 
     def press_key_string(self, keystr):
         """

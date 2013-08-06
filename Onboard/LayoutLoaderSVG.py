@@ -567,9 +567,9 @@ class LayoutLoaderSVG:
                 labels = {m : l for m, l in zip(vkmodmasks, vklabels)}
             else:
                 if key.id.upper() == "SPCE":
-                    labels = ["No X keyboard found, retrying..."]*5
+                    labels[0] = "No X keyboard found, retrying..."
                 else:
-                    labels = ["?"]*5
+                    labels[0] = "?"
 
         # If key is a macro (snippet) generate label from its number.
         elif key.type == KeyCommon.MACRO_TYPE:
@@ -703,8 +703,14 @@ class LayoutLoaderSVG:
 
     def _get_system_keyboard_layout(self, vk):
         """ get names of the currently active layout group and variant """
-        group = vk.get_current_group()
-        names = vk.get_rules_names()
+
+        if self._vk: # xkb keyboard found?
+            group = vk.get_current_group()
+            names = vk.get_rules_names()
+        else:
+            group = 0
+            names = ""
+
         if not names:
             names = ("base", "pc105", "us", "", "")
         layouts  = names[2].split(",")
