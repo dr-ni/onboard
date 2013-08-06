@@ -30,8 +30,6 @@ from Onboard.utils           import show_ask_string_dialog, \
                                     exists_in_path, \
                                     unicode_str, open_utf8
 
-from virtkey import virtkey
-
 app = "onboard"
 
 ### Logging ###

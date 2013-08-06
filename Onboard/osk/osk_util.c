@@ -17,7 +17,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_util.h"
 
 #include <signal.h>
 #include <glib-unix.h>
@@ -25,15 +24,12 @@
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
-#include <X11/extensions/shape.h>
 
 #ifdef USE_LANGUAGE_CLASSIFIER
-#include "textcat.h"
+#include <textcat.h>
 #endif
 
-
 #define MAX_GRAB_DURATION 15   // max time to hold a pointer grab [s]
-
 
 typedef struct {
     Display *xdisplay;
@@ -66,6 +62,20 @@ typedef struct {
 
     OskUtilGrabInfo *info;
 } OskUtil;
+
+enum
+{
+    PRIMARY_BUTTON   = 1,
+    MIDDLE_BUTTON    = 2,
+    SECONDARY_BUTTON = 3,
+};
+
+enum
+{
+    CLICK_TYPE_SINGLE = 3,
+    CLICK_TYPE_DOUBLE = 2,
+    CLICK_TYPE_DRAG   = 1,
+};
 
 static void stop_convert_click(OskUtilGrabInfo* info);
 static Display* get_x_display(OskUtil* util);
@@ -164,7 +174,10 @@ can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
                 break;
             int m = PySequence_Length(rect);
             if (m != 4)
+            {
+                Py_DECREF(rect);
                 break;
+            }
 
             PyObject* item;
 
@@ -757,6 +770,7 @@ raise_windows_to_top (OskUtil *util)
             XSetTransientForHint (xdisplay, xid, parent_xid);
             XRaiseWindow(xdisplay, xid);
         }
+        Py_DECREF(window);
     }
 }
 

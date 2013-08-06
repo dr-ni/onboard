@@ -16,7 +16,6 @@
  */
 
 #include "osk_module.h"
-#include "osk_struts.h"
 
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
