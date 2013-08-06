@@ -68,7 +68,10 @@ class UIMask:
 
 
 class UnpressTimers:
-    """ Redraw keys unpressed after a short while. """
+    """
+    Redraw keys unpressed after a short while.
+    There are multiple timers to suppurt multi-touch.
+    """
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
@@ -87,10 +90,10 @@ class UnpressTimers:
             timer.stop()
             del self._timers[key]
 
-    def stop_all(self):
-        for timer in self._timers.values():
+    def cancel_all(self):
+        for key, timer in self._timers.items():
             Timer.stop(timer)
-        self._timers = {}
+            key.pressed = False
 
     def finish(self, key):
         timer = self._timers.get(key)
@@ -150,8 +153,7 @@ class KeySynthVirtkey(object):
 
     def press_key_string(self, keystr):
         """
-        Send key presses for all characters in a unicode string
-        and keep track of the changes in input_line.
+        Send key presses for all characters in a unicode string.
         """
         keystr = keystr.replace("\\n", "\n")  # for new lines in snippets
 
@@ -1385,8 +1387,11 @@ class Keyboard(WordSuggestions):
 
         self.release_locked_sticky_keys()
 
-        self._unpress_timers.stop_all()
+        # Clear key.pressed for all keys that have already been released
+        # but are still waiting for redrawing the unpressed state.
+        self._unpress_timers.cancel_all()
 
+        # Release keys that haven't been released yet
         for key in self.iter_keys():
             if key.pressed and key.type in \
                 [KeyCommon.CHAR_TYPE,
