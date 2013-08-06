@@ -174,7 +174,10 @@ can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
                 break;
             int m = PySequence_Length(rect);
             if (m != 4)
+            {
+                Py_DECREF(rect);
                 break;
+            }
 
             PyObject* item;
 
@@ -767,6 +770,7 @@ raise_windows_to_top (OskUtil *util)
             XSetTransientForHint (xdisplay, xid, parent_xid);
             XRaiseWindow(xdisplay, xid);
         }
+        Py_DECREF(window);
     }
 }
 
