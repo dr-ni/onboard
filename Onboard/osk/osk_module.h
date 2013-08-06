@@ -137,9 +137,9 @@ void __##__type_name##_register_type (PyObject *module) \
 { \
     if (PyType_Ready (&__type_name##_type) < 0) \
         Py_FatalError ("osk: Cannot initialize " __PyName " type."); \
+    Py_INCREF (&__type_name##_type); \
     if (PyModule_AddObject (module, __PyName, (PyObject *) &__type_name##_type) < 0) \
         Py_FatalError ("osk: Cannot add " __PyName " object."); \
-    Py_INCREF (&__type_name##_type); \
 }
 
 /**
