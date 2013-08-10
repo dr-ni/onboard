@@ -270,7 +270,8 @@ class AtspiTextContext(TextContext):
                 # even if they claim to implement the EditableText interface.
 
                 # Allow direct text insertion by gtk widgets
-                if "toolkit" in attributes and attributes["toolkit"] == "gtk":
+                if attributes and \
+                   "toolkit" in attributes and attributes["toolkit"] == "gtk":
                    can_insert_text = True
 
         return can_insert_text
