@@ -214,8 +214,9 @@ class ConfigObject(object):
                    getattr(self, _CAN_SET_HOOK +_prop)(value):
 
                 if save:
-                    if value != _gskey.value:
+                    if value != _gskey.value or _gskey.modified:
                         self.set_unpacked(_gskey, value)
+                        _gskey.modified = False
 
                 _gskey.value = value
 
@@ -411,27 +412,23 @@ class ConfigObject(object):
         """
 
         filepath = filename
+
         if filename and not os.path.isfile(filename):
             # assume filename is just a basename instead of a full file path
             _logger.debug(_format("{description} '{filename}' not found yet, "
                                   "retrying in default paths", \
                                   description=description, filename=filename))
 
-            if user_filename_func:
-                filepath = user_filename_func(filename)
-                if not os.path.isfile(filepath):
-                    filepath = ""
-
-            if  not filepath and system_filename_func:
-                filepath = system_filename_func(filename)
-                if not os.path.isfile(filepath):
-                    filepath = ""
-
+            filepath = ConfigObject._expand_user_sys_filename(
+                                                     filename,
+                                                     user_filename_func,
+                                                     system_filename_func)
             if not filepath:
                 _logger.info(_format("unable to locate '{filename}', "
                                      "loading default {description} instead",
                                      description=description,
                                      filename=filename))
+
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 
@@ -444,6 +441,24 @@ class ConfigObject(object):
                                   description=description, filepath=filepath))
 
         return filepath
+
+    @staticmethod
+    def _expand_user_sys_filename(filename, \
+                                  user_filename_func = None,
+                                  system_filename_func = None):
+        result = filename
+        if result and not os.path.isfile(result):
+            if user_filename_func:
+                result = user_filename_func(filename)
+                if not os.path.isfile(result):
+                    result = ""
+
+            if  not result and system_filename_func:
+                result = system_filename_func(filename)
+                if not os.path.isfile(result):
+                    result = ""
+
+        return result
 
     @staticmethod
     def get_unpacked_string_list(gskey, type_spec):
@@ -616,6 +631,7 @@ class GSKey:
         self.value       = default     # current property value
         self.writable    = writable    # If False, never write the key
                                        #    to gsettings, even on accident.
+        self.modified    = False       # If True, force writing to gsettings
 
     def is_default(self):
         return self.value == self.default

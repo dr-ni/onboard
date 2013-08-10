@@ -349,9 +349,8 @@ class Settings(DialogBuilder):
                     builder.get_object("system_theme_tracking_enabled_toggle")
         self.system_theme_tracking_enabled_toggle.set_active( \
                                         config.system_theme_tracking_enabled)
-        config.system_theme_tracking_enabled_notify_add(lambda x: \
-                    [self.system_theme_tracking_enabled_toggle.set_active(x),
-                     config.update_theme_from_system_theme()])
+        config.system_theme_tracking_enabled_notify_add( \
+                                        self.on_system_theme_tracking_changed)
 
         # Snippets
         self.snippet_view = SnippetView()
@@ -855,9 +854,15 @@ class Settings(DialogBuilder):
 
         self.update_themeList()
 
-    def on_theme_changed(self, theme_filename):
+    def on_system_theme_tracking_changed(self, x):
+        self.system_theme_tracking_enabled_toggle.set_active( \
+                                        config.system_theme_tracking_enabled)
+        config.load_theme()
+        self.on_theme_changed()
+
+    def on_theme_changed(self, theme_filename = None):
         selected = self.get_selected_theme_filename()
-        if selected != theme_filename:
+        if selected != config.theme_filename:
             self.update_themeList()
 
     def update_themeList(self):

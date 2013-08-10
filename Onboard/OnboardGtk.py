@@ -508,7 +508,7 @@ class OnboardGtk(object):
         """
         Switch onboard themes in sync with gtk-theme changes.
         """
-        config.update_theme_from_system_theme()
+        config.load_theme()
 
     def on_gtk_font_dpi_changed(self):
         """

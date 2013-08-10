@@ -272,29 +272,24 @@ class Config(ConfigObject):
         used_system_defaults = self.init_properties(self.options)
 
         # Make sure there is a 'Default' entry when tracking the system theme.
-        # 'Default' is the theme used when encountering an so far unknown
-        # gtk-theme. 'Default' is added on first start and therefore a
-        # corresponding system default is respected.
+        # 'Default' is the theme used when encountering a so far unknown
+        # gtk-theme.
         theme_assocs = self.system_theme_associations.copy()
         if not "Default" in theme_assocs:
-            theme_assocs["Default"] = self.theme
+            theme_assocs["Default"] = ""
             self.system_theme_associations = theme_assocs
 
-        # remember command line theme for system theme tracking
-        # remember the initial theme from system defaults
-        if self.options.theme or \
-           used_system_defaults and "theme" in self.system_defaults:
+        # Remember command line theme for system theme tracking.
+        if self.options.theme:
+            self.theme_key.modified = True # force writing on next occasion
             self.remember_theme(self.theme)
 
         # load theme
         global Theme
         from Onboard.Appearance import Theme
-
-        # give gtk theme a chance to take over
-        if not self.update_theme_from_system_theme():
-
-            # else use the theme key
-            self.apply_theme()
+        _logger.info("Theme candidates {}" \
+                     .format(self._get_theme_candidates()))
+        self.load_theme()
 
         # misc initializations
         self._last_snippets = dict(self.snippets)  # store a copy
@@ -551,67 +546,95 @@ class Config(ConfigObject):
         self.theme_notify_add(callback)
 
     def get_theme_filename(self):
-        return self._get_user_sys_filename_gs(
-             gskey                = self.theme_key,
-             user_filename_func   = Theme.build_user_filename,
-             system_filename_func = Theme.build_system_filename,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "themes", DEFAULT_THEME +
-                                                "." + Theme.extension()))
-    def set_theme_filename(self, filename, save = True):
-        if filename and os.path.exists(filename):
-            self.set_theme(filename, save)
+        candidates = self._get_theme_candidates()
+        for theme in candidates:
+            if theme:
+                filename = self._expand_theme_filename(theme)
+                if filename:
+                    return filename
+        return ""
 
-            # remember currently active gtk theme
-            if self.system_theme_tracking_enabled:
-                self.remember_theme(filename)
+    def set_theme_filename(self, filename):
+        if filename and os.path.exists(filename):
+            self.remember_theme(filename)
         else:
             _logger.warning(_format("theme '{filename}' does not exist", \
                                     filename=filename))
 
     theme_filename = property(get_theme_filename, set_theme_filename)
 
+    def _expand_theme_filename(self, theme):
+        """ expand generic theme name """
+        return self._expand_user_sys_filename(theme,
+             user_filename_func   = Theme.build_user_filename,
+             system_filename_func = Theme.build_system_filename)
+
     def remember_theme(self, theme_filename):
-        if self.gdi:   # be defensive
+        if self.system_theme_tracking_enabled and \
+           self.gdi:   # be defensive
             gtk_theme = self.get_gtk_theme()
             theme_assocs = self.system_theme_associations.copy()
             theme_assocs[gtk_theme] = theme_filename
             self.system_theme_associations = theme_assocs
 
-    def apply_theme(self):
-        theme_filename = self.theme_filename
-        _logger.info(_format("Loading theme from '{}'", theme_filename))
+        self.set_theme(theme_filename)
 
-        theme = Theme.load(theme_filename)
+    def apply_theme(self, filename = None):
+        if not filename:
+            filename = self.get_theme_filename()
+
+        _logger.info(_format("Loading theme from '{}'", filename))
+
+        theme = Theme.load(filename)
         if not theme:
-            _logger.error(_format("Unable to read theme '{}'", theme_filename))
+            _logger.error(_format("Unable to read theme '{}'", filename))
         else:
             # Save to gsettings
             # Make sure gsettings is in sync with onboard (LP: 877601)
-            self.theme = theme_filename
+            #self.theme = filename
             theme.apply()
 
             # Fix theme not saved to gesettings when switching
             # system contrast themes.
             # Possible gsettings bug in Precise (wasn't in Oneiric).
-            self.apply()
+            #self.apply()
 
-    def update_theme_from_system_theme(self):
-        """ Switches themes for system theme tracking """
+        return bool(theme)
+
+    def load_theme(self):
+        """
+        Figure out which theme to load and load it.
+        """
+        self.apply_theme()
+
+    def _get_theme_candidates(self):
+        """
+        Return a list of themes to consider for loading.
+        Highest priority first.
+        """
+        candidates = []
+
         if self.system_theme_tracking_enabled:
-            gtk_theme = self.get_gtk_theme()
             theme_assocs = self.system_theme_associations
+            gtk_theme = self.get_gtk_theme()
 
-            new_theme = theme_assocs.get(gtk_theme, None)
-            if not new_theme:
-                new_theme = theme_assocs.get("Default", None)
-                if not new_theme:
-                    new_theme = DEFAULT_THEME
+            candidates += [theme_assocs.get(gtk_theme, ""),
+                           theme_assocs.get("Default", ""),
+                           ""]
+        else:
+            candidates += ["",
+                           "",
+                           self.theme]
 
-            self.theme = new_theme
-            self.apply_theme()
-            return True
-        return False
+        if self.system_defaults:
+            theme = self.system_defaults.get("theme", "")
+        else:
+            theme = ""
+        candidates.append(theme)
+
+        candidates.append(DEFAULT_THEME)
+
+        return candidates
 
     def get_gtk_theme(self):
         gtk_settings = Gtk.Settings.get_default()
