@@ -79,7 +79,6 @@ osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
     self->device_id = 0;
     self->source_id = 0;
     self->touch = Py_None;
-    Py_INCREF(self->touch);
     self->source_device = Py_None;
     Py_INCREF(self->source_device);
     return 0;
@@ -88,7 +87,6 @@ osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
 static void
 osk_device_event_dealloc (OskDeviceEvent* self)
 {
-    Py_DECREF(self->touch);
     Py_DECREF(self->source_device);
     OSK_FINISH_DEALLOC (self);
 }
@@ -427,9 +425,7 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
 
         // Link event to itself in the touch property for
         // compatibility with GDK touch events.
-        Py_DECREF(ev->touch);
         ev->touch = (PyObject*) ev;
-        Py_INCREF(ev->touch);
 
         queue_event (dev, ev, type == XI_Motion);
 
