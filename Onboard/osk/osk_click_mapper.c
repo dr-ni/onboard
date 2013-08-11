@@ -700,27 +700,9 @@ osk_click_mapper_convert_primary_click (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-osk_click_mapper_enable_click_conversion (PyObject *self, PyObject *args)
-{
-    OskButtonMapper *instance = (OskButtonMapper*) self;
-    OskBMGrabInfo *info = &instance->info;
-    Bool     enable;
-
-    if (!PyArg_ParseTuple (args, "B", &enable))
-        return NULL;
-
-    info->enable_conversion = enable;
-
-    Py_RETURN_NONE;
-}
-
 static PyMethodDef osk_click_mapper_methods[] = {
     { "convert_primary_click",
         osk_click_mapper_convert_primary_click,
-        METH_VARARGS, NULL },
-    { "enable_click_conversion",
-        osk_click_mapper_enable_click_conversion,
         METH_VARARGS, NULL },
     { "map_pointer_button",
         osk_click_mapper_map_pointer_button,
