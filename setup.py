@@ -54,7 +54,7 @@ def pkgconfig(*packages, **kw):
 
     if status != 0:
         print('setup.py: pkg-config returned exit code %d' % status, file=sys.stderr)
-        print('setup.py: sdist needs libgtk-3-dev, libxkbfile-dev, libxtst-dev and libdconf-dev')
+        print('setup.py: sdist needs libgtk-3-dev, libxtst-dev, libxkbfile-dev, libdconf-dev, libcanberra-dev and libhunspell-dev')
         sys.exit(1)
 
 
