@@ -105,6 +105,7 @@ class Extension_osk(Extension):
                'osk_struts.c',
                'osk_audio.c',
                'osk_hunspell.c',
+               'osk_click_mapper.c',
               ]
 
     depends = ['osk_module.h']

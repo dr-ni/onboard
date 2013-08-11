@@ -657,6 +657,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self._outside_click_detected = True
         elif self._outside_click_detected:
             # button released anywhere outside of onboard's control
+            _logger.debug("click polling: outside click")
             self.stop_click_polling()
             self.close_key_popup()
             self.keyboard.on_outside_click()
@@ -683,7 +684,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_begin()
-        self.set_xi_drag_active(True)
+        self.grab_xi_pointer(True)
 
     def on_drag_activated(self):
         if self.is_resizing():
@@ -692,7 +693,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
-        self.set_xi_drag_active(False)
+        self.grab_xi_pointer(False)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()

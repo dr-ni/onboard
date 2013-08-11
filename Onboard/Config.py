@@ -788,6 +788,9 @@ class Config(ConfigObject):
     def is_keep_aspect_ratio_enabled(self):
         return self.window.keep_aspect_ratio or self.options.keep_aspect_ratio
 
+    def is_mousetweaks_active(self):
+        return self.mousetweaks and self.mousetweaks.is_active()
+
     ####### resize handles #######
     def resize_handles_notify_add(self, callback):
         self.window.resize_handles_notify_add(callback)

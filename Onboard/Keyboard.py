@@ -1368,6 +1368,7 @@ class Keyboard(WordSuggestions):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
+        config.clickmapper.end_mapping()
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
@@ -1495,9 +1496,9 @@ class BCClick(ButtonController):
     def release(self, view, button, event_type):
         mc = self.keyboard.get_mouse_controller()
         if self.is_active():
-            # stop click mapping, resets to primary button and single click
-            mc.set_click_params(MouseController.PRIMARY_BUTTON,
-                                MouseController.CLICK_TYPE_SINGLE)
+            # stop click mapping, reset to primary button and single click
+            mc.map_primary_click(view, MouseController.PRIMARY_BUTTON,
+                                       MouseController.CLICK_TYPE_SINGLE)
         else:
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
@@ -1505,8 +1506,11 @@ class BCClick(ButtonController):
             rects = view.get_click_type_button_rects()
             config.clickmapper.set_exclusion_rects(rects)
 
-            # start the click mapping
-            mc.set_click_params(self.button, self.click_type)
+            # start click mapping
+            mc.map_primary_click(view, self.button, self.click_type)
+
+        # Mark current event handled to stop ClickMapper from receiving it.
+        view.set_xi_event_handled(True)
 
     def update(self):
         mc = self.keyboard.get_mouse_controller()
@@ -1560,7 +1564,7 @@ class BCDragClick(BCClick):
 
     def _can_show_handles(self):
         return self.is_active() and \
-               config.mousetweaks and config.mousetweaks.is_active() and \
+               config.is_mousetweaks_active() and \
                not config.xid_mode
 
 

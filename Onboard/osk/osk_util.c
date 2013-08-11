@@ -29,24 +29,6 @@
 #include <textcat.h>
 #endif
 
-#define MAX_GRAB_DURATION 15   // max time to hold a pointer grab [s]
-
-typedef struct {
-    Display *xdisplay;
-    unsigned int button;
-    unsigned int click_type;
-    unsigned int drag_started;
-    unsigned int drag_button;
-    int          drag_last_x;
-    int          drag_last_y;
-    gint64       drag_last_time;
-    gint64       drag_slowdown_time;
-    unsigned int modifier;
-    Bool         enable_conversion;
-    PyObject*    exclusion_rects;
-    PyObject*    click_done_callback;
-    guint        grab_release_timer;
-} OskUtilGrabInfo;
 
 typedef struct {
     PyObject_HEAD
@@ -59,53 +41,21 @@ typedef struct {
     Atom* watched_root_properties;
     int  num_watched_root_properties;
     PyObject* root_property_callback;
-
-    OskUtilGrabInfo *info;
 } OskUtil;
 
-enum
-{
-    PRIMARY_BUTTON   = 1,
-    MIDDLE_BUTTON    = 2,
-    SECONDARY_BUTTON = 3,
-};
-
-enum
-{
-    CLICK_TYPE_SINGLE = 3,
-    CLICK_TYPE_DOUBLE = 2,
-    CLICK_TYPE_DRAG   = 1,
-};
-
-static void stop_convert_click(OskUtilGrabInfo* info);
 static Display* get_x_display(OskUtil* util);
 
-OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
+OSK_REGISTER_TYPE(OskUtil, osk_util, "Util")
 
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
-    util->info = g_new0 (OskUtilGrabInfo, 1);
-    util->info->button = PRIMARY_BUTTON;
-    util->info->click_type = CLICK_TYPE_SINGLE;
-    util->info->enable_conversion = True;
     util->display = gdk_display_get_default ();
-
     Display* xdisplay = get_x_display(util);
     if (xdisplay) // not on wayland?
     {
-        int nop;
-
         util->atom_net_active_window = \
-                                XInternAtom (xdisplay, "_NET_ACTIVE_WINDOW", True);
-        if (!XTestQueryExtension (xdisplay, &nop, &nop, &nop, &nop))
-        {
-            PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
-            return -1;
-        }
-
-        /* send events inspite of other grabs */
-        XTestGrabControl (xdisplay, True);
+                            XInternAtom (xdisplay, "_NET_ACTIVE_WINDOW", True);
     }
 
     return 0;
@@ -115,13 +65,6 @@ static void
 osk_util_dealloc (OskUtil *util)
 {
     int i;
-
-    if (util->info)
-    {
-        stop_convert_click(util->info);
-        g_free (util->info);
-        util->info = NULL;
-    }
 
     for (i=0; i<G_N_ELEMENTS(util->signal_callbacks); i++)
     {
@@ -146,422 +89,6 @@ get_x_display (OskUtil* util)
     if (GDK_IS_X11_DISPLAY (util->display)) // not on wayland?
         return GDK_DISPLAY_XDISPLAY (util->display);
     return NULL;
-}
-
-static void
-notify_click_done(PyObject* callback)
-{
-    if (callback)
-        osk_util_idle_call(callback, NULL);
-}
-
-static Bool
-can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
-{
-    if (!info->enable_conversion)
-        return False;
-
-    // Check if the the given point (x_root, y_root) lies
-    // within any of the exclusion rectangles.
-    if (info->exclusion_rects)
-    {
-        int i;
-        int n = PySequence_Length(info->exclusion_rects);
-        for (i = 0; i < n; i++)
-        {
-            PyObject* rect = PySequence_GetItem(info->exclusion_rects, i);
-            if (rect == NULL)
-                break;
-            int m = PySequence_Length(rect);
-            if (m != 4)
-            {
-                Py_DECREF(rect);
-                break;
-            }
-
-            PyObject* item;
-
-            item = PySequence_GetItem(rect, 0);
-            int x = PyInt_AsLong(item);
-            Py_DECREF(item);
-
-            item = PySequence_GetItem(rect, 1);
-            int y = PyInt_AsLong(item);
-            Py_DECREF(item);
-
-            item = PySequence_GetItem(rect, 2);
-            int w = PyInt_AsLong(item);
-            Py_DECREF(item);
-
-            item = PySequence_GetItem(rect, 3);
-            int h = PyInt_AsLong(item);
-            Py_DECREF(item);
-
-            Py_DECREF(rect);
-
-            if (x_root >= x && x_root < x + w &&
-                y_root >= y && y_root < y + h)
-            {
-                return False;
-            }
-        }
-    }
-
-    return True;
-}
-
-static Bool
-start_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push ();
-    XGrabButton (info->xdisplay, Button1, info->modifier,
-                 DefaultRootWindow (info->xdisplay),
-                 False, // owner_events == False: Onboard itself can be clicked
-                 ButtonPressMask | ButtonReleaseMask,
-                 GrabModeSync, GrabModeAsync, None, None);
-    gdk_flush ();
-    return !gdk_error_trap_pop();
-}
-
-static void
-stop_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push();
-    XUngrabButton(info->xdisplay,
-                  Button1,
-                  info->modifier,
-                  DefaultRootWindow(info->xdisplay));
-    gdk_error_trap_pop_ignored();
-}
-
-typedef struct {
-    OskUtilGrabInfo* info;
-} DragPollingData;
-
-static gboolean
-on_drag_polling (DragPollingData *data)
-{
-    const double MIN_DRAG_VELOCITY = 60.0; // min velocity to initiate drag end
-    const int    DRAG_END_DELAY    = 1000; // ms below min velocity to end drag
-
-    OskUtilGrabInfo* info = data->info;
-    if (!info->drag_started)
-        return FALSE;  // stop on grab_release_timer
-
-    Display* dpy = info->xdisplay;
-    Window root, child;
-    int x, y, x_root, y_root;
-    unsigned int mask = 0;
-    XQueryPointer (dpy, DefaultRootWindow (dpy),
-                   &root, &child, &x_root, &y_root, &x, &y, &mask);
-
-    int dx = x - info->drag_last_x;
-    int dy = y - info->drag_last_y;
-    double d = sqrt(dx * dx + dy * dy);
-    gint64 now = g_get_monotonic_time();
-    gint64 elapsed = now - info->drag_last_time;
-    double velocity = d / elapsed * 1e6; // [s]
-    if (velocity > MIN_DRAG_VELOCITY)
-        info->drag_slowdown_time = now;
-
-    info->drag_last_x = x;
-    info->drag_last_y = y;
-    info->drag_last_time = now;
-
-    elapsed = (now - info->drag_slowdown_time) / 1000; // [ms]
-    if (elapsed > DRAG_END_DELAY)
-    {
-        XTestFakeButtonEvent (dpy, info->drag_button, False, CurrentTime);
-
-        PyObject* callback = info->click_done_callback;
-        Py_XINCREF(callback);
-
-        stop_convert_click(info);
-
-        notify_click_done(callback);
-        Py_XDECREF(callback);
-
-        g_slice_free (DragPollingData, data);
-        return FALSE;
-    }
-    return TRUE;
-}
-
-static void
-start_drag_polling (OskUtilGrabInfo* info)
-{
-    DragPollingData* data = g_slice_new (DragPollingData);
-    data->info = info;
-
-    g_timeout_add (100, (GSourceFunc) on_drag_polling, data);
-}
-
-static GdkFilterReturn
-osk_util_event_filter (GdkXEvent       *gdk_xevent,
-                       GdkEvent        *gdk_event,
-                       OskUtilGrabInfo *info)
-{
-    PyGILState_STATE state = PyGILState_Ensure();
-    XEvent *event = gdk_xevent;
-
-    if (event->type == ButtonPress || event->type == ButtonRelease)
-    {
-        XButtonEvent *bev = (XButtonEvent *) event;
-        if (bev->button == Button1)
-        {
-            unsigned int button = info->button;
-            unsigned int click_type = info->click_type;
-            PyObject* callback = info->click_done_callback;
-            Py_XINCREF(callback);
-
-            // Don't convert the click if any of the click buttons was hit
-            if (!can_convert_click(info, bev->x_root, bev->y_root))
-            {
-                /* Replay original event.
-                 * This will usually give a regular left click.
-                 */
-                XAllowEvents (bev->display, ReplayPointer, bev->time);
-
-                /*
-                 * Don't stop the grab here, Onboard controls the
-                 * cancellation from the python side. I does so by
-                 * explicitely setting the convert click to
-                 * PRIMARY_BUTTON, CLICK_TYPE_SINGLE.
-                 */
-            }
-            else
-            {
-                /* Consume original event */
-                XAllowEvents (bev->display, AsyncPointer, bev->time);
-
-                if (event->type == ButtonRelease)
-                {
-                    /* Stop the grab before sending any fake events.
-                     */
-                    stop_grab(info);
-
-                    /* Move the pointer to the actual click position.
-                     * Else faked button presses on the touch screen of
-                     * the Nexus 7 are offset by a couple hundred pixels.
-                     */
-                    XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
-
-                    /* Synthesize button click */
-                    unsigned long delay = 40;
-                    switch (click_type)
-                    {
-                        case CLICK_TYPE_SINGLE:
-                            XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
-                            XTestFakeButtonEvent (bev->display, button, False, 50);
-                            break;
-
-                        case CLICK_TYPE_DOUBLE:
-                            XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
-                            XTestFakeButtonEvent (bev->display, button, False, delay);
-                            XTestFakeButtonEvent (bev->display, button, True, delay);
-                            XTestFakeButtonEvent (bev->display, button, False, delay);
-                            break;
-
-                        case CLICK_TYPE_DRAG:
-                            XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
-
-                            gint64 now = g_get_monotonic_time();
-                            info->drag_started = True;
-                            info->drag_button = button;
-                            info->drag_last_time = now;
-                            info->drag_slowdown_time = now;
-                            start_drag_polling(info);
-                            break;
-                    }
-
-                    if (click_type != CLICK_TYPE_DRAG)
-                    {
-                        // notify python that the click is done
-                        stop_convert_click(info);
-                        notify_click_done(callback);
-                    }
-                }
-            }
-            Py_XDECREF(callback);
-        }
-    }
-
-    PyGILState_Release(state);
-
-    return GDK_FILTER_CONTINUE;
-}
-
-static void
-stop_convert_click(OskUtilGrabInfo* info)
-{
-    if (info->xdisplay)
-    {
-        gdk_window_remove_filter (NULL,
-                                  (GdkFilterFunc) osk_util_event_filter,
-                                  info);
-        stop_grab(info);
-    }
-    info->button = PRIMARY_BUTTON;
-    info->click_type = CLICK_TYPE_SINGLE;
-    info->drag_started = False;
-    info->drag_button = 0;
-    info->xdisplay = NULL;
-
-    Py_XDECREF(info->exclusion_rects);
-    info->exclusion_rects = NULL;
-
-    Py_XDECREF(info->click_done_callback);
-    info->click_done_callback = NULL;
-
-    if (info->grab_release_timer)
-        g_source_remove (info->grab_release_timer);
-    info->grab_release_timer = 0;
-}
-
-static unsigned int
-get_modifier_state (Display *dpy)
-{
-    Window root, child;
-    int x, y, x_root, y_root;
-    unsigned int mask = 0;
-
-    XQueryPointer (dpy, DefaultRootWindow (dpy),
-                   &root, &child, &x_root, &y_root, &x, &y, &mask);
-
-    /* remove mouse button states */
-    return mask & 0xFF;
-}
-
-static
-gboolean grab_release_timer_callback(gpointer user_data)
-{
-    OskUtil*         util = (OskUtil*) user_data;
-    OskUtilGrabInfo* info = util->info;
-    Display* xdisplay     = get_x_display(util);
-    PyObject* callback = info->click_done_callback;
-
-    notify_click_done(callback);
-
-    // Always release the XTest button.
-    // -> recover from having the button stuck
-    int button = Button1;
-    if (info->drag_button)
-        button = info->drag_button;
-    XTestFakeButtonEvent (xdisplay, button, False, CurrentTime);
-
-    stop_convert_click(info);
-
-    info->grab_release_timer = 0;
-
-    return False;
-}
-
-/**
- * osk_util_convert_primary_click:
- * @button: Button number to convert (unsigned int)
- *
- * Converts the next mouse "left-click" to a @button click.
- */
-static PyObject *
-osk_util_convert_primary_click (PyObject *self, PyObject *args)
-{
-    OskUtil *util = (OskUtil*) self;
-    OskUtilGrabInfo *info = util->info;
-    Display         *dpy;
-    unsigned int     button;
-    unsigned int     click_type;
-    unsigned int     modifier;
-    PyObject*        exclusion_rects = NULL;
-    PyObject*        callback = NULL;
-
-    if (!PyArg_ParseTuple (args, "II|OO", &button,
-                                          &click_type,
-                                          &exclusion_rects,
-                                          &callback))
-        return NULL;
-
-    if (button < 1 || button > 3)
-    {
-        PyErr_SetString (OSK_EXCEPTION, "unsupported button number");
-        return NULL;
-    }
-
-    stop_convert_click(info);
-
-    if (exclusion_rects)
-    {
-        if (!PySequence_Check(exclusion_rects))
-        {
-            PyErr_SetString(PyExc_ValueError, "expected sequence type");
-            return False;
-        }
-        Py_INCREF(exclusion_rects);
-        info->exclusion_rects = exclusion_rects;
-    }
-
-    /* cancel the click ? */
-    if (button == PRIMARY_BUTTON &&
-        click_type == CLICK_TYPE_SINGLE)
-    {
-        Py_RETURN_NONE;
-    }
-
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-    modifier = get_modifier_state (dpy);
-
-    info->button = button;
-    info->click_type = click_type;
-    info->xdisplay = dpy;
-    info->modifier = modifier;
-    Py_XINCREF(callback);         /* Add a reference to new callback */
-    Py_XDECREF(info->click_done_callback);   /* Dispose of previous callback */
-    info->click_done_callback = callback;    /* Remember new callback */
-
-    if (!start_grab(info))
-    {
-        stop_convert_click(info);
-        PyErr_SetString (OSK_EXCEPTION, "failed to grab button");
-        return NULL;
-    }
-
-    // Make sure the grab can't get stuck for long. On the Nexus 7 this
-    // is a frequent occurrence.
-    info->grab_release_timer = g_timeout_add_seconds(MAX_GRAB_DURATION,
-                                                     grab_release_timer_callback,
-                                                     util);
-
-    gdk_window_add_filter (NULL, (GdkFilterFunc) osk_util_event_filter, info);
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-osk_util_enable_click_conversion (PyObject *self, PyObject *args)
-{
-    OskUtil *util = (OskUtil*) self;
-    OskUtilGrabInfo *info = util->info;
-    Bool     enable;
-
-    if (!PyArg_ParseTuple (args, "B", &enable))
-        return NULL;
-
-    info->enable_conversion = enable;
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-osk_util_get_convert_click_button (PyObject *self)
-{
-    OskUtil *util = (OskUtil*) self;
-    return PyInt_FromLong(util->info->button);
-}
-
-static PyObject *
-osk_util_get_convert_click_type (PyObject *self)
-{
-    OskUtil *util = (OskUtil*) self;
-    return PyInt_FromLong(util->info->click_type);
 }
 
 static PyObject *
@@ -1155,18 +682,6 @@ osk_util_idle_call (PyObject* callback, PyObject* arglist)
 }
 
 static PyMethodDef osk_util_methods[] = {
-    { "convert_primary_click",
-        osk_util_convert_primary_click,
-        METH_VARARGS, NULL },
-    { "get_convert_click_button",
-        (PyCFunction)osk_util_get_convert_click_button,
-        METH_NOARGS, NULL },
-    { "get_convert_click_type",
-        (PyCFunction)osk_util_get_convert_click_type,
-        METH_NOARGS, NULL },
-    { "enable_click_conversion",
-        osk_util_enable_click_conversion,
-        METH_VARARGS, NULL },
     { "set_x_property",
         osk_util_set_x_property,
         METH_VARARGS, NULL },
@@ -1191,3 +706,4 @@ static PyMethodDef osk_util_methods[] = {
 
     { NULL, NULL, 0, NULL }
 };
+

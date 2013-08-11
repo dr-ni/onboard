@@ -13,7 +13,7 @@ except ImportError:
 from gi.repository.Gio import Settings, SettingsBindFlags
 from gi.repository import GLib, GObject, Gtk
 
-from Onboard.utils import DelayedLauncher
+from Onboard.utils import DelayedLauncher, EventSource
 from Onboard.ConfigUtils import ConfigObject
 import Onboard.osk as osk
 
@@ -35,11 +35,10 @@ class MouseController(GObject.GObject):
     CLICK_TYPE_DRAG   = 1
 
     # Public interface
-
     def supports_click_params(self, button, click_type):
         raise NotImplementedError()
 
-    def set_click_params(self, button, click_type):
+    def map_primary_click(self, event_source, button, click_type):
         raise NotImplementedError()
 
     def get_click_button(self):
@@ -57,32 +56,68 @@ class ClickMapper(MouseController):
     def __init__(self):
         MouseController.__init__(self)
 
-        self._osk_util = osk.Util()
+        self._osk_cm = osk.ClickMapper()
         self._click_done_notify_callbacks = []
         self._exclusion_rects = []
+        self._grab_event_source = None
 
     def cleanup(self):
+        self.end_mapping()
         self._click_done_notify_callbacks = []
 
     def supports_click_params(self, button, click_type):
         return True
 
-    def set_click_params(self, button, click_type):
-        self._set_next_mouse_click(button, click_type)
+    def map_primary_click(self, event_source, button, click_type):
+        if event_source and (button != self.PRIMARY_BUTTON or \
+                             click_type != self.CLICK_TYPE_SINGLE):
+            self._begin_mapping(event_source, button, click_type)
+        else:
+            self.end_mapping()
+
+    def _begin_mapping(self, event_source, button, click_type):
+        # "grab" the pointer so we can detect button-release 
+        # anywhere on screen. Works only with XInput as InputEventSource.
+        
+        # remap button
+        if button != self.PRIMARY_BUTTON and \
+           click_type == self.CLICK_TYPE_SINGLE:
+            self._grab_event_source = event_source
+            event_source.grab_xi_pointer(True)
+            EventSource.connect(event_source, "button-release",
+                            self._on_xi_button_release)
+            self._osk_cm.map_pointer_button(button)
+            self._osk_cm.button = button
+            self._osk_cm.click_type = click_type
+        else:
+            self._set_next_mouse_click(button, click_type)
+
+    def end_mapping(self):
+        if self._grab_event_source:
+            EventSource.disconnect(self._grab_event_source,
+                                   "button-release",
+                                   self._on_xi_button_release)
+            self._grab_event_source.grab_xi_pointer(False)
+            self._grab_event_source = None
+
+        if self._osk_cm:
+            if self._osk_cm.click_type == self.CLICK_TYPE_SINGLE:
+                self._osk_cm.restore_pointer_buttons()
+                self._osk_cm.button = self.PRIMARY_BUTTON
+                self._osk_cm.click_type = self.CLICK_TYPE_SINGLE
+            else:
+                self._set_next_mouse_click(self.PRIMARY_BUTTON, self.CLICK_TYPE_SINGLE)
+
+    def _on_xi_button_release(self, event):
+        """ end of CLICK_TYPE_SINGLE in XInput mode """
+        _logger.debug("_on_xi_button_release")
+        self._on_click_done()
 
     def get_click_button(self):
-        try:
-            button = self._osk_util.get_convert_click_button()
-        except osk.error as error:
-            button = self.PRIMARY_BUTTON
-        return button
+        return self._osk_cm.button
 
     def get_click_type(self):
-        try:
-            click_type = self._osk_util.get_convert_click_type()
-        except osk.error as error:
-            click_type = self.CLICK_TYPE_SINGLE
-        return click_type
+        return self._osk_cm.click_type
 
     def _set_next_mouse_click(self, button, click_type):
         """
@@ -90,20 +125,23 @@ class ClickMapper(MouseController):
         specified in @button. Possible values are 2 and 3.
         """
         try:
-            self._osk_util.convert_primary_click(button, click_type,
-                                                 self._exclusion_rects,
-                                                 self._on_click_done)
+            self._osk_cm.convert_primary_click(button, click_type,
+                                               self._exclusion_rects,
+                                               self._on_click_done)
         except osk.error as error:
             _logger.warning(error)
-            self._button = self.PRIMARY_BUTTON
 
     def state_notify_add(self, callback):
         self._click_done_notify_callbacks.append(callback)
 
     def _on_click_done(self):
+        """ osk callback """
+        self.end_mapping()
+
         # update click type buttons
         for callback in self._click_done_notify_callbacks:
             callback(None)
+
 
     def set_exclusion_rects(self, rects):
         self._exclusion_rects = rects
@@ -250,7 +288,7 @@ class Mousetweaks(ConfigObject, MouseController):
         # mousetweaks since 3.3.90 supports middle click button too.
         return True
 
-    def set_click_params(self, button, click_type):
+    def map_primary_click(self, event_source, button, click_type):
         mt_click_type = click_type
         if button == self.SECONDARY_BUTTON:
             mt_click_type = self.CLICK_TYPE_RIGHT

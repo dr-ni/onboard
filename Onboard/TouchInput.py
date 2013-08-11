@@ -13,7 +13,7 @@ import copy
 
 from gi.repository         import Gdk
 
-from Onboard.utils         import Timer
+from Onboard.utils         import Timer, EventSource
 from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
 
 ### Logging ###
@@ -58,12 +58,16 @@ class TouchInputEnum:
     ) = range(3)
 
 
-class InputEventSource:
+class InputEventSource(EventSource):
     """
     Setup and handle GTK or XInput device events.
     """
 
     def __init__(self):
+        # There is only button-release to subscribe to currently,
+        # as this is all MouseController needs to detect the end of a click.
+        EventSource.__init__(self, ["button-release"])
+
         self._gtk_handler_ids = None
         self._device_manager = None
 
@@ -72,8 +76,9 @@ class InputEventSource:
         self._slave_devices = None      # receive pointer and touch events
         self._slave_device_ids = None   # for convenience/speed only
 
-        self._xi_drag_active = 0
-        self._xi_drag_events_selected = False
+        self._xi_grab_active = False
+        self._xi_grab_events_selected = False
+        self._xi_event_handled = False
 
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
@@ -95,17 +100,25 @@ class InputEventSource:
     def handle_unrealize_event(self):
         self.register_input_events(False)
 
-    def set_xi_drag_active(self, active):
+    def grab_xi_pointer(self, active):
         """
-        Tell the xi event source a drag operation has started/ended.
+        Tell the xi event source a drag operation has started/ended
+        and we want to receive events of the whole screen.
         """
-        self._xi_drag_active = active
+        self._xi_grab_active = active
 
-        # release simulated slave device grab when the drag operation ends
+        # release simulated grab of slave device when the drag operation ends
         if not active and \
-           self._xi_drag_events_selected and \
+           self._xi_grab_events_selected and \
            self._device_manager:
-            self._select_xi_drag_events(False)
+            self._select_xi_grab_events(False)
+
+    def set_xi_event_handled(self, handled):
+        """
+        Tell the xi event source to stop/continue processing of handlers for
+        the current event.
+        """
+        self._xi_event_handled = handled
 
     def register_input_events(self, register, use_gtk = False):
         self._register_gtk_events(False)
@@ -246,7 +259,7 @@ class InputEventSource:
         self._slave_devices = devices
         self._slave_device_ids = [d.id for d in devices]
 
-    def _select_xi_drag_events(self, select):
+    def _select_xi_grab_events(self, select):
         """
         Select events for the root window to simulate a pointer grab.
         Only relevant when a drag was initiated, e.g. moving/resizing
@@ -272,7 +285,7 @@ class InputEventSource:
                                    "{id}: {ex}"
                                    .format(id = device.id, ex = ex))
 
-        self._xi_drag_events_selected = select
+        self._xi_grab_events_selected = select
 
     def _device_event_handler(self, event):
         """
@@ -311,18 +324,19 @@ class InputEventSource:
 
 
         # Slaves aren't grabbed for moving/resizing when simulating a drag
-        # operation (drag click button), or multiple slave devices are
+        # operation (drag click button), or when multiple slave devices are
         # involved (one for button press, another for motion).
         # None of these problems are assumed to exist for touch devices.
-        # -> Simulate pointer grab, select root events we can track even 
+        # -> Simulate pointer grab, select root events we can track even
         #    outside the keyboard window.
-        if self._xi_drag_active and \
+        if self._xi_grab_active and \
            (event_type == XIEventType.Motion or \
             event_type == XIEventType.ButtonRelease):
-            if not self._xi_drag_events_selected:
-                self._select_xi_drag_events(True)
+            if not self._xi_grab_events_selected:
+                self._select_xi_grab_events(True)
 
-            #print(self._xi_drag_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
+            #print(event_type, event.x_root, event.y_root)
+            #print(self._xi_grab_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
 
             # We only get root window coordinates for root window events,
             # so convert them to our target window's coordinates.
@@ -334,7 +348,7 @@ class InputEventSource:
             # Is self the hit window?
             # We need this only for the multi-touch case with open
             # long press popup, e.g. while shift is held down with
-            # one finger, touching anything in a long press popup must 
+            # one finger, touching anything in a long press popup must
             # not also affect the keyboard below.
             xid_event = event.xid_event
             if xid_event != 0 and \
@@ -342,6 +356,7 @@ class InputEventSource:
                 return
 
         # Dispatch events
+        self._xi_event_handled = False
         if event_type == XIEventType.Motion:
             self._on_motion_event(self, event)
 
@@ -355,6 +370,8 @@ class InputEventSource:
 
         elif event_type == XIEventType.ButtonRelease:
             self._on_button_release_event(self, event)
+            if not self._xi_event_handled:
+                EventSource.emit(self, "button-release", event)
 
         elif event_type == XIEventType.Enter:
             self._on_enter_notify(self, event)
@@ -735,7 +752,7 @@ class InputSequence:
         self.root_point  = (event.x_root, event.y_root)
         self.button      = 1
         self.state       = Gdk.ModifierType.BUTTON1_MASK
-        self.time        = event.time  # Begin event has no get_time() method, 
+        self.time        = event.time  # Begin event has no get_time() method,
                                        # while update events lack time property.
         self.update_time = time.time()
 

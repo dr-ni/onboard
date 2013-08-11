@@ -172,6 +172,7 @@ void    __osk_devices_register_type      (PyObject *module);
 void    __osk_device_event_register_type (PyObject *module);
 void    __osk_hunspell_register_type     (PyObject *module);
 void    __osk_struts_register_type       (PyObject *module);
+void    __osk_click_mapper_register_type (PyObject *module);
 void    __osk_util_register_type         (PyObject *module);
 
 void osk_util_idle_call (PyObject *callback, PyObject *arglist);
