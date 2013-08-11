@@ -18,12 +18,7 @@
 
 #include "osk_module.h"
 
-#include <signal.h>
-#include <glib-unix.h>
-
 #include <gdk/gdkx.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
 
 
