@@ -172,6 +172,7 @@ typedef struct {
     int       xi2_opcode;
     Atom      atom_product_id;
 
+    GQueue   *event_queue;
     PyObject *event_handler;
     int       button_states[G_N_ELEMENTS(gdk_button_masks)];
 } OskDevices;
@@ -186,6 +187,10 @@ static int osk_devices_select (OskDevices    *dev,
                                int            id,
                                unsigned char *mask,
                                unsigned int   mask_len);
+
+static gboolean idle_process_event_queue (OskDevices* dev);
+static void free_event_queue_element(gpointer data);
+
 
 OSK_REGISTER_TYPE (OskDevices, osk_devices, "Devices")
 
@@ -241,6 +246,10 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     {
         unsigned char mask[2] = { 0, 0 };
 
+        dev->event_queue = g_queue_new();
+        if (!dev->event_queue)
+            return -1;
+            
         Py_INCREF (dev->event_handler);
 
         XISetMask (mask, XI_HierarchyChanged);
@@ -271,20 +280,92 @@ osk_devices_dealloc (OskDevices *dev)
                                   dev);
 
         Py_DECREF (dev->event_handler);
+
+        if (dev->event_queue)
+        {
+            g_queue_free_full(dev->event_queue, free_event_queue_element);
+            dev->event_queue = NULL;
+        }
     }
     OSK_FINISH_DEALLOC (dev);
 }
 
 static void
-osk_devices_call_event_handler (OskDevices *dev, OskDeviceEvent* event)
+queue_event (OskDevices* dev, OskDeviceEvent* event, Bool discard_pending)
 {
-    PyObject* arglist = Py_BuildValue("(O)", event);
-    if (arglist)
+    GQueue* queue = dev->event_queue;
+    if (queue)
     {
-        osk_util_idle_call(dev->event_handler, arglist);
-        Py_DECREF(arglist);
+        if (g_queue_is_empty(queue))
+            g_idle_add ((GSourceFunc) idle_process_event_queue, dev);
+
+        // Discard pending elements of the same type, e.g. to clear 
+        // motion event congestion (LP: #1210665).
+        if (discard_pending)
+        {
+            GList *element = g_queue_peek_head_link (queue);
+            for(;element;)
+            {
+                GList* next = element->next;
+                OskDeviceEvent* e = (OskDeviceEvent*)element->data;
+                if (e->device_id == event->device_id &&
+                    e->type == event->type)
+                {
+                    //printf("deleting %d %d\n", e->type, event->type);
+                    g_queue_delete_link(queue, element);
+                    Py_DECREF(e);
+                }
+                element = next;
+            }
+        }
+
+        // Enqueue the event.
+        Py_INCREF(event);
+        g_queue_push_head(queue, event);
     }
 }
+
+static gboolean idle_process_event_queue (OskDevices* dev)
+{
+    PyGILState_STATE state = PyGILState_Ensure ();
+    PyObject *result;
+    GQueue* queue = dev->event_queue;
+
+    for (;;)
+    {
+        OskDeviceEvent* event = g_queue_pop_tail (queue);
+        if (!event)
+            break;
+
+        PyObject* arglist = Py_BuildValue("(O)", event);
+        if (arglist)
+        {
+            Py_INCREF(dev->event_handler);
+
+            result = PyObject_CallObject(dev->event_handler, arglist);
+            if (result)
+                Py_DECREF (result);
+            else
+                PyErr_Print ();
+
+            Py_DECREF (dev->event_handler);
+            Py_DECREF (arglist);
+
+        }
+
+        Py_DECREF (event);
+    }
+
+    PyGILState_Release (state);
+
+    return False;
+}
+
+static void free_event_queue_element(gpointer data)
+{
+    Py_DECREF(data);
+}
+
 
 static void
 osk_devices_call_event_handler_device (OskDevices *dev,
@@ -303,7 +384,7 @@ osk_devices_call_event_handler_device (OskDevices *dev,
         ev->device_id = device_id;
         ev->source_id = source_id;
 
-        osk_devices_call_event_handler (dev, ev);
+        queue_event (dev, ev, False);
 
         Py_DECREF(ev);
     }
@@ -350,7 +431,7 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
         ev->touch = (PyObject*) ev;
         Py_INCREF(ev->touch);
 
-        osk_devices_call_event_handler (dev, ev);
+        queue_event (dev, ev, type == XI_Motion);
 
         Py_DECREF(ev);
     }
@@ -373,7 +454,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
         ev->device_id = device_id;
         ev->keyval = keyval;
 
-        osk_devices_call_event_handler (dev, ev);
+        queue_event (dev, ev, False);
 
         Py_DECREF(ev);
     }
