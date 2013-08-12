@@ -76,12 +76,11 @@ class ClickMapper(MouseController):
             self.end_mapping()
 
     def _begin_mapping(self, event_source, button, click_type):
-        # "grab" the pointer so we can detect button-release 
-        # anywhere on screen. Works only with XInput as InputEventSource.
-        
         # remap button
         if button != self.PRIMARY_BUTTON and \
            click_type == self.CLICK_TYPE_SINGLE:
+            # "grab" the pointer so we can detect button-release 
+            # anywhere on screen. Works only with XInput as InputEventSource.
             self._grab_event_source = event_source
             event_source.grab_xi_pointer(True)
             EventSource.connect(event_source, "button-release",
@@ -108,10 +107,16 @@ class ClickMapper(MouseController):
             else:
                 self._set_next_mouse_click(self.PRIMARY_BUTTON, self.CLICK_TYPE_SINGLE)
 
+    def is_mapping_active(self):
+        return self._grab_event_source or \
+           self._osk_cm and \
+           (self._osk_cm.click_type != self.CLICK_TYPE_SINGLE or \
+            self._osk_cm.button == self.PRIMARY_BUTTON)
+
     def _on_xi_button_release(self, event):
         """ end of CLICK_TYPE_SINGLE in XInput mode """
         _logger.debug("_on_xi_button_release")
-        self._on_click_done()
+        self.end_mapped_click()
 
     def get_click_button(self):
         return self._osk_cm.button
@@ -127,21 +132,21 @@ class ClickMapper(MouseController):
         try:
             self._osk_cm.convert_primary_click(button, click_type,
                                                self._exclusion_rects,
-                                               self._on_click_done)
+                                               self.end_mapped_click)
         except osk.error as error:
             _logger.warning(error)
 
     def state_notify_add(self, callback):
         self._click_done_notify_callbacks.append(callback)
 
-    def _on_click_done(self):
-        """ osk callback """
-        self.end_mapping()
+    def end_mapped_click(self):
+        """ osk callback, outside click, xi button release """
+        if self.is_mapping_active():
+            self.end_mapping()
 
-        # update click type buttons
-        for callback in self._click_done_notify_callbacks:
-            callback(None)
-
+            # update click type buttons
+            for callback in self._click_done_notify_callbacks:
+                callback(None)
 
     def set_exclusion_rects(self, rects):
         self._exclusion_rects = rects

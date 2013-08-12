@@ -1368,7 +1368,7 @@ class Keyboard(WordSuggestions):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        config.clickmapper.end_mapping()
+        config.clickmapper.end_mapped_click()
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
