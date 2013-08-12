@@ -65,7 +65,7 @@ class InputEventSource(EventSource):
 
     def __init__(self):
         # There is only button-release to subscribe to currently,
-        # as this is all MouseController needs to detect the end of a click.
+        # as this is all CSButtonRemapper needs to detect the end of a click.
         EventSource.__init__(self, ["button-release"])
 
         self._gtk_handler_ids = None
@@ -298,8 +298,7 @@ class InputEventSource(EventSource):
             self._log_event(event)
 
         # re-select devices on changes to the device hierarchy
-        if event_type == XIEventType.DeviceAdded or \
-           event_type == XIEventType.DeviceRemoved or \
+        if event_type in XIEventType.HierarchyEvents or \
            event_type == XIEventType.DeviceChanged:
             self.select_xinput_devices()
             return
@@ -322,13 +321,12 @@ class InputEventSource(EventSource):
         if not win:
             return
 
-
         # Slaves aren't grabbed for moving/resizing when simulating a drag
         # operation (drag click button), or when multiple slave devices are
         # involved (one for button press, another for motion).
-        # None of these problems are assumed to exist for touch devices.
         # -> Simulate pointer grab, select root events we can track even
         #    outside the keyboard window.
+        # None of these problems are assumed to exist for touch devices.
         if self._xi_grab_active and \
            (event_type == XIEventType.Motion or \
             event_type == XIEventType.ButtonRelease):

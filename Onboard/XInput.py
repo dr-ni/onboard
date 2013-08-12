@@ -61,6 +61,10 @@ class XIEventType:
     # extra non-XI events
     DeviceAdded       = 1100
     DeviceRemoved     = 1101
+    SlaveAttached     = 1102
+    SlaveDetached     = 1103
+
+    HierarchyEvents = (DeviceAdded, DeviceRemoved, SlaveAttached, SlaveDetached)
 
 
 class XIEventMask:
@@ -141,6 +145,7 @@ class XIDeviceManager(EventSource):
         """
         EventSource.__init__(self, ["device-event"])
 
+        self._current_event = None
         self._devices = {}
         self._osk_devices = None
         try:
@@ -149,10 +154,10 @@ class XIDeviceManager(EventSource):
         except Exception as ex:
             _logger.warning("Failed to create osk.Devices: " + \
                             unicode_str(ex))
-
+        
         if self.is_valid():
             self.update_devices()
-
+        
     def is_valid(self):
         return not self._osk_devices is None
 
@@ -236,6 +241,12 @@ class XIDeviceManager(EventSource):
         self._osk_devices.unselect_events(xid, device.id)
         return True
 
+    def attach_device(self, device, master_id):
+        self.attach_device_id(device.id, master_id)
+
+    def detach_device(self, device):
+        self.detach_device_id(device.id)
+
     def attach_device_id(self, device_id, master_id):
         self._osk_devices.attach(device_id, master_id)
 
@@ -251,9 +262,9 @@ class XIDeviceManager(EventSource):
         source_id = event.source_id
 
         # update our device objects on changes to the device hierarchy
-        if event_type == XIEventType.DeviceAdded or \
-           event_type == XIEventType.DeviceRemoved or \
+        if event_type in XIEventType.HierarchyEvents or \
            event_type == XIEventType.DeviceChanged:
+            print("Device changed", event_type)
             self.update_devices()
 
         # simulate gtk source device
@@ -266,12 +277,14 @@ class XIDeviceManager(EventSource):
         event.set_source_device(source_device)
 
         # forward the event to all listeners
+        self._current_event = event
         self.emit("device-event", event)
+        self._current_event = None
 
 
 class XIDevice(object):
     """
-    XInput device.
+    XInput device wrapper.
     """
     name         = None
     id           = None
@@ -283,6 +296,15 @@ class XIDevice(object):
     source       = None
 
     _device_manager = None
+
+    def __str__(self):
+        return "{}(id={}, master={}, name={}, source={} )" \
+                .format(type(self).__name__,
+                        repr(self.id),
+                        repr(self.master),
+                        repr(self.name),
+                        repr(self.source),
+                       )
 
     def get_source(self):
         """
@@ -317,6 +339,12 @@ class XIDevice(object):
             else:
                 input_source = Gdk.InputSource.MOUSE
         return input_source
+
+    def is_touch_screen(self):
+        """
+        Touch screen device?
+        """
+        return self.source == Gdk.InputSource.TOUCHSCREEN
 
     # methods inherited from Gerd's scanner device.
     def is_master(self):

@@ -695,6 +695,51 @@ osk_click_mapper_convert_primary_click (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+
+static PyObject *
+osk_click_mapper_generate_motion_event (PyObject *self, PyObject *args)
+{
+    OskButtonMapper *instance = (OskButtonMapper*) self;
+    unsigned int     x_root, y_root;
+
+    Display* xdisplay = get_x_display(instance);
+    if (!xdisplay)
+    {
+        PyErr_SetString (OSK_EXCEPTION, "failed to get X display");
+        return NULL;
+    }
+
+    if (!PyArg_ParseTuple (args, "II", &x_root, &y_root))
+        return NULL;
+
+    XTestFakeMotionEvent(xdisplay, -1, x_root, y_root, CurrentTime);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+osk_click_mapper_generate_button_event (PyObject *self, PyObject *args)
+{
+    OskButtonMapper *instance = (OskButtonMapper*) self;
+    unsigned int button;
+    Bool press;
+
+    Display* xdisplay = get_x_display(instance);
+    if (!xdisplay)
+    {
+        PyErr_SetString (OSK_EXCEPTION, "failed to get X display");
+        return NULL;
+    }
+
+    if (!PyArg_ParseTuple (args, "Ip", &button, &press))
+        return NULL;
+
+    XTestFakeButtonEvent (xdisplay, button, press, CurrentTime);
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_click_mapper_methods[] = {
     { "convert_primary_click",
         osk_click_mapper_convert_primary_click,
@@ -705,6 +750,14 @@ static PyMethodDef osk_click_mapper_methods[] = {
     { "restore_pointer_buttons",
         osk_click_mapper_restore_pointer_buttons,
         METH_VARARGS, NULL },
+
+    { "generate_motion_event",
+        osk_click_mapper_generate_motion_event,
+        METH_VARARGS, NULL },
+    { "generate_button_event",
+        osk_click_mapper_generate_button_event,
+        METH_VARARGS, NULL },
+
     { NULL, NULL, 0, NULL }
 };
 

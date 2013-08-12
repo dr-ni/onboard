@@ -10,21 +10,23 @@ try:
 except ImportError:
     pass
 
-from gi.repository.Gio import Settings, SettingsBindFlags
-from gi.repository import GLib, GObject, Gtk
+from gi.repository.Gio   import Settings, SettingsBindFlags
+from gi.repository       import GLib, GObject, Gtk
 
-from Onboard.utils import DelayedLauncher, EventSource
+from Onboard.utils       import DelayedLauncher, EventSource
 from Onboard.ConfigUtils import ConfigObject
+from Onboard.XInput      import XIDeviceManager, XIEventType, XIEventMask
+
 import Onboard.osk as osk
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("MouseControl")
+_logger = logging.getLogger("ClickSimulator")
 ###############
 
 
-class MouseController(GObject.GObject):
-    """ Abstract base class for mouse controllers """
+class ClickSimulator(GObject.GObject):
+    """ Abstract base class for mouse click simulators """
 
     PRIMARY_BUTTON   = 1
     MIDDLE_BUTTON    = 2
@@ -48,13 +50,13 @@ class MouseController(GObject.GObject):
         raise NotImplementedError()
 
 
-class ClickMapper(MouseController):
+class CSButtonRemapper(ClickSimulator):
     """
     Onboards built-in mouse click mapper.
     Maps secondary or middle button to the primary button.
     """
     def __init__(self):
-        MouseController.__init__(self)
+        ClickSimulator.__init__(self)
 
         self._osk_cm = osk.ClickMapper()
         self._click_done_notify_callbacks = []
@@ -152,7 +154,134 @@ class ClickMapper(MouseController):
         self._exclusion_rects = rects
 
 
-class Mousetweaks(ConfigObject, MouseController):
+class CSFloatingSlave(ClickSimulator):
+    """
+    Onboards built-in mouse click mapper.
+    Maps secondary or middle button to the primary button.
+    """
+    def __init__(self):
+        ClickSimulator.__init__(self)
+
+        self._click_done_notify_callbacks = []
+        self._exclusion_rects = []
+
+        self._device_manager = XIDeviceManager()
+        self._master_device_id = None
+        self._detached_device_id = None
+        self._osk_cm = osk.ClickMapper()
+        self._can_end_mapping = False
+
+        self._button = self.PRIMARY_BUTTON
+        self._click_type = self.CLICK_TYPE_SINGLE
+
+    def cleanup(self):
+        self.end_mapping()
+        self._click_done_notify_callbacks = []
+
+    def supports_click_params(self, button, click_type):
+        return True
+
+    def map_primary_click(self, event_source, button, click_type):
+        if event_source and (button != self.PRIMARY_BUTTON or \
+                             click_type != self.CLICK_TYPE_SINGLE):
+            self._begin_mapping(event_source, button, click_type)
+        else:
+            self.end_mapping()
+
+    def _begin_mapping(self, event_source, button, click_type):
+        # remap button
+        event = self._device_manager._current_event
+        device = event.get_source_device()
+        self._detached_device_id = device.id
+        self._master_device_id = device.master
+        print("detaching", device)
+        self._device_manager.detach_device(device)
+
+        # connect to root window events to get them for the whole screen
+        self._device_manager.connect("device-event",
+                                      self._device_event_handler)
+        event_mask = XIEventMask.ButtonPressMask | \
+                     XIEventMask.ButtonReleaseMask | \
+                     XIEventMask.MotionMask
+        try:
+            self._device_manager.select_events(None, device, event_mask)
+        except Exception as ex:
+            _logger.warning("Failed to select root events for device "
+                            "{id}: {ex}"
+                                    .format(id = device.id, ex = ex))
+
+        self._button = button
+        self._click_type = click_type
+        self._can_end_mapping = False
+
+    def end_mapping(self):
+        if not self._detached_device_id is None:
+            self._device_manager.disconnect("device-event",
+                                            self._device_event_handler)
+            device = self._device_manager \
+                         .lookup_device_id(self._detached_device_id)
+
+            print("attaching", device)
+            try:
+                self._device_manager.unselect_events(None, device)
+            except Exception as ex:
+                _logger.warning("Failed to unselect root events for device "
+                               "{id}: {ex}"
+                               .format(id = device.id, ex = ex))
+
+            self._device_manager.attach_device(device, self._master_device_id)
+            self._detached_device_id = None
+            self._master_device_id = None
+
+        self._button = self.PRIMARY_BUTTON
+        self._click_type = self.CLICK_TYPE_SINGLE
+
+    def _device_event_handler(self, event):
+        if event.device_id == self._detached_device_id:
+            device = event.get_source_device()
+            event_type = event.xi_type
+
+            print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
+
+            if event_type == XIEventType.Motion:
+                self._osk_cm.generate_motion_event(int(event.x_root),
+                                                   int(event.y_root))
+
+            elif event_type == XIEventType.ButtonPress:
+                self._can_end_mapping = True
+                self._osk_cm.generate_button_event(self._button, True)
+
+            elif event_type == XIEventType.ButtonRelease:
+                self._osk_cm.generate_button_event(self._button, False)
+                if self._can_end_mapping:
+                    self.end_mapped_click()
+
+    def is_mapping_active(self):
+        return self._detached_device_id
+
+    def get_click_button(self):
+        return self._button
+
+    def get_click_type(self):
+        return self._click_type
+
+    def state_notify_add(self, callback):
+        self._click_done_notify_callbacks.append(callback)
+
+    def end_mapped_click(self):
+        """ osk callback, outside click, xi button release """
+        if self.is_mapping_active():
+            self.end_mapping()
+
+            # update click type buttons
+            for callback in self._click_done_notify_callbacks:
+                callback(None)
+
+    def set_exclusion_rects(self, rects):
+        self._exclusion_rects = rects
+
+
+class CSMousetweaks(ConfigObject, ClickSimulator):
     """ Mousetweaks settings, D-bus control and signal handling """
 
     CLICK_TYPE_RIGHT  = 0
@@ -173,7 +302,7 @@ class Mousetweaks(ConfigObject, MouseController):
             raise ImportError("python-dbus unavailable")
 
         ConfigObject.__init__(self)
-        MouseController.__init__(self)
+        ClickSimulator.__init__(self)
 
         self.launcher = DelayedLauncher()
         self._daemon_running_notify_callbacks = []

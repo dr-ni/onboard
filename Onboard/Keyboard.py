@@ -13,7 +13,7 @@ from Onboard                 import KeyCommon
 from Onboard.KeyCommon       import StickyBehavior
 from Onboard.KeyboardPopups  import TouchFeedback
 from Onboard.Sound           import Sound
-from Onboard.MouseControl    import MouseController
+from Onboard.ClickSimulator  import ClickSimulator
 from Onboard.Scanner         import Scanner
 from Onboard.utils           import Timer, Modifiers, parse_key_combination, \
                                     unicode_str
@@ -1368,17 +1368,17 @@ class Keyboard(WordSuggestions):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        config.clickmapper.end_mapped_click()
+        config.clicksim.end_mapped_click()
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
         pass
 
-    def get_mouse_controller(self):
+    def get_click_simulator(self):
         if config.mousetweaks and \
            config.mousetweaks.is_active():
             return config.mousetweaks
-        return config.clickmapper
+        return config.clicksim
 
     def cleanup(self):
         WordSuggestions.cleanup(self)
@@ -1494,17 +1494,17 @@ class ButtonController(object):
 class BCClick(ButtonController):
     """ Controller for click buttons """
     def release(self, view, button, event_type):
-        mc = self.keyboard.get_mouse_controller()
+        mc = self.keyboard.get_click_simulator()
         if self.is_active():
             # stop click mapping, reset to primary button and single click
-            mc.map_primary_click(view, MouseController.PRIMARY_BUTTON,
-                                       MouseController.CLICK_TYPE_SINGLE)
+            mc.map_primary_click(view, ClickSimulator.PRIMARY_BUTTON,
+                                       ClickSimulator.CLICK_TYPE_SINGLE)
         else:
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
             rects = view.get_click_type_button_rects()
-            config.clickmapper.set_exclusion_rects(rects)
+            config.clicksim.set_exclusion_rects(rects)
 
             # start click mapping
             mc.map_primary_click(view, self.button, self.click_type)
@@ -1513,40 +1513,40 @@ class BCClick(ButtonController):
         view.set_xi_event_handled(True)
 
     def update(self):
-        mc = self.keyboard.get_mouse_controller()
+        mc = self.keyboard.get_click_simulator()
         self.set_active(self.is_active())
         self.set_sensitive(
             mc.supports_click_params(self.button, self.click_type))
 
     def is_active(self):
-        mc = self.keyboard.get_mouse_controller()
+        mc = self.keyboard.get_click_simulator()
         return mc.get_click_button() == self.button and \
                mc.get_click_type() == self.click_type
 
 class BCSingleClick(BCClick):
     id = "singleclick"
-    button = MouseController.PRIMARY_BUTTON
-    click_type = MouseController.CLICK_TYPE_SINGLE
+    button = ClickSimulator.PRIMARY_BUTTON
+    click_type = ClickSimulator.CLICK_TYPE_SINGLE
 
 class BCMiddleClick(BCClick):
     id = "middleclick"
-    button = MouseController.MIDDLE_BUTTON
-    click_type = MouseController.CLICK_TYPE_SINGLE
+    button = ClickSimulator.MIDDLE_BUTTON
+    click_type = ClickSimulator.CLICK_TYPE_SINGLE
 
 class BCSecondaryClick(BCClick):
     id = "secondaryclick"
-    button = MouseController.SECONDARY_BUTTON
-    click_type = MouseController.CLICK_TYPE_SINGLE
+    button = ClickSimulator.SECONDARY_BUTTON
+    click_type = ClickSimulator.CLICK_TYPE_SINGLE
 
 class BCDoubleClick(BCClick):
     id = "doubleclick"
-    button = MouseController.PRIMARY_BUTTON
-    click_type = MouseController.CLICK_TYPE_DOUBLE
+    button = ClickSimulator.PRIMARY_BUTTON
+    click_type = ClickSimulator.CLICK_TYPE_DOUBLE
 
 class BCDragClick(BCClick):
     id = "dragclick"
-    button = MouseController.PRIMARY_BUTTON
-    click_type = MouseController.CLICK_TYPE_DRAG
+    button = ClickSimulator.PRIMARY_BUTTON
+    click_type = ClickSimulator.CLICK_TYPE_DRAG
 
     def release(self, view, button, event_type):
         BCClick.release(self, view, button, event_type)

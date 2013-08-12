@@ -12,11 +12,12 @@ from optparse import OptionParser
 
 from gi.repository import GLib, Gtk
 
-from Onboard.utils        import show_confirmation_dialog, Version, unicode_str
-from Onboard.WindowUtils  import Handle, DockingEdge
-from Onboard.ConfigUtils  import ConfigObject
-from Onboard.MouseControl import Mousetweaks, ClickMapper
-from Onboard.Exceptions   import SchemaError
+from Onboard.utils          import show_confirmation_dialog, Version, unicode_str
+from Onboard.WindowUtils    import Handle, DockingEdge
+from Onboard.ConfigUtils    import ConfigObject
+from Onboard.ClickSimulator import CSButtonRemapper, CSFloatingSlave, \
+                                   CSMousetweaks
+from Onboard.Exceptions     import SchemaError
 
 ### Logging ###
 import logging
@@ -316,7 +317,7 @@ class Config(ConfigObject):
         # when restarting. Restarts don't happen anymore, keep
         # this for now anyway.
         self.disconnect_notifications()
-        self.clickmapper.cleanup()
+        self.clicksim.cleanup()
         if self.mousetweaks:
             self.mousetweaks.cleanup()
 
@@ -380,13 +381,14 @@ class Config(ConfigObject):
                           self.typing_assistance]
 
         try:
-            self.mousetweaks = Mousetweaks()
+            self.mousetweaks = CSMousetweaks()
             self.children.append(self.mousetweaks)
         except (SchemaError, ImportError) as e:
             _logger.warning(unicode_str(e))
             self.mousetweaks = None
 
-        self.clickmapper = ClickMapper()
+        click_sim = os.environ.get("CLICKSIM", "CSButtonRemapper")
+        self.clicksim = globals()[click_sim]()
 
     def init_from_gsettings(self):
         """

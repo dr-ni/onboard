@@ -45,6 +45,8 @@ static unsigned int gdk_button_masks[] = {GDK_BUTTON1_MASK,
 
 #define OSK_DEVICE_ADDED_EVENT   1100
 #define OSK_DEVICE_REMOVED_EVENT 1101
+#define OSK_SLAVE_ATTACHED_EVENT 1102
+#define OSK_SLAVE_DETACHED_EVENT 1103
 
 typedef struct {
     PyObject_HEAD
@@ -776,8 +778,10 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
             {
                 XIHierarchyEvent *event = cookie->data;
 
-                if ((event->flags & XISlaveAdded) ||
-                    (event->flags & XISlaveRemoved))
+                if (event->flags & (XISlaveAdded | 
+                                    XISlaveRemoved |
+                                    XISlaveAttached |
+                                    XISlaveDetached))
                 {
                     XIHierarchyInfo *info;
                     int              i;
@@ -798,6 +802,22 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                         {
                             osk_devices_call_event_handler_device (dev,
                                                             OSK_DEVICE_REMOVED_EVENT,
+                                                            event->display,
+                                                            info->deviceid,
+                                                            0);
+                        }
+                        else if (info->flags & XISlaveAttached)
+                        {
+                            osk_devices_call_event_handler_device (dev,
+                                                            OSK_SLAVE_ATTACHED_EVENT,
+                                                            event->display,
+                                                            info->deviceid,
+                                                            0);
+                        }
+                        else if (info->flags & XISlaveDetached)
+                        {
+                            osk_devices_call_event_handler_device (dev,
+                                                            OSK_SLAVE_DETACHED_EVENT,
                                                             event->display,
                                                             info->deviceid,
                                                             0);
