@@ -724,6 +724,7 @@ osk_click_mapper_generate_button_event (PyObject *self, PyObject *args)
     OskButtonMapper *instance = (OskButtonMapper*) self;
     unsigned int button;
     Bool press;
+    unsigned long time = CurrentTime;
 
     Display* xdisplay = get_x_display(instance);
     if (!xdisplay)
@@ -732,10 +733,10 @@ osk_click_mapper_generate_button_event (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    if (!PyArg_ParseTuple (args, "Ip", &button, &press))
+    if (!PyArg_ParseTuple (args, "Ip|k", &button, &press, &time))
         return NULL;
 
-    XTestFakeButtonEvent (xdisplay, button, press, CurrentTime);
+    XTestFakeButtonEvent (xdisplay, button, press, time);
 
     Py_RETURN_NONE;
 }

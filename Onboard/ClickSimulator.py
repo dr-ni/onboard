@@ -168,7 +168,7 @@ class CSFloatingSlave(ClickSimulator):
         self._device_manager = XIDeviceManager()
         self._grabbed_device_id = None
         self._osk_cm = osk.ClickMapper()
-        self._can_end_mapping = False
+        self._num_clicks_detected = 0
 
         self._button = self.PRIMARY_BUTTON
         self._click_type = self.CLICK_TYPE_SINGLE
@@ -222,7 +222,7 @@ class CSFloatingSlave(ClickSimulator):
 
             self._button = button
             self._click_type = click_type
-            self._can_end_mapping = False
+            self._num_clicks_detected = 0
 
         except osk.error:
             self.end_mapping()
@@ -259,26 +259,61 @@ class CSFloatingSlave(ClickSimulator):
         self._click_type = self.CLICK_TYPE_SINGLE
 
     def _device_event_handler(self, event):
-        if event.device_id == self._grabbed_device_id:
-            device = event.get_source_device()
-            event_type = event.xi_type
+        if event.device_id != self._grabbed_device_id:
+            return
 
-            print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
+        device = event.get_source_device()
+        event_type = event.xi_type
+        point = (event.x_root, event.y_root)
+        button = self._button
+        click_type = self._click_type
+        generate_button_event = self._osk_cm.generate_button_event
 
-            if event_type == XIEventType.Motion:
-                self._osk_cm.generate_motion_event(int(event.x_root),
-                                                   int(event.y_root))
+        print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
 
-            elif event_type == XIEventType.ButtonPress:
-                self._osk_cm.generate_button_event(self._button, True)
-                self._can_end_mapping = True
+        if event_type == XIEventType.Motion:
+            self._osk_cm.generate_motion_event(int(event.x_root),
+                                               int(event.y_root))
+
+        # single click
+        if click_type == self.CLICK_TYPE_SINGLE:
+            if event_type == XIEventType.ButtonPress:
+                generate_button_event(button, True)
 
             elif event_type == XIEventType.ButtonRelease:
-                self._osk_cm.generate_button_event(self._button, False)
-                if self._can_end_mapping and \
-                   not self._is_point_in_exclusion_rects((event.x_root,
-                                                          event.y_root)):
+                generate_button_event(button, False)
+                if self._num_clicks_detected and \
+                   not self._is_point_in_exclusion_rects(point):
                     self.end_mapped_click()
+
+        # double click
+        elif click_type == self.CLICK_TYPE_DOUBLE:
+            if event_type == XIEventType.ButtonRelease:
+                if self._num_clicks_detected:
+                   if not self._is_point_in_exclusion_rects(point):
+                       delay = 40
+                       generate_button_event(button, True)
+                       generate_button_event(button, False, delay)
+                       generate_button_event(button, True, delay)
+                       generate_button_event(button, False, delay)
+                   self.end_mapped_click()
+
+        # drag click
+        elif click_type == self.CLICK_TYPE_DRAG:
+            if event_type == XIEventType.ButtonRelease:
+                if self._num_clicks_detected == 1:
+                    if self._is_point_in_exclusion_rects(point):
+                        self.end_mapped_click()
+                    else:
+                        generate_button_event(button, True)
+
+                elif self._num_clicks_detected >= 2:
+                   generate_button_event(button, False)
+                   self.end_mapped_click()
+
+        # count button presses
+        if event_type == XIEventType.ButtonPress:
+            self._num_clicks_detected += 1
 
     def _is_point_in_exclusion_rects(self, point):
         for rect in self._exclusion_rects:
