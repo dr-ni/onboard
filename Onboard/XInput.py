@@ -145,7 +145,6 @@ class XIDeviceManager(EventSource):
         """
         EventSource.__init__(self, ["device-event"])
 
-        self._current_event = None
         self._devices = {}
         self._osk_devices = None
         try:
@@ -155,6 +154,9 @@ class XIDeviceManager(EventSource):
             _logger.warning("Failed to create osk.Devices: " + \
                             unicode_str(ex))
         
+        self._current_event = None
+        self._selected_events = {}
+
         if self.is_valid():
             self.update_devices()
         
@@ -227,6 +229,7 @@ class XIDeviceManager(EventSource):
             xid = win.get_xid()
 
         self._osk_devices.select_events(xid, device.id, mask)
+        self._selected_events[(device.id, xid)] = mask
         return True
 
     def unselect_events(self, window, device):
@@ -237,6 +240,10 @@ class XIDeviceManager(EventSource):
             if not win:
                 return False # no gdk window yet
             xid = win.get_xid()
+
+        try:
+            del self._selected_events[(device.id, xid)]
+        except KeyError: pass
 
         self._osk_devices.unselect_events(xid, device.id)
         return True
@@ -253,6 +260,30 @@ class XIDeviceManager(EventSource):
     def detach_device_id(self, device_id):
         self._osk_devices.detach(device_id)
 
+    def grab_device(self, device):
+        self.grab_device_id(device.id)
+
+    def ungrab_device(self, device):
+        self.ungrab_device_id(device.id)
+
+    def grab_device_id(self, device_id):
+        # Unselect InputEventSource events to really receive only events
+        # expicitely selected for the grab. Prevents double presses 
+        # on Onboard's windows.
+        for (id, xid), mask in self._selected_events.items():
+            if id == device_id:
+                self._osk_devices.unselect_events(xid, device_id)
+
+        self._osk_devices.grab_device(device_id, 0)
+
+    def ungrab_device_id(self, device_id):
+        self._osk_devices.ungrab_device(device_id)
+
+        # Restore InputEventSource events.
+        for (id, xid), mask in self._selected_events.items():
+            if id == device_id:
+                self._osk_devices.select_events(xid, device_id, mask)
+
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
@@ -264,7 +295,6 @@ class XIDeviceManager(EventSource):
         # update our device objects on changes to the device hierarchy
         if event_type in XIEventType.HierarchyEvents or \
            event_type == XIEventType.DeviceChanged:
-            print("Device changed", event_type)
             self.update_devices()
 
         # simulate gtk source device

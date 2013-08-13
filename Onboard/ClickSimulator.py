@@ -81,7 +81,7 @@ class CSButtonRemapper(ClickSimulator):
         # remap button
         if button != self.PRIMARY_BUTTON and \
            click_type == self.CLICK_TYPE_SINGLE:
-            # "grab" the pointer so we can detect button-release 
+            # "grab" the pointer so we can detect button-release
             # anywhere on screen. Works only with XInput as InputEventSource.
             self._grab_event_source = event_source
             event_source.grab_xi_pointer(True)
@@ -166,8 +166,7 @@ class CSFloatingSlave(ClickSimulator):
         self._exclusion_rects = []
 
         self._device_manager = XIDeviceManager()
-        self._master_device_id = None
-        self._detached_device_id = None
+        self._grabbed_device_id = None
         self._osk_cm = osk.ClickMapper()
         self._can_end_mapping = False
 
@@ -189,55 +188,78 @@ class CSFloatingSlave(ClickSimulator):
             self.end_mapping()
 
     def _begin_mapping(self, event_source, button, click_type):
-        # remap button
-        event = self._device_manager._current_event
-        device = event.get_source_device()
-        self._detached_device_id = device.id
-        self._master_device_id = device.master
-        print("detaching", device)
-        self._device_manager.detach_device(device)
-
-        # connect to root window events to get them for the whole screen
-        self._device_manager.connect("device-event",
-                                      self._device_event_handler)
-        event_mask = XIEventMask.ButtonPressMask | \
-                     XIEventMask.ButtonReleaseMask | \
-                     XIEventMask.MotionMask
         try:
-            self._device_manager.select_events(None, device, event_mask)
-        except Exception as ex:
-            _logger.warning("Failed to select root events for device "
-                            "{id}: {ex}"
-                                    .format(id = device.id, ex = ex))
+            event = self._device_manager._current_event
+            device = event.get_source_device()
+            self._grabbed_device_id = device.id
 
-        self._button = button
-        self._click_type = click_type
-        self._can_end_mapping = False
+            print("grab", device)
+
+            try:
+                self._device_manager.grab_device(device)
+            except osk.error as ex:
+                _logger.error("grab device {id} '{name}': {ex}"
+                              .format(id = device.id,
+                                      name=device.name,
+                                      ex = ex))
+                raise ex
+
+            # connect to root window events to get them for the whole screen
+            self._device_manager.connect("device-event",
+                                          self._device_event_handler)
+            event_mask = XIEventMask.ButtonPressMask | \
+                         XIEventMask.ButtonReleaseMask | \
+                         XIEventMask.MotionMask
+            try:
+                self._device_manager.select_events(None, device, event_mask)
+            except osk.error as ex:
+                _logger.error("select root events for device "
+                              "{id} '{name}': {ex}"
+                              .format(id = device.id,
+                                      name=device.name,
+                                      ex = ex))
+                raise ex
+
+            self._button = button
+            self._click_type = click_type
+            self._can_end_mapping = False
+
+        except osk.error:
+            self.end_mapping()
 
     def end_mapping(self):
-        if not self._detached_device_id is None:
+        if not self._grabbed_device_id is None:
             self._device_manager.disconnect("device-event",
                                             self._device_event_handler)
             device = self._device_manager \
-                         .lookup_device_id(self._detached_device_id)
+                         .lookup_device_id(self._grabbed_device_id)
 
-            print("attaching", device)
+            print("ungrab", device)
+
             try:
                 self._device_manager.unselect_events(None, device)
-            except Exception as ex:
-                _logger.warning("Failed to unselect root events for device "
-                               "{id}: {ex}"
-                               .format(id = device.id, ex = ex))
+            except osk.error as ex:
+                _logger.error("unselect root events for device "
+                              "{id} '{name}': {ex}"
+                              .format(id = device.id,
+                                      name=device.name,
+                                      ex = ex))
 
-            self._device_manager.attach_device(device, self._master_device_id)
-            self._detached_device_id = None
-            self._master_device_id = None
+            try:
+                self._device_manager.ungrab_device(device)
+            except osk.error as ex:
+                _logger.error("ungrab device {id} '{name}': {ex}"
+                              .format(id = device.id,
+                                      name=device.name,
+                                      ex = ex))
+
+            self._grabbed_device_id = None
 
         self._button = self.PRIMARY_BUTTON
         self._click_type = self.CLICK_TYPE_SINGLE
 
     def _device_event_handler(self, event):
-        if event.device_id == self._detached_device_id:
+        if event.device_id == self._grabbed_device_id:
             device = event.get_source_device()
             event_type = event.xi_type
 
@@ -248,16 +270,24 @@ class CSFloatingSlave(ClickSimulator):
                                                    int(event.y_root))
 
             elif event_type == XIEventType.ButtonPress:
-                self._can_end_mapping = True
                 self._osk_cm.generate_button_event(self._button, True)
+                self._can_end_mapping = True
 
             elif event_type == XIEventType.ButtonRelease:
                 self._osk_cm.generate_button_event(self._button, False)
-                if self._can_end_mapping:
+                if self._can_end_mapping and \
+                   not self._is_point_in_exclusion_rects((event.x_root,
+                                                          event.y_root)):
                     self.end_mapped_click()
 
+    def _is_point_in_exclusion_rects(self, point):
+        for rect in self._exclusion_rects:
+            if rect.is_point_within(point):
+                return True
+        return False
+
     def is_mapping_active(self):
-        return self._detached_device_id
+        return self._grabbed_device_id
 
     def get_click_button(self):
         return self._button

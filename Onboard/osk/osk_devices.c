@@ -249,7 +249,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
         dev->event_queue = g_queue_new();
         if (!dev->event_queue)
             return -1;
-            
+
         Py_INCREF (dev->event_handler);
 
         XISetMask (mask, XI_HierarchyChanged);
@@ -299,7 +299,7 @@ queue_event (OskDevices* dev, OskDeviceEvent* event, Bool discard_pending)
         if (g_queue_is_empty(queue))
             g_idle_add ((GSourceFunc) idle_process_event_queue, dev);
 
-        // Discard pending elements of the same type, e.g. to clear 
+        // Discard pending elements of the same type, e.g. to clear
         // motion event congestion (LP: #1210665).
         if (discard_pending)
         {
@@ -655,7 +655,7 @@ update_state (int evtype, XIDeviceEvent* event, OskDevices* dev)
             (*count)--;
 
             // some protection at least against initially pressed buttons
-            if (*count < 0) 
+            if (*count < 0)
                 *count = 0;
         }
     }
@@ -778,7 +778,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
             {
                 XIHierarchyEvent *event = cookie->data;
 
-                if (event->flags & (XISlaveAdded | 
+                if (event->flags & (XISlaveAdded |
                                     XISlaveRemoved |
                                     XISlaveAttached |
                                     XISlaveDetached))
@@ -1126,6 +1126,75 @@ osk_devices_detach (PyObject *self, PyObject *args)
 }
 
 /**
+ * osk_devices_grab_device:
+ * @id:     Id of the device to attach (int)
+ *
+ * Grabs the device with @id.
+ *
+ */
+static PyObject *
+osk_devices_grab_device (PyObject *self, PyObject *args)
+{
+    OskDevices       *dev = (OskDevices *) self;
+    int               id;
+    Window            win;
+
+    if (!PyArg_ParseTuple (args, "ii", &id, &win))
+        return NULL;
+
+    if (win == 0)
+        win = DefaultRootWindow (dev->dpy);
+
+    unsigned char mask[1] = {0};
+    XIEventMask events;
+    events.deviceid = id;
+    events.mask = mask;
+    events.mask_len = sizeof(mask);
+
+    gdk_error_trap_push ();
+    Status status = XIGrabDevice(dev->dpy, id, win, CurrentTime, None,
+                                 XIGrabModeSync, XIGrabModeAsync,
+                                 True, &events);
+    gint error = gdk_error_trap_pop ();
+
+    if (status != Success || error)
+    {
+        PyErr_Format (OSK_EXCEPTION, "failed to grab device (0x%x, 0x%x)",
+                      status, error);
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+/**
+ * osk_devices_ungrab_device:
+ * @id:     Id of the device to ungrab (int)
+ *
+ * Ungrabs the device with @id.
+ *
+ */
+static PyObject *
+osk_devices_ungrab_device (PyObject *self, PyObject *args)
+{
+    OskDevices       *dev = (OskDevices *) self;
+    int               id;
+
+    if (!PyArg_ParseTuple (args, "i", &id))
+        return NULL;
+
+    gdk_error_trap_push ();
+    Status status = XIUngrabDevice(dev->dpy, id, CurrentTime);
+    gint error = gdk_error_trap_pop ();
+    if (status != Success || error)
+    {
+        PyErr_Format (OSK_EXCEPTION, "failed to ungrab device (0x%x, 0x%x)",
+                      status, error);
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+/**
  * osk_devices_select_events:
  * @id:  Id of the device to select events for (int)
  * @event_mask: Bit mask of XI events to select (long)
@@ -1211,6 +1280,8 @@ static PyMethodDef osk_devices_methods[] = {
     { "get_info",        osk_devices_get_info,        METH_VARARGS, NULL },
     { "attach",          osk_devices_attach,          METH_VARARGS, NULL },
     { "detach",          osk_devices_detach,          METH_VARARGS, NULL },
+    { "grab_device",     osk_devices_grab_device,     METH_VARARGS, NULL },
+    { "ungrab_device",   osk_devices_ungrab_device,   METH_VARARGS, NULL },
     { "select_events",   osk_devices_select_events,   METH_VARARGS, NULL },
     { "unselect_events", osk_devices_unselect_events, METH_VARARGS, NULL },
     { "get_client_pointer", osk_devices_get_client_pointer, METH_NOARGS, NULL },
