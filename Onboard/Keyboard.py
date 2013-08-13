@@ -360,6 +360,7 @@ class Keyboard(WordSuggestions):
     def update_input_event_source(self):
         for view in self._layout_views:
             view.update_input_event_source()
+        config.update_click_sim()
 
     def show_touch_handles(self, show, auto_hide = True):
         for view in self._layout_views:

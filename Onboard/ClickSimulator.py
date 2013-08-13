@@ -50,7 +50,7 @@ class ClickSimulator(GObject.GObject):
         raise NotImplementedError()
 
 
-class CSButtonRemapper(ClickSimulator):
+class CSButtonMapper(ClickSimulator):
     """
     Onboards built-in mouse click mapper.
     Maps secondary or middle button to the primary button.

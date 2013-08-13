@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+
+# Copyright © 2012-2013, marmuta
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 """
 Touch input
 
@@ -14,6 +32,7 @@ import copy
 from gi.repository         import Gdk
 
 from Onboard.utils         import Timer, EventSource
+from Onboard.definitions   import InputEventSourceEnum, TouchInputEnum
 from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
 
 ### Logging ###
@@ -42,21 +61,6 @@ DRAG_GESTURE_THRESHOLD2 = 40**2  # square of the distance in pixels until
 
 # sequence id of core pointer events (single-touch/click events)
 POINTER_SEQUENCE = 0
-
-class InputEventSourceEnum:
-    (
-        GTK,
-        XINPUT,
-    ) = range(2)
-
-
-class TouchInputEnum:
-    (
-        NONE,
-        SINGLE,
-        MULTI,
-    ) = range(3)
-
 
 class InputEventSource(EventSource):
     """

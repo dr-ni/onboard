@@ -13,9 +13,10 @@ from optparse import OptionParser
 from gi.repository import GLib, Gtk
 
 from Onboard.utils          import show_confirmation_dialog, Version, unicode_str
+from Onboard.definitions    import InputEventSourceEnum, TouchInputEnum
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
-from Onboard.ClickSimulator import CSButtonRemapper, CSFloatingSlave, \
+from Onboard.ClickSimulator import CSButtonMapper, CSFloatingSlave, \
                                    CSMousetweaks
 from Onboard.Exceptions     import SchemaError
 
@@ -387,8 +388,16 @@ class Config(ConfigObject):
             _logger.warning(unicode_str(e))
             self.mousetweaks = None
 
-        click_sim = os.environ.get("CLICKSIM", "CSButtonRemapper")
-        self.clicksim = globals()[click_sim]()
+        self.update_click_sim()
+
+    def update_click_sim(self):
+        event_source = self.keyboard.input_event_source
+        if event_source == InputEventSourceEnum.XINPUT:
+            clicksim = CSFloatingSlave  # Requires the XInput event source.
+        else:
+            clicksim = CSButtonMapper # Event source doesn't matter,
+                                        # but fails on some touch-screens.
+        self.clicksim = clicksim()
 
     def init_from_gsettings(self):
         """
@@ -945,8 +954,8 @@ class ConfigKeyboard(ConfigObject):
     """Window configuration """
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
     DEFAULT_KEY_SYNTH  = 0 # XTest
-    DEFAULT_TOUCH_INPUT = 2 # multi
-    DEFAULT_INPUT_EVENT_SOURCE = 1 # XInput
+    DEFAULT_TOUCH_INPUT = TouchInputEnum.MULTI
+    DEFAULT_INPUT_EVENT_SOURCE = InputEventSourceEnum.XINPUT
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD

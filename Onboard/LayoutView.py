@@ -13,9 +13,9 @@ from gi.repository         import Gtk
 from Onboard.utils         import Rect, Timer, \
                                   roundrect_arc, roundrect_curve, \
                                   gradient_line, brighten, timeit
+from Onboard.definitions   import InputEventSourceEnum
 from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
-from Onboard.TouchInput    import InputEventSourceEnum
 
 import Onboard.Keyboard
 
