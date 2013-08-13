@@ -161,7 +161,7 @@ map_button_func(OskBMMapInfo* info, XDevice* device)
                                               buttons, sizeof(buttons));
     if (num_buttons >= 3)
     {
-        printf("mapping device %d\n", (int)device->device_id);
+        //printf("mapping device %d\n", (int)device->device_id);
 
         PointerState* saved_state = info->saved_pointer_states +
                                     info->num_saved_pointer_states;
@@ -199,7 +199,7 @@ restore_button_func(OskBMMapInfo* info, XDevice* device)
         {
             if (state->num_buttons)
             {
-                printf("restoring device %d\n", (int)device->device_id);
+                //printf("restoring device %d\n", (int)device->device_id);
                 XSetDeviceButtonMapping(info->xdisplay, device,
                                         state->buttons, state->num_buttons);
             }

@@ -193,7 +193,7 @@ class CSFloatingSlave(ClickSimulator):
             device = event.get_source_device()
             self._grabbed_device_id = device.id
 
-            print("grab", device)
+            _logger.info("grab " + str(device))
 
             try:
                 self._device_manager.grab_device(device)
@@ -234,7 +234,7 @@ class CSFloatingSlave(ClickSimulator):
             device = self._device_manager \
                          .lookup_device_id(self._grabbed_device_id)
 
-            print("ungrab", device)
+            _logger.info("ungrab " + str(device))
 
             try:
                 self._device_manager.unselect_events(None, device)
@@ -264,12 +264,13 @@ class CSFloatingSlave(ClickSimulator):
 
         device = event.get_source_device()
         event_type = event.xi_type
-        point = (event.x_root, event.y_root)
+        root_point = (event.x_root, event.y_root)
         button = self._button
         click_type = self._click_type
         generate_button_event = self._osk_cm.generate_button_event
 
-        print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
+        #print("device event:", event.device_id, event.xi_type,
+        #      (event.x, event.y), root_point, event.xid_event)
 
         if event_type == XIEventType.Motion:
             self._osk_cm.generate_motion_event(int(event.x_root),
@@ -283,14 +284,14 @@ class CSFloatingSlave(ClickSimulator):
             elif event_type == XIEventType.ButtonRelease:
                 generate_button_event(button, False)
                 if self._num_clicks_detected and \
-                   not self._is_point_in_exclusion_rects(point):
+                   not self._is_point_in_exclusion_rects(root_point):
                     self.end_mapped_click()
 
         # double click
         elif click_type == self.CLICK_TYPE_DOUBLE:
             if event_type == XIEventType.ButtonRelease:
                 if self._num_clicks_detected:
-                   if not self._is_point_in_exclusion_rects(point):
+                   if not self._is_point_in_exclusion_rects(root_point):
                        delay = 40
                        generate_button_event(button, True)
                        generate_button_event(button, False, delay)
@@ -302,7 +303,7 @@ class CSFloatingSlave(ClickSimulator):
         elif click_type == self.CLICK_TYPE_DRAG:
             if event_type == XIEventType.ButtonRelease:
                 if self._num_clicks_detected == 1:
-                    if self._is_point_in_exclusion_rects(point):
+                    if self._is_point_in_exclusion_rects(root_point):
                         self.end_mapped_click()
                     else:
                         generate_button_event(button, True)
