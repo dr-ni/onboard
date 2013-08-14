@@ -13,10 +13,12 @@ from Onboard                 import KeyCommon
 from Onboard.KeyCommon       import StickyBehavior
 from Onboard.KeyboardPopups  import TouchFeedback
 from Onboard.Sound           import Sound
-from Onboard.ClickSimulator  import ClickSimulator
+from Onboard.ClickSimulator  import ClickSimulator, \
+                                    CSButtonMapper, CSFloatingSlave
 from Onboard.Scanner         import Scanner
 from Onboard.utils           import Timer, Modifiers, parse_key_combination, \
                                     unicode_str
+from Onboard.definitions     import InputEventSourceEnum
 from Onboard.WordSuggestions import WordSuggestions
 from Onboard.AutoShow        import AutoShow
 from Onboard.canonical_equivalents import *
@@ -212,8 +214,9 @@ class Keyboard(WordSuggestions):
 
     _layer_locked = False
     _last_alt_key = None
-    _alt_locked = False
-    _key_synth   = None
+    _alt_locked   = False
+    _key_synth    = None
+    _click_sim    = None
 
 ### Properties ###
 
@@ -360,7 +363,38 @@ class Keyboard(WordSuggestions):
     def update_input_event_source(self):
         for view in self._layout_views:
             view.update_input_event_source()
-        config.update_click_sim()
+        self.update_click_sim()
+
+    def update_click_sim(self):
+        event_source = config.keyboard.input_event_source
+        if event_source == InputEventSourceEnum.XINPUT:
+            # XInput click simulator
+            # Recommended, but requires the XInput event source.
+            clicksim = CSFloatingSlave()  
+
+            # Fall back to button mapper if XInput 2.2 is unavaliable
+            if not clicksim.is_valid():
+                _logger.warning("XInput click simulator CSFloatingSlave "
+                                "unavailable, "
+                                "falling back to CSButtonMapper.")
+                clicksim = CSButtonMapper()
+
+        else:
+            # Button mapper
+            # Works with any event source, but may fail on touch-screens.
+            clicksim = CSButtonMapper()
+                               
+        if self._click_sim:
+            self._click_sim.cleanup()
+        self._click_sim = clicksim
+        self._click_sim.state_notify_add(self._on_click_sim_state_notify)
+
+        _logger.info("using click simulator '{}'" \
+                     .format(type(self._click_sim).__name__))
+
+    def _on_click_sim_state_notify(self, x):
+        self.invalidate_context_ui()
+        self.commit_ui_updates()
 
     def show_touch_handles(self, show, auto_hide = True):
         for view in self._layout_views:
@@ -1369,7 +1403,7 @@ class Keyboard(WordSuggestions):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        config.clicksim.end_mapped_click()
+        self._click_sim.end_mapped_click()
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
@@ -1379,7 +1413,7 @@ class Keyboard(WordSuggestions):
         if config.mousetweaks and \
            config.mousetweaks.is_active():
             return config.mousetweaks
-        return config.clicksim
+        return self._click_sim
 
     def cleanup(self):
         WordSuggestions.cleanup(self)
@@ -1424,6 +1458,9 @@ class Keyboard(WordSuggestions):
         if self._key_synth_atspi:
             self._key_synth_atspi.cleanup()
         self.layout = None  # free the memory
+
+        if self._click_sim:
+            self._click_sim.cleanup()
 
     def find_items_from_ids(self, ids):
         if self.layout is None:
@@ -1505,7 +1542,7 @@ class BCClick(ButtonController):
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
             rects = view.get_click_type_button_rects()
-            config.clicksim.set_exclusion_rects(rects)
+            self.keyboard._click_sim.set_exclusion_rects(rects)
 
             # start click mapping
             mc.map_primary_click(view, self.button, self.click_type)

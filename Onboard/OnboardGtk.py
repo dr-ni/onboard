@@ -293,7 +293,6 @@ class OnboardGtk(object):
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)
         config.lockdown.lockdown_notify_add(update_ui)
-        config.clicksim.state_notify_add(update_ui)
         if config.mousetweaks:
             config.mousetweaks.state_notify_add(update_ui_no_resize)
 

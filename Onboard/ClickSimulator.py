@@ -177,6 +177,9 @@ class CSFloatingSlave(ClickSimulator):
         self.end_mapping()
         self._click_done_notify_callbacks = []
 
+    def is_valid(self):
+        return self._device_manager.is_valid()
+
     def supports_click_params(self, button, click_type):
         return True
 

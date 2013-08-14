@@ -16,8 +16,7 @@ from Onboard.utils          import show_confirmation_dialog, Version, unicode_st
 from Onboard.definitions    import InputEventSourceEnum, TouchInputEnum
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
-from Onboard.ClickSimulator import CSButtonMapper, CSFloatingSlave, \
-                                   CSMousetweaks
+from Onboard.ClickSimulator import CSMousetweaks
 from Onboard.Exceptions     import SchemaError
 
 ### Logging ###
@@ -318,7 +317,6 @@ class Config(ConfigObject):
         # when restarting. Restarts don't happen anymore, keep
         # this for now anyway.
         self.disconnect_notifications()
-        self.clicksim.cleanup()
         if self.mousetweaks:
             self.mousetweaks.cleanup()
 
@@ -387,17 +385,6 @@ class Config(ConfigObject):
         except (SchemaError, ImportError) as e:
             _logger.warning(unicode_str(e))
             self.mousetweaks = None
-
-        self.update_click_sim()
-
-    def update_click_sim(self):
-        event_source = self.keyboard.input_event_source
-        if event_source == InputEventSourceEnum.XINPUT:
-            clicksim = CSFloatingSlave  # Requires the XInput event source.
-        else:
-            clicksim = CSButtonMapper # Event source doesn't matter,
-                                        # but fails on some touch-screens.
-        self.clicksim = clicksim()
 
     def init_from_gsettings(self):
         """

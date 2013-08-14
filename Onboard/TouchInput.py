@@ -248,7 +248,7 @@ class InputEventSource(EventSource):
 
         devices = self._device_manager.get_client_slave_pointer_devices()
         devices = [d for d in devices if not d.is_floating()]
-        _logger.info("listening to XInput devices: {}" \
+        _logger.info("listening to XInput slaves: {}" \
                      .format([(d.name, d.id, d.get_config_string()) \
                               for d in devices]))
 
