@@ -1402,6 +1402,7 @@ class Keyboard(WordSuggestions):
         Keep this as Francesco likes to have modifiers
         reset when clicking outside of onboard.
         """
+        print("on_outside_click")
         self.release_latched_sticky_keys()
         self._click_sim.end_mapped_click()
 

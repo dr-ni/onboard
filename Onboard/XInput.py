@@ -154,7 +154,8 @@ class XIDeviceManager(EventSource):
             _logger.warning("Failed to create osk.Devices: " + \
                             unicode_str(ex))
         
-        self._current_event = None
+        self._last_motion_device_id = None
+        self._last_click_device_id = None
         self._selected_events = {}
 
         if self.is_valid():
@@ -218,6 +219,9 @@ class XIDeviceManager(EventSource):
                 devices[device.id] = device
 
         self._devices = devices
+
+        self._last_click_device_id = None
+        self._last_motion_device_id = None
 
     def select_events(self, window, device, mask):
         if window is None:  # use root window?
@@ -284,6 +288,18 @@ class XIDeviceManager(EventSource):
             if id == device_id:
                 self._osk_devices.select_events(xid, device_id, mask)
 
+    def get_last_click_device(self):
+        id = self._last_click_device_id
+        if id is None:
+            return None
+        return self.lookup_device_id(id)
+
+    def get_last_motion_device(self):
+        id = self._last_motion_device_id
+        if id is None:
+            return None
+        return self.lookup_device_id(id)
+
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
@@ -306,10 +322,15 @@ class XIDeviceManager(EventSource):
             source_device = None
         event.set_source_device(source_device)
 
+        # remember recently used device ids for CSFloatingSlave
+        if event_type == XIEventType.Motion:
+            self._last_motion_device_id = event.source_id
+        elif event_type == XIEventType.ButtonPress or \
+             event_type == XIEventType.TouchBegin:
+            self._last_click_device_id = event.source_id
+
         # forward the event to all listeners
-        self._current_event = event
         self.emit("device-event", event)
-        self._current_event = None
 
 
 class XIDevice(object):

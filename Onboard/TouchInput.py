@@ -218,7 +218,7 @@ class InputEventSource(EventSource):
     def select_xinput_devices(self):
         """ Select pointer devices and their events we want to listen to. """
 
-        # Select events for the master pointer.
+        # Select events of the master pointer.
         # Enter/leave events aren't supported by the slaves.
         event_mask = XIEventMask.EnterMask | \
                      XIEventMask.LeaveMask
@@ -226,7 +226,6 @@ class InputEventSource(EventSource):
         _logger.info("listening to XInput master: {}" \
                      .format((device.name, device.id,
                              device.get_config_string())))
-
         try:
             self._device_manager.select_events(self, device, event_mask)
         except Exception as ex:
@@ -237,7 +236,7 @@ class InputEventSource(EventSource):
         self._master_device = device
         self._master_device_id = device.id
 
-        # Select events for all attached (non-floating) slave pointers.
+        # Select events of all attached (non-floating) slave pointers.
         event_mask = XIEventMask.ButtonPressMask | \
                      XIEventMask.ButtonReleaseMask | \
                      XIEventMask.EnterMask | \
@@ -251,7 +250,6 @@ class InputEventSource(EventSource):
         _logger.info("listening to XInput slaves: {}" \
                      .format([(d.name, d.id, d.get_config_string()) \
                               for d in devices]))
-
         for device in devices:
             try:
                 self._device_manager.select_events(self, device, event_mask)
