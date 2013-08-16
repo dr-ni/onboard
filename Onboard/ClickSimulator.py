@@ -307,6 +307,11 @@ class CSFloatingSlave(ClickSimulator):
 
             print(self._motion_position, event.device_id)
 
+        if position is None and \
+           (event_type == XIEventType.ButtonPress or \
+            event_type == XIEventType.ButtonRelease):
+            position = (int(event.x_root), int(event.y_root))
+
         if position is None:
             return
         
