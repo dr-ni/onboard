@@ -203,7 +203,6 @@ class CSFloatingSlave(ClickSimulator):
             self._motion_position = None
 
     def end_mapping(self):
-        print("end_mapping")
         self._deregister_xinput_events()
         self._button = self.PRIMARY_BUTTON
         self._click_type = self.CLICK_TYPE_SINGLE
@@ -228,7 +227,6 @@ class CSFloatingSlave(ClickSimulator):
 
     def _register_xinput_device(self, device, description, event_mask):
         _logger.info("grab {} device {}".format(description, device))
-        print("grab {} device {}".format(description, device))
 
         try:
             self._device_manager.grab_device(device)
@@ -262,7 +260,6 @@ class CSFloatingSlave(ClickSimulator):
                 device = self._device_manager.lookup_device_id(device_id)
 
                 _logger.info("ungrab " + str(device))
-                print("ungrab " + str(device))
 
                 try:
                     self._device_manager.unselect_events(None, device)
@@ -292,8 +289,7 @@ class CSFloatingSlave(ClickSimulator):
         if not event.device_id in self._grabbed_device_ids:
             return
 
-#        if event.xi_type != XIEventType.Motion:
-        print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
+        #print("device event:", event.device_id, event.xi_type, (event.x, event.y), (event.x_root, event.y_root), event.xid_event)
 
         # Get pointer position from motion events only to support clicking
         # with one device and pointing with another.
@@ -304,8 +300,6 @@ class CSFloatingSlave(ClickSimulator):
 
             # tell master pointer about our new position
             self._osk_cm.generate_motion_event(*position)
-
-            print(self._motion_position, event.device_id)
 
         if position is None and \
            (event_type == XIEventType.ButtonPress or \
@@ -329,10 +323,8 @@ class CSFloatingSlave(ClickSimulator):
         # double click
         elif click_type == self.CLICK_TYPE_DOUBLE:
             if event_type == XIEventType.ButtonRelease:
-                print("double click, release: detected", self._num_clicks_detected)
                 if self._num_clicks_detected:
                    if not self._is_point_in_exclusion_rects(position):
-                       print("double click")
                        delay = 40
                        generate_button_event(button, True)
                        generate_button_event(button, False, delay)
@@ -377,7 +369,6 @@ class CSFloatingSlave(ClickSimulator):
 
     def end_mapped_click(self):
         """ osk callback, outside click, xi button release """
-        print("end_mapped_click", self.is_mapping_active())
         if self.is_mapping_active():
             self.end_mapping()
 
