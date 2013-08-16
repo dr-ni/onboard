@@ -159,8 +159,10 @@ class CSFloatingSlave(ClickSimulator):
     Onboards built-in mouse click mapper.
     Maps secondary or middle button to the primary button.
     """
-    def __init__(self):
+    def __init__(self, keyboard):
         ClickSimulator.__init__(self)
+
+        self._keyboard = keyboard
 
         self._device_manager = XIDeviceManager()
         self._grabbed_device_ids = []
@@ -312,10 +314,13 @@ class CSFloatingSlave(ClickSimulator):
         # single click
         if click_type == self.CLICK_TYPE_SINGLE:
             if event_type == XIEventType.ButtonPress:
+                self._keyboard.maybe_send_alt_press(None, button, 0)
                 generate_button_event(button, True)
 
             elif event_type == XIEventType.ButtonRelease:
                 generate_button_event(button, False)
+                self._keyboard.maybe_send_alt_release(None, button, 0)
+
                 if self._num_clicks_detected and \
                    not self._is_point_in_exclusion_rects(position):
                     self.end_mapped_click()
@@ -324,13 +329,15 @@ class CSFloatingSlave(ClickSimulator):
         elif click_type == self.CLICK_TYPE_DOUBLE:
             if event_type == XIEventType.ButtonRelease:
                 if self._num_clicks_detected:
-                   if not self._is_point_in_exclusion_rects(position):
-                       delay = 40
-                       generate_button_event(button, True)
-                       generate_button_event(button, False, delay)
-                       generate_button_event(button, True, delay)
-                       generate_button_event(button, False, delay)
-                   self.end_mapped_click()
+                    if not self._is_point_in_exclusion_rects(position):
+                        delay = 40
+                        self._keyboard.maybe_send_alt_press(None, button, 0)
+                        generate_button_event(button, True)
+                        generate_button_event(button, False, delay)
+                        generate_button_event(button, True, delay)
+                        generate_button_event(button, False, delay)
+                        self._keyboard.maybe_send_alt_release(None, button, 0)
+                    self.end_mapped_click()
 
         # drag click
         elif click_type == self.CLICK_TYPE_DRAG:
@@ -339,10 +346,12 @@ class CSFloatingSlave(ClickSimulator):
                     if self._is_point_in_exclusion_rects(position):
                         self.end_mapped_click()
                     else:
+                        self._keyboard.maybe_send_alt_press(None, button, 0)
                         generate_button_event(button, True)
 
                 elif self._num_clicks_detected >= 2:
                     generate_button_event(button, False)
+                    self._keyboard.maybe_send_alt_release(None, button, 0)
                     self.end_mapped_click()
 
         # count button presses
@@ -371,6 +380,8 @@ class CSFloatingSlave(ClickSimulator):
         """ osk callback, outside click, xi button release """
         if self.is_mapping_active():
             self.end_mapping()
+
+            self._keyboard.release_latched_sticky_keys()
 
             # update click type buttons
             for callback in self._click_done_notify_callbacks:

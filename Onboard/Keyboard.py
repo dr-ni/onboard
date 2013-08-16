@@ -370,7 +370,7 @@ class Keyboard(WordSuggestions):
         if event_source == InputEventSourceEnum.XINPUT:
             # XInput click simulator
             # Recommended, but requires the XInput event source.
-            clicksim = CSFloatingSlave()  
+            clicksim = CSFloatingSlave(self)  
 
             # Fall back to button mapper if XInput 2.2 is unavaliable
             if not clicksim.is_valid():
@@ -747,7 +747,7 @@ class Keyboard(WordSuggestions):
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
                 WordSuggestions.on_before_key_press(self, key)
-                self.maybe_send_alt_press(key, view, button, event_type)
+                self.maybe_send_alt_press_for_key(key, view, button, event_type)
 
                 self.send_key_press(key, view, button, event_type)
 
@@ -783,7 +783,7 @@ class Keyboard(WordSuggestions):
                action == KeyCommon.DELAYED_STROKE_ACTION:
 
                 WordSuggestions.on_before_key_press(self, key)
-                self.maybe_send_alt_press(key, view, button, event_type)
+                self.maybe_send_alt_press_for_key(key, view, button, event_type)
 
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow to use Atspi for char keys
@@ -803,7 +803,7 @@ class Keyboard(WordSuggestions):
             if modifier != 8: # not Alt?
                 self._key_synth.unlock_mod(modifier)
 
-        self.maybe_send_alt_release(key, view, button, event_type)
+        self.maybe_send_alt_release_for_key(key, view, button, event_type)
 
         # Check modifier counts for plausibility.
         # There might be a bug lurking that gets certain modifers stuck
@@ -815,19 +815,28 @@ class Keyboard(WordSuggestions):
                                 .format(self.mods[modifier], modifier))
                 self.mods[mod] = 0
 
-    def maybe_send_alt_press(self, key, view, button, event_type):
-        # handle delayed Alt press
+    def maybe_send_alt_press_for_key(self, key, view, button, event_type):
+        """ handle delayed Alt press """
         if self.mods[8] and \
-           not self._alt_locked and \
            not key.active and \
-           not key.type == KeyCommon.BUTTON_TYPE and \
-           not self.is_key_disabled(key):
+           not self.is_key_disabled(key) and \
+           not key.type == KeyCommon.BUTTON_TYPE:
+            self.maybe_send_alt_press(view, button, event_type)
+
+    def maybe_send_alt_release_for_key(self, key, view, button, event_type):
+        """ handle delayed Alt release """
+        if self._alt_locked:
+            self.maybe_send_alt_release(view, button, event_type)
+
+    def maybe_send_alt_press(self, view, button, event_type):
+        if self.mods[8] and \
+           not self._alt_locked:
             self._alt_locked = True
             if self._last_alt_key:
                 self.send_key_press(self._last_alt_key, view, button, event_type)
             self._key_synth.lock_mod(8)
 
-    def maybe_send_alt_release(self, key, view, button, event_type):
+    def maybe_send_alt_release(self, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
@@ -924,7 +933,7 @@ class Keyboard(WordSuggestions):
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
            not (key.type == KeyCommon.BUTTON_TYPE and \
-           key.id in ["middleclick", "secondaryclick"]) and \
+                key.is_click_type_key()) and \
            not key in self.get_text_displays():
             # release latched modifiers
             self.release_latched_sticky_keys(only_unpressed = True)

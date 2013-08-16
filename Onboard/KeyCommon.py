@@ -300,6 +300,12 @@ class KeyCommon(LayoutItem):
         """
         return bool(self.modifier)
 
+    def is_click_type_key(self):
+        return self.id in ["singleclick",
+                           "secondaryclick",
+                           "middleclick",
+                           "doubleclick",
+                           "dragclick"]
     def is_button(self):
         return self.type == BUTTON_TYPE
 
