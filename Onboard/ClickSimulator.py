@@ -209,22 +209,22 @@ class CSFloatingSlave(ClickSimulator):
         self._click_type = self.CLICK_TYPE_SINGLE
 
     def _register_xinput_events(self, click_device, motion_device):
-        ok = self._register_xinput_device(click_device, "primary",
+        success = self._register_xinput_device(click_device, "primary",
                                           XIEventMask.ButtonPressMask | \
                                           XIEventMask.ButtonReleaseMask | \
                                           XIEventMask.MotionMask)
 
-        if ok and not motion_device is click_device:
-            ok = self._register_xinput_device(motion_device, "motion",
+        if success and not motion_device is click_device:
+            success = self._register_xinput_device(motion_device, "motion",
                                               XIEventMask.MotionMask)
 
-        if ok:
+        if success:
             self._device_manager.connect("device-event",
-                                          self._device_event_handler)
+                                          self._on_device_event)
         else:
             self._deregister_xinput_events()
 
-        return ok
+        return success
 
     def _register_xinput_device(self, device, description, event_mask):
         _logger.info("grab {} device {}".format(description, device))
@@ -255,37 +255,35 @@ class CSFloatingSlave(ClickSimulator):
     def _deregister_xinput_events(self):
         if self._grabbed_device_ids:
             self._device_manager.disconnect("device-event",
-                                            self._device_event_handler)
+                                            self._on_device_event)
 
             # unselect and ungrab all devices
             for device_id in self._grabbed_device_ids:
-                if device_id:
-                    device = self._device_manager.lookup_device_id(device_id)
+                device = self._device_manager.lookup_device_id(device_id)
 
-                    _logger.info("ungrab " + str(device))
-                    print("ungrab " + str(device))
+                _logger.info("ungrab " + str(device))
+                print("ungrab " + str(device))
 
-                    try:
-                        self._device_manager.unselect_events(None, device)
-                    except osk.error as ex:
-                        _logger.error("unselect root events for device "
-                                      "{id} '{name}': {ex}"
-                                      .format(id = device.id,
-                                              name=device.name,
-                                              ex = ex))
+                try:
+                    self._device_manager.unselect_events(None, device)
+                except osk.error as ex:
+                    _logger.error("unselect root events for device "
+                                  "{id} '{name}': {ex}"
+                                  .format(id = device.id,
+                                          name=device.name,
+                                          ex = ex))
 
-                    try:
-                        self._device_manager.ungrab_device(device)
-                    except osk.error as ex:
-                        _logger.error("ungrab device {id} '{name}': {ex}"
-                                      .format(id = device.id,
-                                              name=device.name,
-                                              ex = ex))
+                try:
+                    self._device_manager.ungrab_device(device)
+                except osk.error as ex:
+                    _logger.error("ungrab device {id} '{name}': {ex}"
+                                  .format(id = device.id,
+                                          name=device.name,
+                                          ex = ex))
 
             self._grabbed_device_ids = []
 
-    def _device_event_handler(self, event):
-        device = event.get_source_device()
+    def _on_device_event(self, event):
         event_type = event.xi_type
         button = self._button
         click_type = self._click_type
@@ -347,8 +345,8 @@ class CSFloatingSlave(ClickSimulator):
                         generate_button_event(button, True)
 
                 elif self._num_clicks_detected >= 2:
-                   generate_button_event(button, False)
-                   self.end_mapped_click()
+                    generate_button_event(button, False)
+                    self.end_mapped_click()
 
         # count button presses
         if event_type == XIEventType.ButtonPress:

@@ -143,7 +143,7 @@ class XIDeviceManager(EventSource):
         """
         Singleton constructor, runs only once.
         """
-        EventSource.__init__(self, ["device-event"])
+        EventSource.__init__(self, ["device-event", "device-grab"])
 
         self._devices = {}
         self._osk_devices = None
@@ -156,7 +156,7 @@ class XIDeviceManager(EventSource):
         
         self._last_motion_device_id = None
         self._last_click_device_id = None
-        self._selected_events = {}
+        self._grabbed_devices_ids = set()
 
         if self.is_valid():
             self.update_devices()
@@ -184,11 +184,23 @@ class XIDeviceManager(EventSource):
         return [device for device in self._devices.values() \
                 if device.is_pointer()]
 
-    def get_client_slave_pointer_devices(self):
+    def get_client_pointer_slaves(self):
+        """
+        All slaves of the client pointer, with and without device grabs.
+        """
         client_pointer = self.get_client_pointer()
         return [device for device in self.get_pointer_devices() \
                 if not device.is_master() and \
                    device.master == client_pointer.id]
+
+    def get_client_pointer_attached_slaves(self):
+        """
+        Slaves that are currently attached to the client pointer.
+        """
+        devices = self.get_client_pointer_slaves()
+        devices = [d for d in devices if not d.is_floating() and \
+                                         not self.is_grabbed(d)]
+        return devices
 
     def get_master_pointer_devices(self):
         return [device for device in self.get_pointer_devices() \
@@ -233,7 +245,6 @@ class XIDeviceManager(EventSource):
             xid = win.get_xid()
 
         self._osk_devices.select_events(xid, device.id, mask)
-        self._selected_events[(device.id, xid)] = mask
         return True
 
     def unselect_events(self, window, device):
@@ -244,10 +255,6 @@ class XIDeviceManager(EventSource):
             if not win:
                 return False # no gdk window yet
             xid = win.get_xid()
-
-        try:
-            del self._selected_events[(device.id, xid)]
-        except KeyError: pass
 
         self._osk_devices.unselect_events(xid, device.id)
         return True
@@ -265,28 +272,25 @@ class XIDeviceManager(EventSource):
         self._osk_devices.detach(device_id)
 
     def grab_device(self, device):
-        self.grab_device_id(device.id)
+        self.grab_device_id(device.id) # raises osk.error
+        self.emit("device-grab", device, True)
 
     def ungrab_device(self, device):
-        self.ungrab_device_id(device.id)
+        self.ungrab_device_id(device.id) # raises osk.error
+        self.emit("device-grab", device, False)
+
+    def is_grabbed(self, device):
+        return device.id in self._grabbed_devices_ids
 
     def grab_device_id(self, device_id):
-        # Unselect InputEventSource events to really receive only events
-        # expicitely selected for the grab. Prevents double presses 
-        # on Onboard's windows.
-        for (id, xid), mask in self._selected_events.items():
-            if id == device_id:
-                self._osk_devices.unselect_events(xid, device_id)
-
         self._osk_devices.grab_device(device_id, 0)
 
-    def ungrab_device_id(self, device_id):
-        self._osk_devices.ungrab_device(device_id)
+        assert(not device_id in self._grabbed_devices_ids)
+        self._grabbed_devices_ids.add(device_id)
 
-        # Restore InputEventSource events.
-        for (id, xid), mask in self._selected_events.items():
-            if id == device_id:
-                self._osk_devices.select_events(xid, device_id, mask)
+    def ungrab_device_id(self, device_id):
+        self._grabbed_devices_ids.discard(device_id)
+        self._osk_devices.ungrab_device(device_id)
 
     def get_last_click_device(self):
         id = self._last_click_device_id

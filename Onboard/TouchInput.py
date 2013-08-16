@@ -180,7 +180,9 @@ class InputEventSource(EventSource):
             self._device_manager = XIDeviceManager()
             if self._device_manager.is_valid():
                 self._device_manager.connect("device-event",
-                                             self._device_event_handler)
+                                             self._on_device_event)
+                self._device_manager.connect("device-grab",
+                                             self._on_device_grab)
                 self.select_xinput_devices()
             else:
                 success = False
@@ -189,7 +191,9 @@ class InputEventSource(EventSource):
 
             if self._device_manager:
                 self._device_manager.disconnect("device-event",
-                                                self._device_event_handler)
+                                                self._on_device_event)
+                self._device_manager.disconnect("device-grab",
+                                                self._on_device_grab)
 
             if self._master_device:
                 device = self._master_device
@@ -245,8 +249,7 @@ class InputEventSource(EventSource):
         if self._touch_events_enabled:
             event_mask |= XIEventMask.TouchMask
 
-        devices = self._device_manager.get_client_slave_pointer_devices()
-        devices = [d for d in devices if not d.is_floating()]
+        devices = self._device_manager.get_client_pointer_attached_slaves()
         _logger.info("listening to XInput slaves: {}" \
                      .format([(d.name, d.id, d.get_config_string()) \
                               for d in devices]))
@@ -289,7 +292,10 @@ class InputEventSource(EventSource):
 
         self._xi_grab_events_selected = select
 
-    def _device_event_handler(self, event):
+    def _on_device_grab(self, device, event):
+        self.select_xinput_devices()
+
+    def _on_device_event(self, event):
         """
         Handler for XI2 events.
         """
