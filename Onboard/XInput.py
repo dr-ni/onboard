@@ -236,7 +236,7 @@ class XIDeviceManager(EventSource):
                 devices[device.id] = device
 
             if device.name in self.last_device_blacklist:
-                self._last_device_blacklist_ids.append(device)
+                self._last_device_blacklist_ids.append(device.id)
 
         self._devices = devices
 
