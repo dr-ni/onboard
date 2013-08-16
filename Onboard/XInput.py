@@ -122,6 +122,7 @@ class XIDeviceManager(EventSource):
     """
 
     blacklist = ("Power Button")
+    last_device_blacklist = ("Virtual core XTEST pointer")
 
     def __new__(cls, *args, **kwargs):
         """
@@ -149,13 +150,15 @@ class XIDeviceManager(EventSource):
         self._osk_devices = None
         try:
             self._osk_devices = osk.Devices(event_handler = \
-                                            self._device_event_handler)
+                                            self._on_device_event)
         except Exception as ex:
             _logger.warning("Failed to create osk.Devices: " + \
                             unicode_str(ex))
         
         self._last_motion_device_id = None
         self._last_click_device_id = None
+        self._last_device_blacklist_ids = []
+
         self._grabbed_devices_ids = set()
 
         if self.is_valid():
@@ -208,6 +211,8 @@ class XIDeviceManager(EventSource):
 
     def update_devices(self):
         devices = {}
+        self._last_device_blacklist_ids = []
+
         for info in self._osk_devices.list():
             device = XIDevice()
             device._device_manager = self
@@ -229,6 +234,9 @@ class XIDeviceManager(EventSource):
 
             if not device.name in self.blacklist:
                 devices[device.id] = device
+
+            if device.name in self.last_device_blacklist:
+                self._last_device_blacklist_ids.append(device)
 
         self._devices = devices
 
@@ -304,7 +312,7 @@ class XIDeviceManager(EventSource):
             return None
         return self.lookup_device_id(id)
 
-    def _device_event_handler(self, event):
+    def _on_device_event(self, event):
         """
         Handler for XI2 events.
         """
@@ -327,11 +335,12 @@ class XIDeviceManager(EventSource):
         event.set_source_device(source_device)
 
         # remember recently used device ids for CSFloatingSlave
-        if event_type == XIEventType.Motion:
-            self._last_motion_device_id = event.source_id
-        elif event_type == XIEventType.ButtonPress or \
-             event_type == XIEventType.TouchBegin:
-            self._last_click_device_id = event.source_id
+        if not source_id in self._last_device_blacklist_ids:
+            if event_type == XIEventType.Motion:
+                self._last_motion_device_id = source_id
+            elif event_type == XIEventType.ButtonPress or \
+                 event_type == XIEventType.TouchBegin:
+                self._last_click_device_id = source_id
 
         # forward the event to all listeners
         self.emit("device-event", event)
