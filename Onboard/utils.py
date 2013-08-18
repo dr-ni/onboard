@@ -1253,6 +1253,19 @@ def exists_in_path(basename):
             return True
     return False
 
+def chmodtree(path, mode = 0o777, only_dirs = False):
+    """
+    Change permissions of all files of the given directory tree.
+    Raises OSError.
+    """
+    os.chmod(path, mode)
+    for root, dirs, files in os.walk(path):
+        for d in dirs:
+            os.chmod(os.path.join(root, d), mode)                    
+        if not only_dirs:
+            for f in files:
+                os.chmod(os.path.join(root, f), mode)                    
+
 def unicode_str(obj, encoding = "utf-8"):
     """
     Safe str() function that always returns an unicode string.
@@ -1414,4 +1427,199 @@ def permute_mask(mask):
                 m |= bit_masks[bit]
         perms.append(m)
     return perms
+
+
+class XDGDirs:
+    """
+    Build paths compliant with XDG Base Directory Specification.
+    http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+    Doctests:
+
+    >>> os.environ["HOME"] = "/home/test_user"
+
+    # XDG_CONFIG_HOME unavailable
+    >>> os.environ["XDG_CONFIG_HOME"] = ""
+    >>> XDGDirs.get_config_home("onboard/test.dat")
+    '/home/test_user/.config/onboard/test.dat'
+
+    # XDG_CONFIG_HOME available
+    >>> os.environ["XDG_CONFIG_HOME"] = "/home/test_user/.config_home"
+    >>> XDGDirs.get_config_home("onboard/test.dat")
+    '/home/test_user/.config_home/onboard/test.dat'
+
+    # XDG_DATA_HOME unavailable
+    >>> os.environ["XDG_DATA_HOME"] = ""
+    >>> XDGDirs.get_data_home("onboard/test.dat")
+    '/home/test_user/.local/share/onboard/test.dat'
+
+    # XDG_DATA_HOME available
+    >>> os.environ["XDG_DATA_HOME"] = "/home/test_user/.data_home"
+    >>> XDGDirs.get_data_home("onboard/test.dat")
+    '/home/test_user/.data_home/onboard/test.dat'
+
+    # XDG_CONFIG_DIRS unvailable
+    >>> os.environ["XDG_CONFIG_HOME"] = ""
+    >>> os.environ["XDG_CONFIG_DIRS"] = ""
+    >>> XDGDirs.get_all_config_dirs("onboard/test.dat")
+    ['/home/test_user/.config/onboard/test.dat', '/etc/xdg/onboard/test.dat']
+
+    # XDG_CONFIG_DIRS available
+    >>> os.environ["XDG_CONFIG_HOME"] = ""
+    >>> os.environ["XDG_CONFIG_DIRS"] = "/etc/xdg/xdg-ubuntu:/etc/xdg"
+    >>> XDGDirs.get_all_config_dirs("onboard/test.dat")
+    ['/home/test_user/.config/onboard/test.dat', \
+'/etc/xdg/xdg-ubuntu/onboard/test.dat', \
+'/etc/xdg/onboard/test.dat']
+
+    # XDG_DATA_DIRS unvailable
+    >>> os.environ["XDG_DATA_HOME"] = ""
+    >>> os.environ["XDG_DATA_DIRS"] = ""
+    >>> XDGDirs.get_all_data_dirs("onboard/test.dat")
+    ['/home/test_user/.local/share/onboard/test.dat', \
+'/usr/local/share/onboard/test.dat', \
+'/usr/share/onboard/test.dat']
+
+    # XDG_DATA_DIRS available
+    >>> os.environ["XDG_DATA_HOME"] = ""
+    >>> os.environ["XDG_DATA_DIRS"] = "/usr/share/gnome:/usr/local/share/:/usr/share/"
+    >>> XDGDirs.get_all_data_dirs("onboard/test.dat")
+    ['/home/test_user/.local/share/onboard/test.dat', \
+'/usr/share/gnome/onboard/test.dat', \
+'/usr/local/share/onboard/test.dat', \
+'/usr/share/onboard/test.dat']
+    """
+
+    @staticmethod
+    def get_config_home(file = None):
+        """
+        User specific config directory.
+        """
+        path = os.environ.get("XDG_CONFIG_HOME")
+        if path and not os.path.isabs(path):
+            _logger.warning("XDG_CONFIG_HOME doesn't contain an absolute path,"
+                            "ignoring.")
+            path = None
+        if not path:
+            path = os.path.join(os.path.expanduser("~"), ".config")
+
+        if file:
+            path = os.path.join(path, file)
+
+        return path
+
+    @staticmethod
+    def get_config_dirs():
+        """
+        Config directories ordered by preference.
+        """
+        paths = []
+
+        value = os.environ.get("XDG_CONFIG_DIRS")
+        if not value:
+            value = "/etc/xdg"
+        
+        paths = value.split(":")
+        paths = [p for p in paths if os.path.isabs(p)]
+
+        return paths
+
+    @staticmethod
+    def get_all_config_dirs(file = None):
+        paths = [XDGDirs.get_config_home()] + XDGDirs.get_config_dirs()
+
+        if file:
+            paths = [os.path.join(p, file) for p in paths]
+
+        return paths
+
+    @staticmethod
+    def find_config_files(file):
+        """ Find file in all config directories, highest priority first. """
+        paths = XDGDirs.get_all_config_dirs(file)
+        return [p for p in paths if os.path.isfile(path) and \
+                                    os.access(filename, os.R_OK)]
+
+    @staticmethod
+    def find_config_file(file):
+        """ Find file of highest priority """
+        paths = XDGDirs.find_config_files(file)
+        if paths:
+            return paths[0]
+        return None
+
+    @staticmethod
+    def get_data_home(file = None):
+        """
+        User specific data directory.
+        """
+        path = os.environ.get("XDG_DATA_HOME")
+        if path and not os.path.isabs(path):
+            _logger.warning("XDG_DATA_HOME doesn't contain an absolute path,"
+                            "ignoring.")
+            path = None
+        if not path:
+            path = os.path.join(os.path.expanduser("~"), ".local", "share")
+
+        if file:
+            path = os.path.join(path, file)
+
+        return path
+
+    @staticmethod
+    def get_data_dirs():
+        """
+        Data directories ordered by preference.
+        """
+        paths = []
+
+        value = os.environ.get("XDG_DATA_DIRS")
+        if not value:
+            value = "/usr/local/share/:/usr/share/"
+        
+        paths = value.split(":")
+        paths = [p for p in paths if os.path.isabs(p)]
+
+        return paths
+
+    @staticmethod
+    def get_all_data_dirs(file = None):
+        paths = [XDGDirs.get_data_home()] + XDGDirs.get_data_dirs()
+
+        if file:
+            paths = [os.path.join(p, file) for p in paths]
+
+        return paths
+
+    @staticmethod
+    def find_data_files(file):
+        """ Find file in all data directories, highest priority first. """
+        paths = XDGDirs.get_all_data_dirs(file)
+        return [p for p in paths if os.path.isfile(path) and \
+                                    os.access(filename, os.R_OK)]
+
+    @staticmethod
+    def find_data_file(file):
+        """ Find file of highest priority """
+        paths = XDGDirs.find_data_files(file)
+        if paths:
+            return paths[0]
+        return None
+
+    def assure_user_dir_exists(path):
+        """
+        If necessary create user XDG directory.
+        Raises OSError.
+        """
+        exists = os.path.exists(path)
+        if not exists:
+            try:
+                os.makedirs(path, mode = 0o700)
+                exists = True
+            except OSError as ex:
+                _logger.error(_format("failed to create directory '{}': {}",
+                                       path, unicode_str(ex)))
+                raise ex
+        return exists
+
 

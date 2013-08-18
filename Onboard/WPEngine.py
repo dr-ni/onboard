@@ -442,8 +442,7 @@ class ModelCache:
                 try:
                     # create the path
                     path = os.path.dirname(filename)
-                    if not os.path.exists(path):
-                        os.makedirs(path)
+                    utils.XDGDirs.assure_user_dir_exists(path)
 
                     if 1:
                         # save to temp file

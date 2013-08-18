@@ -12,7 +12,8 @@ from optparse import OptionParser
 
 from gi.repository import GLib, Gtk
 
-from Onboard.utils          import show_confirmation_dialog, Version, unicode_str
+from Onboard.utils          import show_confirmation_dialog, Version, \
+                                   unicode_str, XDGDirs, chmodtree
 from Onboard.definitions    import InputEventSourceEnum, TouchInputEnum
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
@@ -70,7 +71,7 @@ START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
 INSTALL_DIR                = "/usr/share/onboard"
 LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
-USER_DIR                   = ".onboard"
+USER_DIR                   = "onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
@@ -251,21 +252,25 @@ class Config(ConfigObject):
         self.install_dir = self._get_install_dir()
         self.user_dir = self._get_user_dir()
 
-        # migrate old user dir ".sok" to ".onboard"
-        old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
-        user_dir = self.user_dir
-        if not os.path.exists(user_dir) and os.path.exists(old_user_dir):
-            _logger.info(_format("Migrating user directory '{}' to '{}'.", \
-                                 old_user_dir, user_dir))
-            try:
-                copytree(old_user_dir, user_dir)
-            except OSError as ex: # python >2.5
-                _logger.error(_format("Failed to migrate user directory. ") + \
-                              unicode_str(ex))
+        # migrate old user dir ".sok" or ".onboard" to XDG data home
+        if not os.path.exists(self.user_dir):
+            old_user_dir = os.path.join(os.path.expanduser("~"), ".onboard")
+            if not os.path.exists(old_user_dir):
+                old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
+            if os.path.exists(old_user_dir):
+                _logger.info(_format("Migrating user directory '{}' to '{}'.", \
+                                     old_user_dir, self.user_dir))
+                try:
+                    copytree(old_user_dir, self.user_dir)
+                    chmodtree(self.user_dir, 0o700, True) # honor XDG spec
+                except OSError as ex: # python >2.5
+                    _logger.error(_format("Failed to migrate user directory. ") + \
+                                  unicode_str(ex))
 
         # Load system defaults (if there are any, not required).
         # Used for distribution specific settings, aka branding.
-        paths = [os.path.join(self.install_dir, SYSTEM_DEFAULTS_FILENAME),
+        paths = XDGDirs.get_all_config_dirs(USER_DIR) + \
+                [os.path.join(self.install_dir, SYSTEM_DEFAULTS_FILENAME),
                  os.path.join("/etc/onboard", SYSTEM_DEFAULTS_FILENAME)]
         self.load_system_defaults(paths)
 
@@ -934,7 +939,7 @@ class Config(ConfigObject):
         return result
 
     def _get_user_dir(self):
-        return os.path.join(os.path.expanduser("~"), USER_DIR)
+        return XDGDirs.get_data_home(USER_DIR)
 
 
 class ConfigKeyboard(ConfigObject):

@@ -28,7 +28,8 @@ from Onboard.XInput          import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
                                     exists_in_path, \
-                                    unicode_str, open_utf8
+                                    unicode_str, open_utf8, \
+                                    XDGDirs
 
 app = "onboard"
 
@@ -319,8 +320,10 @@ class Settings(DialogBuilder):
                 Gtk.TreeViewColumn(None, Gtk.CellRendererText(), markup=0))
 
         self.user_layout_root = os.path.join(config.user_dir, "layouts/")
-        if not os.path.exists(self.user_layout_root):
-            os.makedirs(self.user_layout_root)
+        try:
+            XDGDirs.assure_user_dir_exists(self.user_layout_root)
+        except OSError as ex:
+            pass
 
         self.layout_remove_button = \
                              builder.get_object("layout_remove_button")
@@ -338,9 +341,10 @@ class Settings(DialogBuilder):
         self.customize_theme_button = \
                                    builder.get_object("customize_theme_button")
 
-        user_theme_root = Theme.user_path()
-        if not os.path.exists(user_theme_root):
-            os.makedirs(user_theme_root)
+        try:
+            XDGDirs.assure_user_dir_exists(Theme.user_path())
+        except OSError as ex:
+            pass
 
         self.update_themeList()
         config.theme_notify_add(self.on_theme_changed)
