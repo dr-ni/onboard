@@ -992,7 +992,7 @@ static unsigned int
 keysym2keycode (OskVirtkey *vk, KeySym keysym, unsigned int *mod_mask)
 {
     static int modified_key = 0;
-    KeyCode code;
+    KeyCode code = 0;
 
     code = XKeysymToKeycode (vk->display, keysym);
     if (code)
@@ -1008,10 +1008,10 @@ keysym2keycode (OskVirtkey *vk, KeySym keysym, unsigned int *mod_mask)
             if (XkbKeycodeToKeysym (vk->display, code, group, 1) == keysym)
                 *mod_mask |= 1;
             else
-                return 0;
+                code = 0;
         }
     }
-    else
+    if (!code)
     {
         int index;
         /* Change one of the last 10 keysyms to our converted utf8,
