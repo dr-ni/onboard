@@ -21,7 +21,8 @@ from Onboard.KeyGtk          import RectKey, WordlistKey, BarKey, \
 from Onboard.Layout          import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils           import hexstring_to_float, modifiers, Rect, \
                                     toprettyxml, Version, open_utf8, \
-                                    permute_mask, LABEL_MODIFIERS
+                                    permute_mask, LABEL_MODIFIERS, \
+                                    unicode_str, XDGDirs
 from Onboard.WordSuggestions import WordListPanel
 
 ### Config Singleton ###
@@ -877,62 +878,71 @@ class LayoutLoaderSVG:
         svg_filenames = {}
         fallback_layers = {}
 
-        with open_utf8(src_filename) as f:
-            domdoc = minidom.parse(f)
-            keyboard_node = domdoc.documentElement
+        try:
+            with open_utf8(src_filename) as f:
+                domdoc = minidom.parse(f)
+                keyboard_node = domdoc.documentElement
 
-            # check layout format
-            format = LayoutLoaderSVG.LAYOUT_FORMAT_LEGACY
-            if keyboard_node.hasAttribute("format"):
-               format = Version.from_string(keyboard_node.attributes["format"].value)
-            keyboard_node.attributes["id"] = dst_basename
+                # check layout format
+                format = LayoutLoaderSVG.LAYOUT_FORMAT_LEGACY
+                if keyboard_node.hasAttribute("format"):
+                   format = Version.from_string(keyboard_node.attributes["format"].value)
+                keyboard_node.attributes["id"] = dst_basename
 
-            if format < LayoutLoaderSVG.LAYOUT_FORMAT_LAYOUT_TREE:
-                raise Exceptions.LayoutFileError( \
-                    _format("copy_layouts failed, unsupported layout format '{}'.",
-                            format))
-            else:
-                # replace the basename of all svg filenames
-                for node in LayoutLoaderSVG._iter_dom_nodes(keyboard_node):
-                    if LayoutLoaderSVG.is_layout_node(node):
-                        if node.hasAttribute("filename"):
-                            filename = node.attributes["filename"].value
+                if format < LayoutLoaderSVG.LAYOUT_FORMAT_LAYOUT_TREE:
+                    raise Exceptions.LayoutFileError( \
+                        _format("copy_layouts failed, unsupported layout format '{}'.",
+                                format))
+                else:
+                    # replace the basename of all svg filenames
+                    for node in LayoutLoaderSVG._iter_dom_nodes(keyboard_node):
+                        if LayoutLoaderSVG.is_layout_node(node):
+                            if node.hasAttribute("filename"):
+                                filename = node.attributes["filename"].value
 
-                            # Create a replacement layer name for the unlikely
-                            # case  that the svg-filename doesn't contain a
-                            # layer section (as in path/basename-layer.ext).
-                            fallback_layer_name = fallback_layers.get(filename,
-                                         "Layer" + str(len(fallback_layers)))
-                            fallback_layers[filename] = fallback_layer_name
+                                # Create a replacement layer name for the unlikely
+                                # case  that the svg-filename doesn't contain a
+                                # layer section (as in path/basename-layer.ext).
+                                fallback_layer_name = fallback_layers.get(filename,
+                                             "Layer" + str(len(fallback_layers)))
+                                fallback_layers[filename] = fallback_layer_name
 
-                            # replace the basename of this filename
-                            new_filename = LayoutLoaderSVG._replace_basename( \
-                                 filename, dst_basename, fallback_layer_name)
+                                # replace the basename of this filename
+                                new_filename = LayoutLoaderSVG._replace_basename( \
+                                     filename, dst_basename, fallback_layer_name)
 
-                            node.attributes["filename"].value = new_filename
-                            svg_filenames[filename] = new_filename
+                                node.attributes["filename"].value = new_filename
+                                svg_filenames[filename] = new_filename
 
-        if domdoc:
-            # write the new layout file
-            with open_utf8(dst_filename, "w") as f:
-                xml = toprettyxml(domdoc)
-                if sys.version_info.major == 2:  # python 2?
-                    xml = xml.encode("UTF-8")
-                f.write(xml)
+            if domdoc:
+                XDGDirs.assure_user_dir_exists(config.get_user_layout_dir())
 
-                # copy the svg files
-                for src, dst in list(svg_filenames.items()):
+                # write the new layout file
+                with open_utf8(dst_filename, "w") as f:
+                    xml = toprettyxml(domdoc)
+                    if sys.version_info.major == 2:  # python 2?
+                        xml = xml.encode("UTF-8")
+                    f.write(xml)
 
-                    dir, name = os.path.split(src)
-                    if not dir:
-                        src = os.path.join(src_dir, name)
-                    dir, name = os.path.split(dst)
-                    if not dir:
-                        dst = os.path.join(dst_dir, name)
+                    # copy the svg files
+                    for src, dst in list(svg_filenames.items()):
 
-                    _logger.info(_format("copying svg file '{}' to '{}'", \
-                                 src, dst))
-                    shutil.copyfile(src, dst)
+                        dir, name = os.path.split(src)
+                        if not dir:
+                            src = os.path.join(src_dir, name)
+                        dir, name = os.path.split(dst)
+                        if not dir:
+                            dst = os.path.join(dst_dir, name)
+
+                        _logger.info(_format("copying svg file '{}' to '{}'", \
+                                     src, dst))
+                        shutil.copyfile(src, dst)
+        except OSError as ex:
+            _logger.error("copy_layout failed: " + \
+                          unicode_str(ex))
+        except Exceptions.LayoutFileError as ex:
+            _logger.error(unicode_str(ex))
+
 
     @staticmethod
     def remove_layout(filename):

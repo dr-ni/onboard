@@ -28,8 +28,7 @@ from Onboard.XInput          import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
                                     exists_in_path, \
-                                    unicode_str, open_utf8, \
-                                    XDGDirs
+                                    unicode_str, open_utf8
 
 app = "onboard"
 
@@ -319,11 +318,7 @@ class Settings(DialogBuilder):
         self.layout_view.append_column( \
                 Gtk.TreeViewColumn(None, Gtk.CellRendererText(), markup=0))
 
-        self.user_layout_root = os.path.join(config.user_dir, "layouts/")
-        try:
-            XDGDirs.assure_user_dir_exists(self.user_layout_root)
-        except OSError as ex:
-            pass
+        self.user_layout_root = config.get_user_layout_dir()
 
         self.layout_remove_button = \
                              builder.get_object("layout_remove_button")
@@ -340,11 +335,6 @@ class Settings(DialogBuilder):
         self.delete_theme_button
         self.customize_theme_button = \
                                    builder.get_object("customize_theme_button")
-
-        try:
-            XDGDirs.assure_user_dir_exists(Theme.user_path())
-        except OSError as ex:
-            pass
 
         self.update_themeList()
         config.theme_notify_add(self.on_theme_changed)
@@ -719,8 +709,11 @@ class Settings(DialogBuilder):
                                          os.access(filename, os.W_OK))
 
     def find_layouts(self, path):
-        files = os.listdir(path)
         layouts = []
+        try:
+            files = os.listdir(path)
+        except OSError:
+            files = []
         for filename in files:
             if filename.endswith(".sok") or \
                filename.endswith(config.LAYOUT_FILE_EXTENSION):

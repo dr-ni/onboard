@@ -957,6 +957,8 @@ class Config(ConfigObject):
     def _get_user_dir(self):
         return XDGDirs.get_data_home(USER_DIR)
 
+    def get_user_layout_dir(self):
+        return os.path.join(self.user_dir, "layouts/")
 
 class ConfigKeyboard(ConfigObject):
     """Window configuration """

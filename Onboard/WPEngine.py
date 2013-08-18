@@ -430,8 +430,7 @@ class ModelCache:
         filename = self.get_filename(lmid)
 
         if filename and \
-           (model.modified or \
-            not os.path.exists(filename)):
+           model.modified:
 
             if model.load_error:
                 _logger.warning("Not saving modified language model '{}' "

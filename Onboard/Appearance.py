@@ -21,7 +21,8 @@ from math import log
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float, brighten, toprettyxml, \
-                                TreeItem, Version, unicode_str, open_utf8
+                                TreeItem, Version, unicode_str, open_utf8, \
+                                XDGDirs
 
 import Onboard.utils as utils
 
@@ -245,8 +246,13 @@ class Theme:
         """
         Returns the full path names of all themes found in the given path.
         """
-        files = os.listdir(path)
         themes = []
+
+        try:
+            files = os.listdir(path)
+        except OSError:
+            files = []
+
         for filename in files:
             if filename.endswith(Theme.extension()):
                 themes.append(os.path.join(path, filename))
@@ -386,6 +392,8 @@ class Theme:
                     theme_element.appendChild(element)
 
             pretty_xml = toprettyxml(domdoc)
+
+            XDGDirs.assure_user_dir_exists(self.user_path())
 
             with open_utf8(self._filename, "w") as _file:
                 if sys.version_info.major >= 3:
@@ -785,8 +793,13 @@ class ColorScheme(object):
         """
         Returns the full path names of all color schemes found in the given path.
         """
-        files = os.listdir(path)
         color_schemes = []
+
+        try:
+            files = os.listdir(path)
+        except OSError:
+            files = []
+
         for filename in files:
             if filename.endswith(ColorScheme.extension()):
                 color_schemes.append(os.path.join(path, filename))
