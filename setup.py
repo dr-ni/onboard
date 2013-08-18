@@ -178,7 +178,7 @@ class Extension_lm(Extension):
                            undef_macros = [],
                            library_dirs = [],
                            libraries = [],
-                           #define_macros=[('NDEBUG', '1')],
+                           define_macros=[('NDEBUG', '1')],
                           )
 
 extension_lm = Extension_lm("Onboard", "Onboard")
