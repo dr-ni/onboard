@@ -64,7 +64,7 @@ vk_init_keyboard (OskVirtkey *vk)
     vk->kbd = XkbGetKeyboard (vk->display,
                               XkbCompatMapMask | XkbNamesMask | XkbGeometryMask,
                               XkbUseCoreKbd);
-#ifdef NDEBUG
+#ifndef NDEBUG
     /* test missing keyboard (LP:#526791) keyboard on/off every 10 seconds */
     if (getenv ("VIRTKEY_DEBUG"))
     {
