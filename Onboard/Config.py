@@ -10,7 +10,7 @@ import sys
 from shutil import copytree
 from optparse import OptionParser
 
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk, Gio
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree
@@ -260,12 +260,28 @@ class Config(ConfigObject):
             if os.path.exists(old_user_dir):
                 _logger.info(_format("Migrating user directory '{}' to '{}'.", \
                                      old_user_dir, self.user_dir))
+                # Copy the data directory
                 try:
                     copytree(old_user_dir, self.user_dir)
                     chmodtree(self.user_dir, 0o700, True) # honor XDG spec
+
                 except OSError as ex: # python >2.5
-                    _logger.error(_format("Failed to migrate user directory. ") + \
+                    _logger.error(_format("failed to migrate user directory. ") + \
                                   unicode_str(ex))
+
+                # Return paths in gsettings to basenames. Custom path
+                # information will be lost.
+                try:
+                    filter = lambda x: os.path.splitext(os.path.basename(x))[0]
+                    s = Gio.Settings.new(SCHEMA_ONBOARD)
+                    s["layout"] = filter(s["layout"])
+                    s["theme"] = filter(s["theme"])
+                    s["system-theme-associations"] = \
+                        {k : filter(v) \
+                         for k, v in s["system-theme-associations"].items()}
+                except Exception as ex:
+                    _logger.warning("migrating gsettings paths failed: " + \
+                                    unicode_str(ex))
 
         # Load system defaults (if there are any, not required).
         # Used for distribution specific settings, aka branding.
