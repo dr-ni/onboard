@@ -322,6 +322,11 @@ class hunspell(SCBackend):
         >>> len(q)
         2
 
+        # dashes
+        >>> sp = hunspell(["en_US"])
+        >>> sp.query("ubuntu-system")  # doctest: +ELLIPSIS
+        [[[0, 6, 'ubuntu'], ['Ubuntu', 'Kubuntu', 'urbanite', 'urbanity']]]
+
         # unrecognized word returns error span with zero choices (# mark)
         >>> q = sp.query("ἄναρχος")
         >>> q  # doctest:
@@ -384,7 +389,7 @@ class hunspell(SCBackend):
 
                 try:
                     if self._osk_hunspell.spell(word) == 0:
-                        suggestions = list(self._osk_hunspell.suggest(text))
+                        suggestions = list(self._osk_hunspell.suggest(word))
                         results.append([span, suggestions])
                 except UnicodeEncodeError:
                     # Assume the offending character isn't part of the

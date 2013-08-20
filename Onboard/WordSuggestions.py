@@ -439,6 +439,8 @@ class WordSuggestions:
         (['USA', ...], TextSpan(0, 3, 'usa', 0, None), 'USA')
         >>> f(TextSpan(0, 3, "Usa"), True)                 # doctest: +ELLIPSIS
         (['USA', ...], TextSpan(0, 3, 'Usa', 0, None), 'USA')
+        >>> f(TextSpan(0, 13, "ubuntu-system"), True)      # doctest: +ELLIPSIS
+        ([...], TextSpan(0, 13, 'ubuntu-system', 0, None), 'Ubuntu-system')
         """
         correction_choices = []
         correction_span = None
@@ -471,6 +473,7 @@ class WordSuggestions:
                             find_corrections(word_caps, offset)
                     if not choices:
                         auto_capitalization = word_caps
+                        correction_span = word_span
 
         #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
         return correction_choices, correction_span, auto_capitalization

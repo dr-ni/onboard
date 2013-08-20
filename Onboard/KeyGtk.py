@@ -791,6 +791,7 @@ class WordlistKey(RectKey):
     def get_light_direction(self):
         return -0.75 * pi / 180
 
+
 class FullSizeKey(WordlistKey):
     def __init__(self, id = "", border_rect = None):
         super(FullSizeKey, self).__init__(id, border_rect)
