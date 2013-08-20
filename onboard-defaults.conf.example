@@ -23,7 +23,7 @@ layout=Compact
 #layout=Phone
 
 #system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
-system-theme-tracking-enabled=False
+#system-theme-tracking-enabled=True
 
 # Default theme
 # Specify full path and filename or only the base name of the initial theme.
