@@ -331,6 +331,10 @@ class Config(ConfigObject):
         # tell config objects that their properties are valid now
         self.on_properties_initialized()
 
+        # Work around changes in preferences having no effect in Saucy.
+        # If there is an unbalanced self.delay() somewhere I haven't found it.
+        self.apply()
+
         _logger.debug("Leaving init")
 
     def cleanup(self):
