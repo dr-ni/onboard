@@ -209,10 +209,8 @@ class TestCommand(Command):
 DistUtilsExtra.auto.setup(
     name = 'onboard',
     version = '0.99.0~alpha1~tr1507',
-    author = 'Chris Jones',
-    author_email = 'chris.e.jones@gmail.com',
-    maintainer = 'Ubuntu Core Developers',
-    maintainer_email = 'ubuntu-devel-discuss@lists.ubuntu.com',
+    author = 'Onboard devel team',
+    author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
