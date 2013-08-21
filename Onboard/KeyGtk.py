@@ -789,7 +789,7 @@ class WordlistKey(RectKey):
         return style
 
     def get_light_direction(self):
-        return -0.75 * pi / 180
+        return -0.3 * pi / 180
 
 
 class FullSizeKey(WordlistKey):
