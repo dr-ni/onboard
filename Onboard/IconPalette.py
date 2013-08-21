@@ -439,9 +439,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         else:
             co = config.icp.portrait
 
-        co.settings.delay()
+        co.delay()
         co.x, co.y, co.width, co.height = rect
-        co.settings.apply()
+        co.apply()
 
     def _is_dwelling(self):
         return bool(self._dwell_begin_timer) and \

@@ -1006,9 +1006,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._written_window_rects[orientation] = rect.copy()
 
         # write to gsettings and trigger notifications
-        co.settings.delay()
+        co.delay()
         co.x, co.y, co.width, co.height = rect
-        co.settings.apply()
+        co.apply()
 
     def write_docking_size(self, orientation, size):
         co = self.get_orientation_config_object()
@@ -1018,11 +1018,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._written_dock_sizes[orientation] = tuple(size)
 
         # write to gsettings and trigger notifications
-        co.settings.delay()
+        co.delay()
         if not expand:
             co.dock_width = size[0]
         co.dock_height = size[1]
-        co.settings.apply()
+        co.apply()
 
     def get_orientation_config_object(self):
         orientation = self.get_screen_orientation()
