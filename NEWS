@@ -1,3 +1,107 @@
+Version 0.99.0
+--------------
+
+  * Long press popup:
+    - Hide long press popup when keyboard gets hidden
+    - Add possibility to show arbitrary layouts in popups
+    - Add character alternatives for most latin based languages
+  * Add key-press feedback:
+    - Size of label popup stored in gsettings-key
+    - Also allow images in the touch feedback
+    - Don't show feedback popup when xembedded
+  * Add sound feedback:
+    - New dependency: libcanberra
+    - Add 'Play sound' option to the Preferences dialog
+  * Add word suggestions:
+    - Add tools to create language models (lm) from large corpora
+    - Learn from typed text by default
+    - Limit over-learning in the terminal with additional filters.
+    - Use UTF-8 encoding internally (cuts memory usage)
+    - Fall back to hard-coded country codes if there is no lm for current locale
+    - Add initial system language models for: de_AT, de_CH, de_DE, en_AU,
+      en_ES, en_GB, en_US, fr_fr, it_IT, pt_BR, pt_PT, ru_RU
+    - Optimize system language models for size/memory usage.
+    - Use case insensitive predictions most of the time
+    - Offer spelling suggestions based on the hunspell C-API
+    - Auto-add word separators
+    - Add word suggestion row to all layouts
+    - Make word suggestion also work when using the scanning mode
+    - Doctests available for English, German, Italian, Portuguese, Russian and
+      Spanish
+  * Add auto-capitalization
+    - Off by default because very new
+    - Add corresponding option to the Preferences of Onboard
+    - Independent of word suggestions
+  * Add XInput as a new event source and make it the default: (LP: #905636)
+    - Fall back to GTK event handling if XInput 2.2 isn't available
+    - Allow switching between GTK and XInput events without restarting Onboard
+    - Listen only to the XInput client pointer and its slaves
+    - Make XInput target specific windows instead of root window
+    - Support Multi-touch
+    - Don't count scroll-wheel movement as button presses
+    - Grab pointer even if click is performed by different device than movement
+    - Fix pointer becoming unresponsive on wetab tablet (LP: #1095508)
+  * Docking: 
+    - Fix returning to the undocked position when turning off docking
+  * Layouts:
+    - Add new layout called Phone
+    - Add new layout called Small
+    - Fix Euro sign not being typed in Phone and Small layouts (LP: #1164009)
+    - Fix key stroke width not being written to theme files
+    - Make layouts understand a new 'layout' tag for sub-layouts
+    - Make layouts understand a new 'compact' attribute for boxes
+    - New 'svg_id' attribute allows ids in the svg file different from key id
+    - New key attribute 'label_margin' to influence the size of the labels
+    - New attribute 'theme_id' for keys
+    - Allow multiple characters in char attribute of layouts
+    - Fall back to default layout on a layout loading error
+    - Allow blocking of auto-switch to layer0 for arbitrary sub-trees
+    - Perform various layout tweaks
+    - Move hide button to word suggestion line when visible
+    - Update layouts format versions to 3.1
+  * Remove support for python 2
+  * Integrate functionality of virtkey extension into Onboard; the separate
+    python-virtkey package is not necessary anymore
+  * Fix another problem with handling the no core keyboard case (LP: 526791)
+  * Fix setting the Super key label override in the Preferences dialog
+  * Make system defaults work also after a manual install (LP: #1210568)
+  * Prevent motion event congestion when using XInput (LP: #1210665)
+  * Base remapping of middle and right click on XInput (LP: #1191098)
+  * Add another click type switching method under XInput (LP: #1210575)
+  * Allow to wrap simulated clicks in left Alt presses (LP: #1212248)
+  * Support XDG Base Directory Specification (LP: #1074448)
+  * Don't create empty user directories until they are needed (LP: #1105843)
+  * Allow drag selection of keys (LP: #644210)
+  * Add HighContrast icon (LP: #1082243)
+  * Fix onboard sometimes not switching labels back to lower case (LP: #1207503)
+  * Ensure proper python thread state in gdk event filters (LP: #1189946)
+  * Properly set up signal handler in the osk python thread state (LP: #1195857)
+  * Fix segfault when activating drag click the first time without hover click
+  * Don't interrupt manual window movement with auto-show repositioning
+  * Do not support anymore outdated conversion to gsettings (LP: #1123789)
+  * Fix window resizing while the scanner is enabled
+  * Don't flash the icon palette when rotating the screen of the Nexus 7
+  * Terminate drag click on pointer stop instead of click to work around bug
+  * Move keyboard to current desktop with D-Bus Show() in OpenBox (LP: #1092166)
+  * Work around hang/endless loop when quickly switching themes
+  * Fix URL bar of Epiphany web browser not being detected by AT-SPI
+  * Various fixes to improve python2 compatibility
+  * Fix osk errors found by cpychecker
+  * Make more AT-SPI processing asynchronous
+  * Handle more uncaught AT-SPI exceptions
+  * Don't read much data from accessibles before we know them to be of interest
+  * Let ConfigObject be the interface of all gsettings delay and apply calls
+  * Improve appearance of the Preferences dialog
+  * Allow starting up without python(3)-dbus (runs with reduced functionality)
+  * Update system defaults example files
+  * Make themes work with more layers
+  * Improve themes and color schemes
+  * Add sdist to pkg-config debugging aid
+  * Remove Alt-Tab blocking on Nexus 7 (LP: #1082101)
+  * Drop gconf2 migration
+  * Update some labels and tooltips
+  * Some code cleanup
+
 Version 0.99.0~alpha1~tr1190
 ----------------------------
 

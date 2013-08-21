@@ -208,7 +208,7 @@ class TestCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.99.0~alpha1~tr1507',
+    version = '0.99.0',
     author = 'Onboard devel team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
