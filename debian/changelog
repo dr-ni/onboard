@@ -1,19 +1,24 @@
-onboard (0.99.0~alpha1~tr1531-0ppa~saucy1) saucy; urgency=low
+onboard (0.99.0-0ubuntu1) saucy; urgency=low
 
+  * Request for sponsorship for new upstream release (LP: #1215164)
   * debian/control:
+    - Add libcanberra-dev, libxkbfile-dev and libhunspell-dev to Build-Depends
     - Raise Standards-Version to 3.9.4
-    - Add libcanberra-dev to Build-Depends
-    - Add libcanberra0 to Depends of onboard package
-    - Add iso-codes to Depends of onboard package
-    - Add creation of package onboard-prediction-data package
-    - Add libhunspell to Recommends
-  * debian/onboard.install: new file to split keyboard from prediction data
-  * debian/onboard-prediction-data.install: new file with prediction data
+    - Remove python3-virtkey from Depends
+    - Add libxkbfile1, libcanberra0, libhunspell-1.3-0 and iso-codes to Depends
+    - Define new package onboard-data package for all architectures
+    - Add onboard-data to Recommends
+    - Update description of onboard package
+  * debian/control_python2.in: removed
+  * debian/control_python3.in: removed
+  * debian/onboard.install: new file to split keyboard from the prediction data
+  * debian/onboard-data.install: new file with the prediction data for onboard
   * debian/rules:
-    - Have override_dh_auto_install do the installation to debian/tmp
+    - Remove support for python2
+    - Add override_dh_auto_install target to use debian/tmp
     - Add override_dh_install target
   * debian/patches/add_defaults_for_ubuntu.patch:
-    -Update add_defaults_for_ubuntu.patch with values for this release
+    - Update add_defaults_for_ubuntu.patch with values for this release
   * Long press popup:
     - Hide long press popup when keyboard gets hidden
     - Add possibility to show arbitrary layouts in popups
@@ -41,7 +46,7 @@ onboard (0.99.0~alpha1~tr1531-0ppa~saucy1) saucy; urgency=low
     - Make word suggestion also work when using the scanning mode
     - Doctests available for English, German, Italian, Portuguese, Russian and
       Spanish
-  * Auto-capitalization
+  * Add auto-capitalization
     - Off by default because very new
     - Add corresponding option to the Preferences of Onboard
     - Independent of word suggestions
@@ -72,6 +77,18 @@ onboard (0.99.0~alpha1~tr1531-0ppa~saucy1) saucy; urgency=low
     - Perform various layout tweaks
     - Move hide button to word suggestion line when visible
     - Update layouts format versions to 3.1
+  * Remove support for python 2
+  * Integrate functionality of virtkey extension into Onboard; the separate
+    python-virtkey package is not necessary anymore
+  * Fix another problem with handling the no core keyboard case (LP: 526791)
+  * Fix setting the Super key label override in the Preferences dialog
+  * Make system defaults work also after a manual install (LP: #1210568)
+  * Prevent motion event congestion when using XInput (LP: #1210665)
+  * Base remapping of middle and right click on XInput (LP: #1191098)
+  * Add another click type switching method under XInput (LP: #1210575)
+  * Allow to wrap simulated clicks in left Alt presses (LP: #1212248)
+  * Support XDG Base Directory Specification (LP: #1074448)
+  * Don't create empty user directories until they are needed (LP: #1105843)
   * Allow drag selection of keys (LP: #644210)
   * Add HighContrast icon (LP: #1082243)
   * Fix onboard sometimes not switching labels back to lower case (LP: #1207503)
@@ -91,6 +108,7 @@ onboard (0.99.0~alpha1~tr1531-0ppa~saucy1) saucy; urgency=low
   * Make more AT-SPI processing asynchronous
   * Handle more uncaught AT-SPI exceptions
   * Don't read much data from accessibles before we know them to be of interest
+  * Let ConfigObject be the interface of all gsettings delay and apply calls
   * Improve appearance of the Preferences dialog
   * Allow starting up without python(3)-dbus (runs with reduced functionality)
   * Update system defaults example files
@@ -102,7 +120,7 @@ onboard (0.99.0~alpha1~tr1531-0ppa~saucy1) saucy; urgency=low
   * Update some labels and tooltips
   * Some code cleanup
 
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 03 Aug 2013 21:00:05 +0200
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 22 Aug 2013 10:24:23 +0200
 
 onboard (0.99.0~alpha1~tr1190-0ubuntu1) raring; urgency=low
 

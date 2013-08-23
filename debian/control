@@ -47,8 +47,7 @@ Description: Simple On-screen Keyboard
 
 Package: onboard-data
 Architecture: all
-Depends: ${python3:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          onboard (>= 0.99.0~alpha1~tr1507)
 Replaces: onboard-prediction-data  (<< 0.99.0~alpha1~tr1531)
 Breaks: onboard-prediction-data  (<< 0.99.0~alpha1~tr1531)

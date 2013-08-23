@@ -16,8 +16,7 @@ usr/share/onboard/CHANGELOG
 usr/share/onboard/COPYING
 usr/share/onboard/layoutstrings.py
 usr/share/onboard/NEWS
-usr/share/onboard/onboard-defaults.conf.example
-usr/share/onboard/onboard-defaults.conf.example.nexus7
+usr/share/onboard/onboard-defaults.conf*
 usr/share/onboard/README
 usr/share/onboard/settings.ui
 usr/share/onboard/settings_scanner_dialog.ui
