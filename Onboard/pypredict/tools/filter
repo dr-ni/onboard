@@ -48,11 +48,11 @@ def main():
     # regex filters
     parser.add_option("-r", "--regex-unigram",
               type="str", dest="regex_unigram", default="",
-              help="regular expression filter applied to unigrams")
+              help="regular expression filter applied to unigrams. Matches are dropped.")
     parser.add_option("-n", "--regex-ngram",
               type="str", dest="regex_ngram", default="",
               help="regular expression filter applied to the space separated "
-                   "ngram string")
+                   "ngram string. Matches are dropped.")
     parser.add_option("-t", "--title-case",
               action="store_true", dest="title_case", default=False,
               help="Keep only all capitalized words for bigrams and up")

@@ -52,6 +52,7 @@ class _BaseModel:
         [['word1'], ['word1', 'word2'], ['word2'], ['<s>'], ['<s>', 'word3'], ['word3']]
         """
         token_sections = []
+
         # Don't let <unk> enter the model.
         # Split the token stream into sections between <unk>s.
         unk_sections = split_tokens(tokens, "<unk>")
@@ -116,7 +117,10 @@ class _BaseModel:
 
 
 class LanguageModel(_BaseModel, lm.LanguageModel):
-    """ Keep this to access the class constants. """
+    """
+    Abstract class representing the base class of all models.
+    Keep this for access to class constants.
+    """
     def __init__(self):
         raise NotImplementedError()
 
@@ -138,6 +142,8 @@ class CachedDynamicModel(_BaseModel, lm.CachedDynamicModel):
 
 def split_tokens(tokens, separator, keep_separator = False):
     """
+    Split list of tokens at separator token.
+
     Doctests:
     # excluding separator
     >>> split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>")
