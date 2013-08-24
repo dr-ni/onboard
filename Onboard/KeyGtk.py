@@ -405,10 +405,15 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # popup indicator
         if not self.popup_id is None and \
            not config.xid_mode:
-            label = "…"
-            label = "︙"
+            label = "︙"         # narrow glyph, but not available on Precise
+            fallback_label = "…" # ellipsis should exist in all fonts
+
             font_size = self.font_size
+
             layout = self.get_pango_layout(label, font_size, 2)
+            if layout.get_unknown_glyphs_count():
+                layout = self.get_pango_layout(fallback_label, font_size, 2)
+
             src_size = layout.get_size()
             src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
             xalign, yalign = self.align_popup_indicator(src_size,
