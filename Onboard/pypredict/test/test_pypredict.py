@@ -489,6 +489,8 @@ def suite():
          ["under_score's", ["under_score's"], ["under_score's"],
              ["under_score's"]],
          ["|", ['|'], ['|'], ['|']],
+         ["find | grep", ['find', '|', 'grep'], ['find', '|', 'grep'],
+             ['find | grep']],
          ["<bot:txt> word", ['<bot:txt>', 'word'], ['<bot:txt>', 'word'],
              ['<bot:txt> word']],
          ["<bot:term> word", ['<bot:term>', 'word'], ['<bot:term>', 'word'],
