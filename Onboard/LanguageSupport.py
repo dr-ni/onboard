@@ -49,6 +49,8 @@ class LanguageDB:
                        "eu" : "ES",
                        "fr" : "FR",
                        "fy" : "BL",
+                       "ga" : "IE",  # Irish
+                       "gd" : "GB",  # Scottish Gaelic
                        "it" : "IT",
                        "li" : "NL",
                        "nl" : "NL",
@@ -61,7 +63,7 @@ class LanguageDB:
                        "sr" : "RS",
                        "sv" : "SE",
                        "ti" : "ER",
-                       "tr" : "TK",
+                       "tr" : "TR", # Turkish
                       }
 
     def __init__(self, wp = None):
