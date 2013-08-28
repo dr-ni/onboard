@@ -1,13 +1,26 @@
 
 \data\
-ngram 1=47889
-ngram 2=3935
+ngram 1=49675
+ngram 2=3974
 
 \1-grams:
 1 <unk>
 1 <s>
 1 </s>
 1 <num>
+285 -A
+75 -Azul
+141 -B
+119 -C
+385 -D
+84 -E
+104 -a
+416 -bit
+118 -bits
+84 -e
+71 -i
+81 -o
+85 -se
 625 AA
 138 AAC
 384 AB
@@ -16,6 +29,7 @@ ngram 2=3935
 174 ABNT
 1782 AC
 126 ACP
+73 ACS
 558 AD
 74 ADH
 190 AFA
@@ -29,10 +43,13 @@ ngram 2=3935
 108 ALGOL
 1949 AM
 71 AMA
+73 AMB
 80 ANA
 141 ANAC
 83 ANATEL
 89 ANC
+73 ANL
+179 ANP
 567 AP
 332 APA
 115 APL
@@ -68,6 +85,7 @@ ngram 2=3935
 478 Abertura
 141 Abi
 300 Abigail
+81 Abin
 175 Abismo
 118 Abissínia
 123 Abner
@@ -267,6 +285,7 @@ ngram 2=3935
 133 Ajudante
 146 Ajuricaba
 3368 Al
+341 Al-Qaeda
 590 Ala
 1738 Alabama
 184 Alagoa
@@ -286,6 +305,7 @@ ngram 2=3935
 90 Albanesa
 396 Albano
 306 Albergaria
+117 Albergaria-a-Velha
 96 Albernaz
 3720 Albert
 756 Alberta
@@ -299,6 +319,7 @@ ngram 2=3935
 2820 Albuquerque
 2003 Albânia
 137 Alcaide
+74 Alcaide-mor
 276 Alcalá
 92 Alcatraz
 350 Alceu
@@ -542,6 +563,8 @@ ngram 2=3935
 128 Amã
 1115 Amélia
 36464 América
+98 América-MG
+74 América-RJ
 2336 Américas
 1076 Américo
 308 Amílcar
@@ -618,6 +641,7 @@ ngram 2=3935
 73 Anhaia
 148 Anhangabaú
 569 Anhanguera
+85 Anhangüera
 315 Anhembi
 117 Anhumas
 85 Ani
@@ -797,6 +821,7 @@ ngram 2=3935
 83 Arcebispos
 372 Archer
 836 Arco
+115 Arco-Íris
 761 Arcos
 205 Arcoverde
 78 Arcozelo
@@ -1004,6 +1029,7 @@ ngram 2=3935
 72 Ataliba
 267 Atanásio
 326 Ataque
+79 Ataulfo
 515 Ataíde
 164 Atelier
 70 Ateliê
@@ -1027,6 +1053,8 @@ ngram 2=3935
 676 Atlântida
 920 Atlética
 5487 Atlético
+250 Atlético-MG
+266 Atlético-PR
 98 Atmosféricos
 1533 Ato
 169 Atol
@@ -1143,6 +1171,8 @@ ngram 2=3935
 74 Aída
 731 BA
 97 BAR
+154 BB
+2918 BBC
 319 BC
 77 BCE
 102 BCP
@@ -1389,9 +1419,12 @@ ngram 2=3935
 227 Beco
 137 Bei
 132 Beija
+178 Beija-Flor
 459 Beijo
 72 Beijos
 2370 Beira
+180 Beira-Mar
+253 Beira-Rio
 145 Beiras
 464 Beirute
 96 Beirão
@@ -1401,6 +1434,7 @@ ngram 2=3935
 1837 Bela
 106 Belarmino
 2768 Belas
+628 Belas-Artes
 273 Belchior
 342 Belenenses
 578 Beleza
@@ -1421,6 +1455,7 @@ ngram 2=3935
 321 Belvedere
 4728 Belém
 95 Belíssima
+73 Bem-Estar
 179 Bemposta
 182 Benavente
 231 Benedita
@@ -1452,6 +1487,7 @@ ngram 2=3935
 89 Berengária
 146 Berengário
 361 Berenice
+1090 Berkeley
 7874 Berlim
 141 Bermuda
 387 Bermudas
@@ -1535,6 +1571,7 @@ ngram 2=3935
 863 Bispos
 245 Bissau
 166 Bit
+597 Bittencourt
 257 Bitínia
 87 Bizantina
 1558 Bizantino
@@ -1549,6 +1586,8 @@ ngram 2=3935
 76 Bloemfontein
 272 Blog
 120 Bloqueio
+136 Blu-Ray
+362 Blu-ray
 1719 Blues
 1111 Blumenau
 4291 Boa
@@ -1634,6 +1673,7 @@ ngram 2=3935
 100 Borromeu
 74 Bos
 851 Bosco
+78 Bose-Einstein
 529 Bosque
 479 Bossa
 3683 Boston
@@ -1814,6 +1854,7 @@ ngram 2=3935
 268 Búlgaro
 74 Búlgaros
 219 Búzios
+90 Bündchen
 514 CA
 201 CAD
 182 CAM
@@ -1826,6 +1867,7 @@ ngram 2=3935
 111 CCB
 119 CCC
 12312 CD
+292 CD-ROM
 199 CDC
 70 CDI
 237 CDS
@@ -1834,10 +1876,12 @@ ngram 2=3935
 925 CE
 79 CEDA
 73 CEF
+102 CEFET
 217 CEI
 807 CEO
 391 CEP
 395 CF
+150 CGT
 132 CI
 1235 CIA
 96 CIC
@@ -1845,15 +1889,20 @@ ngram 2=3935
 70 CIS
 89 CISC
 100 CITES
+127 CJ
 154 CL
 140 CLT
-538 CM
+106 CMOS
+133 CMS
 240 CN
+503 CNBB
 70 CNE
 82 CNI
 423 CNN
 77 CNPJ
 313 CNPq
+111 CNRS
+777 CNT
 335 CO
 106 COBOL
 77 COHAB
@@ -1863,13 +1912,20 @@ ngram 2=3935
 88 CPF
 662 CPI
 162 CPLP
+89 CPT
 391 CR
 102 CRC
 114 CRU
 285 CS
+278 CSA
 230 CSI
+140 CTA
+71 CTB
+84 CTI
 117 CTT
+146 CUT
 375 CV
+110 CVM
 194 Ca
 248 Caatinga
 224 Cabala
@@ -1882,7 +1938,6 @@ ngram 2=3935
 128 Cabelo
 637 Cabeça
 134 Cabeças
-557 Cabeço
 145 Cabido
 310 Cabinda
 77 Cabine
@@ -2071,7 +2126,6 @@ ngram 2=3935
 172 Cancioneiro
 92 Cancún
 74 Candango
-230 Candeias
 391 Candelária
 101 Candida
 219 Candidatos
@@ -2147,6 +2201,8 @@ ngram 2=3935
 111 Capitu
 195 Capitães
 4749 Capitão
+107 Capitão-general
+269 Capitão-mor
 426 Capitólio
 144 Capivara
 320 Capivari
@@ -2300,7 +2356,6 @@ ngram 2=3935
 726 Cascavel
 86 Casco
 191 Cascudo
-133 Cascão
 539 Case
 109 Casimir
 450 Casimiro
@@ -2441,6 +2496,8 @@ ngram 2=3935
 13335 Central
 1134 Centre
 20978 Centro
+530 Centro-Africana
+1037 Centro-Oeste
 642 Centros
 89 Cenáculo
 107 Cera
@@ -2494,7 +2551,6 @@ ngram 2=3935
 165 Chapadão
 156 Chapecoense
 473 Chapecó
-218 Chapel
 72 Chapeleiro
 104 Chapeuzinho
 258 Chapéu
@@ -2516,8 +2572,10 @@ ngram 2=3935
 135 Cheia
 181 Cheiro
 100 Chelas
+85 Chernobyl
 998 Chi
 274 Chiado
+473 Chiapas
 162 Chiara
 269 Chiba
 74 Chibata
@@ -2703,6 +2761,7 @@ ngram 2=3935
 198 Cobre
 141 Coburgo
 140 Coca
+794 Coca-Cola
 192 Cocais
 207 Cochabamba
 414 Coco
@@ -2993,6 +3052,7 @@ ngram 2=3935
 229 Coqueiro
 185 Coqueiros
 609 Cor
+104 Cor-de-Rosa
 147 Cora
 218 Coragem
 74 Corais
@@ -3038,6 +3098,7 @@ ngram 2=3935
 473 Corpus
 71 Corral
 86 Corre
+587 Correa
 366 Corredor
 3412 Correia
 1443 Correio
@@ -3285,12 +3346,13 @@ ngram 2=3935
 92 Cós
 81 Cósmica
 103 Cósmico
-269 Côa
 237 Cônego
 180 Cônsul
 74 Côrtes
 231 Cúpula
 554 Cúria
+124 D'Água
+90 D'água
 112 DB
 3850 DC
 181 DDD
@@ -3299,6 +3361,7 @@ ngram 2=3935
 112 DI
 3089 DJ
 94 DL
+75 DN
 2803 DNA
 150 DOC
 72 DOM
@@ -3306,6 +3369,7 @@ ngram 2=3935
 139 DR
 76 DRIS
 1340 DS
+84 DST
 9172 DVD
 861 DVDs
 201 DX
@@ -3363,6 +3427,8 @@ ngram 2=3935
 1202 Declaração
 98 Decorativas
 4435 Decreto
+907 Decreto-Lei
+212 Decreto-lei
 119 Decretos
 89 Dedo
 252 Dedé
@@ -3556,6 +3622,7 @@ ngram 2=3935
 166 Diretas
 179 Direto
 2765 Diretor
+91 Diretor-Geral
 292 Diretora
 152 Diretores
 751 Diretoria
@@ -3571,6 +3638,7 @@ ngram 2=3935
 328 Discurso
 85 Discursos
 110 Discípulos
+97 Disneylândia
 96 Distante
 138 Distribuidora
 309 Distribuição
@@ -3696,6 +3764,7 @@ ngram 2=3935
 1193 Ducado
 164 Ducal
 255 Duda
+425 Dudu
 320 Duelo
 195 Duende
 75 Dueto
@@ -3735,6 +3804,8 @@ ngram 2=3935
 90 Dívida
 308 Dó
 156 Dória
+539 Düsseldorf
+152 EAD
 128 EB
 498 EC
 293 ECA
@@ -3825,6 +3896,7 @@ ngram 2=3935
 90 Elche
 621 Eldorado
 671 Eleanor
+163 Eleazar
 139 Electro
 281 Elefante
 329 Eleitor
@@ -3861,6 +3933,7 @@ ngram 2=3935
 169 Elmo
 104 Elo
 479 Elvira
+292 Elza
 613 Elétrica
 149 Elétricas
 208 Elétrico
@@ -3922,7 +3995,6 @@ ngram 2=3935
 252 Energética
 108 Enes
 594 Enfermagem
-285 Eng
 4889 Engenharia
 1062 Engenheiro
 739 Engenheiros
@@ -3980,6 +4052,7 @@ ngram 2=3935
 373 Eros
 85 Erro
 81 Eru
+121 Erundina
 73 Erva
 83 Erário
 167 Es
@@ -4106,7 +4179,11 @@ ngram 2=3935
 116 Estacional
 182 Estadio
 47653 Estado
+723 Estado-Maior
+78 Estado-nação
 68425 Estados
+202 Estados-Membros
+252 Estados-membros
 370 Estaduais
 8826 Estadual
 128 Estadão
@@ -4301,6 +4378,7 @@ ngram 2=3935
 414 FAB
 190 FAO
 150 FAP
+151 FARC
 1074 FBI
 5003 FC
 72 FE
@@ -4318,6 +4396,7 @@ ngram 2=3935
 273 FPF
 236 FR
 98 FSF
+85 FSM
 166 FTP
 108 FUNAI
 213 Fabiana
@@ -4494,6 +4573,7 @@ ngram 2=3935
 151 Fi
 169 Fialho
 72 Fiação
+122 Fibonacci
 142 Fibra
 126 Ficha
 2871 Ficheiro
@@ -4531,6 +4611,7 @@ ngram 2=3935
 338 Filipina
 3317 Filipinas
 72 Filipino
+75 Filipos
 922 Filmes
 73 Filo
 340 Filologia
@@ -4569,6 +4650,7 @@ ngram 2=3935
 139 Fito
 77 Fixo
 76 Fiéis
+70 Fla-Flu
 108 Flaco
 174 Flame
 3833 Flamengo
@@ -4732,6 +4814,7 @@ ngram 2=3935
 193 Frísia
 841 Fu
 305 Fuga
+165 Fukushima
 111 Fulda
 174 Fumaça
 82 Funai
@@ -4791,6 +4874,7 @@ ngram 2=3935
 105 Fúlvio
 315 Fúria
 89 Fúrias
+282 Führer
 125 GABA
 202 GARRIDO
 94 GATT
@@ -4798,6 +4882,7 @@ ngram 2=3935
 103 GD
 535 GE
 82 GH
+366 GHz
 148 GLP
 213 GNR
 1031 GNU
@@ -4806,6 +4891,7 @@ ngram 2=3935
 1849 GP
 487 GPL
 540 GPS
+752 GT
 113 Ga
 132 Gabe
 81 Gabeira
@@ -5039,6 +5125,7 @@ ngram 2=3935
 79 Gleba
 132 Glicério
 1365 Global
+145 Globinho
 13947 Globo
 173 Globos
 830 Gloria
@@ -5087,9 +5174,11 @@ ngram 2=3935
 168 Gosto
 253 Gota
 138 Gotardo
+643 Gotemburgo
 1305 Goulart
 850 Gouveia
 4449 Governador
+115 Governador-geral
 257 Governadores
 117 Governamental
 163 Governante
@@ -5165,7 +5254,14 @@ ngram 2=3935
 158 Gráfico
 134 Grândola
 286 Grã
+4558 Grã-Bretanha
+214 Grã-duquesa
 397 Grão
+326 Grão-Ducado
+536 Grão-Mestre
+356 Grão-Pará
+94 Grão-ducado
+495 Grão-duque
 8293 Grécia
 3370 Grêmio
 80 Gu
@@ -5175,6 +5271,7 @@ ngram 2=3935
 410 Guadiana
 128 Guairá
 211 Guajará
+76 Guajará-Mirim
 130 Gualberto
 368 Guam
 95 Guamá
@@ -5236,6 +5333,7 @@ ngram 2=3935
 4216 Guimarães
 70 Guinevere
 4309 Guiné
+845 Guiné-Bissau
 177 Guiomar
 241 Guise
 503 Guitarra
@@ -5271,7 +5369,10 @@ ngram 2=3935
 106 Gótica
 287 Gótico
 135 HB
+164 HC
+1336 HD
 81 HDL
+240 HDTV
 125 HF
 888 HIV
 674 HP
@@ -5313,8 +5414,10 @@ ngram 2=3935
 81 Harare
 120 Hardware
 172 Hari
+331 Harlem
 442 Harmonia
 610 Haroldo
+2014 Harvard
 83 Harã
 934 Havana
 1557 Havaí
@@ -5337,7 +5440,6 @@ ngram 2=3935
 143 Helene
 206 Heleno
 136 Helga
-150 Helio
 281 Heliópolis
 271 Heloísa
 522 Helsinque
@@ -5386,11 +5488,11 @@ ngram 2=3935
 217 Hidrográfica
 89 Hidrogênio
 112 Hidráulica
+138 Higgs
 160 Higiene
 203 Higino
 391 Hilda
 105 Hildebrando
-529 Hilton
 221 Hilário
 439 Himalaia
 154 Himalaias
@@ -5433,6 +5535,7 @@ ngram 2=3935
 742 Holocausto
 121 Holoceno
 4836 Homem
+990 Homem-Aranha
 1080 Homens
 1335 Homer
 823 Homero
@@ -5525,6 +5628,7 @@ ngram 2=3935
 95 IMC
 76 IML
 107 INCRA
+102 INEP
 123 INPI
 238 INSS
 1288 IP
@@ -5553,6 +5657,7 @@ ngram 2=3935
 3786 IX
 84 Ia
 116 Iago
+97 Iansã
 147 Iara
 129 Iate
 111 Ibama
@@ -5608,6 +5713,7 @@ ngram 2=3935
 5756 Ilhas
 258 Ilhéu
 536 Ilhéus
+3560 Illinois
 115 Iluminação
 482 Iluminismo
 124 Ilustrada
@@ -5673,13 +5779,13 @@ ngram 2=3935
 3228 Independência
 2735 Indiana
 270 Indiano
+808 Indianápolis
 115 Indicação
 84 Indira
 374 Individual
 310 Indo
 469 Indochina
 3218 Indonésia
-87 Indus
 118 Industria
 185 Industriais
 3548 Industrial
@@ -5963,7 +6069,11 @@ ngram 2=3935
 94 Ivã
 195 Izabel
 671 Iêmen
+212 JB
+447 JK
+73 JN
 74 JS
+107 JT
 313 Jabaquara
 249 Jaboatão
 227 Jaboticabal
@@ -6043,6 +6153,7 @@ ngram 2=3935
 7813 Jardim
 103 Jardine
 656 Jardins
+278 Jared
 156 Jari
 237 Jarreteira
 119 Jarvis
@@ -6081,7 +6192,10 @@ ngram 2=3935
 127 Jesuíta
 650 Jesuítas
 143 Ji
+144 Ji-Paraná
 2958 Jim
+93 Jingle
+73 Jiu-jitsu
 2363 Joana
 80 Joanes
 347 Joanesburgo
@@ -6235,16 +6349,15 @@ ngram 2=3935
 113 Kbps
 1827 Kennedy
 2152 Kevin
-244 Kg
 495 Khmer
 75 Kikito
+351 Kiko
 84 Kilimanjaro
 781 Kingston
 224 Kiribati
 341 Kit
 569 Klaus
 158 Kleber
-1531 Km
 3466 Kong
 121 Kr
 416 Kremlin
@@ -6254,16 +6367,19 @@ ngram 2=3935
 71 Kwanza
 507 Kyoto
 178 Kátia
+253 LC
 354 LCD
 106 LDL
 209 LED
 484 LEGO
+629 LGBT
 73 LI
 12128 LINEAR
 76 LIVE
 105 LO
 2929 LP
 78 LR
+149 LT
 156 LU
 78 LX
 17749 La
@@ -6355,6 +6471,9 @@ ngram 2=3935
 851 Latim
 6764 Latina
 1363 Latino
+130 Latino-Americana
+200 Latino-Americano
+86 Latino-americano
 107 Latinos
 154 Latitude
 119 Lato
@@ -6371,6 +6490,7 @@ ngram 2=3935
 102 Laurissilva
 754 Lauro
 89 Lava
+188 Lavoisier
 152 Lavoura
 96 Lavra
 176 Lavradio
@@ -6425,6 +6545,7 @@ ngram 2=3935
 71 Leni
 252 Lenine
 81 Leninegrado
+508 Leningrado
 210 Leno
 146 Lens
 224 Lençóis
@@ -6444,6 +6565,7 @@ ngram 2=3935
 136 Lesbos
 270 Lesoto
 4908 Leste
+77 Leste-Oeste
 147 Leto
 177 Letra
 6024 Letras
@@ -6541,6 +6663,7 @@ ngram 2=3935
 1813 Lisa
 99 Lisandro
 30430 Lisboa
+132 Lispector
 1539 Lista
 248 Lita
 105 Lite
@@ -6683,6 +6806,7 @@ ngram 2=3935
 99 Lusitanos
 428 Lusitânia
 294 Luso
+78 Luso-Brasileira
 122 Lusofonia
 173 Lustosa
 74 Lusácia
@@ -6738,6 +6862,7 @@ ngram 2=3935
 307 Lúcifer
 1587 Lúcio
 437 MA
+189 MAM
 109 MAN
 117 MAX
 823 MB
@@ -6752,6 +6877,7 @@ ngram 2=3935
 1938 MG
 1695 MHz
 272 MI
+76 MIS
 167 ML
 81 MMX
 194 MN
@@ -6764,6 +6890,7 @@ ngram 2=3935
 806 MS
 164 MST
 589 MT
+72 MTC
 262 MV
 723 MW
 78 MX
@@ -7139,6 +7266,7 @@ ngram 2=3935
 729 Matilde
 70 Matinhos
 6500 Mato
+127 Mato-Grossense
 70 Matola
 1773 Matos
 521 Matosinhos
@@ -7181,6 +7309,7 @@ ngram 2=3935
 129 Maçônicas
 77 Maíra
 238 Mbps
+1414 McCartney
 360 McDonald
 7909 Me
 193 Mealhada
@@ -7362,7 +7491,6 @@ ngram 2=3935
 101 Militão
 172 Milo
 83 Milos
-1809 Milton
 3869 Milão
 321 Milênio
 110 Milícia
@@ -7514,6 +7642,7 @@ ngram 2=3935
 79 Mongo
 253 Mongol
 1016 Mongólia
+254 Monique
 291 Monitor
 73 Monitoramento
 953 Moniz
@@ -7540,6 +7669,7 @@ ngram 2=3935
 9354 Monte
 3326 Monteiro
 77 Montemor
+173 Montemor-o-Novo
 2028 Montenegro
 82 Montepio
 151 Montero
@@ -7655,10 +7785,13 @@ ngram 2=3935
 102 Mulato
 155 Mulei
 2206 Mulher
+101 Mulher-Gato
+204 Mulher-Maravilha
 1389 Mulheres
 90 Multi
 163 Multimédia
 87 Multimídia
+103 Multiverso
 174 Mumbai
 109 Mundaú
 1068 Mundiais
@@ -7779,8 +7912,10 @@ ngram 2=3935
 712 NET
 73 NG
 328 NP
+117 NPC
 74 NR
 125 NU
+88 NW
 313 Nabuco
 233 Nabucodonosor
 1173 Nacionais
@@ -7804,6 +7939,7 @@ ngram 2=3935
 951 Namíbia
 328 Nana
 1074 Nancy
+182 Nanda
 361 Nando
 93 Nani
 82 Nano
@@ -7895,6 +8031,7 @@ ngram 2=3935
 91 Neguinho
 168 Negócio
 1677 Negócios
+245 Nei
 415 Neiva
 96 Nelas
 136 Nelsinho
@@ -7928,6 +8065,7 @@ ngram 2=3935
 3089 Neves
 1949 Newton
 790 Ney
+224 Neymar
 77 Nhô
 200 Ni
 76 Nicanor
@@ -7949,7 +8087,6 @@ ngram 2=3935
 86 Nigeriana
 2662 Nigéria
 1914 Nilo
-245 Nilton
 240 Nilópolis
 909 Nina
 690 Nine
@@ -7999,6 +8136,8 @@ ngram 2=3935
 2245 Noroeste
 1716 Noronha
 34881 Norte
+171 Norte-Americana
+221 Norte-Nordeste
 5782 Noruega
 144 Norueguesa
 162 Norueguês
@@ -8070,6 +8209,7 @@ ngram 2=3935
 271 ODAS
 224 OEA
 410 OH
+93 OIT
 286 OLP
 245 OM
 338 OMC
@@ -8191,7 +8331,6 @@ ngram 2=3935
 279 Omaha
 946 Omar
 100 Ombrófila
-328 Omega
 81 Omo
 490 Omã
 99 Omíada
@@ -8341,8 +8480,11 @@ ngram 2=3935
 79 PAULO
 393 PB
 2684 PC
+109 PCA
 639 PCB
 231 PCC
+332 PCI
+76 PCO
 473 PCP
 182 PCR
 193 PCUS
@@ -8352,27 +8494,38 @@ ngram 2=3935
 836 PDS
 909 PDT
 796 PE
+183 PEC
 85 PEN
+188 PET
 125 PETA
 339 PF
 783 PFL
 78 PGA
 95 PH
+88 PHS
 281 PI
 3783 PIB
 89 PIE
 212 PJ
+492 PL
 130 PLC
+94 PLS
 574 PM
 2358 PMDB
 149 PMN
 75 PO
 885 PP
+134 PPB
 91 PPM
+180 PPP
 403 PPS
 1296 PR
+141 PRB
 98 PRD
+117 PRI
+99 PRN
 78 PRO
+324 PRP
 103 PRTB
 939 PS
 194 PSA
@@ -8395,6 +8548,7 @@ ngram 2=3935
 138 PTC
 109 PTN
 99 PU
+470 PUC
 509 PV
 221 PVC
 176 Pa
@@ -8489,6 +8643,11 @@ ngram 2=3935
 1131 Pamplona
 450 Pampulha
 1470 Pan
+166 Pan-Americana
+208 Pan-Americano
+1870 Pan-Americanos
+78 Pan-americana
+555 Pan-americanos
 2377 Panamá
 200 Pancho
 457 Panda
@@ -8663,6 +8822,7 @@ ngram 2=3935
 228 Paulistas
 471 Paulistão
 78390 Paulo
+81 Paulo-SP
 552 Paulínia
 629 Pavia
 1116 Pavilhão
@@ -8826,10 +8986,12 @@ ngram 2=3935
 236 Pesqueira
 2021 Pesquisa
 1101 Pesquisas
+123 Pessanha
 3322 Pessoa
 369 Pessoal
 352 Pestana
 301 Peste
+329 Pet
 1286 Pete
 7327 Peter
 2022 Petersburgo
@@ -8854,6 +9016,7 @@ ngram 2=3935
 86 Pias
 371 Piauiense
 3751 Piauí
+687 Pica-Pau
 111 Picada
 2311 Picardia
 722 Picasso
@@ -8865,7 +9028,6 @@ ngram 2=3935
 93 Piedoso
 95 Piedras
 1759 Piemonte
-365 Pier
 3103 Pierre
 1309 Pietro
 841 Pilar
@@ -9017,7 +9179,6 @@ ngram 2=3935
 279 Poderes
 79 Poderosa
 217 Poderoso
-453 Poe
 74 Poeira
 200 Poema
 269 Poemas
@@ -9169,6 +9330,7 @@ ngram 2=3935
 150 Prazer
 441 Prazeres
 7515 Praça
+111 Praça-forte
 79 Praças
 109 Preciso
 76 Preconceito
@@ -9216,6 +9378,8 @@ ngram 2=3935
 481 Prime
 11186 Primeira
 3284 Primeiro
+571 Primeiro-Ministro
+267 Primeiro-ministro
 100 Primitiva
 631 Primo
 101 Primordial
@@ -9245,7 +9409,9 @@ ngram 2=3935
 175 Procissão
 531 Proclamação
 387 Procurador
+165 Procurador-Geral
 197 Procuradoria
+87 Procuradoria-Geral
 534 Procópio
 509 Produto
 243 Produtor
@@ -9314,6 +9480,8 @@ ngram 2=3935
 120 Práticas
 123 Prático
 121 Pré
+157 Pré-História
+116 Pré-história
 174 Prédio
 10085 Prêmio
 691 Prêmios
@@ -9341,6 +9509,7 @@ ngram 2=3935
 375 Puma
 103 Pumas
 130 Punho
+1628 Punk
 167 Puno
 438 Punta
 87 Punto
@@ -9380,7 +9549,8 @@ ngram 2=3935
 188 Pólvora
 77 Pórcio
 105 Pórtico
-105 Pós
+625 Pós-Graduação
+171 Pós-graduação
 111 Póstumas
 72 Póstumo
 1881 Póvoa
@@ -9409,6 +9579,7 @@ ngram 2=3935
 120 Quarenta
 384 Quaresma
 1169 Quarta
+111 Quarta-feira
 148 Quartas
 590 Quartel
 868 Quarteto
@@ -9447,6 +9618,8 @@ ngram 2=3935
 454 Quilombo
 100 Quincas
 2686 Quinta
+70 Quinta-Feira
+125 Quinta-feira
 147 Quintal
 360 Quintana
 140 Quintanilha
@@ -9463,6 +9636,7 @@ ngram 2=3935
 90 Quirinal
 275 Quirino
 119 Quiroga
+282 Quissamã
 536 Quito
 284 Quitéria
 224 Quixadá
@@ -9488,10 +9662,13 @@ ngram 2=3935
 203 RI
 250 RISC
 2148 RJ
+320 RMS
 455 RN
 817 RNA
 174 RO
 313 ROM
+93 RP
+1288 RPG
 458 RPM
 169 RR
 2134 RS
@@ -9799,6 +9976,7 @@ ngram 2=3935
 674 Rice
 437 Richter
 2003 Rico
+88 Rico-homem
 127 Rida
 421 Ride
 193 Riel
@@ -9812,6 +9990,10 @@ ngram 2=3935
 492 Ringo
 141 Rino
 99693 Rio
+505 Rio-Grandense
+92 Rio-Niterói
+544 Rio-São
+88 Rio-grandense
 280 Riograndense
 446 Rioja
 1312 Rios
@@ -9881,6 +10063,7 @@ ngram 2=3935
 80 Romanche
 99 Romani
 5223 Romano
+916 Romano-Germânico
 877 Romanos
 545 Romantismo
 152 Romaria
@@ -9941,6 +10124,7 @@ ngram 2=3935
 473 Rouge
 443 Round
 289 Roupa
+434 Rousseff
 72 Roxa
 119 Roxas
 458 Roxo
@@ -10019,17 +10203,21 @@ ngram 2=3935
 114 SILVA
 409 SM
 106 SN
+329 SO
 267 SOS
 262 SOUZA
 4282 SP
 166 SPA
 260 SPD
 144 SR
+70 SRF
+91 SSE
 635 STF
 234 STJ
 121 SUD
 431 SUS
 514 SV
+113 SW
 820 Saara
 340 Sabará
 332 Sabedoria
@@ -10101,6 +10289,7 @@ ngram 2=3935
 492 Salinas
 96 Salitre
 210 Salmo
+94 Salmon
 291 Salmos
 74 Salo
 1609 Salomão
@@ -10157,6 +10346,7 @@ ngram 2=3935
 952 Sangue
 207 Sanitária
 185 Sansão
+312 Sant'Ana
 43939 Santa
 4993 Santana
 1868 Santarém
@@ -10192,6 +10382,7 @@ ngram 2=3935
 100 Sardes
 225 Sardinha
 484 Sargento
+97 Sargento-mor
 142 Sargentos
 469 Sarmento
 1055 Sarney
@@ -10246,6 +10437,7 @@ ngram 2=3935
 126 Secretos
 328 Secretária
 3199 Secretário
+362 Secretário-Geral
 122 Secretários
 106 Sector
 92 Secular
@@ -10260,6 +10452,7 @@ ngram 2=3935
 451 Segredo
 192 Segredos
 19378 Segunda
+90 Segunda-feira
 2529 Segundo
 90 Segundona
 179 Segura
@@ -10397,6 +10590,8 @@ ngram 2=3935
 1635 Sevilha
 85 Sexos
 328 Sexta
+284 Sexta-Feira
+189 Sexta-feira
 102 Sexteto
 389 Sexto
 241 Sexual
@@ -10489,10 +10684,10 @@ ngram 2=3935
 100 Sistemática
 187 Sistina
 316 Sisto
-155 Sita
 467 Site
 94 Sitio
 593 Sião
+276 Skate
 75 Slalom
 82 Sm
 4720 Soares
@@ -10507,6 +10702,7 @@ ngram 2=3935
 733 Sobrinho
 1885 Sociais
 7064 Social
+267 Social-Democrata
 328 Socialismo
 3056 Socialista
 226 Socialistas
@@ -10579,7 +10775,6 @@ ngram 2=3935
 291 Sorte
 171 Sosa
 91 Sossego
-100 Sotavento
 357 Soto
 608 Sou
 1706 Soul
@@ -10595,6 +10790,7 @@ ngram 2=3935
 362 Soviético
 118 Soviéticos
 194 Spa
+374 Spin
 333 Split
 4663 Sr
 1601 Sri
@@ -10647,6 +10843,12 @@ ngram 2=3935
 83 Suja
 104 Sujeito
 54704 Sul
+1326 Sul-Americana
+71 Sul-Americanas
+937 Sul-Americano
+224 Sul-Americanos
+182 Sul-americana
+108 Sul-americano
 388 Sula
 266 Sultanato
 418 Sultão
@@ -10656,6 +10858,8 @@ ngram 2=3935
 338 Sumo
 189 Suméria
 5719 Super
+135 Super-Heróis
+269 Super-Homem
 662 Supercopa
 256 Superintendente
 407 Superintendência
@@ -10761,6 +10965,7 @@ ngram 2=3935
 356 TSE
 80 TST
 31367 TV
+422 TVE
 1074 TVI
 181 TVS
 425 TVs
@@ -10798,6 +11003,7 @@ ngram 2=3935
 158 Talentos
 757 Tales
 143 Talhada
+96 Talia
 111 Talibã
 125 Talma
 224 Talmude
@@ -10883,6 +11089,7 @@ ngram 2=3935
 95 Taís
 814 Tcheca
 107 Tcheco
+853 Tchecoslováquia
 73 Tchê
 1188 Te
 73 Tear
@@ -10943,6 +11150,7 @@ ngram 2=3935
 170 Tenda
 83 Tendencies
 1162 Tenente
+127 Tenente-coronel
 457 Tenerife
 112 Tenho
 109 Tenor
@@ -11066,6 +11274,7 @@ ngram 2=3935
 148 Timo
 132 Timon
 706 Timor
+912 Timor-Leste
 226 Timão
 663 Timóteo
 1010 Tina
@@ -11105,6 +11314,7 @@ ngram 2=3935
 76 Tocantinópolis
 240 Tocha
 1897 Todos
+71 Todos-os-Santos
 259 Toei
 696 Togo
 94 Tojal
@@ -11207,6 +11417,7 @@ ngram 2=3935
 210 Transtorno
 410 Trapalhões
 71 Trapo
+88 Trata-se
 5924 Tratado
 319 Tratados
 273 Tratamento
@@ -11265,6 +11476,7 @@ ngram 2=3935
 81 Troféus
 654 Troia
 249 Troilo
+78 Trojan
 87 Tronco
 567 Trono
 657 Tropa
@@ -11274,6 +11486,7 @@ ngram 2=3935
 712 Trácia
 158 Tráfego
 70 Tráfico
+514 Trás-os-Montes
 414 Trânsito
 4696 Três
 101 Tríade
@@ -11364,10 +11577,17 @@ ngram 2=3935
 461 Túnel
 140 UAI
 291 UCI
+659 UDN
 211 UDP
 1134 UE
 3398 UEFA
 249 UERJ
+81 UFABC
+260 UFBA
+2971 UFC
+304 UFF
+149 UFG
+73 UFJF
 630 UFMG
 178 UFO
 72 UFPA
@@ -11379,7 +11599,9 @@ ngram 2=3935
 106 UFRN
 164 UFSC
 73 UFSM
+80 UFV
 106 UGT
+850 UHF
 74 ULA
 135 UNAM
 344 UNE
@@ -11388,6 +11610,7 @@ ngram 2=3935
 251 UNICAMP
 258 UNICEF
 104 UNIFESP
+71 UNIRIO
 250 UNITA
 378 UNIX
 204 UPA
@@ -11399,6 +11622,7 @@ ngram 2=3935
 612 USB
 131 USC
 2296 USP
+284 UTI
 222 UV
 73 UVA
 139 Ubaldo
@@ -11503,12 +11727,14 @@ ngram 2=3935
 299 Utopia
 223 Uva
 558 Uzbequistão
+130 VB
 869 VHS
 8136 VI
 5154 VII
 4445 VIII
 335 VIP
 127 VS
+185 VT
 286 VW
 325 Vaca
 252 Vacaria
@@ -11569,6 +11795,7 @@ ngram 2=3935
 308 Vampiro
 168 Vampiros
 4005 Van
+1613 Vancouver
 103 Vanda
 252 Vanderlei
 1263 Vanessa
@@ -11638,6 +11865,7 @@ ngram 2=3935
 77 Venezianos
 5015 Venezuela
 105 Venezuelana
+91 Venha-Ver
 126 Venta
 93 Ventania
 841 Vento
@@ -11709,6 +11937,15 @@ ngram 2=3935
 1218 Viação
 182 Vicariato
 611 Vice
+77 Vice-Almirante
+139 Vice-Campeão
+118 Vice-Prefeito
+750 Vice-Presidente
+331 Vice-Rei
+147 Vice-Reino
+89 Vice-campeão
+276 Vice-presidente
+339 Vice-rei
 6052 Vicente
 160 Vicentina
 138 Vicentino
@@ -11723,6 +11960,7 @@ ngram 2=3935
 502 Vidas
 185 Vide
 100 Videira
+2210 Video
 126 Videoclipe
 205 Vidigal
 104 Vidigueira
@@ -11749,6 +11987,7 @@ ngram 2=3935
 93 Vilaça
 555 Vilela
 587 Vilhena
+478 Villa-Lobos
 91 Vilma
 339 Vilnius
 84 Vilões
@@ -11906,6 +12145,7 @@ ngram 2=3935
 288 Vôlei
 86 WALL
 282 WB
+77 WSW
 2071 Wagner
 1096 Wall
 259 Wallis
@@ -11947,6 +12187,7 @@ ngram 2=3935
 134 XXVIII
 220 XXX
 72 XXXI
+111 XY
 1042 Xadrez
 96 Xambá
 749 Xangai
@@ -11975,6 +12216,7 @@ ngram 2=3935
 346 Yin
 15456 York
 76 Yôga
+130 ZE
 427 Zacarias
 135 Zaibatsu
 391 Zaire
@@ -12052,6 +12294,7 @@ ngram 2=3935
 71 abafar
 94 abaixar
 12932 abaixo
+131 abaixo-assinado
 73 abala
 345 abalada
 326 abalado
@@ -12078,6 +12321,8 @@ ngram 2=3935
 75 abandonava
 1863 abandono
 3703 abandonou
+80 abandoná-la
+102 abandoná-lo
 236 abarca
 86 abarcando
 76 abarcar
@@ -12192,7 +12437,10 @@ ngram 2=3935
 181 abraço
 238 abraçou
 2293 abre
+73 abre-alas
+317 abre-se
 837 abrem
+140 abrem-se
 489 abreviada
 138 abreviadamente
 947 abreviado
@@ -12218,6 +12466,7 @@ ngram 2=3935
 555 abrigou
 38897 abril
 1770 abrindo
+110 abrindo-se
 3612 abrir
 952 abriram
 85 abrirem
@@ -12225,6 +12474,7 @@ ngram 2=3935
 79 abrirá
 117 abrisse
 4758 abriu
+151 abriu-se
 229 abrupta
 362 abruptamente
 114 abruptas
@@ -12256,6 +12506,7 @@ ngram 2=3935
 1768 absorção
 208 abstenção
 116 abstenções
+78 abster-se
 313 abstinência
 70 abstracionismo
 539 abstrata
@@ -12336,6 +12587,7 @@ ngram 2=3935
 91 acatar
 100 acatou
 129 acede
+72 acede-se
 425 aceder
 107 acedeu
 92 acedida
@@ -12359,6 +12611,7 @@ ngram 2=3935
 2092 aceito
 628 aceitos
 3947 aceitou
+94 aceitá-lo
 219 aceitáveis
 590 aceitável
 184 acelera
@@ -12426,6 +12679,7 @@ ngram 2=3935
 94 acetilsalicílico
 128 acetona
 1584 acha
+201 acha-se
 158 achada
 117 achadas
 740 achado
@@ -12443,6 +12697,7 @@ ngram 2=3935
 145 achatados
 75 achatamento
 1081 achava
+79 achava-se
 521 achavam
 149 achei
 777 acho
@@ -12518,6 +12773,8 @@ ngram 2=3935
 642 acompanhava
 321 acompanhavam
 1964 acompanhou
+70 acompanhá-la
+230 acompanhá-lo
 71 aconchegante
 289 aconselha
 324 aconselhado
@@ -12575,22 +12832,27 @@ ngram 2=3935
 80 acostumar
 105 acre
 3302 acredita
+1605 acredita-se
 209 acreditado
 3333 acreditam
 90 acreditamos
 973 acreditando
+79 acreditando-se
 1869 acreditar
 255 acreditaram
 193 acreditarem
 84 acreditasse
 2817 acreditava
+367 acreditava-se
 1483 acreditavam
 186 acredite
 108 acreditem
 227 acredito
 462 acreditou
+76 acreditou-se
 575 acres
 687 acrescenta
+71 acrescenta-se
 313 acrescentada
 231 acrescentadas
 593 acrescentado
@@ -12646,6 +12908,7 @@ ngram 2=3935
 1188 acusados
 224 acusam
 338 acusando
+164 acusando-o
 244 acusar
 285 acusaram
 109 acusativo
@@ -12674,7 +12937,9 @@ ngram 2=3935
 953 adaptados
 129 adaptam
 256 adaptando
+102 adaptando-se
 1155 adaptar
+221 adaptar-se
 194 adaptaram
 153 adaptativa
 77 adaptativas
@@ -12683,6 +12948,7 @@ ngram 2=3935
 5420 adaptação
 1514 adaptações
 626 adaptou
+83 adaptou-se
 124 adaptável
 117 adarve
 168 adega
@@ -12959,6 +13225,7 @@ ngram 2=3935
 174 afamado
 70 afamados
 495 afasta
+137 afasta-se
 672 afastada
 364 afastadas
 1884 afastado
@@ -12966,10 +13233,14 @@ ngram 2=3935
 143 afastam
 1252 afastamento
 377 afastando
+223 afastando-se
 1169 afastar
+278 afastar-se
 135 afastaram
 93 afastava
 722 afastou
+375 afastou-se
+81 afastá-lo
 156 afazeres
 75 afecção
 124 afecções
@@ -13011,6 +13282,7 @@ ngram 2=3935
 243 afiliados
 463 afiliação
 85 afiliações
+78 afiliou-se
 385 afim
 99 afinada
 101 afinadas
@@ -13023,10 +13295,13 @@ ngram 2=3935
 255 afinidades
 536 afins
 6710 afirma
+189 afirma-se
 627 afirmado
 2532 afirmam
 2972 afirmando
+74 afirmando-se
 2034 afirmar
+127 afirmar-se
 785 afirmaram
 93 afirmarem
 71 afirmaria
@@ -13038,6 +13313,7 @@ ngram 2=3935
 151 afirme
 90 afirmem
 7071 afirmou
+105 afirmou-se
 90 afixos
 158 aflição
 240 afloramento
@@ -13061,6 +13337,13 @@ ngram 2=3935
 2300 africanos
 184 africâner
 190 afro
+201 afro-americana
+80 afro-americanas
+281 afro-americano
+605 afro-americanos
+211 afro-brasileira
+220 afro-brasileiras
+121 afro-brasileiros
 168 afronta
 70 afugentar
 126 afunda
@@ -13155,6 +13438,7 @@ ngram 2=3935
 92 agravo
 89 agravos
 259 agravou
+105 agravou-se
 213 agredido
 202 agredir
 86 agrediu
@@ -13203,6 +13487,7 @@ ngram 2=3935
 89 agrupado
 790 agrupados
 164 agrupam
+83 agrupam-se
 840 agrupamento
 444 agrupamentos
 140 agrupando
@@ -13251,6 +13536,7 @@ ngram 2=3935
 154 ajudados
 1185 ajudam
 1692 ajudando
+84 ajudando-o
 905 ajudante
 256 ajudantes
 7955 ajudar
@@ -13267,6 +13553,10 @@ ngram 2=3935
 209 ajude
 102 ajudem
 5620 ajudou
+78 ajudou-o
+342 ajudá-la
+871 ajudá-lo
+325 ajudá-los
 144 ajuntamento
 113 ajusta
 185 ajustada
@@ -13336,6 +13626,7 @@ ngram 2=3935
 198 albufeira
 118 albumina
 502 alcaide
+245 alcaide-mor
 108 alcaides
 144 alcalina
 119 alcalinas
@@ -13473,15 +13764,19 @@ ngram 2=3935
 464 alho
 10548 ali
 229 alia
+85 alia-se
 1230 aliada
 1151 aliadas
 2577 aliado
 4652 aliados
 166 aliando
+123 aliando-se
 4023 aliança
 947 alianças
 288 aliar
+160 aliar-se
 168 aliaram
+116 aliaram-se
 151 alicerce
 360 alicerces
 98 alienado
@@ -13490,13 +13785,17 @@ ngram 2=3935
 1030 alienígena
 825 alienígenas
 735 alimenta
+238 alimenta-se
 340 alimentada
 166 alimentadas
 578 alimentado
 327 alimentados
 816 alimentam
+322 alimentam-se
 284 alimentando
+230 alimentando-se
 2582 alimentar
+192 alimentar-se
 108 alimentarem
 989 alimentares
 231 alimentava
@@ -13520,11 +13819,14 @@ ngram 2=3935
 177 alinhar
 109 alinhou
 362 aliou
+349 aliou-se
 99 alistado
 74 alistados
 214 alistamento
 133 alistar
+75 alistar-se
 204 alistou
+269 alistou-se
 86 aliviado
 633 aliviar
 1051 aliás
@@ -13578,6 +13880,7 @@ ngram 2=3935
 20724 alta
 5238 altamente
 2365 altar
+596 altar-mor
 955 altares
 5582 altas
 220 alter
@@ -13611,10 +13914,14 @@ ngram 2=3935
 139 alternou
 381 alternância
 997 alterou
+86 alterou-se
 86 altiplano
 19435 altitude
 1556 altitudes
 17167 alto
+124 alto-falante
+215 alto-falantes
+195 alto-mar
 5140 altos
 142 altruísmo
 110 altruísta
@@ -13676,6 +13983,7 @@ ngram 2=3935
 90 alçar
 368 alças
 57446 além
+90 além-mar
 160 alérgica
 131 alérgicas
 102 alínea
@@ -14019,6 +14327,10 @@ ngram 2=3935
 189 anglicana
 172 anglicano
 194 anglicanos
+115 anglo-saxã
+188 anglo-saxão
+77 anglo-saxônica
+205 anglo-saxões
 114 anglos
 117 anglófona
 81 anglófono
@@ -14079,6 +14391,7 @@ ngram 2=3935
 137 anormalidades
 150 anormalmente
 236686 anos
+3130 anos-luz
 72 anota
 80 anotada
 107 anotadas
@@ -14142,6 +14455,9 @@ ngram 2=3935
 8573 anteriormente
 62031 antes
 181 anti
+142 anti-herói
+148 anti-horário
+90 anti-inflamatórios
 228 antiaérea
 97 antiaéreas
 76 antiaéreos
@@ -14173,6 +14489,7 @@ ngram 2=3935
 79 antipsicóticos
 87 antiquado
 132 antiquário
+90 antiquíssima
 74 antissemita
 106 antissemitismo
 140 antitanque
@@ -14264,6 +14581,7 @@ ngram 2=3935
 116 apagou
 161 apagão
 1370 apaixona
+263 apaixona-se
 1142 apaixonada
 78 apaixonadamente
 1852 apaixonado
@@ -14273,6 +14591,7 @@ ngram 2=3935
 321 apaixonar
 106 apaixonaram
 645 apaixonou
+310 apaixonou-se
 198 apanha
 290 apanhado
 150 apanhados
@@ -14349,6 +14668,7 @@ ngram 2=3935
 361 apelou
 98210 apenas
 110 apendicite
+76 apercebe-se
 187 aperfeiçoada
 78 aperfeiçoadas
 229 aperfeiçoado
@@ -14382,14 +14702,18 @@ ngram 2=3935
 94 aplauso
 318 aplausos
 1215 aplica
+412 aplica-se
 134 aplicabilidade
 2755 aplicada
 1083 aplicadas
 2601 aplicado
 926 aplicados
 389 aplicam
+95 aplicam-se
 535 aplicando
+98 aplicando-se
 1824 aplicar
+86 aplicar-se
 122 aplicaram
 811 aplicativo
 1266 aplicativos
@@ -14406,9 +14730,12 @@ ngram 2=3935
 91 apocalíptico
 163 apoda
 109 apoderar
+146 apoderar-se
 73 apoderou
+100 apoderou-se
 971 apogeu
 748 apoia
+79 apoia-se
 1235 apoiada
 425 apoiadas
 2310 apoiado
@@ -14417,6 +14744,7 @@ ngram 2=3935
 773 apoiados
 435 apoiam
 812 apoiando
+125 apoiando-se
 253 apoiante
 669 apoiantes
 3045 apoiar
@@ -14429,6 +14757,7 @@ ngram 2=3935
 20765 apoio
 539 apoios
 2014 apoiou
+105 apoiá-lo
 74 apolares
 230 apologia
 82 apologista
@@ -14461,10 +14790,13 @@ ngram 2=3935
 72 aposentadorias
 276 aposentados
 102 aposentando
+107 aposentando-se
 752 aposentar
+258 aposentar-se
 98 aposento
 577 aposentos
 859 aposentou
+417 aposentou-se
 1068 aposta
 88 apostado
 179 apostando
@@ -14524,6 +14856,7 @@ ngram 2=3935
 2303 aprendizagem
 280 aprendizes
 18245 apresenta
+1206 apresenta-se
 4134 apresentada
 1714 apresentadas
 8851 apresentado
@@ -14533,25 +14866,32 @@ ngram 2=3935
 894 apresentadores
 2145 apresentados
 6952 apresentam
+396 apresentam-se
 4439 apresentando
+526 apresentando-se
 7786 apresentar
+542 apresentar-se
 1596 apresentaram
+153 apresentaram-se
 624 apresentarem
 141 apresentaria
 148 apresentará
 192 apresentasse
 93 apresentassem
 3463 apresentava
+142 apresentava-se
 959 apresentavam
 8322 apresentação
 5461 apresentações
 390 apresente
 266 apresentem
 9015 apresentou
+986 apresentou-se
 132 apressadamente
 76 apressado
 96 apressar
 81 apressou
+86 apressou-se
 327 apreço
 148 aprimorada
 127 aprimorado
@@ -14600,14 +14940,16 @@ ngram 2=3935
 265 aproveitam
 1373 aproveitamento
 1110 aproveitando
+264 aproveitando-se
 1190 aproveitar
 314 aproveitaram
 101 aproveitava
 77 aproveitavam
 1061 aproveitou
-92 aprovisionamento
+123 aproveitou-se
 1951 aprovou
 1174 aproxima
+275 aproxima-se
 1240 aproximada
 29738 aproximadamente
 170 aproximadas
@@ -14615,7 +14957,9 @@ ngram 2=3935
 121 aproximados
 382 aproximam
 487 aproximando
+293 aproximando-se
 1154 aproximar
+348 aproximar-se
 161 aproximaram
 74 aproximarem
 443 aproximava
@@ -14624,6 +14968,7 @@ ngram 2=3935
 272 aproximações
 79 aproxime
 481 aproximou
+319 aproximou-se
 187 apta
 129 aptas
 644 aptidão
@@ -14687,6 +15032,7 @@ ngram 2=3935
 164 aquífero
 92 aquíferos
 19648 ar
+189 ar-condicionado
 91 ara
 76 arabescos
 154 aracnídeos
@@ -14743,6 +15089,7 @@ ngram 2=3935
 244 arcebispos
 78 arcipreste
 4723 arco
+334 arco-íris
 76 arconte
 2114 arcos
 107 arcossauros
@@ -14880,6 +15227,7 @@ ngram 2=3935
 103 arqueóloga
 743 arqueólogo
 759 arqueólogos
+98 arqui-inimigo
 419 arquibancada
 622 arquibancadas
 799 arquidiocese
@@ -14924,6 +15272,8 @@ ngram 2=3935
 130 arrancando
 318 arrancar
 228 arrancou
+369 arranha-céu
+497 arranha-céus
 136 arranja
 97 arranjada
 156 arranjadas
@@ -15152,6 +15502,7 @@ ngram 2=3935
 2135 assassino
 1044 assassinos
 496 assassinou
+97 assassiná-lo
 215 assassínio
 92 assediada
 84 assediado
@@ -15169,7 +15520,10 @@ ngram 2=3935
 1518 assembleia
 379 assembleias
 776 assemelha
+387 assemelha-se
 354 assemelham
+142 assemelham-se
+158 assemelhando-se
 108 assemelhar
 153 assemelhava
 491 assenta
@@ -15241,6 +15595,7 @@ ngram 2=3935
 89 assintomática
 73 assintomáticos
 500 assiste
+111 assiste-se
 254 assistem
 166 assistenciais
 123 assistencial
@@ -15257,10 +15612,12 @@ ngram 2=3935
 457 assistiram
 116 assistirem
 1045 assistiu
+124 assistiu-se
 3448 assistência
 764 assistências
 159 assoalho
 439 associa
+145 associa-se
 4198 associada
 2376 associadas
 5337 associado
@@ -15268,6 +15625,7 @@ ngram 2=3935
 236 associam
 165 associando
 480 associar
+112 associar-se
 121 associaram
 159 associativa
 87 associativismo
@@ -15277,6 +15635,7 @@ ngram 2=3935
 7750 associação
 2581 associações
 281 associou
+259 associou-se
 90 assolada
 87 assolado
 92 assolaram
@@ -15289,6 +15648,7 @@ ngram 2=3935
 220 assoreamento
 125 assuma
 3628 assume
+159 assume-se
 650 assumem
 278 assumia
 117 assumiam
@@ -15298,6 +15658,7 @@ ngram 2=3935
 1238 assumido
 194 assumidos
 2315 assumindo
+93 assumindo-se
 5081 assumir
 108 assumira
 757 assumiram
@@ -15375,6 +15736,8 @@ ngram 2=3935
 245 atacava
 263 atacavam
 2275 atacou
+152 atacá-lo
+93 atacá-los
 85 atadas
 87 atado
 71 atados
@@ -15536,7 +15899,6 @@ ngram 2=3935
 105 atrapalhando
 297 atrapalhar
 88 atrapalhou
-144 atras
 73 atrasa
 252 atrasada
 428 atrasado
@@ -15579,9 +15941,13 @@ ngram 2=3935
 85 atrial
 594 atribuem
 1159 atribui
+97 atribui-lhe
+99 atribui-se
 311 atribuindo
+203 atribuindo-lhe
 694 atribuir
 1032 atribuiu
+142 atribuiu-lhe
 1385 atribuição
 1011 atribuições
 93 atribulada
@@ -15705,6 +16071,7 @@ ngram 2=3935
 352 australianas
 2117 australiano
 611 australianos
+144 austro-húngaro
 1151 austríaca
 294 austríacas
 2323 austríaco
@@ -15824,6 +16191,7 @@ ngram 2=3935
 82 auxiliava
 220 auxilio
 316 auxiliou
+101 auxiliá-lo
 3117 auxílio
 82 auxílios
 242 aval
@@ -15841,6 +16209,7 @@ ngram 2=3935
 3759 avaliação
 735 avaliações
 326 avaliou
+155 avant-garde
 74 avantajado
 133 avante
 726 avança
@@ -15981,6 +16350,7 @@ ngram 2=3935
 1030 bacharel
 517 bacharelado
 219 bacharelato
+164 bacharelou-se
 84 bacharéis
 4603 bacia
 1144 bacias
@@ -16032,7 +16402,9 @@ ngram 2=3935
 4429 baixista
 142 baixistas
 15972 baixo
+144 baixo-relevo
 3119 baixos
+118 baixos-relevos
 256 baixou
 78 baixíssima
 184 baião
@@ -16230,14 +16602,20 @@ ngram 2=3935
 13371 baseado
 3311 baseados
 113 baseando
+716 baseando-se
 189 basear
+93 basear-se
 98 basearam
 241 baseava
+241 baseava-se
 104 baseavam
 143 basebol
 1258 baseia
+1392 baseia-se
 340 baseiam
+240 baseiam-se
 449 baseou
+291 baseou-se
 4888 bases
 3829 basicamente
 82 basilar
@@ -16275,8 +16653,10 @@ ngram 2=3935
 112 bataria
 86 batarias
 977 batata
+157 batata-doce
 642 batatas
 729 bate
+168 bate-papo
 199 batedor
 151 batedores
 143 batem
@@ -16350,6 +16730,8 @@ ngram 2=3935
 92 behaviorismo
 345 bei
 212 beija
+109 beija-flor
+212 beija-flores
 163 beijam
 168 beijando
 233 beijar
@@ -16357,6 +16739,7 @@ ngram 2=3935
 152 beijos
 75 beijou
 2092 beira
+308 beira-mar
 87 beiral
 100 beirando
 74 beiras
@@ -16376,6 +16759,14 @@ ngram 2=3935
 229 belíssimo
 70 belíssimos
 66064 bem
+1202 bem-estar
+93 bem-humorada
+97 bem-humorado
+725 bem-sucedida
+208 bem-sucedidas
+739 bem-sucedido
+308 bem-sucedidos
+70 bem-vindo
 593 bemol
 138 beneditina
 282 beneditino
@@ -16432,6 +16823,8 @@ ngram 2=3935
 116 berílio
 117 besouro
 265 besouros
+468 best-seller
+152 best-sellers
 408 besta
 206 bestas
 77 besteiros
@@ -16614,7 +17007,9 @@ ngram 2=3935
 2082 blues
 175 blusa
 13864 boa
+77 boa-fé
 4640 boas
+179 boas-vindas
 585 boate
 339 boates
 305 boato
@@ -16704,7 +17099,6 @@ ngram 2=3935
 3827 bons
 181 boné
 87 bonés
-128 booleana
 382 boom
 827 borboleta
 409 borboletas
@@ -16919,6 +17313,7 @@ ngram 2=3935
 427 burro
 230 burros
 12156 busca
+71 busca-se
 80 buscada
 173 buscado
 967 buscam
@@ -16930,6 +17325,7 @@ ngram 2=3935
 786 buscava
 518 buscavam
 983 buscou
+93 buscá-lo
 668 busto
 255 bustos
 70 butano
@@ -17009,7 +17405,6 @@ ngram 2=3935
 263 cabeçalho
 82 cabeçalhos
 1976 cabeças
-71 cabeço
 132 cabeçote
 230 cabia
 194 cabido
@@ -17017,6 +17412,8 @@ ngram 2=3935
 971 cabine
 326 cabines
 6343 cabo
+129 cabo-verdiana
+325 cabo-verdiano
 178 caboclo
 225 caboclos
 1465 cabos
@@ -17107,6 +17504,7 @@ ngram 2=3935
 87 calcares
 106 calcita
 215 calcula
+154 calcula-se
 778 calculada
 137 calculadas
 601 calculado
@@ -17217,8 +17615,6 @@ ngram 2=3935
 415 camiseta
 336 camisetas
 297 camisola
-105 camião
-152 camiões
 102 campa
 120 campainha
 115 campal
@@ -17249,6 +17645,7 @@ ngram 2=3935
 289 camuflagem
 157 camundongos
 961 cana
+1563 cana-de-açúcar
 5256 canadense
 998 canadenses
 195 canadiana
@@ -17282,11 +17679,14 @@ ngram 2=3935
 90 candelabro
 83 candelabros
 1101 candidata
+77 candidata-se
 368 candidatar
+176 candidatar-se
 840 candidatas
 7892 candidato
 4374 candidatos
 271 candidatou
+414 candidatou-se
 2562 candidatura
 362 candidaturas
 687 candomblé
@@ -17391,6 +17791,7 @@ ngram 2=3935
 10531 capaz
 4410 capazes
 7552 capela
+1097 capela-mor
 1234 capelas
 161 capelinha
 89 capella
@@ -17419,6 +17820,9 @@ ngram 2=3935
 154 capitã
 573 capitães
 7218 capitão
+361 capitão-general
+742 capitão-mor
+72 capitão-tenente
 382 capitéis
 98 capivara
 92 capivaras
@@ -17458,6 +17862,7 @@ ngram 2=3935
 545 capturaram
 143 capturas
 826 capturou
+122 capturá-lo
 84 capuchinho
 132 capuchinhos
 103 caput
@@ -17473,19 +17878,24 @@ ngram 2=3935
 2511 caracteres
 154 caracteristicamente
 1770 caracteriza
+1160 caracteriza-se
 2340 caracterizada
 520 caracterizadas
 2640 caracterizado
 609 caracterizados
 715 caracterizam
+287 caracterizam-se
 325 caracterizando
+147 caracterizando-se
 551 caracterizar
 131 caracterizaram
 179 caracterizava
+77 caracterizava-se
 83 caracterizavam
 796 caracterização
 79 caracterizações
 522 caracterizou
+198 caracterizou-se
 8340 característica
 16407 características
 1715 característico
@@ -17519,6 +17929,7 @@ ngram 2=3935
 105 carcaças
 227 carcinoma
 1010 cardeais
+99 cardeais-bispos
 2685 cardeal
 132 cardinais
 204 cardinal
@@ -17639,6 +18050,7 @@ ngram 2=3935
 141 carrinhos
 246 carris
 10999 carro
+217 carro-chefe
 525 carroceria
 149 carrocerias
 6543 carros
@@ -17673,11 +18085,13 @@ ngram 2=3935
 611 cartunista
 78 cartunistas
 2048 cartão
+85 cartão-postal
 268 cartógrafo
 131 cartógrafos
 313 cartório
 94 cartórios
 1583 cartões
+87 cartões-postais
 566 carvalho
 245 carvalhos
 2532 carvão
@@ -17688,6 +18102,7 @@ ngram 2=3935
 145 carências
 82 carótida
 41502 casa
+635 casa-se
 430 casaco
 123 casacos
 3475 casada
@@ -17701,9 +18116,12 @@ ngram 2=3935
 15237 casamento
 1403 casamentos
 287 casando
+189 casando-se
 3656 casar
+911 casar-se
 149 casara
 862 casaram
+354 casaram-se
 167 casarem
 272 casaria
 222 casario
@@ -17733,6 +18151,7 @@ ngram 2=3935
 35602 caso
 16275 casos
 6212 casou
+5146 casou-se
 103 cassada
 424 cassado
 169 cassados
@@ -17916,6 +18335,7 @@ ngram 2=3935
 1077 caçador
 152 caçadora
 1327 caçadores
+119 caçadores-coletores
 172 caçados
 157 caçam
 86 caçamba
@@ -17972,6 +18392,7 @@ ngram 2=3935
 726 cela
 308 celas
 626 celebra
+143 celebra-se
 1166 celebrada
 267 celebradas
 1404 celebrado
@@ -17989,6 +18410,7 @@ ngram 2=3935
 577 celebridade
 1177 celebridades
 617 celebrou
+116 celebrou-se
 341 celeiro
 134 celeiros
 1096 celeste
@@ -18036,6 +18458,7 @@ ngram 2=3935
 333 centers
 3221 cento
 135 centra
+340 centra-se
 944 centrada
 203 centradas
 787 centrado
@@ -18054,8 +18477,16 @@ ngram 2=3935
 359 centralização
 88 centrista
 34265 centro
+93 centro-americano
+191 centro-direita
+179 centro-esquerda
+163 centro-leste
+300 centro-norte
+446 centro-oeste
+468 centro-sul
 228 centroavante
 6528 centros
+101 centrou-se
 206 centrífuga
 74 centrífugas
 102 centrípeta
@@ -18150,6 +18581,7 @@ ngram 2=3935
 76 cessam
 73 cessando
 368 cessar
+513 cessar-fogo
 197 cessaram
 135 cessação
 453 cessou
@@ -18175,15 +18607,22 @@ ngram 2=3935
 137 chalé
 86 chalés
 4992 chama
+1728 chama-se
 32036 chamada
 5920 chamadas
 45354 chamado
 9579 chamados
 1443 chamam
+225 chamam-se
 130 chamamento
 418 chamamos
 1102 chamando
+205 chamando-a
+71 chamando-lhe
+322 chamando-o
+113 chamando-se
 5234 chamar
+1081 chamar-se
 964 chamaram
 77 chamarem
 409 chamaria
@@ -18191,13 +18630,20 @@ ngram 2=3935
 1067 chamas
 118 chamasse
 1976 chamava
+756 chamava-se
 935 chamavam
 93 chame
 304 chaminé
 230 chaminés
 5375 chamou
+97 chamou-a
+97 chamou-lhe
+175 chamou-o
+211 chamou-se
 93 champagne
 135 champanhe
+156 chamá-la
+284 chamá-lo
 3197 chance
 138 chancela
 165 chancelaria
@@ -18250,6 +18696,7 @@ ngram 2=3935
 281 chefiou
 209 chefão
 8538 chega
+228 chega-se
 9575 chegada
 168 chegadas
 2460 chegado
@@ -18269,6 +18716,7 @@ ngram 2=3935
 1181 chegava
 939 chegavam
 27314 chegou
+192 chegou-se
 318 chegue
 94 cheguei
 149 cheguem
@@ -18314,6 +18762,7 @@ ngram 2=3935
 1288 chocolate
 226 chocolates
 270 chocou
+90 chocou-se
 93 chope
 2230 choque
 385 choques
@@ -18376,8 +18825,13 @@ ngram 2=3935
 225 ciclônico
 1810 cidadania
 209521 cidade
+87 cidade-Estado
+245 cidade-estado
+231 cidade-sede
 488 cidadela
 27028 cidades
+201 cidades-estado
+90 cidades-estados
 152 cidadezinha
 262 cidadã
 2445 cidadão
@@ -18475,6 +18929,7 @@ ngram 2=3935
 5003 circulação
 114 circulo
 450 circulou
+97 circum-navegação
 230 circuncisão
 289 circunda
 171 circundada
@@ -18515,6 +18970,7 @@ ngram 2=3935
 185 cistos
 720 cisão
 1456 cita
+93 cita-se
 1705 citada
 941 citadas
 70 citadina
@@ -18522,6 +18978,7 @@ ngram 2=3935
 3189 citado
 1632 citados
 374 citam
+72 citam-se
 887 citando
 1689 citar
 93 citaram
@@ -18584,14 +19041,19 @@ ngram 2=3935
 165 classicista
 71 classicistas
 803 classifica
+122 classifica-se
 2718 classificada
 1843 classificadas
 4923 classificado
 2788 classificados
 476 classificam
+139 classificam-se
 593 classificando
+478 classificando-se
 1510 classificar
+150 classificar-se
 731 classificaram
+209 classificaram-se
 291 classificatória
 161 classificatório
 82 classificatórios
@@ -18600,6 +19062,8 @@ ngram 2=3935
 9739 classificação
 841 classificações
 3313 classificou
+81 classificou-o
+617 classificou-se
 635 claustro
 114 claustros
 204 clausura
@@ -18615,6 +19079,7 @@ ngram 2=3935
 101 clichê
 156 clichês
 3417 cliente
+75 cliente-servidor
 223 clientela
 4454 clientes
 9872 clima
@@ -18662,6 +19127,7 @@ ngram 2=3935
 572 clínicos
 7460 cm
 419 co
+196 co-piloto
 192 coadjutor
 74 coadjuvado
 1150 coadjuvante
@@ -18883,13 +19349,19 @@ ngram 2=3935
 73 colmo
 727 colo
 2736 coloca
+162 coloca-se
 3888 colocada
 2020 colocadas
 6801 colocado
 3661 colocados
 844 colocam
 1879 colocando
+98 colocando-a
+175 colocando-o
+94 colocando-os
+177 colocando-se
 4548 colocar
+137 colocar-se
 871 colocaram
 128 colocarem
 160 colocaria
@@ -18899,6 +19371,12 @@ ngram 2=3935
 6690 colocação
 470 colocações
 3905 colocou
+74 colocou-a
+224 colocou-o
+138 colocou-se
+152 colocá-la
+269 colocá-lo
+93 colocá-los
 527 colombiana
 906 colombiano
 178 colombianos
@@ -18959,6 +19437,8 @@ ngram 2=3935
 72 comandam
 635 comandando
 7633 comandante
+115 comandante-chefe
+392 comandante-em-chefe
 1306 comandantes
 1234 comandar
 87 comandaram
@@ -19013,6 +19493,7 @@ ngram 2=3935
 308 comediantes
 352 comem
 625 comemora
+111 comemora-se
 411 comemorada
 835 comemorado
 87 comemorados
@@ -19107,6 +19588,7 @@ ngram 2=3935
 9376 começo
 264 começos
 47515 começou
+141 começou-se
 163 comia
 136 comiam
 3322 comida
@@ -19154,6 +19636,7 @@ ngram 2=3935
 590 comparados
 139 comparam
 483 comparando
+78 comparando-se
 680 comparar
 98 compararam
 246 comparativa
@@ -19293,6 +19776,7 @@ ngram 2=3935
 5445 componentes
 2465 compor
 791 comporta
+94 comporta-se
 236 comportam
 362 comportamentais
 339 comportamental
@@ -19359,9 +19843,11 @@ ngram 2=3935
 188 compromete
 127 comprometem
 173 comprometendo
+88 comprometendo-se
 442 comprometer
 135 comprometeram
 285 comprometeu
+150 comprometeu-se
 103 comprometia
 429 comprometida
 104 comprometidas
@@ -19384,12 +19870,14 @@ ngram 2=3935
 336 comprovação
 77 comprovem
 170 comprovou
+87 comprá-lo
 94 compulsivo
 88 compulsoriamente
 113 compulsão
 165 compulsória
 177 compulsório
 312 compunha
+78 compunha-se
 481 compunham
 257 compuseram
 94 computabilidade
@@ -19409,10 +19897,10 @@ ngram 2=3935
 75 compósitos
 2567 compôs
 1369 compõe
+300 compõe-se
 2511 compõem
 22896 comum
 4123 comumente
-276 comummente
 57818 comuna
 121 comunais
 233 comunal
@@ -19427,6 +19915,7 @@ ngram 2=3935
 266 comunicam
 158 comunicando
 1176 comunicar
+140 comunicar-se
 71 comunicarem
 71 comunicativa
 79 comunicativo
@@ -19466,9 +19955,11 @@ ngram 2=3935
 786 concede
 92 concedem
 279 concedendo
+76 concedendo-lhe
 799 conceder
 136 concederam
 1950 concedeu
+352 concedeu-lhe
 250 concedia
 2114 concedida
 443 concedidas
@@ -19488,19 +19979,25 @@ ngram 2=3935
 16936 concelho
 1074 concelhos
 1147 concentra
+372 concentra-se
 731 concentrada
 453 concentradas
 740 concentrado
 557 concentrados
 475 concentram
+215 concentram-se
 325 concentrando
+236 concentrando-se
 995 concentrar
+216 concentrar-se
 183 concentraram
+92 concentraram-se
 208 concentrava
 137 concentravam
 5676 concentração
 1083 concentrações
 405 concentrou
+229 concentrou-se
 179 conceptual
 3372 concepção
 698 concepções
@@ -19526,9 +20023,11 @@ ngram 2=3935
 490 conclave
 128 concluem
 970 conclui
+173 conclui-se
 629 concluindo
 2064 concluir
 3135 concluiu
+168 concluiu-se
 110 conclusiva
 78 conclusivas
 76 conclusivos
@@ -19656,6 +20155,7 @@ ngram 2=3935
 1644 condução
 644 cone
 558 conecta
+88 conecta-se
 393 conectada
 334 conectadas
 703 conectado
@@ -19663,6 +20163,7 @@ ngram 2=3935
 202 conectam
 269 conectando
 637 conectar
+76 conectar-se
 233 conectividade
 83 conectivo
 70 conectivos
@@ -19695,6 +20196,7 @@ ngram 2=3935
 638 conferido
 129 conferidos
 243 conferindo
+77 conferindo-lhe
 575 conferir
 370 conferiu
 2515 conferência
@@ -19724,6 +20226,7 @@ ngram 2=3935
 116 confidencialidade
 227 confidente
 204 configura
+76 configura-se
 79 configurada
 201 configurado
 111 configurados
@@ -19794,6 +20297,7 @@ ngram 2=3935
 166 confrontou
 146 confucionismo
 476 confunde
+170 confunde-se
 341 confundem
 743 confundida
 182 confundidas
@@ -19840,14 +20344,17 @@ ngram 2=3935
 119 congênitas
 85 conhaque
 4721 conhece
+74 conhece-se
 363 conhecedor
 177 conhecedores
 1246 conhecem
+81 conhecem-se
 836 conhecemos
 509 conhecendo
 4447 conhecer
 198 conhecera
 979 conheceram
+92 conheceram-se
 196 conhecerem
 89 conheceria
 103 conhecesse
@@ -19861,6 +20368,8 @@ ngram 2=3935
 12316 conhecidos
 13686 conhecimento
 3536 conhecimentos
+84 conhecê-la
+120 conhecê-lo
 212 conheça
 90 conheçam
 94 conheço
@@ -19909,17 +20418,20 @@ ngram 2=3935
 90 conquistasse
 178 conquistava
 13760 conquistou
+125 conquistá-la
 156 consagra
 861 consagrada
 330 consagradas
 1514 consagrado
 849 consagrados
 144 consagrando
+85 consagrando-se
 198 consagrar
 97 consagraram
 90 consagraria
 723 consagração
 757 consagrou
+218 consagrou-se
 95 consanguinidade
 1213 consciente
 225 conscientemente
@@ -19935,6 +20447,7 @@ ngram 2=3935
 1668 consecutivos
 136 consecução
 9046 consegue
+115 consegue-se
 2630 conseguem
 271 consegui
 1353 conseguia
@@ -19956,6 +20469,7 @@ ngram 2=3935
 526 conseguisse
 195 conseguissem
 22366 conseguiu
+85 conseguiu-se
 190 conselheira
 2290 conselheiro
 918 conselheiros
@@ -19973,6 +20487,7 @@ ngram 2=3935
 334 consertar
 125 conserto
 1218 conserva
+132 conserva-se
 71 conservacionista
 491 conservada
 344 conservadas
@@ -19984,6 +20499,7 @@ ngram 2=3935
 288 conservadorismo
 404 conservados
 458 conservam
+121 conservam-se
 312 conservando
 79 conservante
 745 conservar
@@ -19994,19 +20510,27 @@ ngram 2=3935
 4203 conservação
 402 conservou
 3553 considera
+72 considera-o
+626 considera-se
 16201 considerada
 4290 consideradas
 28191 considerado
 7028 considerados
 3109 consideram
+117 consideram-se
 125 consideramos
 2193 considerando
+97 considerando-a
+124 considerando-o
+345 considerando-se
 3005 considerar
+277 considerar-se
 722 consideraram
 196 considerarem
 197 considerarmos
 103 considerasse
 1991 considerava
+119 considerava-se
 999 consideravam
 2075 consideravelmente
 1799 consideração
@@ -20015,6 +20539,10 @@ ngram 2=3935
 158 considerem
 86 considero
 2418 considerou
+83 considerou-o
+90 considerou-se
+95 considerá-la
+191 considerá-lo
 826 consideráveis
 3890 considerável
 498 consiga
@@ -20052,6 +20580,7 @@ ngram 2=3935
 128 consolidaram
 1563 consolidação
 789 consolidou
+202 consolidou-se
 163 consolo
 454 consome
 303 consomem
@@ -20080,6 +20609,7 @@ ngram 2=3935
 104 constataram
 287 constatação
 403 constatou
+137 constatou-se
 295 constava
 148 constavam
 10209 constelação
@@ -20095,17 +20625,23 @@ ngram 2=3935
 84 constitucionalistas
 147 constitucionalmente
 7042 constituem
+113 constituem-se
 3938 constitui
+692 constitui-se
 1297 constituindo
+462 constituindo-se
 814 constituinte
 837 constituintes
 1490 constituir
+153 constituir-se
 99 constituiria
 1036 constituiu
+428 constituiu-se
 4520 constituição
 285 constituições
 98 constitutiva
 641 constituía
+146 constituía-se
 544 constituíam
 4629 constituída
 718 constituídas
@@ -20122,6 +20658,7 @@ ngram 2=3935
 8237 construir
 97 construiria
 3979 construiu
+169 construiu-se
 306 construtiva
 167 construtivas
 122 construtivismo
@@ -20141,6 +20678,7 @@ ngram 2=3935
 12545 construído
 3742 construídos
 1309 construíram
+70 construíram-se
 118 construírem
 104 construísse
 753 constrói
@@ -20185,6 +20723,8 @@ ngram 2=3935
 983 consórcio
 119 consórcios
 32503 conta
+87 conta-lhe
+304 conta-se
 773 contabilidade
 97 contabilista
 90 contabiliza
@@ -20208,6 +20748,7 @@ ngram 2=3935
 132 contagiante
 105 contagiosa
 1823 contam
+392 contam-se
 228 contaminada
 148 contaminadas
 254 contaminado
@@ -20216,6 +20757,7 @@ ngram 2=3935
 109 contaminar
 833 contaminação
 3940 contando
+70 contando-se
 226 contanto
 4640 contar
 489 contaram
@@ -20230,6 +20772,7 @@ ngram 2=3935
 134 contatou
 4755 contava
 614 contavam
+88 contavam-se
 174 conte
 731 contem
 324 contempla
@@ -20333,6 +20876,10 @@ ngram 2=3935
 3958 contos
 6435 contou
 81981 contra
+193 contra-almirante
+115 contra-atacar
+477 contra-ataque
+175 contra-ataques
 123 contrabaixista
 443 contrabaixo
 88 contrabalançar
@@ -20408,6 +20955,7 @@ ngram 2=3935
 1817 contratou
 271 contratuais
 213 contratual
+120 contratá-lo
 819 contração
 195 contrações
 153 contraída
@@ -20504,6 +21052,9 @@ ngram 2=3935
 1923 convencional
 203 convencionalmente
 116 convencionou
+101 convencê-la
+219 convencê-lo
+80 convencê-los
 710 conveniente
 208 convenientemente
 137 convenientes
@@ -20537,12 +21088,17 @@ ngram 2=3935
 214 conversível
 290 conversões
 564 converte
+148 converte-se
 151 convertem
 251 convertendo
+253 convertendo-se
 1179 converter
+286 converter-se
 288 converteram
+92 converteram-se
 89 converteria
 1174 converteu
+782 converteu-se
 699 convertida
 241 convertidas
 1531 convertido
@@ -20563,6 +21119,7 @@ ngram 2=3935
 247 convidaram
 86 convidava
 1664 convidou
+146 convidou-o
 332 convincente
 138 convincentes
 3960 convite
@@ -20642,6 +21199,7 @@ ngram 2=3935
 112 coquetel
 71 coquetéis
 13571 cor
+331 cor-de-rosa
 83 cora
 1684 coragem
 861 corais
@@ -20711,6 +21269,7 @@ ngram 2=3935
 178 coroou
 444 coros
 28366 corpo
+231 corpo-a-corpo
 603 corporais
 1622 corporal
 410 corporativa
@@ -20804,6 +21363,7 @@ ngram 2=3935
 246 corsário
 724 corsários
 1232 corta
+78 corta-mato
 1205 cortada
 569 cortadas
 1357 cortado
@@ -20823,6 +21383,7 @@ ngram 2=3935
 365 cortesia
 188 cortesã
 159 cortesão
+192 cortesãos
 75 cortesãs
 87 cortical
 416 cortina
@@ -20863,6 +21424,7 @@ ngram 2=3935
 136 costela
 324 costelas
 2584 costuma
+244 costuma-se
 2023 costumam
 1301 costumava
 600 costumavam
@@ -20988,6 +21550,7 @@ ngram 2=3935
 188 cretense
 186 cretenses
 3916 cria
+179 cria-se
 159 criacionismo
 72 criacionista
 111 criacionistas
@@ -21000,11 +21563,13 @@ ngram 2=3935
 4976 criados
 1069 criam
 5204 criando
+193 criando-se
 8643 criança
 15632 crianças
 14227 criar
 143 criara
 2530 criaram
+93 criaram-se
 282 criarem
 186 criaria
 614 crias
@@ -21035,6 +21600,7 @@ ngram 2=3935
 1519 criminosos
 77 crina
 11924 criou
+524 criou-se
 194 crioula
 718 crioulo
 160 crioulos
@@ -21061,6 +21627,7 @@ ngram 2=3935
 5543 cristã
 3760 cristão
 6534 cristãos
+162 cristãos-novos
 1751 cristãs
 73 criteriosa
 893 critica
@@ -21150,6 +21717,7 @@ ngram 2=3935
 2807 crédito
 2082 créditos
 394 crê
+168 crê-se
 320 críquete
 10811 crítica
 7225 críticas
@@ -21323,9 +21891,12 @@ ngram 2=3935
 10006 cursos
 1065 cursou
 5942 curta
+1305 curta-metragem
 2555 curtas
+315 curtas-metragens
 152 curtir
 5439 curto
+100 curto-circuito
 1667 curtos
 82 curtume
 93 curtumes
@@ -21352,6 +21923,7 @@ ngram 2=3935
 182 custear
 137 custeio
 6949 custo
+83 custo-benefício
 102 customização
 4171 custos
 80 custosa
@@ -21409,6 +21981,7 @@ ngram 2=3935
 96 céltico
 3138 célula
 8667 células
+194 células-tronco
 3434 cérebro
 218 cérebros
 99 cério
@@ -21446,6 +22019,7 @@ ngram 2=3935
 549 códice
 217 códices
 7905 código
+249 código-fonte
 1557 códigos
 447 cólera
 91 cólicas
@@ -21488,6 +22062,12 @@ ngram 2=3935
 331 cúpulas
 105 cúria
 72 cúspides
+149 d'Arc
+313 d'Oeste
+247 d'Água
+123 d'Ávila
+1737 d'água
+182 dB
 2329006 da
 7646 dada
 1658 dadas
@@ -21500,6 +22080,9 @@ ngram 2=3935
 91 damos
 1228 dance
 10393 dando
+819 dando-lhe
+269 dando-lhes
+131 dando-se
 518 danificada
 422 danificadas
 700 danificado
@@ -21537,6 +22120,9 @@ ngram 2=3935
 704 daqui
 616 daquilo
 15912 dar
+431 dar-lhe
+140 dar-lhes
+163 dar-se
 354 dardo
 191 dardos
 308 darem
@@ -21561,6 +22147,7 @@ ngram 2=3935
 133 date
 90 dativo
 2952 dava
+99 dava-se
 1022 davam
 6825 daí
 8447443 de
@@ -21625,6 +22212,7 @@ ngram 2=3935
 93 decidiria
 117 decidisse
 12257 decidiu
+485 decidiu-se
 80 decidível
 264 decifrar
 101 decifração
@@ -21639,6 +22227,7 @@ ngram 2=3935
 101 decisório
 3754 decisões
 1441 declara
+105 declara-se
 1604 declarada
 121 declaradamente
 211 declaradas
@@ -21646,13 +22235,17 @@ ngram 2=3935
 449 declarados
 288 declaram
 903 declarando
+93 declarando-se
 1184 declarar
+74 declarar-se
 845 declararam
+78 declararam-se
 91 declarasse
 302 declarava
 3174 declaração
 1440 declarações
 6805 declarou
+304 declarou-se
 72 declinado
 283 declinar
 7801 declinação
@@ -21710,6 +22303,7 @@ ngram 2=3935
 72 decretaram
 105 decretação
 5588 decreto
+395 decreto-lei
 651 decretos
 781 decretou
 9279 decréscimo
@@ -21718,19 +22312,28 @@ ngram 2=3935
 73 decídua
 79 decíduas
 1039 dedica
+678 dedica-se
 4195 dedicada
 864 dedicadas
 4672 dedicado
 1391 dedicados
 364 dedicam
+111 dedicam-se
 284 dedicando
+679 dedicando-se
 2043 dedicar
+1213 dedicar-se
 312 dedicaram
+155 dedicaram-se
 207 dedicatória
 292 dedicava
+148 dedicava-se
 230 dedicavam
+99 dedicavam-se
 1415 dedicação
 2178 dedicou
+110 dedicou-lhe
+1593 dedicou-se
 1040 dedo
 1845 dedos
 107 dedutivo
@@ -21751,6 +22354,7 @@ ngram 2=3935
 1282 defendem
 1803 defendendo
 5500 defender
+187 defender-se
 369 defenderam
 169 defenderem
 176 defenderia
@@ -21761,6 +22365,8 @@ ngram 2=3935
 263 defendidas
 923 defendido
 181 defendidos
+95 defendê-la
+94 defendê-lo
 81 defense
 1160 defensiva
 515 defensivas
@@ -21778,6 +22384,7 @@ ngram 2=3935
 710 deficiências
 88 defina
 2891 define
+223 define-se
 812 definem
 283 definia
 75 definiam
@@ -21842,12 +22449,17 @@ ngram 2=3935
 73 deitados
 156 deitar
 6516 deixa
+102 deixa-se
 1088 deixada
 482 deixadas
 3137 deixado
 765 deixados
 1445 deixam
 8404 deixando
+236 deixando-a
+461 deixando-o
+138 deixando-os
+72 deixando-se
 9041 deixar
 329 deixara
 3161 deixaram
@@ -21862,8 +22474,15 @@ ngram 2=3935
 421 deixe
 133 deixem
 16944 deixou
+76 deixou-a
+126 deixou-o
+105 deixou-se
+214 deixá-la
+386 deixá-lo
+113 deixá-los
 170 dejetos
 11072 del
+527 del-Rei
 10239 dela
 8813 delas
 14417 dele
@@ -21944,7 +22563,9 @@ ngram 2=3935
 1743 demitido
 229 demitidos
 317 demitir
+144 demitir-se
 482 demitiu
+279 demitiu-se
 2328 demo
 2882 democracia
 201 democracias
@@ -22009,20 +22630,25 @@ ngram 2=3935
 74 denegrir
 232 dengue
 609 denomina
+321 denomina-se
 6725 denominada
 1355 denominadas
 7287 denominado
 167 denominador
 1779 denominados
 225 denominam
+93 denominam-se
 90 denominando
 608 denominar
+811 denominar-se
 135 denominaram
 145 denominava
+97 denominava-se
 117 denominavam
 7152 denominação
 1623 denominações
 546 denominou
+80 denominou-se
 537 denota
 94 denotada
 170 denotado
@@ -22065,10 +22691,12 @@ ngram 2=3935
 844 denúncia
 1031 denúncias
 311 depara
+81 depara-se
 141 deparam
 104 deparar
 88 depararam
 179 deparou
+124 deparou-se
 41010 departamento
 2160 departamentos
 70 dependa
@@ -22129,7 +22757,10 @@ ngram 2=3935
 5982 der
 312 dera
 4448 deram
+164 deram-lhe
+144 deram-se
 4097 deriva
+81 deriva-se
 1776 derivada
 943 derivadas
 3062 derivado
@@ -22173,6 +22804,8 @@ ngram 2=3935
 132 derrotarem
 2235 derrotas
 4902 derrotou
+251 derrotá-lo
+115 derrotá-los
 234 derruba
 726 derrubada
 170 derrubadas
@@ -22183,6 +22816,7 @@ ngram 2=3935
 214 derrubaram
 153 derrube
 693 derrubou
+95 derrubá-lo
 154 desabamento
 348 desabitada
 159 desabitadas
@@ -22218,7 +22852,6 @@ ngram 2=3935
 208 desagradáveis
 433 desagradável
 164 desagregação
-153 desaguam
 201 desaguando
 457 desaguar
 71 desajeitada
@@ -22330,6 +22963,7 @@ ngram 2=3935
 39935 descoberto
 1557 descobertos
 5879 descobre
+248 descobre-se
 1492 descobrem
 92 descobri
 506 descobridor
@@ -22344,6 +22978,7 @@ ngram 2=3935
 198 descobrirem
 102 descobrisse
 5041 descobriu
+441 descobriu-se
 78 descolagem
 207 descolonização
 140 descompressão
@@ -22387,11 +23022,16 @@ ngram 2=3935
 98 descontínua
 129 descrença
 4581 descreve
+73 descreve-se
 989 descrevem
 996 descrevendo
+72 descrevendo-a
+127 descrevendo-o
 3529 descrever
 331 descreveram
 3280 descreveu
+81 descreveu-a
+104 descreveu-o
 320 descrevia
 114 descreviam
 70 descriminalização
@@ -22498,6 +23138,7 @@ ngram 2=3935
 5208 desenhos
 882 desenhou
 241 desenrola
+128 desenrola-se
 454 desenrolar
 92 desenrolou
 389 desentendimento
@@ -22506,17 +23147,23 @@ ngram 2=3935
 140 desenvolva
 102 desenvolvam
 3121 desenvolve
+574 desenvolve-se
 537 desenvolvedor
 409 desenvolvedora
 1356 desenvolvedores
 1253 desenvolvem
+241 desenvolvem-se
 1897 desenvolvendo
+171 desenvolvendo-se
 6904 desenvolver
+361 desenvolver-se
 1938 desenvolveram
+305 desenvolveram-se
 228 desenvolverem
 83 desenvolveria
 134 desenvolvesse
 6556 desenvolveu
+1237 desenvolveu-se
 385 desenvolvia
 176 desenvolviam
 4426 desenvolvida
@@ -22591,6 +23238,7 @@ ngram 2=3935
 139 desidrogenase
 4792 design
 1693 designa
+183 designa-se
 2210 designada
 371 designadamente
 879 designadas
@@ -22599,6 +23247,7 @@ ngram 2=3935
 202 designam
 197 designando
 3108 designar
+375 designar-se
 82 designaram
 326 designava
 5357 designação
@@ -22637,29 +23286,36 @@ ngram 2=3935
 264 desligamento
 317 desligar
 192 desligou
+139 desligou-se
 113 desliza
 320 deslizamento
 368 deslizamentos
 74 deslizante
 163 deslizar
 326 desloca
+158 desloca-se
 259 deslocada
 164 deslocadas
 450 deslocado
 242 deslocados
 89 deslocalização
 283 deslocam
+130 deslocam-se
 1854 deslocamento
 387 deslocamentos
 175 deslocando
+157 deslocando-se
 626 deslocar
+247 deslocar-se
 181 deslocaram
+108 deslocaram-se
 71 deslocarem
 118 deslocava
 139 deslocavam
 264 deslocação
 136 deslocações
 299 deslocou
+347 deslocou-se
 193 deslumbrante
 80 deslumbrantes
 184 desmaia
@@ -22678,7 +23334,9 @@ ngram 2=3935
 1143 desmembrado
 111 desmembrados
 682 desmembramento
+161 desmembrando-se
 141 desmembrou
+94 desmembrou-se
 75 desmentida
 135 desmentido
 102 desmentiu
@@ -22726,6 +23384,7 @@ ngram 2=3935
 337 despedido
 176 despedir
 194 despediu
+99 despediu-se
 1058 despeito
 75 despejado
 204 despejo
@@ -22800,20 +23459,28 @@ ngram 2=3935
 8830 desses
 33528 desta
 2921 destaca
+2883 destaca-se
 872 destacada
 506 destacadas
 1802 destacado
 942 destacados
 2099 destacam
+3283 destacam-se
 658 destacamento
 224 destacamentos
 126 destacamos
 1055 destacando
+2057 destacando-se
 2329 destacar
+207 destacar-se
 682 destacaram
+279 destacaram-se
 339 destacava
+136 destacava-se
 192 destacavam
+101 destacavam-se
 2451 destacou
+1150 destacou-se
 70 destacável
 12678 destaque
 1571 destaques
@@ -22828,16 +23495,20 @@ ngram 2=3935
 100 destilaria
 449 destilação
 363 destina
+358 destina-se
 2890 destinada
 1460 destinadas
 3367 destinado
 1946 destinados
 157 destinam
+112 destinam-se
 93 destinar
 306 destinatário
 136 destinatários
 170 destinava
+241 destinava-se
 94 destinavam
+87 destinavam-se
 206 destinação
 6795 destino
 1460 destinos
@@ -22865,6 +23536,8 @@ ngram 2=3935
 107 destrutivas
 243 destrutivo
 139 destrutivos
+121 destruí-la
+164 destruí-lo
 2760 destruída
 1135 destruídas
 2579 destruído
@@ -22936,8 +23609,10 @@ ngram 2=3935
 117 deteriorado
 108 deteriorando
 109 deteriorar
+76 deteriorar-se
 575 deterioração
 101 deteriorou
+104 deteriorou-se
 1830 determina
 4703 determinada
 2306 determinadas
@@ -22980,8 +23655,12 @@ ngram 2=3935
 467 detritos
 496 detrás
 1671 detém
+119 detê-lo
 301 detêm
 24635 deu
+838 deu-lhe
+103 deu-lhes
+2458 deu-se
 5588 deus
 3130 deusa
 456 deusas
@@ -23005,12 +23684,16 @@ ngram 2=3935
 403 devastação
 285 devastou
 25221 deve
+3212 deve-se
 305 devedor
 124 devedores
 9964 devem
+171 devem-se
 812 devemos
 992 devendo
+78 devendo-se
 1476 dever
+130 dever-se
 80 deveram
 130 deveras
 1002 deveres
@@ -23021,7 +23704,9 @@ ngram 2=3935
 97 deveríamos
 99 devesse
 350 deveu
+493 deveu-se
 2176 devia
+102 devia-se
 1076 deviam
 1218 devida
 1237 devidamente
@@ -23133,6 +23818,7 @@ ngram 2=3935
 1255 difere
 865 diferem
 658 diferencia
+169 diferencia-se
 621 diferenciada
 461 diferenciadas
 633 diferenciado
@@ -23140,10 +23826,13 @@ ngram 2=3935
 596 diferenciais
 1482 diferencial
 291 diferenciam
+99 diferenciam-se
 98 diferenciando
+139 diferenciando-se
 799 diferenciar
 101 diferenciava
 976 diferenciação
+71 diferenciá-lo
 72 diferenciáveis
 117 diferenciável
 12778 diferente
@@ -23177,6 +23866,7 @@ ngram 2=3935
 630 difundir
 91 difundiram
 238 difundiu
+100 difundiu-se
 249 difusa
 73 difusas
 116 difuso
@@ -23186,6 +23876,7 @@ ngram 2=3935
 2380 difíceis
 9260 difícil
 467 diga
+79 diga-se
 94 digam
 153 digamos
 120 digerir
@@ -23281,6 +23972,7 @@ ngram 2=3935
 345 diplomas
 1608 diplomata
 369 diplomatas
+102 diplomou-se
 1151 diplomática
 1138 diplomáticas
 643 diplomático
@@ -23311,6 +24003,8 @@ ngram 2=3935
 74 diretivo
 4560 direto
 19500 diretor
+292 diretor-geral
+114 diretor-presidente
 1767 diretora
 2218 diretores
 2168 diretoria
@@ -23321,10 +24015,13 @@ ngram 2=3935
 650 diretório
 234 diretórios
 23062 direção
+88 direção-geral
 966 direções
 367 diria
 1643 dirige
+279 dirige-se
 325 dirigem
+107 dirigem-se
 1596 dirigente
 1980 dirigentes
 780 dirigia
@@ -23334,10 +24031,14 @@ ngram 2=3935
 15854 dirigido
 890 dirigidos
 1016 dirigindo
+228 dirigindo-se
 2772 dirigir
+195 dirigir-se
 336 dirigiram
+155 dirigiram-se
 82 dirigirem
 4458 dirigiu
+591 dirigiu-se
 140 dirigíveis
 218 dirigível
 111 dirá
@@ -23492,12 +24193,14 @@ ngram 2=3935
 516 disputava
 318 disputavam
 6130 disputou
+92 disputou-se
 213 dispôs
 2326 dispõe
 473 dispõem
 234 disquete
 183 disquetes
 17930 disse
+216 disse-lhe
 122 dissecação
 195 disseminada
 77 disseminadas
@@ -23521,6 +24224,7 @@ ngram 2=3935
 197 dissipar
 235 dissipação
 151 dissipou
+124 dissipou-se
 30399 disso
 165 dissociação
 1887 dissolução
@@ -23528,6 +24232,7 @@ ngram 2=3935
 87 dissolvendo
 467 dissolver
 461 dissolveu
+99 dissolveu-se
 636 dissolvida
 151 dissolvidas
 795 dissolvido
@@ -23544,6 +24249,7 @@ ngram 2=3935
 405 distancia
 283 distanciamento
 94 distanciando
+70 distanciando-se
 151 distanciar
 72 distancias
 89 distanciou
@@ -23552,7 +24258,10 @@ ngram 2=3935
 1783 distantes
 156 distensão
 837 distingue
+497 distingue-se
 465 distinguem
+202 distinguem-se
+98 distingui-lo
 124 distinguia
 80 distinguiam
 187 distinguida
@@ -23560,9 +24269,12 @@ ngram 2=3935
 518 distinguido
 161 distinguidos
 105 distinguindo
+211 distinguindo-se
 1482 distinguir
+83 distinguir-se
 75 distinguiram
 352 distinguiu
+200 distinguiu-se
 78 distinguíveis
 1440 distinta
 127 distintamente
@@ -23588,7 +24300,9 @@ ngram 2=3935
 266 distração
 127 distraído
 239 distribuem
+98 distribuem-se
 545 distribui
+155 distribui-se
 303 distribuidor
 527 distribuidora
 174 distribuidoras
@@ -23676,18 +24390,25 @@ ngram 2=3935
 286 divida
 180 dividas
 2168 divide
+630 divide-se
 811 dividem
+276 dividem-se
 228 dividendos
 501 dividia
+73 dividia-se
 250 dividiam
 5573 dividida
 2155 divididas
 5631 dividido
 2907 divididos
 843 dividindo
+151 dividindo-se
 1571 dividir
+107 dividir-se
 525 dividiram
+86 dividiram-se
 1626 dividiu
+204 dividiu-se
 239 divido
 1899 divina
 77 divinamente
@@ -23709,8 +24430,11 @@ ngram 2=3935
 197 divorciado
 118 divorciados
 178 divorciar
+84 divorciar-se
 443 divorciaram
+137 divorciaram-se
 395 divorciou
+198 divorciou-se
 351 divulga
 1125 divulgada
 472 divulgadas
@@ -23727,13 +24451,19 @@ ngram 2=3935
 1125 divulgou
 1643 divórcio
 17321 diz
+206 diz-lhe
+1041 diz-se
 3394 dizem
 246 dizemos
 7666 dizendo
+172 dizendo-lhe
+80 dizendo-se
 9060 dizer
+198 dizer-se
 93 dizerem
 256 dizeres
 2865 dizia
+177 dizia-se
 827 diziam
 112 dizimada
 93 dizimados
@@ -23925,6 +24655,7 @@ ngram 2=3935
 832 doutoramento
 392 doutores
 122 doutorou
+291 doutorou-se
 4274 doutrina
 72 doutrinadores
 75 doutrinais
@@ -24074,6 +24805,8 @@ ngram 2=3935
 367 duzentas
 1087 duzentos
 13942 dá
+194 dá-lhe
+1080 dá-se
 78 dácios
 146 dádiva
 73 dádivas
@@ -24087,8 +24820,6 @@ ngram 2=3935
 4188 décimo
 103 décimos
 131 défice
-564 déficit
-134 déficits
 133 déspota
 501 dê
 256 dígito
@@ -24115,6 +24846,8 @@ ngram 2=3935
 1913 dúvidas
 502 dúzia
 276 dúzias
+975 e-mail
+362 e-mails
 544 ebulição
 142 eclesial
 1433 eclesiástica
@@ -24175,6 +24908,7 @@ ngram 2=3935
 1122 edificações
 114 edificou
 12917 edifício
+102 edifício-sede
 6800 edifícios
 412 edita
 1422 editada
@@ -24188,6 +24922,7 @@ ngram 2=3935
 98 editaram
 72 editava
 4882 editor
+336 editor-chefe
 6826 editora
 947 editoras
 108 editoração
@@ -24249,8 +24984,6 @@ ngram 2=3935
 2447 eficiência
 1520 eficácia
 200 efluentes
-133 efémera
-73 efémero
 199 efêmera
 71 efêmeras
 108 efêmero
@@ -24276,6 +25009,7 @@ ngram 2=3935
 127 ejetado
 112 ejeção
 3753 el
+216 el-rei
 85687 ela
 259 elabora
 1131 elaborada
@@ -24301,11 +25035,15 @@ ngram 2=3935
 73 elegantemente
 359 elegantes
 396 elege
+111 elege-se
 251 elegem
 214 elegendo
+168 elegendo-se
 1251 eleger
+102 eleger-se
 430 elegeram
 1559 elegeu
+537 elegeu-se
 124 elegia
 78 elegibilidade
 478 elegância
@@ -24345,6 +25083,7 @@ ngram 2=3935
 271 eletrodos
 74 eletroeletrônicos
 77 eletroforese
+213 eletromagnetismo
 577 eletromagnética
 336 eletromagnéticas
 282 eletromagnético
@@ -24361,6 +25100,7 @@ ngram 2=3935
 3106 eletrônico
 3094 eletrônicos
 735 eleva
+242 eleva-se
 6125 elevada
 2033 elevadas
 7107 elevado
@@ -24369,12 +25109,14 @@ ngram 2=3935
 1876 elevados
 169 elevam
 454 elevando
+135 elevando-se
 802 elevar
 103 elevaram
 96 elevava
 3172 elevação
 698 elevações
 751 elevou
+111 elevou-se
 184 elfo
 639 elfos
 397 elimina
@@ -24393,6 +25135,7 @@ ngram 2=3935
 2179 eliminação
 92 eliminações
 708 eliminou
+70 eliminá-lo
 236 elipse
 3955 elite
 601 elites
@@ -24445,6 +25188,7 @@ ngram 2=3935
 88 emancipar
 2588 emancipação
 150 emancipou
+119 emancipou-se
 90 emaranhado
 1127 embaixada
 343 embaixadas
@@ -24591,6 +25335,7 @@ ngram 2=3935
 77 empenhar
 702 empenho
 157 empenhou
+151 empenhou-se
 121 empiricamente
 163 empirismo
 76 emplacando
@@ -24619,6 +25364,7 @@ ngram 2=3935
 1510 empreendimento
 1064 empreendimentos
 1154 emprega
+84 emprega-se
 1664 empregada
 619 empregadas
 2681 empregado
@@ -24634,6 +25380,7 @@ ngram 2=3935
 5236 emprego
 1780 empregos
 436 empregou
+83 empregou-se
 337 empregue
 277 empregues
 507 empreitada
@@ -24749,6 +25496,7 @@ ngram 2=3935
 2121 encarregado
 425 encarregados
 471 encarregou
+155 encarregou-se
 324 encarregue
 84 encarregues
 626 encarte
@@ -24776,6 +25524,7 @@ ngram 2=3935
 133 encerraria
 110 encerrava
 2612 encerrou
+235 encerrou-se
 202 enche
 102 enchem
 115 enchendo
@@ -24809,16 +25558,21 @@ ngram 2=3935
 555 encomendas
 576 encomendou
 15566 encontra
+12806 encontra-se
 13874 encontrada
 5022 encontradas
 9487 encontrado
 7776 encontrados
 6849 encontram
+5222 encontram-se
 1245 encontramos
 1116 encontrando
+782 encontrando-se
 12174 encontrar
+709 encontrar-se
 116 encontrara
 2683 encontraram
+310 encontraram-se
 498 encontrarem
 213 encontraria
 91 encontrariam
@@ -24826,13 +25580,19 @@ ngram 2=3935
 241 encontrasse
 169 encontrassem
 3632 encontrava
+1919 encontrava-se
 1785 encontravam
+819 encontravam-se
 396 encontre
 114 encontrei
 227 encontrem
 7316 encontro
 2016 encontros
 5868 encontrou
+565 encontrou-se
+183 encontrá-la
+359 encontrá-lo
+110 encontrá-los
 198 encoraja
 102 encorajada
 256 encorajado
@@ -24924,6 +25684,7 @@ ngram 2=3935
 900 enfraquecer
 100 enfraqueceram
 496 enfraqueceu
+202 enfraqueceu-se
 224 enfraquecida
 337 enfraquecido
 85 enfraquecidos
@@ -24939,6 +25700,7 @@ ngram 2=3935
 1104 enfrentando
 4657 enfrentar
 1402 enfrentaram
+125 enfrentaram-se
 132 enfrentarem
 354 enfrentaria
 242 enfrentariam
@@ -24947,6 +25709,7 @@ ngram 2=3935
 455 enfrentava
 239 enfrentavam
 3220 enfrentou
+120 enfrentá-lo
 110 enfurece
 128 enfureceu
 87 enfurecida
@@ -24958,6 +25721,7 @@ ngram 2=3935
 278 engajamento
 102 engajar
 75 engajou
+87 engajou-se
 197 engana
 82 enganada
 343 enganado
@@ -24974,6 +25738,7 @@ ngram 2=3935
 88 engenharias
 102 engenheira
 6823 engenheiro
+99 engenheiro-chefe
 1864 engenheiros
 1085 engenho
 785 engenhos
@@ -25009,6 +25774,7 @@ ngram 2=3935
 428 enormemente
 1923 enormes
 224 enquadra
+95 enquadra-se
 154 enquadrada
 88 enquadradas
 231 enquadrado
@@ -25063,6 +25829,7 @@ ngram 2=3935
 422 ensinava
 136 ensinavam
 16820 ensino
+86 ensino-aprendizagem
 262 ensinos
 1447 ensinou
 100 ensolarado
@@ -25082,6 +25849,7 @@ ngram 2=3935
 70 entediado
 83 entenda
 826 entende
+267 entende-se
 469 entendem
 108 entendemos
 188 entendendo
@@ -25146,13 +25914,17 @@ ngram 2=3935
 124 entregam
 359 entregando
 1700 entregar
+74 entregar-se
 221 entregaram
 299 entregas
 112 entregasse
 125 entregava
 1543 entregou
+84 entregou-lhe
+76 entregou-se
 3410 entregue
 1282 entregues
+80 entregá-lo
 152 entrelaçadas
 77 entrelaçado
 160 entrelaçados
@@ -25226,6 +25998,9 @@ ngram 2=3935
 102 enviavam
 1274 envio
 4889 enviou
+82 enviou-lhe
+112 enviou-o
+81 enviá-lo
 271 envolta
 299 envolto
 130 envoltos
@@ -25233,15 +26008,20 @@ ngram 2=3935
 115 envolva
 212 envolvam
 4012 envolve
+189 envolve-se
 1609 envolvem
 4341 envolvendo
+123 envolvendo-se
 655 envolvente
 155 envolventes
 1406 envolver
+165 envolver-se
 424 envolveram
+93 envolveram-se
 70 envolverem
 95 envolveria
 1933 envolveu
+664 envolveu-se
 627 envolvia
 298 envolviam
 1633 envolvida
@@ -25369,12 +26149,17 @@ ngram 2=3935
 257 ereção
 75 ergonomia
 508 ergue
+571 ergue-se
 105 erguem
+140 erguem-se
 153 erguendo
+75 erguendo-se
 793 erguer
 217 ergueram
 470 ergueu
+112 ergueu-se
 167 erguia
+122 erguia-se
 1731 erguida
 387 erguidas
 1579 erguido
@@ -25418,6 +26203,7 @@ ngram 2=3935
 1469 erupção
 697 erupções
 569 erva
+361 erva-mate
 988 ervas
 94 ervilha
 93 ervilhas
@@ -25549,6 +26335,7 @@ ngram 2=3935
 261 escondem
 285 escondendo
 1279 esconder
+98 esconder-se
 112 esconderam
 565 esconderijo
 102 esconderijos
@@ -25585,6 +26372,7 @@ ngram 2=3935
 6248 escravos
 77 escreva
 2745 escreve
+80 escreve-se
 282 escrevem
 76 escrevemos
 2138 escrevendo
@@ -25667,6 +26455,7 @@ ngram 2=3935
 4804 esforço
 4944 esforços
 125 esforçou
+134 esforçou-se
 94 esfriar
 413 esférica
 160 esféricas
@@ -25735,10 +26524,14 @@ ngram 2=3935
 203 espalham
 202 espalhamento
 348 espalhando
+113 espalhando-se
 642 espalhar
+76 espalhar-se
 424 espalharam
+111 espalharam-se
 71 espalhava
 1050 espalhou
+341 espalhou-se
 217 espancado
 89 espancamento
 11546 espanhol
@@ -25761,6 +26554,8 @@ ngram 2=3935
 88 espaçados
 170 espaçamento
 23627 espaço
+461 espaço-tempo
+70 espaço-temporal
 629 espaçonave
 218 espaçonaves
 4303 espaços
@@ -25777,10 +26572,12 @@ ngram 2=3935
 1448 especializadas
 2047 especializado
 1642 especializados
+241 especializando-se
 112 especializar
 1429 especialização
 200 especializações
 316 especializou
+296 especializou-se
 19556 especialmente
 87 especiaria
 739 especiarias
@@ -25813,6 +26610,7 @@ ngram 2=3935
 71 espectroscópicas
 110 espectrômetro
 135 especula
+172 especula-se
 189 especulado
 78 especuladores
 148 especulam
@@ -25832,6 +26630,7 @@ ngram 2=3935
 1489 espelho
 653 espelhos
 2854 espera
+323 espera-se
 669 esperada
 176 esperadas
 2555 esperado
@@ -25848,6 +26647,7 @@ ngram 2=3935
 114 esperaram
 89 esperaria
 1917 esperava
+148 esperava-se
 750 esperavam
 75 espere
 233 esperma
@@ -25937,6 +26737,7 @@ ngram 2=3935
 83 espumas
 80 espáduas
 67507 espécie
+149 espécie-tipo
 23616 espécies
 483 espécime
 70 espécimens
@@ -26004,14 +26805,19 @@ ngram 2=3935
 202 essências
 55199 esta
 2328 estabelece
+146 estabelece-se
 570 estabelecem
 1721 estabelecendo
+370 estabelecendo-se
 5204 estabelecer
+324 estabelecer-se
 96 estabelecera
 2064 estabeleceram
+386 estabeleceram-se
 209 estabelecerem
 100 estabeleceria
 5182 estabeleceu
+963 estabeleceu-se
 527 estabelecia
 124 estabeleciam
 3274 estabelecida
@@ -26050,7 +26856,11 @@ ngram 2=3935
 577 estadista
 102 estadistas
 120505 estado
+359 estado-maior
+985 estado-unidense
+164 estado-unidenses
 13858 estados
+82 estados-membros
 3679 estaduais
 12192 estadual
 18012 estadunidense
@@ -26109,6 +26919,7 @@ ngram 2=3935
 17172 estação
 7513 estações
 65566 este
+74 este-oeste
 86 esteios
 395 esteira
 203 esteiras
@@ -26118,13 +26929,20 @@ ngram 2=3935
 390 estelares
 76 estelionato
 2397 estende
+1133 estende-se
 518 estendem
+172 estendem-se
 473 estendendo
+670 estendendo-se
 875 estender
+119 estender-se
 270 estenderam
+85 estenderam-se
 109 estenderia
 1286 estendeu
+382 estendeu-se
 628 estendia
+218 estendia-se
 181 estendiam
 824 estendida
 194 estendidas
@@ -26167,6 +26985,7 @@ ngram 2=3935
 96 estilístico
 112 estilísticos
 822 estima
+800 estima-se
 25456 estimada
 222 estimadas
 1810 estimado
@@ -26177,6 +26996,7 @@ ngram 2=3935
 1395 estimativa
 1287 estimativas
 73 estimava
+165 estimava-se
 918 estimação
 390 estimou
 474 estimula
@@ -26272,6 +27092,7 @@ ngram 2=3935
 137 estrearia
 166 estreava
 11521 estreia
+92 estreia-se
 163 estreias
 2064 estreita
 442 estreitamente
@@ -26291,6 +27112,7 @@ ngram 2=3935
 352 estrelato
 1858 estrelou
 11395 estreou
+427 estreou-se
 681 estresse
 90 estriado
 199 estrias
@@ -26509,6 +27331,7 @@ ngram 2=3935
 130 evitados
 317 evitam
 1554 evitando
+76 evitando-se
 8828 evitar
 98 evitaram
 100 evitarem
@@ -26542,6 +27365,74 @@ ngram 2=3935
 100 evoluídos
 541 evoluíram
 3184 ex
+72 ex-Ministro
+120 ex-Presidente
+110 ex-União
+107 ex-agente
+145 ex-aluno
+232 ex-alunos
+100 ex-amante
+88 ex-astronauta
+75 ex-atacante
+351 ex-atleta
+140 ex-atriz
+141 ex-automobilista
+148 ex-baixista
+210 ex-baterista
+284 ex-campeão
+70 ex-capitão
+130 ex-chefe
+135 ex-clube
+182 ex-colega
+80 ex-colônias
+74 ex-combatentes
+204 ex-companheiro
+83 ex-companheiros
+297 ex-deputado
+191 ex-diretor
+80 ex-equipe
+147 ex-escravos
+240 ex-esposa
+82 ex-funcionários
+4123 ex-futebolista
+346 ex-ginasta
+130 ex-goleiro
+757 ex-governador
+251 ex-guitarrista
+389 ex-integrante
+214 ex-integrantes
+2590 ex-jogador
+75 ex-jogadora
+142 ex-jogadores
+141 ex-lutador
+150 ex-líder
+416 ex-marido
+417 ex-membro
+284 ex-membros
+349 ex-ministro
+193 ex-modelo
+271 ex-mulher
+301 ex-namorada
+318 ex-namorado
+73 ex-oficial
+74 ex-parceiro
+352 ex-piloto
+80 ex-policial
+623 ex-prefeito
+1720 ex-presidente
+103 ex-presidentes
+178 ex-primeiro-ministro
+82 ex-professor
+126 ex-secretário
+168 ex-senador
+70 ex-soldado
+178 ex-tenista
+180 ex-treinador
+86 ex-técnico
+73 ex-vereador
+388 ex-vocalista
+93 ex-voleibolista
+87 ex-votos
 73 exacerbada
 104 exacerbado
 351 exagerada
@@ -26611,6 +27502,7 @@ ngram 2=3935
 447 excessos
 6259 exceto
 94 excetuando
+129 excetuando-se
 5311 exceção
 1119 exceções
 176 excitado
@@ -26624,6 +27516,7 @@ ngram 2=3935
 81 excluem
 350 exclui
 588 excluindo
+88 excluindo-se
 347 excluir
 104 excluiu
 1540 exclusiva
@@ -26673,6 +27566,7 @@ ngram 2=3935
 173 executor
 137 executores
 972 executou
+76 executá-lo
 112 executáveis
 178 executável
 7289 execução
@@ -26719,6 +27613,7 @@ ngram 2=3935
 3965 exibição
 799 exibições
 2180 exige
+80 exige-se
 878 exigem
 374 exigente
 230 exigentes
@@ -26740,7 +27635,9 @@ ngram 2=3935
 1184 exilado
 854 exilados
 182 exilar
+176 exilar-se
 180 exilou
+171 exilou-se
 934 exista
 983 existam
 17096 existe
@@ -26786,9 +27683,12 @@ ngram 2=3935
 697 expandido
 80 expandidos
 452 expandindo
+88 expandindo-se
 1500 expandir
+162 expandir-se
 291 expandiram
 1179 expandiu
+413 expandiu-se
 144 expansionismo
 169 expansionista
 78 expansionistas
@@ -26839,6 +27739,7 @@ ngram 2=3935
 166 expirou
 91 explanados
 3118 explica
+83 explica-se
 434 explicada
 206 explicadas
 778 explicado
@@ -26995,6 +27896,7 @@ ngram 2=3935
 262 extinguir
 100 extinguiram
 394 extinguiu
+187 extinguiu-se
 4377 extinta
 638 extintas
 4006 extinto
@@ -27039,6 +27941,8 @@ ngram 2=3935
 816 extraído
 396 extraídos
 2257 extrema
+272 extrema-direita
+154 extrema-esquerda
 7382 extremamente
 572 extremas
 2290 extremidade
@@ -27139,6 +28043,8 @@ ngram 2=3935
 552 fajã
 151 fajãs
 7337 fala
+79 fala-nos
+229 fala-se
 2052 falada
 735 faladas
 2155 falado
@@ -27151,6 +28057,7 @@ ngram 2=3935
 483 falante
 2380 falantes
 6032 falar
+72 falar-se
 231 falaram
 132 falarem
 447 falas
@@ -27350,17 +28257,29 @@ ngram 2=3935
 205 fax
 111 faxina
 34751 faz
+818 faz-se
 10798 fazem
+111 fazem-se
 222 fazemos
 5151 fazenda
 2629 fazendas
 1387 fazendeiro
 1330 fazendeiros
 18501 fazendo
+226 fazendo-a
+450 fazendo-o
+128 fazendo-os
+253 fazendo-se
 42243 fazer
+277 fazer-se
 932 fazerem
 8103 fazia
+139 fazia-se
 3703 faziam
+250 fazê-la
+77 fazê-las
+1826 fazê-lo
+149 fazê-los
 1250 faça
 516 façam
 438 façanha
@@ -27544,6 +28463,8 @@ ngram 2=3935
 274 feudos
 34587 fevereiro
 54648 fez
+75 fez-lhe
+611 fez-se
 700 fezes
 111 fi
 139 fiabilidade
@@ -27647,15 +28568,19 @@ ngram 2=3935
 26001 filhos
 393 filhote
 1135 filhotes
+90 filia-se
 552 filiada
 313 filiadas
 1339 filiado
 452 filiados
 740 filiais
 1155 filial
+98 filiando-se
 98 filiar
+75 filiar-se
 629 filiação
 187 filiou
+517 filiou-se
 321 filipina
 80 filipinas
 315 filipino
@@ -27699,6 +28624,7 @@ ngram 2=3935
 667 filtros
 70 filão
 355 filólogo
+169 filósofa
 3805 filósofo
 1588 filósofos
 46508 fim
@@ -27783,6 +28709,7 @@ ngram 2=3935
 292 firmes
 334 firmeza
 756 firmou
+150 firmou-se
 1022 fiscais
 1677 fiscal
 90 fiscaliza
@@ -27810,6 +28737,7 @@ ngram 2=3935
 142 fito
 90 fitoplâncton
 2197 fixa
+129 fixa-se
 478 fixada
 266 fixadas
 751 fixado
@@ -27817,19 +28745,25 @@ ngram 2=3935
 361 fixados
 126 fixam
 303 fixando
+285 fixando-se
 879 fixar
+180 fixar-se
 433 fixaram
+124 fixaram-se
 92 fixarem
 731 fixas
 1295 fixação
 1759 fixo
 776 fixos
 768 fixou
+360 fixou-se
 461 fiz
 265 fizemos
 383 fizer
 704 fizera
 9844 fizeram
+82 fizeram-no
+97 fizeram-se
 86 fizerem
 1080 fizesse
 443 fizessem
@@ -27870,6 +28804,7 @@ ngram 2=3935
 150 flocos
 91 floema
 2961 flor
+73 flor-de-lis
 2280 flora
 467 florais
 270 floral
@@ -27931,6 +28866,7 @@ ngram 2=3935
 223 fobia
 77 fobias
 690 foca
+117 foca-se
 628 focada
 161 focadas
 668 focado
@@ -27949,6 +28885,7 @@ ngram 2=3935
 3942 foco
 494 focos
 229 focou
+91 focou-se
 90 focus
 94 fofa
 187 fofocas
@@ -27963,6 +28900,9 @@ ngram 2=3935
 183 fogão
 108 fogões
 922296 foi
+1239 foi-lhe
+86 foi-lhes
+451 foi-se
 283 foice
 84 foices
 1555 folclore
@@ -28021,6 +28961,8 @@ ngram 2=3935
 108 forais
 892 foral
 168210 foram
+190 foram-lhe
+158 foram-se
 150 forame
 91 forasteiro
 181 forasteiros
@@ -28037,6 +28979,7 @@ ngram 2=3935
 161 forjar
 127 forjou
 93348 forma
+456 forma-se
 12684 formada
 1851 formadas
 13017 formado
@@ -28058,11 +29001,15 @@ ngram 2=3935
 131 formalizou
 2681 formalmente
 6981 formam
+284 formam-se
 6944 formando
+471 formando-se
 107 formandos
 8736 formar
+283 formar-se
 100 formara
 3170 formaram
+243 formaram-se
 402 formarem
 189 formaria
 252 formariam
@@ -28088,6 +29035,7 @@ ngram 2=3935
 96 formigueiro
 170 formosa
 6182 formou
+2833 formou-se
 322 formula
 319 formulada
 146 formuladas
@@ -28136,6 +29084,7 @@ ngram 2=3935
 1102 fortalecer
 94 fortaleceram
 363 fortaleceu
+138 fortaleceu-se
 99 fortalecida
 142 fortalecido
 836 fortalecimento
@@ -28157,6 +29106,7 @@ ngram 2=3935
 81 fortíssima
 71 fortíssimo
 22769 força
+135 força-tarefa
 1418 forçada
 73 forçadamente
 346 forçadas
@@ -28164,6 +29114,7 @@ ngram 2=3935
 1336 forçados
 128 forçam
 1022 forçando
+131 forçando-o
 946 forçar
 416 forçaram
 21757 forças
@@ -28461,6 +29412,7 @@ ngram 2=3935
 400 fundados
 197 fundam
 151 fundamenta
+80 fundamenta-se
 296 fundamentada
 108 fundamentadas
 164 fundamentado
@@ -28483,6 +29435,7 @@ ngram 2=3935
 9776 fundação
 967 fundações
 282 funde
+91 funde-se
 197 fundem
 316 fundida
 360 fundidas
@@ -28490,14 +29443,18 @@ ngram 2=3935
 360 fundidos
 144 fundindo
 502 fundir
+114 fundir-se
 225 fundiram
+153 fundiram-se
 466 fundiu
+340 fundiu-se
 145 fundiária
 507 fundição
 70 fundições
 9197 fundo
 3742 fundos
 7266 fundou
+147 fundou-se
 267 funerais
 1392 funeral
 316 funerária
@@ -28555,6 +29512,7 @@ ngram 2=3935
 719 fuzileiros
 276 fuzis
 325 fá
+106 fá-lo
 5707 fábrica
 2466 fábricas
 229 fábula
@@ -28566,13 +29524,16 @@ ngram 2=3935
 564 fármacos
 82 fáscia
 1618 fã
+122 fã-clube
 8482 fãs
 5675 fé
 2328 férias
+130 férmions
 802 férrea
 204 férreas
 1027 férteis
 1089 fértil
+234 fê-lo
 2048 fêmea
 2375 fêmeas
 161 fêmur
@@ -28581,6 +29542,8 @@ ngram 2=3935
 10090 física
 2942 físicas
 6838 físico
+116 físico-química
+104 físico-químicas
 2921 físicos
 77 fólico
 113 fólios
@@ -28623,6 +29586,7 @@ ngram 2=3935
 652 galega
 137 galegas
 1048 galego
+77 galego-português
 300 galegos
 171 galera
 89 galeras
@@ -29134,6 +30098,7 @@ ngram 2=3935
 220 governadas
 1277 governado
 14915 governador
+645 governador-geral
 327 governadora
 1321 governadores
 340 governados
@@ -29180,10 +30145,13 @@ ngram 2=3935
 342 graduados
 1170 gradual
 2791 gradualmente
+274 graduando-se
 198 graduar
+163 graduar-se
 3372 graduação
 180 graduações
 500 graduou
+1015 graduou-se
 132 grafada
 588 grafado
 77 graffiti
@@ -29283,6 +30251,8 @@ ngram 2=3935
 408 graxos
 1830 graça
 8533 graças
+398 greco-romana
+102 greco-romano
 6257 grega
 1260 gregas
 11620 grego
@@ -29336,7 +30306,13 @@ ngram 2=3935
 1704 grávida
 293 grávidas
 210 grânulos
+181 grã-cruz
+393 grã-duquesa
 679 grão
+111 grão-ducado
+715 grão-duque
+173 grão-mestre
+90 grão-vizir
 1703 grãos
 116 grêmio
 87 guano
@@ -29344,6 +30320,12 @@ ngram 2=3935
 262 guaranis
 177 guaraná
 4628 guarda
+135 guarda-chuva
+498 guarda-costas
+77 guarda-marinha
+117 guarda-mor
+312 guarda-redes
+176 guarda-roupa
 360 guardada
 263 guardadas
 543 guardado
@@ -29422,9 +30404,6 @@ ngram 2=3935
 111 gânglio
 165 gânglios
 163 gângster
-84 gémeas
-85 gémeo
-196 gémeos
 334 gêmea
 516 gêmeas
 582 gêmeo
@@ -29703,6 +30682,7 @@ ngram 2=3935
 2818 hino
 935 hinos
 100 hinário
+957 hip-hop
 91 hiperatividade
 83 hiperbólica
 77 hiperbólico
@@ -29765,6 +30745,7 @@ ngram 2=3935
 6224 histórica
 2723 históricas
 9595 histórico
+107 histórico-cultural
 4562 históricos
 276 hitita
 272 hititas
@@ -30032,6 +31013,7 @@ ngram 2=3935
 6306 identidade
 598 identidades
 1086 identifica
+110 identifica-se
 1306 identificada
 982 identificadas
 2093 identificado
@@ -30041,6 +31023,7 @@ ngram 2=3935
 563 identificam
 289 identificando
 2965 identificar
+106 identificar-se
 283 identificaram
 162 identificava
 131 identificavam
@@ -30257,6 +31240,7 @@ ngram 2=3935
 293 impecável
 1495 impede
 437 impedem
+187 impedi-lo
 501 impedia
 176 impediam
 352 impedida
@@ -30349,6 +31333,7 @@ ngram 2=3935
 97 impopulares
 116 impopularidade
 1044 impor
+89 impor-se
 996 importa
 255 importada
 304 importadas
@@ -30531,6 +31516,7 @@ ngram 2=3935
 108 inauguraram
 3994 inauguração
 1426 inaugurou
+114 inaugurou-se
 256 inca
 86 incalculável
 135 incandescente
@@ -30605,8 +31591,11 @@ ngram 2=3935
 244 include
 84 includes
 11013 incluem
+408 incluem-se
 12745 inclui
+167 inclui-se
 31877 incluindo
+195 incluindo-se
 3112 incluir
 158 incluiria
 91 incluirá
@@ -30685,6 +31674,7 @@ ngram 2=3935
 155 incorporava
 1256 incorporação
 941 incorporou
+91 incorporou-se
 315 incorreta
 323 incorretamente
 103 incorretas
@@ -30821,6 +31811,10 @@ ngram 2=3935
 5604 indivíduo
 10507 indivíduos
 4048 indo
+180 indo-europeia
+165 indo-europeias
+162 indo-europeu
+142 indo-europeus
 215 indonésia
 272 indonésio
 112 indonésios
@@ -31081,6 +32075,7 @@ ngram 2=3935
 251 inibir
 487 inibição
 4128 inicia
+1213 inicia-se
 3746 iniciada
 964 iniciadas
 3839 iniciado
@@ -31092,12 +32087,16 @@ ngram 2=3935
 200 inicialização
 13015 inicialmente
 744 iniciam
+156 iniciam-se
 2249 iniciando
+362 iniciando-se
 233 iniciante
 396 iniciantes
 3353 iniciar
+106 iniciar-se
 140 iniciara
 2125 iniciaram
+532 iniciaram-se
 144 iniciarem
 180 iniciaria
 77 iniciará
@@ -31105,12 +32104,14 @@ ngram 2=3935
 5931 iniciativa
 1642 iniciativas
 428 iniciava
+101 iniciava-se
 122 iniciavam
 924 iniciação
 116 iniciações
 70 inicie
 2751 inicio
 13352 iniciou
+2791 iniciou-se
 74 iniciática
 181 inigualável
 81 inimaginável
@@ -31178,9 +32179,11 @@ ngram 2=3935
 332 insatisfeito
 261 insatisfeitos
 147 inscreve
+139 inscreve-se
 305 inscrever
 140 inscreveram
 261 inscreveu
+174 inscreveu-se
 381 inscrita
 321 inscritas
 727 inscrito
@@ -31198,6 +32201,7 @@ ngram 2=3935
 165 inseparáveis
 254 inseparável
 607 insere
+280 insere-se
 181 inserem
 1170 inserida
 429 inseridas
@@ -31240,6 +32244,7 @@ ngram 2=3935
 485 inspeção
 127 inspeções
 267 inspira
+87 inspira-se
 2268 inspirada
 713 inspiradas
 3901 inspirado
@@ -31249,28 +32254,36 @@ ngram 2=3935
 1001 inspirados
 85 inspiram
 191 inspirando
+92 inspirando-se
 352 inspirar
 366 inspiraram
 108 inspirava
 3988 inspiração
 268 inspirações
 1671 inspirou
+196 inspirou-se
 1498 instabilidade
 409 instala
+223 instala-se
 3426 instalada
 1300 instaladas
 4306 instalado
 88 instalador
 1629 instalados
 159 instalam
+92 instalam-se
 359 instalando
+213 instalando-se
 1529 instalar
+249 instalar-se
 84 instalara
 843 instalaram
+395 instalaram-se
 105 instalarem
 6187 instalação
 5530 instalações
 1548 instalou
+693 instalou-se
 526 instantaneamente
 970 instante
 233 instantes
@@ -31360,6 +32373,7 @@ ngram 2=3935
 73 intangíveis
 101 intangível
 2626 integra
+92 integra-se
 2355 integrada
 708 integradas
 3199 integrado
@@ -31371,9 +32385,11 @@ ngram 2=3935
 955 integralmente
 903 integram
 1149 integrando
+97 integrando-se
 4351 integrante
 6992 integrantes
 3861 integrar
+113 integrar-se
 299 integraram
 72 integrarem
 519 integrava
@@ -31381,6 +32397,7 @@ ngram 2=3935
 4181 integração
 1245 integridade
 2440 integrou
+170 integrou-se
 2021 inteira
 3533 inteiramente
 702 inteiras
@@ -31419,6 +32436,7 @@ ngram 2=3935
 151 intensificaram
 788 intensificação
 535 intensificou
+237 intensificou-se
 364 intensiva
 130 intensivamente
 80 intensivas
@@ -31431,6 +32449,8 @@ ngram 2=3935
 5700 intenção
 1379 intenções
 159 inter
+73 inter-relação
+81 inter-relações
 387 interage
 485 interagem
 257 interagindo
@@ -31478,12 +32498,14 @@ ngram 2=3935
 2933 interessante
 1173 interessantes
 494 interessar
+182 interessar-se
 129 interessaram
 262 interessava
 101 interessavam
 13878 interesse
 5672 interesses
 638 interessou
+367 interessou-se
 159 interestaduais
 220 interestadual
 408 interestelar
@@ -31624,6 +32646,7 @@ ngram 2=3935
 215 intimidação
 220 intimista
 103 intitula
+74 intitula-se
 3777 intitulada
 151 intituladas
 7604 intitulado
@@ -32060,8 +33083,11 @@ ngram 2=3935
 2168 jesuítas
 101 jesuítica
 126 jesuíticas
+147 jingle
+145 jingles
 249 jipe
 73 jipes
+355 jiu-jitsu
 116 joalharia
 81 joalheiro
 178 joalheria
@@ -32097,6 +33123,7 @@ ngram 2=3935
 339 jogável
 102 joia
 336 joias
+94 joint-venture
 2101 jornada
 345 jornadas
 6750 jornais
@@ -32115,6 +33142,7 @@ ngram 2=3935
 2703 judaica
 688 judaicas
 639 judaico
+111 judaico-cristã
 301 judaicos
 1195 judaísmo
 2096 judeu
@@ -32161,12 +33189,17 @@ ngram 2=3935
 74 juninos
 720 juniores
 2360 junta
+510 junta-se
 266 juntado
 548 juntam
+269 juntam-se
 17340 juntamente
 539 juntando
+378 juntando-se
 2488 juntar
+774 juntar-se
 1057 juntaram
+667 juntaram-se
 209 juntarem
 93 juntaria
 1922 juntas
@@ -32176,6 +33209,7 @@ ngram 2=3935
 34047 junto
 7102 juntos
 2966 juntou
+2212 juntou-se
 2278 junção
 137 junções
 126 jupiteriana
@@ -32214,6 +33248,7 @@ ngram 2=3935
 135 justaposição
 228 justas
 519 justifica
+72 justifica-se
 251 justificada
 226 justificado
 70 justificados
@@ -32258,6 +33293,9 @@ ngram 2=3935
 373 kit
 261 kits
 71350 km
+74 kryptoniana
+81 kryptoniano
+122 kryptonianos
 181 kung
 16393 la
 1870 labelo
@@ -32345,6 +33383,8 @@ ngram 2=3935
 486 lanterna
 312 lanternas
 5306 lança
+94 lança-chamas
+85 lança-se
 14926 lançada
 2508 lançadas
 55638 lançado
@@ -32356,6 +33396,7 @@ ngram 2=3935
 2051 lançamentos
 1908 lançando
 5131 lançar
+88 lançar-se
 3289 lançaram
 183 lançarem
 270 lançaria
@@ -32366,6 +33407,8 @@ ngram 2=3935
 102 lançavam
 109 lanço
 16825 lançou
+239 lançou-se
+94 lançá-lo
 159 lapso
 121 laptop
 2052 lar
@@ -32403,6 +33446,8 @@ ngram 2=3935
 517 later
 3838 laterais
 2790 lateral
+405 lateral-direito
+447 lateral-esquerdo
 369 lateralmente
 317 laticínios
 98 latifundiário
@@ -32415,6 +33460,10 @@ ngram 2=3935
 85 latinizada
 113 latinizado
 2196 latino
+332 latino-americana
+150 latino-americanas
+296 latino-americano
+488 latino-americanos
 1081 latinos
 4478 latitude
 777 latitudes
@@ -32515,6 +33564,7 @@ ngram 2=3935
 102 legível
 18306 lei
 98 leia
+82 leia-se
 74 leiga
 319 leigo
 889 leigos
@@ -32546,6 +33596,7 @@ ngram 2=3935
 701 lembrança
 656 lembranças
 2157 lembrar
+81 lembrar-se
 353 lembrava
 116 lembravam
 70 lembre
@@ -32585,12 +33636,15 @@ ngram 2=3935
 688 leque
 89 leques
 2994 ler
+108 ler-se
 70 leram
 103 lesbianismo
 269 lesionado
 154 lesionou
 77 lesmas
 16766 leste
+339 leste-oeste
+71 leste-sudeste
 3311 lesão
 2156 lesões
 186 letais
@@ -32611,6 +33665,7 @@ ngram 2=3935
 466 leucemia
 244 leucócitos
 9711 leva
+169 leva-o
 2697 levada
 1121 levadas
 127 levadiça
@@ -32618,7 +33673,12 @@ ngram 2=3935
 1987 levados
 2532 levam
 6487 levando
+189 levando-a
+349 levando-o
+158 levando-os
+162 levando-se
 732 levanta
+78 levanta-se
 500 levantada
 401 levantadas
 546 levantado
@@ -32630,14 +33690,17 @@ ngram 2=3935
 366 levantamentos
 356 levantando
 1551 levantar
+112 levantar-se
 315 levantaram
 79 levantava
 763 levante
 171 levantes
 1179 levantou
+155 levantou-se
 8186 levar
 168 levara
 4651 levaram
+208 levaram-no
 266 levarem
 1292 levaria
 279 levariam
@@ -32659,6 +33722,12 @@ ngram 2=3935
 105 levitas
 114 levitação
 17141 levou
+198 levou-a
+614 levou-o
+98 levou-os
+309 levá-la
+524 levá-lo
+214 levá-los
 75 lexicais
 88 lexical
 80 lexicógrafo
@@ -32702,11 +33771,13 @@ ngram 2=3935
 170 libertam
 304 libertando
 1379 libertar
+115 libertar-se
 123 libertaram
 2457 libertação
 286 liberto
 299 libertos
 450 libertou
+93 libertá-lo
 210 libertária
 87 libertárias
 328 libertário
@@ -32731,6 +33802,7 @@ ngram 2=3935
 970 licenciatura
 141 licenciaturas
 349 licenciou
+395 licenciou-se
 3454 licença
 775 licenças
 586 liceu
@@ -32765,18 +33837,22 @@ ngram 2=3935
 373 lidos
 80 lidou
 8717 liga
+297 liga-se
 4680 ligada
 2969 ligadas
 5307 ligado
 4230 ligados
 71 ligaduras
 925 ligam
+118 ligam-se
 242 ligamento
 213 ligamentos
 1882 ligando
+95 ligando-se
 175 ligante
 247 ligantes
 1384 ligar
+127 ligar-se
 147 ligaria
 153 ligará
 1458 ligas
@@ -32792,28 +33868,34 @@ ngram 2=3935
 254 ligeiros
 496 light
 402 ligou
+79 ligou-se
 150 lilás
 111 lima
 214 limbo
 307 limiar
 366 liminar
 952 limita
+562 limita-se
 3595 limitada
 737 limitadas
 3488 limitado
 857 limitados
 288 limitam
+70 limitam-se
 404 limitando
+283 limitando-se
 147 limitante
 663 limitar
 92 limitaram
 255 limitava
+82 limitava-se
 117 limitavam
 823 limitação
 1472 limitações
 6228 limite
 6014 limites
 338 limitou
+143 limitou-se
 715 limpa
 113 limpando
 621 limpar
@@ -32936,9 +34018,12 @@ ngram 2=3935
 95 livra
 81 livrando
 950 livrar
+213 livrar-se
 543 livraria
 418 livrarias
 14459 livre
+195 livre-arbítrio
+96 livre-docente
 169 livreiro
 71 livreiros
 1512 livremente
@@ -32958,6 +34043,7 @@ ngram 2=3935
 295 lobisomem
 181 lobisomens
 1198 lobo
+80 lobo-guará
 1010 lobos
 83 locadoras
 20486 locais
@@ -32965,14 +34051,20 @@ ngram 2=3935
 8983 localidade
 26629 localidades
 3720 localiza
+17002 localiza-se
 58500 localizada
 2595 localizadas
 36820 localizado
 3008 localizados
 657 localizam
+658 localizam-se
+179 localizando-se
 931 localizar
+95 localizar-se
 490 localizava
+1003 localizava-se
 132 localizavam
+139 localizavam-se
 5983 localização
 289 localizações
 165 localizou
@@ -33029,8 +34121,10 @@ ngram 2=3935
 397 londrino
 135 londrinos
 10260 longa
+1543 longa-metragem
 169 longamente
 3483 longas
+207 longas-metragens
 5875 longe
 643 longevidade
 3878 longitude
@@ -33075,6 +34169,7 @@ ngram 2=3935
 283 louro
 244 louros
 91 lousa
+116 louva-a-deus
 129 louvado
 84 louvando
 96 louvar
@@ -33098,6 +34193,7 @@ ngram 2=3935
 1727 lucro
 1582 lucros
 57509 lugar
+122 lugar-tenente
 216 lugarejo
 77 lugarejos
 10480 lugares
@@ -33119,6 +34215,9 @@ ngram 2=3935
 184 lusitano
 261 lusitanos
 79 luso
+102 luso-brasileira
+210 luso-brasileiro
+71 luso-brasileiros
 108 lustre
 74 lustres
 158 lusófona
@@ -33170,6 +34269,7 @@ ngram 2=3935
 350 lápide
 135 lápides
 447 lápis
+98 lápis-lazúli
 479 látex
 77 lávicas
 70 lávico
@@ -33184,6 +34284,7 @@ ngram 2=3935
 407 lésbicas
 362 léxico
 782 lê
+232 lê-se
 82 lêmure
 147 lêmures
 121 líbero
@@ -33266,6 +34367,7 @@ ngram 2=3935
 371 maciços
 654 maconha
 162 macro
+75 macro-jê
 115 macroeconomia
 108 macromoléculas
 112 macros
@@ -33353,6 +34455,7 @@ ngram 2=3935
 75 maioritária
 92 maioritário
 505677 mais
+124 mais-valia
 87 maiô
 166 maiúscula
 326 maiúsculas
@@ -33361,11 +34464,16 @@ ngram 2=3935
 143 majestosa
 190 majestoso
 1696 major
+440 major-general
 776 majoritariamente
 290 majoritária
 342 majoritário
 79 majoritários
 8422 mal
+112 mal-entendido
+73 mal-entendidos
+212 mal-estar
+80 mal-humorado
 348 mala
 147 malaia
 71 malaiala
@@ -33460,6 +34568,8 @@ ngram 2=3935
 1355 mandioca
 1288 mando
 3864 mandou
+73 mandou-o
+72 mandá-lo
 760 mandíbula
 240 mandíbulas
 124 maneio
@@ -33490,6 +34600,7 @@ ngram 2=3935
 263 mania
 109 manicômio
 875 manifesta
+197 manifesta-se
 127 manifestada
 261 manifestado
 250 manifestam
@@ -33497,6 +34608,7 @@ ngram 2=3935
 159 manifestando
 864 manifestantes
 547 manifestar
+130 manifestar-se
 272 manifestaram
 131 manifestava
 76 manifestavam
@@ -33505,6 +34617,7 @@ ngram 2=3935
 997 manifesto
 154 manifestos
 690 manifestou
+159 manifestou-se
 166 manipula
 123 manipulada
 116 manipuladas
@@ -33528,25 +34641,30 @@ ngram 2=3935
 112 manta
 118 mantas
 634 manteiga
-316 mantem
 3739 mantendo
+71 mantendo-o
+866 mantendo-se
 102 mantenedor
 248 mantenedora
 354 mantenha
 167 mantenham
 12388 manter
+721 manter-se
 318 manterem
 351 manteria
 145 manterá
 6791 manteve
+1913 manteve-se
 2324 mantida
 895 mantidas
 3281 mantido
 1149 mantidos
 444 mantimentos
 1789 mantinha
+117 mantinha-se
 785 mantinham
 1473 mantiveram
+291 mantiveram-se
 318 mantivesse
 171 mantivessem
 1308 manto
@@ -33554,7 +34672,12 @@ ngram 2=3935
 169 mantra
 90 mantras
 6633 mantém
+547 mantém-se
+187 mantê-la
+326 mantê-lo
+156 mantê-los
 1405 mantêm
+187 mantêm-se
 868 manuais
 1860 manual
 526 manualmente
@@ -33707,7 +34830,9 @@ ngram 2=3935
 85 martirizados
 491 martírio
 612 marxismo
+78 marxismo-leninismo
 873 marxista
+124 marxista-leninista
 421 marxistas
 41987 março
 918 maré
@@ -33752,6 +34877,8 @@ ngram 2=3935
 260 mastros
 262 masturbação
 4508 mata
+78 mata-leão
+332 mata-mata
 713 matado
 191 matador
 120 matadouro
@@ -33759,6 +34886,7 @@ ngram 2=3935
 959 matagal
 380 matam
 2058 matando
+232 matando-o
 303 matança
 71 matanças
 5476 matar
@@ -33797,6 +34925,7 @@ ngram 2=3935
 89 matiz
 136 matizes
 547 mato
+151 mato-grossense
 131 matos
 2923 matou
 168 matriarca
@@ -33804,8 +34933,10 @@ ngram 2=3935
 108 matricial
 188 matriculado
 349 matriculados
+83 matriculando-se
 81 matricular
 247 matriculou
+459 matriculou-se
 128 matrimoniais
 207 matrimonial
 820 matrimônio
@@ -33816,10 +34947,16 @@ ngram 2=3935
 484 maturação
 1117 maturidade
 170 matutino
+296 matá-la
+865 matá-lo
+177 matá-los
 6385 matéria
+795 matéria-prima
 2153 matérias
+614 matérias-primas
 2168 mau
 1113 maus
+117 maus-tratos
 557 mausoléu
 79 mausoléus
 166 maxila
@@ -33937,10 +35074,29 @@ ngram 2=3935
 82 megatons
 119 megawatts
 4691 meia
+201 meia-atacante
+88 meia-hora
+165 meia-idade
+384 meia-irmã
+99 meia-lua
+711 meia-noite
+344 meia-vida
 799 meias
 102 meiga
 39470 meio
+646 meio-campista
+552 meio-campo
+667 meio-dia
+77 meio-fundo
+794 meio-irmão
+143 meio-irmãos
+82 meio-médio
+77 meio-oeste
+99 meio-pesado
+74 meio-tempo
+89 meio-termo
 7702 meios
+79 meios-pesados
 218 meiose
 109 meiões
 1094 mel
@@ -33977,7 +35133,6 @@ ngram 2=3935
 204 melódicas
 552 melódico
 133 melódicos
-100 membra
 1846 membrana
 699 membranas
 24160 membro
@@ -34254,6 +35409,7 @@ ngram 2=3935
 963 mexicanos
 84 mexilhões
 94 mezanino
+112 mezzo-soprano
 1211 mg
 964 mi
 78 mia
@@ -34264,6 +35420,9 @@ ngram 2=3935
 116 micologistas
 125 micorrizas
 539 micro
+174 micro-ondas
+112 micro-organismos
+159 micro-ônibus
 84 microbiana
 141 microbiologia
 77 microclima
@@ -34394,7 +35553,6 @@ ngram 2=3935
 140 minimizando
 776 minimizar
 126 minimização
-71 minimo
 1966 minissérie
 309 minisséries
 124 ministeriais
@@ -34408,6 +35566,7 @@ ngram 2=3935
 395 ministrar
 78 ministrava
 7718 ministro
+91 ministro-chefe
 2277 ministros
 232 ministrou
 2462 ministério
@@ -34725,6 +35884,7 @@ ngram 2=3935
 93 montana
 317 montando
 4789 montanha
+89 montanha-russa
 5867 montanhas
 184 montanhismo
 91 montanhistas
@@ -34795,6 +35955,7 @@ ngram 2=3935
 95 mordidas
 116 mordido
 406 mordomo
+89 mordomo-mor
 1143 more
 209 morena
 82 morfema
@@ -34845,6 +36006,7 @@ ngram 2=3935
 86 mortis
 9143 morto
 7228 mortos
+124 mortos-vivos
 82 mortuária
 77 mortífero
 599 mosaico
@@ -34862,25 +36024,32 @@ ngram 2=3935
 936 mosteiros
 116 mosto
 11570 mostra
+454 mostra-se
 1059 mostrada
 522 mostradas
 2857 mostrado
 86 mostrador
 737 mostrados
 3559 mostram
+133 mostram-se
 3701 mostrando
+153 mostrando-se
 5127 mostrar
+125 mostrar-se
 1480 mostraram
+177 mostraram-se
 131 mostrarem
 126 mostraria
 104 mostrará
 664 mostras
 106 mostrasse
 1404 mostrava
+112 mostrava-se
 561 mostravam
 129 mostre
 89 mostrem
 4506 mostrou
+717 mostrou-se
 73 mota
 228 mote
 172 motel
@@ -34935,12 +36104,18 @@ ngram 2=3935
 416 mouse
 87 mova
 917 move
+207 move-se
 383 movem
+151 movem-se
 447 movendo
+294 movendo-se
 1364 mover
+377 mover-se
 100 moveram
 373 moveu
+229 moveu-se
 173 movia
+78 movia-se
 80 moviam
 569 movida
 281 movidas
@@ -34954,6 +36129,7 @@ ngram 2=3935
 253 movimentam
 176 movimentando
 447 movimentar
+88 movimentar-se
 1550 movimentação
 261 movimentações
 27493 movimento
@@ -34978,17 +36154,22 @@ ngram 2=3935
 513 mucosa
 269 mucosas
 3353 muda
+698 muda-se
 476 mudada
 122 mudadas
 2193 mudado
 134 mudados
 817 mudam
+88 mudam-se
 1649 mudando
+399 mudando-se
 11349 mudança
 9237 mudanças
 5977 mudar
+545 mudar-se
 95 mudara
 1824 mudaram
+606 mudaram-se
 197 mudarem
 382 mudaria
 140 mudará
@@ -35001,6 +36182,7 @@ ngram 2=3935
 856 mudo
 219 mudos
 9694 mudou
+5917 mudou-se
 140 mudéjar
 170 mui
 7546 muita
@@ -35020,6 +36202,7 @@ ngram 2=3935
 140 multado
 284 multas
 123 multi
+267 multi-instrumentista
 108 multicelulares
 151 multicultural
 327 multidisciplinar
@@ -35047,6 +36230,7 @@ ngram 2=3935
 902 multiplicação
 325 multiplicidade
 124 multitarefa
+85 multiverso
 76 mumificação
 148 mundana
 72 mundanas
@@ -35118,6 +36302,7 @@ ngram 2=3935
 1218 muçulmano
 3961 muçulmanos
 2371 má
+81 má-fé
 73 mácula
 547 máfia
 1155 mágica
@@ -35144,6 +36329,9 @@ ngram 2=3935
 10026 mão
 10921 mãos
 38966 média
+171 média-alta
+79 média-baixa
+82 média-metragem
 2321 médias
 3343 médica
 982 médicas
@@ -35330,10 +36518,12 @@ ngram 2=3935
 966 naturalizado
 114 naturalização
 77 naturalizou
+109 naturalizou-se
 2290 naturalmente
 168 nature
 14120 natureza
 303 naturezas
+111 naturezas-mortas
 70 naturismo
 698 nau
 72 naufragado
@@ -35439,6 +36629,7 @@ ngram 2=3935
 71 negocio
 493 negociou
 1294 negou
+113 negou-se
 3278 negra
 1097 negras
 208 negreiro
@@ -35615,6 +36806,7 @@ ngram 2=3935
 17894 nomeado
 1617 nomeados
 329 nomeando
+80 nomeando-o
 1069 nomear
 210 nomearam
 96 nomeava
@@ -35625,7 +36817,9 @@ ngram 2=3935
 1222 nomenclatura
 104 nomenclaturas
 2545 nomeou
+380 nomeou-o
 16202 nomes
+79 nomeá-lo
 158 nominais
 870 nominal
 338 nominalmente
@@ -35661,6 +36855,16 @@ ngram 2=3935
 81 normatização
 6543 noroeste
 38079 norte
+7656 norte-americana
+1299 norte-americanas
+31188 norte-americano
+2586 norte-americanos
+71 norte-coreana
+158 norte-coreano
+73 norte-coreanos
+124 norte-irlandês
+132 norte-nordeste
+583 norte-sul
 86 nortista
 127 nortistas
 1129 norueguesa
@@ -35675,8 +36879,10 @@ ngram 2=3935
 224 nostalgia
 71 nostálgico
 5847 nota
+347 nota-se
 72 notabilizado
 387 notabilizou
+209 notabilizou-se
 380 notada
 1138 notadamente
 120 notadas
@@ -35728,6 +36934,8 @@ ngram 2=3935
 287 noutro
 765 noutros
 44169 nova
+131 nova-iorquina
+130 nova-iorquino
 25569 novamente
 20122 novas
 112 novata
@@ -35751,6 +36959,7 @@ ngram 2=3935
 55598 novo
 20766 novos
 183 noz
+73 noz-moscada
 227 nozes
 2340 noção
 674 noções
@@ -35821,6 +37030,19 @@ ngram 2=3935
 184 náutico
 312 náuticos
 389116 não
+77 não-agressão
+71 não-cristãos
+204 não-ficção
+204 não-governamentais
+211 não-governamental
+105 não-humanos
+80 não-judeus
+193 não-linear
+73 não-lineares
+73 não-muçulmanos
+161 não-oficiais
+456 não-oficial
+132 não-violência
 297 néctar
 97 néon
 297 névoa
@@ -35868,7 +37090,6 @@ ngram 2=3935
 87 obituário
 117 objectiva
 4197 objectivo
-1337 objecto
 823 objetiva
 111 objetivamente
 383 objetivando
@@ -35887,7 +37108,9 @@ ngram 2=3935
 198 oboé
 78 oboés
 36924 obra
+792 obra-prima
 32973 obras
+382 obras-primas
 110 obreiros
 732 obriga
 1101 obrigada
@@ -35896,6 +37119,7 @@ ngram 2=3935
 1739 obrigados
 169 obrigam
 783 obrigando
+129 obrigando-o
 333 obrigar
 327 obrigaram
 611 obrigatoriamente
@@ -35909,6 +37133,7 @@ ngram 2=3935
 1407 obrigação
 1302 obrigações
 1293 obrigou
+95 obrigou-o
 74 obsceno
 531 obscura
 295 obscuras
@@ -35916,6 +37141,7 @@ ngram 2=3935
 599 obscuro
 340 obscuros
 1219 observa
+433 observa-se
 1387 observada
 937 observadas
 2192 observado
@@ -35923,9 +37149,12 @@ ngram 2=3935
 838 observadores
 1077 observados
 314 observam
+106 observam-se
 140 observamos
 851 observando
+109 observando-se
 3147 observar
+152 observar-se
 311 observaram
 758 observatório
 150 observatórios
@@ -35934,11 +37163,13 @@ ngram 2=3935
 2589 observações
 106 observe
 1607 observou
+101 observou-se
 236 observáveis
 267 observável
 351 observância
 85 obsessiva
 111 obsessivo
+124 obsessivo-compulsivo
 518 obsessão
 165 obsidiana
 73 obsolescência
@@ -35957,9 +37188,11 @@ ngram 2=3935
 1534 obstáculos
 202 obtemos
 2877 obtendo
+120 obtendo-se
 123 obtenha
 2097 obtenção
 8780 obter
+133 obter-se
 209 obterem
 121 obteria
 11751 obteve
@@ -35975,7 +37208,9 @@ ngram 2=3935
 182 obtivesse
 96 obturador
 1365 obtém
+232 obtém-se
 267 obtêm
+70 obtêm-se
 114 obuses
 927 obviamente
 174 oca
@@ -36053,6 +37288,7 @@ ngram 2=3935
 474 oculto
 271 ocultos
 4046 ocupa
+140 ocupa-se
 102 ocupacionais
 227 ocupacional
 3219 ocupada
@@ -36064,6 +37300,7 @@ ngram 2=3935
 425 ocupante
 786 ocupantes
 3300 ocupar
+71 ocupar-se
 1268 ocuparam
 117 ocuparem
 154 ocuparia
@@ -36075,6 +37312,7 @@ ngram 2=3935
 459 ocupações
 72 ocupe
 3868 ocupou
+130 ocupou-se
 155 ode
 435 odeia
 101 odeiam
@@ -36100,11 +37338,14 @@ ngram 2=3935
 6350 oferece
 1688 oferecem
 1786 oferecendo
+98 oferecendo-lhe
 3370 oferecer
 462 ofereceram
 85 oferecerem
 73 oferecesse
 2282 ofereceu
+202 ofereceu-lhe
+146 ofereceu-se
 885 oferecia
 359 ofereciam
 1080 oferecida
@@ -36199,6 +37440,7 @@ ngram 2=3935
 97 omitir
 202 omíada
 126 omíadas
+1082 on-line
 76 oncologia
 5430 onda
 4035 ondas
@@ -36220,6 +37462,7 @@ ngram 2=3935
 81 ontológico
 4355 onze
 280 onça
+135 onça-pintada
 160 onças
 88 onívoros
 89 opaca
@@ -36267,9 +37510,11 @@ ngram 2=3935
 2340 opiniões
 94 opinou
 158 opondo
+182 opondo-se
 2368 oponente
 1022 oponentes
 369 opor
+164 opor-se
 77 oportuna
 6069 oportunidade
 3103 oportunidades
@@ -36299,15 +37544,20 @@ ngram 2=3935
 474 optaram
 94 optimização
 1629 optou
+117 optou-se
 136 opulência
 316 opunha
+89 opunha-se
 267 opunham
 249 opus
 311 opuseram
+93 opuseram-se
 3929 opção
 2598 opções
 737 opôs
+306 opôs-se
 455 opõe
+142 opõe-se
 240 opõem
 93 opúsculo
 80 oque
@@ -36368,6 +37618,7 @@ ngram 2=3935
 3528 organismos
 592 organista
 1453 organiza
+86 organiza-se
 317 organizacionais
 654 organizacional
 4172 organizada
@@ -36378,15 +37629,19 @@ ngram 2=3935
 760 organizadores
 1880 organizados
 414 organizam
+89 organizam-se
 552 organizando
 3466 organizar
+88 organizar-se
 718 organizaram
+76 organizaram-se
 102 organizarem
 233 organizava
 141 organizavam
 19208 organização
 6270 organizações
 2852 organizou
+159 organizou-se
 285 orgasmo
 85 orgias
 107 orgulha
@@ -36421,6 +37676,7 @@ ngram 2=3935
 36555 origem
 4474 origens
 782 origina
+382 origina-se
 457 originada
 254 originadas
 894 originado
@@ -36430,12 +37686,15 @@ ngram 2=3935
 753 originalidade
 12256 originalmente
 309 originam
+78 originam-se
 625 originando
 288 originar
 387 originaram
+107 originaram-se
 75 originaria
 293 originariamente
 1639 originou
+659 originou-se
 2517 originária
 519 originárias
 1298 originário
@@ -36573,8 +37832,11 @@ ngram 2=3935
 116289 outros
 42023 outubro
 973 ouve
+88 ouve-se
 228 ouvem
 183 ouvi
+74 ouvi-la
+117 ouvi-lo
 362 ouvia
 122 ouviam
 730 ouvida
@@ -36726,7 +37988,9 @@ ngram 2=3935
 164 palatino
 183 palato
 15491 palavra
+75 palavra-chave
 12168 palavras
+131 palavras-chave
 160 palavrões
 7376 palco
 1563 palcos
@@ -36774,6 +38038,7 @@ ngram 2=3935
 103 pampa
 155 pampas
 117 pan
+149 pan-americano
 96 panamenho
 161 pancada
 128 pancadas
@@ -36811,6 +38076,8 @@ ngram 2=3935
 728 papas
 575 papeis
 31039 papel
+108 papel-moeda
+170 papel-título
 91 papelaria
 261 papelão
 113 papilas
@@ -36871,7 +38138,6 @@ ngram 2=3935
 80 paralímpico
 82 paralítico
 320 param
-149 paramentos
 245 paramilitar
 257 paramilitares
 1469 paranaense
@@ -37005,6 +38271,7 @@ ngram 2=3935
 16041 partida
 10624 partidas
 15657 partido
+73 partido-alto
 4700 partidos
 629 partidária
 244 partidárias
@@ -37050,6 +38317,7 @@ ngram 2=3935
 1348 paróquias
 101 pascal
 18266 passa
+273 passa-se
 1357 passada
 855 passadas
 87 passadiço
@@ -37063,6 +38331,7 @@ ngram 2=3935
 5013 passam
 112 passamos
 13073 passando
+90 passando-se
 587 passaporte
 240 passaportes
 12341 passar
@@ -37105,6 +38374,7 @@ ngram 2=3935
 4931 passo
 2846 passos
 48400 passou
+263 passou-se
 246 passíveis
 296 passível
 1348 pasta
@@ -37205,6 +38475,8 @@ ngram 2=3935
 76 patógeno
 121 patógenos
 560 pau
+92 pau-a-pique
+306 pau-brasil
 259 paulatinamente
 81 paulinas
 5960 paulista
@@ -37239,7 +38511,9 @@ ngram 2=3935
 305 paço
 111 paços
 69961 país
+232 país-sede
 41910 países
+171 países-membros
 1397 pecado
 139 pecador
 196 pecadores
@@ -37267,6 +38541,7 @@ ngram 2=3935
 1310 pedaço
 1685 pedaços
 3635 pede
+127 pede-lhe
 407 pedem
 115 pederastia
 349 pedestal
@@ -37281,15 +38556,19 @@ ngram 2=3935
 7462 pedido
 1568 pedidos
 1784 pedindo
+157 pedindo-lhe
 2516 pedir
+74 pedir-lhe
 82 pedira
 818 pediram
 89 pedisse
 5383 pediu
+227 pediu-lhe
 70 pediátrica
 342 pedofilia
 124 pedonal
 9896 pedra
+72 pedra-sabão
 4705 pedras
 284 pedreira
 251 pedreiras
@@ -37319,6 +38598,7 @@ ngram 2=3935
 179 peitoral
 82 peitos
 6151 peixe
+81 peixe-boi
 4694 peixes
 158 pejorativa
 125 pejorativamente
@@ -37383,6 +38663,7 @@ ngram 2=3935
 70 penitências
 79 penosa
 1625 pensa
+311 pensa-se
 214 pensada
 80 pensadas
 616 pensado
@@ -37399,12 +38680,14 @@ ngram 2=3935
 110 pensarem
 76 pensasse
 936 pensava
+158 pensava-se
 377 pensavam
 161 pense
 248 pensei
 89 pensionistas
 218 penso
 1135 pensou
+111 pensou-se
 1025 pensão
 292 pensões
 86 pentacampeonato
@@ -37433,6 +38716,7 @@ ngram 2=3935
 12560 pequenas
 83 pequenina
 17527 pequeno
+75 pequeno-almoço
 11649 pequenos
 82 pequi
 4321 per
@@ -37443,6 +38727,7 @@ ngram 2=3935
 98 percam
 125 perceba
 2374 percebe
+291 percebe-se
 559 percebem
 163 percebemos
 475 percebendo
@@ -37450,6 +38735,7 @@ ngram 2=3935
 578 perceberam
 124 perceberem
 1741 percebeu
+80 percebeu-se
 97 percebi
 94 percebia
 438 percebida
@@ -37485,6 +38771,7 @@ ngram 2=3935
 11318 perda
 2101 perdas
 2979 perde
+130 perde-se
 268 perdedor
 274 perdedores
 740 perdem
@@ -37492,6 +38779,7 @@ ngram 2=3935
 5666 perder
 294 perdera
 2449 perderam
+85 perderam-se
 279 perderem
 351 perderia
 99 perderiam
@@ -37499,6 +38787,7 @@ ngram 2=3935
 413 perdesse
 89 perdessem
 10758 perdeu
+213 perdeu-se
 73 perdi
 382 perdia
 135 perdiam
@@ -37570,6 +38859,7 @@ ngram 2=3935
 1585 perguntas
 102 perguntava
 935 perguntou
+74 perguntou-lhe
 86 periculosidade
 1335 periferia
 155 periferias
@@ -37630,6 +38920,7 @@ ngram 2=3935
 494 permita
 344 permitam
 12461 permite
+104 permite-lhe
 3727 permitem
 2132 permitia
 612 permitiam
@@ -37638,8 +38929,11 @@ ngram 2=3935
 2091 permitido
 458 permitidos
 5470 permitindo
+175 permitindo-lhe
+93 permitindo-lhes
 4663 permitir
 1411 permitiram
+72 permitiram-lhe
 114 permitirem
 651 permitiria
 152 permitiriam
@@ -37648,6 +38942,7 @@ ngram 2=3935
 393 permitisse
 184 permitissem
 5687 permitiu
+243 permitiu-lhe
 142 permuta
 164 permutação
 98 permutações
@@ -37703,6 +38998,7 @@ ngram 2=3935
 446 persistência
 188 persona
 27217 personagem
+179 personagem-título
 17012 personagens
 5346 personalidade
 2935 personalidades
@@ -37803,6 +39099,8 @@ ngram 2=3935
 99 pesetas
 8385 peso
 1162 pesos
+113 pesos-médios
+252 pesos-pesados
 72 pesou
 290 pesqueira
 92 pesqueiras
@@ -37861,6 +39159,8 @@ ngram 2=3935
 100 pias
 311 piauiense
 115 piauienses
+96 pica-pau
+80 pica-paus
 416 picada
 254 picadas
 150 picado
@@ -37900,6 +39200,7 @@ ngram 2=3935
 139 pilotou
 145 pilão
 692 pimenta
+73 pimenta-do-reino
 85 pimentas
 143 pimentão
 74 pinacoteca
@@ -38008,9 +39309,11 @@ ngram 2=3935
 83 pizzas
 130 pião
 3170 placa
+187 placa-mãe
 2713 placar
 91 placares
 3180 placas
+130 placas-mãe
 227 placebo
 240 placenta
 118 placentários
@@ -38147,10 +39450,14 @@ ngram 2=3935
 3756 pobres
 2801 pobreza
 97534 pode
+4667 pode-se
 50578 podem
+425 podem-se
 5078 podemos
 8058 podendo
+192 podendo-se
 37828 poder
+94 poder-se-ia
 1194 poderem
 180 poderemos
 9027 poderes
@@ -38166,13 +39473,13 @@ ngram 2=3935
 269 poderíamos
 73 podes
 6295 podia
+107 podia-se
 3935 podiam
 94 podido
 122 podre
 83 podres
 1282 poeira
 98 poeiras
-149 poem
 4005 poema
 4179 poemas
 477 poente
@@ -38279,6 +39586,9 @@ ngram 2=3935
 32294 política
 10355 políticas
 27995 político
+265 político-administrativa
+81 político-administrativo
+109 político-militar
 10338 políticos
 130 pomar
 247 pomares
@@ -38297,6 +39607,8 @@ ngram 2=3935
 746 pondo
 76 ponha
 3790 ponta
+85 ponta-direita
+129 ponta-esquerda
 173 pontapé
 88 pontapés
 98 pontaria
@@ -38342,6 +39654,7 @@ ngram 2=3935
 115 popularizaram
 714 popularização
 534 popularizou
+128 popularizou-se
 3181 popularmente
 118580 população
 5059 populações
@@ -38382,6 +39695,11 @@ ngram 2=3935
 25363 porque
 573 porquê
 6491 porta
+948 porta-aviões
+130 porta-bandeira
+139 porta-malas
+958 porta-voz
+81 porta-vozes
 263 portabilidade
 180 portada
 153 portado
@@ -38406,6 +39724,9 @@ ngram 2=3935
 111 portes
 251 portfólio
 8544 porto
+80 porto-alegrense
+110 porto-riquenha
+147 porto-riquenho
 2400 portos
 214 portuense
 22124 portuguesa
@@ -38443,6 +39764,7 @@ ngram 2=3935
 271 posicionar
 77 posicionaram
 271 posicionou
+137 posicionou-se
 2571 positiva
 560 positivamente
 2093 positivas
@@ -38511,7 +39833,6 @@ ngram 2=3935
 137 postar
 453 postas
 286 poste
-122 poster
 230 posteridade
 5310 posterior
 4223 posteriores
@@ -38651,6 +39972,7 @@ ngram 2=3935
 4816 prazo
 458 prazos
 6832 praça
+82 praça-forte
 2026 praças
 334 pre
 89 precariamente
@@ -38855,17 +40177,20 @@ ngram 2=3935
 112 premonição
 89 prenda
 474 prende
+152 prende-se
 177 prendem
 220 prendendo
 1037 prender
 170 prenderam
 443 prendeu
+176 prendê-lo
 250 prenome
 262 prensa
 131 prensagem
 99 prensas
 99 prenúncio
 384 preocupa
+111 preocupa-se
 469 preocupada
 85 preocupadas
 1039 preocupado
@@ -38874,20 +40199,26 @@ ngram 2=3935
 256 preocupante
 74 preocupantes
 481 preocupar
+84 preocupar-se
 173 preocupava
 76 preocupavam
 3047 preocupação
 1362 preocupações
 190 preocupou
+107 preocupou-se
 987 prepara
+188 prepara-se
 922 preparada
 469 preparadas
 2091 preparado
 205 preparador
 981 preparados
 359 preparam
+73 preparam-se
 751 preparando
+152 preparando-se
 2041 preparar
+126 preparar-se
 197 prepararam
 77 prepararem
 680 preparativos
@@ -38896,11 +40227,13 @@ ngram 2=3935
 283 preparatório
 454 preparatórios
 621 preparava
+99 preparava-se
 224 preparavam
 3307 preparação
 249 preparações
 849 preparo
 780 preparou
+135 preparou-se
 327 preponderante
 177 preponderância
 197 preposição
@@ -39020,6 +40353,7 @@ ngram 2=3935
 873 prestou
 2853 prestígio
 148 presume
+185 presume-se
 73 presumida
 87 presumido
 74 presumir
@@ -39035,6 +40369,7 @@ ngram 2=3935
 1275 pretas
 94 pretenda
 2986 pretende
+116 pretende-se
 623 pretendem
 302 pretendendo
 635 pretendente
@@ -39054,6 +40389,7 @@ ngram 2=3935
 214 preterido
 955 pretexto
 4897 preto
+284 preto-e-branco
 242 pretor
 148 pretoriana
 103 pretoriano
@@ -39069,6 +40405,7 @@ ngram 2=3935
 145 prevalente
 459 prevalência
 329 prevendo
+85 prevendo-se
 165 prevenindo
 1320 prevenir
 428 preventiva
@@ -39078,6 +40415,7 @@ ngram 2=3935
 1667 prevenção
 858 prever
 1166 previa
+80 previa-se
 146 previam
 1882 previamente
 300 previdência
@@ -39093,6 +40431,7 @@ ngram 2=3935
 717 previsões
 460 previu
 1377 prevê
+80 prevê-se
 71 preza
 116 preâmbulo
 5168 preço
@@ -39107,10 +40446,16 @@ ngram 2=3935
 122 primaz
 491 primazia
 115725 primeira
+398 primeira-dama
+158 primeira-ministra
 4099 primeiramente
 18220 primeiras
 131766 primeiro
+4574 primeiro-ministro
+74 primeiro-secretário
+129 primeiro-tenente
 31643 primeiros
+117 primeiros-ministros
 2187 primitiva
 282 primitivamente
 749 primitivas
@@ -39118,6 +40463,7 @@ ngram 2=3935
 1498 primitivo
 974 primitivos
 3844 primo
+71 primo-irmão
 129 primogenitura
 119 primogênita
 587 primogênito
@@ -39204,6 +40550,7 @@ ngram 2=3935
 777 proceder
 106 procederam
 479 procedeu
+209 procedeu-se
 124 procedia
 83 procediam
 100 procedido
@@ -39238,12 +40585,15 @@ ngram 2=3935
 78 proclamava
 1199 proclamação
 830 proclamou
+142 proclamou-se
 189 procriação
 6713 procura
+83 procura-se
 464 procurada
 228 procuradas
 1092 procurado
 814 procurador
+275 procurador-geral
 202 procuradores
 394 procurados
 1277 procuram
@@ -39258,6 +40608,7 @@ ngram 2=3935
 254 procuração
 174 procure
 2409 procurou
+93 procurá-lo
 168 procônsul
 88 prodigiosa
 730 produtiva
@@ -39272,9 +40623,11 @@ ngram 2=3935
 5155 produtores
 17772 produtos
 4808 produz
+129 produz-se
 157 produza
 75 produzam
 2263 produzem
+75 produzem-se
 918 produzia
 386 produziam
 7836 produzida
@@ -39289,6 +40642,7 @@ ngram 2=3935
 138 produzirá
 95 produzisse
 5799 produziu
+87 produziu-se
 40920 produção
 3657 produções
 279 prodígio
@@ -39336,6 +40690,7 @@ ngram 2=3935
 113 profissionalizar
 321 profissionalização
 155 profissionalizou
+74 profissionalizou-se
 1208 profissionalmente
 3403 profissão
 678 profissões
@@ -39406,6 +40761,7 @@ ngram 2=3935
 712 projetados
 118 projetam
 198 projetando
+70 projetando-se
 750 projetar
 84 projetaram
 355 projetista
@@ -39428,6 +40784,7 @@ ngram 2=3935
 81 proliferam
 660 proliferação
 216 prolonga
+105 prolonga-se
 762 prolongada
 186 prolongadas
 622 prolongado
@@ -39436,8 +40793,10 @@ ngram 2=3935
 831 prolongamento
 125 prolongamentos
 79 prolongando
+179 prolongando-se
 298 prolongar
 241 prolongou
+110 prolongou-se
 132 prolífica
 427 prolífico
 95 prolíficos
@@ -39496,6 +40855,7 @@ ngram 2=3935
 1984 pronto
 612 prontos
 268 pronuncia
+375 pronuncia-se
 323 pronunciada
 157 pronunciadas
 881 pronunciado
@@ -39584,6 +40944,7 @@ ngram 2=3935
 973 propósitos
 2692 propôs
 1756 propõe
+80 propõe-se
 315 propõem
 122 prorrogado
 951 prorrogação
@@ -39627,6 +40988,7 @@ ngram 2=3935
 356 protegem
 435 protegendo
 4593 proteger
+80 proteger-se
 132 protegerem
 189 protegeu
 277 protegia
@@ -39635,6 +40997,9 @@ ngram 2=3935
 789 protegidas
 1483 protegido
 830 protegidos
+189 protegê-la
+191 protegê-lo
+113 protegê-los
 128 proteica
 97 protesta
 125 protestando
@@ -39738,6 +41103,7 @@ ngram 2=3935
 2909 provocou
 72 provoque
 1365 provou
+122 provou-se
 461 prováveis
 3788 provável
 2144 provém
@@ -39766,6 +41132,35 @@ ngram 2=3935
 706 práticos
 75 práxis
 529 pré
+70 pré-adolescente
+92 pré-adolescentes
+85 pré-candidato
+110 pré-clássico
+170 pré-colombiana
+88 pré-colombianas
+81 pré-colombiano
+95 pré-colombianos
+120 pré-determinadas
+101 pré-determinado
+80 pré-determinados
+96 pré-escola
+225 pré-escolar
+162 pré-guerra
+451 pré-história
+242 pré-histórica
+161 pré-históricas
+331 pré-histórico
+479 pré-históricos
+72 pré-natal
+238 pré-produção
+139 pré-requisito
+154 pré-requisitos
+84 pré-romana
+87 pré-romano
+94 pré-sal
+77 pré-socráticos
+354 pré-temporada
+127 pré-venda
 6666 prédio
 2525 prédios
 992 prévia
@@ -39777,6 +41172,7 @@ ngram 2=3935
 8636 príncipe
 1487 príncipes
 556 pró
+78 pró-vida
 344 prólogo
 24105 própria
 6602 próprias
@@ -39914,6 +41310,8 @@ ngram 2=3935
 86 puniu
 1212 punição
 352 punições
+3946 punk
+288 punks
 103 punção
 86 punível
 72 pupa
@@ -39958,6 +41356,7 @@ ngram 2=3935
 187 pálio
 76 pálpebra
 145 pálpebras
+410 pára
 117 páreo
 1045 pároco
 109 párocos
@@ -40005,7 +41404,20 @@ ngram 2=3935
 738 pólvora
 696 pórtico
 180 pórticos
-736 pós
+77 pós-Segunda
+70 pós-apocalíptico
+190 pós-doutorado
+152 pós-graduado
+2118 pós-graduação
+1200 pós-guerra
+128 pós-moderna
+74 pós-modernidade
+95 pós-modernismo
+104 pós-moderno
+73 pós-parto
+206 pós-produção
+296 pós-punk
+140 pós-temporada
 335 póstuma
 71 póstumas
 502 póstumo
@@ -40014,13 +41426,16 @@ ngram 2=3935
 309 pôquer
 1504 pôr
 1498 pôs
+126 pôs-se
 113 pôster
 101 pôsteres
 1093 põe
+78 põe-se
 244 põem
 13404 pública
 7208 públicas
 31271 público
+245 público-alvo
 7237 públicos
 364 púlpito
 85 púlpitos
@@ -40069,6 +41484,7 @@ ngram 2=3935
 1731 qualificação
 280 qualificações
 357 qualificou
+145 qualificou-se
 202 qualitativa
 86 qualitativamente
 117 qualitativo
@@ -40100,10 +41516,13 @@ ngram 2=3935
 222 quark
 352 quarks
 6874 quarta
+475 quarta-feira
 945 quartas
+194 quartas-feiras
 300 quarteirão
 243 quarteirões
 1382 quartel
+592 quartel-general
 1140 quarteto
 168 quartetos
 15701 quarto
@@ -40120,6 +41539,8 @@ ngram 2=3935
 374 quatrocentos
 1996653 que
 2250 quebra
+203 quebra-cabeça
+278 quebra-cabeças
 577 quebrada
 300 quebradas
 1105 quebrado
@@ -40151,6 +41572,7 @@ ngram 2=3935
 375 queixa
 457 queixas
 324 queixo
+94 queixou-se
 33285 quem
 126 queniano
 4424 quente
@@ -40217,9 +41639,11 @@ ngram 2=3935
 132 quinquagésima
 119 quinquagésimo
 5208 quinta
+571 quinta-feira
 130 quintais
 333 quintal
 564 quintas
+194 quintas-feiras
 368 quinteto
 6975 quinto
 188 quintos
@@ -40307,6 +41731,7 @@ ngram 2=3935
 125 radicalização
 687 radicalmente
 78 radicou
+130 radicou-se
 123 radicular
 451 radio
 89 radioamadores
@@ -40334,9 +41759,12 @@ ngram 2=3935
 155 raides
 100 rail
 8916 rainha
+98 rainha-mãe
 404 rainhas
 25963 raio
+141 raio-X
 3016 raios
+370 raios-X
 1363 raiva
 2707 raiz
 239 rajada
@@ -40398,6 +41826,7 @@ ngram 2=3935
 240 rascunho
 149 rascunhos
 104 rasga
+75 rasga-se
 142 rasgada
 122 rasgadas
 150 rasgado
@@ -40483,6 +41912,7 @@ ngram 2=3935
 1197 realista
 615 realistas
 4161 realiza
+591 realiza-se
 15888 realizada
 7219 realizadas
 19185 realizado
@@ -40491,21 +41921,27 @@ ngram 2=3935
 316 realizadores
 6395 realizados
 1463 realizam
+248 realizam-se
 2277 realizando
+87 realizando-se
 9731 realizar
+228 realizar-se
 1647 realizaram
+480 realizaram-se
 336 realizarem
 176 realizaria
 132 realizará
 168 realizasse
 76 realizassem
 701 realizava
+70 realizava-se
 517 realizavam
 7754 realização
 991 realizações
 162 realize
 86 realizem
 8337 realizou
+1277 realizou-se
 7477 realmente
 78 realça
 81 realçado
@@ -40559,12 +41995,14 @@ ngram 2=3935
 73 rebelados
 113 rebelar
 169 rebelaram
+87 rebelaram-se
 1252 rebelde
 2795 rebeldes
 252 rebeldia
 2510 rebelião
 589 rebeliões
 174 rebelou
+102 rebelou-se
 90 rebentar
 117 rebentos
 140 rebentou
@@ -40613,6 +42051,7 @@ ngram 2=3935
 7089 recebido
 1217 recebidos
 546 recebimento
+111 recebê-lo
 511 receio
 129 receios
 1845 receita
@@ -40702,6 +42141,7 @@ ngram 2=3935
 70 recolocação
 205 recombinação
 420 recomenda
+202 recomenda-se
 405 recomendada
 143 recomendadas
 927 recomendado
@@ -40747,6 +42187,7 @@ ngram 2=3935
 1695 reconhecidos
 7786 reconhecimento
 143 reconhecimentos
+80 reconhecê-lo
 132 reconhecíveis
 222 reconhecível
 128 reconheça
@@ -40846,12 +42287,15 @@ ngram 2=3935
 138 recuperam
 505 recuperando
 3924 recuperar
+166 recuperar-se
 247 recuperaram
 75 recuperarem
 90 recuperasse
 149 recuperava
 4063 recuperação
 1505 recuperou
+173 recuperou-se
+74 recuperá-lo
 159 recursiva
 197 recursivamente
 109 recursivas
@@ -40860,23 +42304,43 @@ ngram 2=3935
 13763 recursos
 146 recursão
 2263 recusa
+202 recusa-se
 328 recusada
 774 recusado
 203 recusam
 266 recusando
+159 recusando-se
 705 recusar
+106 recusar-se
 74 recusara
 725 recusaram
+211 recusaram-se
 77 recusarem
 72 recusasse
 248 recusava
+73 recusava-se
 129 recusavam
 3391 recusou
+963 recusou-se
 2142 recém
+161 recém-chegado
+179 recém-chegados
+459 recém-criada
+345 recém-criado
+83 recém-eleito
+200 recém-formada
+199 recém-formado
+110 recém-fundada
+85 recém-fundado
+77 recém-inaugurada
+111 recém-nascida
+367 recém-nascido
+284 recém-nascidos
 231 recíproca
 84 recíprocas
 171 recíproco
 796 redator
+126 redator-chefe
 150 redatores
 1493 redação
 139 redações
@@ -40919,6 +42383,7 @@ ngram 2=3935
 75 redutores
 240 redutos
 1134 reduz
+88 reduz-se
 327 reduzem
 114 reduzia
 2648 reduzida
@@ -40930,6 +42395,7 @@ ngram 2=3935
 238 reduziram
 70 reduziria
 864 reduziu
+73 reduziu-se
 5403 redução
 485 reduções
 80 reedificada
@@ -40941,8 +42407,10 @@ ngram 2=3935
 502 reedição
 137 reedições
 80 reeducação
+83 reelegendo-se
 124 reeleger
 82 reelegeu
+72 reelegeu-se
 204 reeleita
 2331 reeleito
 85 reeleitos
@@ -40976,7 +42444,9 @@ ngram 2=3935
 706 refeição
 802 refeições
 5468 refere
+4569 refere-se
 1181 referem
+784 referem-se
 403 referencia
 278 referenciada
 80 referenciadas
@@ -40991,16 +42461,21 @@ ngram 2=3935
 1466 referente
 1477 referentes
 540 referia
+256 referia-se
 177 referiam
+76 referiam-se
 3010 referida
 689 referidas
 4140 referido
 1011 referidos
 78 referimos
 502 referindo
+1064 referindo-se
 3209 referir
+1114 referir-se
 122 referirem
 487 referiu
+208 referiu-se
 13501 referência
 4668 referências
 88 refez
@@ -41085,11 +42560,16 @@ ngram 2=3935
 1506 refrão
 149 refrões
 85 refugia
+89 refugia-se
 355 refugiado
 1659 refugiados
+94 refugiando-se
 188 refugiar
+210 refugiar-se
 163 refugiaram
+109 refugiaram-se
 260 refugiou
+320 refugiou-se
 71 refundada
 85 refundado
 89 refutada
@@ -41143,10 +42623,13 @@ ngram 2=3935
 88 registando
 239 registar
 108 registaram
+70 registaram-se
 1678 registo
 1150 registos
 351 registou
+100 registou-se
 1033 registra
+103 registra-se
 3029 registrada
 1267 registradas
 2311 registrado
@@ -41161,6 +42644,7 @@ ngram 2=3935
 5583 registro
 4118 registros
 1611 registrou
+139 registrou-se
 129057 região
 19330 regiões
 4187 regra
@@ -41278,6 +42762,7 @@ ngram 2=3935
 1023 rejeitou
 1028 rejeição
 774 relaciona
+264 relaciona-se
 2995 relacionada
 3984 relacionadas
 3811 relacionado
@@ -41285,10 +42770,12 @@ ngram 2=3935
 150 relacionais
 293 relacional
 408 relacionam
+85 relacionam-se
 5800 relacionamento
 1343 relacionamentos
 191 relacionando
 503 relacionar
+95 relacionar-se
 95 relacionava
 129 relacionou
 239 relançada
@@ -41457,10 +42944,14 @@ ngram 2=3935
 87 rendem
 297 rendendo
 559 render
+184 render-se
 625 renderam
+105 renderam-se
 101 renderia
 237 renderização
 2698 rendeu
+169 rendeu-lhe
+221 rendeu-se
 86 rendia
 72 rendibilidade
 156 rendido
@@ -41553,6 +43044,7 @@ ngram 2=3935
 79 repertórios
 578 repescagem
 607 repete
+83 repete-se
 210 repetem
 114 repetia
 468 repetida
@@ -41635,6 +43127,7 @@ ngram 2=3935
 177 represente
 94 representem
 3819 representou
+76 representá-lo
 101 repressiva
 77 repressivas
 118 repressivo
@@ -41668,6 +43161,7 @@ ngram 2=3935
 159 reproduzidos
 144 reproduzindo
 948 reproduzir
+104 reproduzir-se
 93 reproduziu
 3254 reprodução
 198 reproduções
@@ -41756,6 +43250,8 @@ ngram 2=3935
 2166 resgate
 118 resgates
 197 resgatou
+93 resgatá-la
+91 resgatá-lo
 76 resguardar
 1871 reside
 680 residem
@@ -41955,6 +43451,7 @@ ngram 2=3935
 120 resulte
 5174 resultou
 486 resume
+94 resume-se
 78 resumem
 96 resumia
 266 resumida
@@ -41995,14 +43492,18 @@ ngram 2=3935
 106 retilíneo
 419 retina
 612 retira
+173 retira-se
 4624 retirada
 868 retiradas
 2537 retirado
 1108 retirados
 206 retiram
 463 retirando
+206 retirando-se
 2805 retirar
+538 retirar-se
 572 retiraram
+187 retiraram-se
 139 retirarem
 143 retirasse
 95 retirassem
@@ -42012,6 +43513,7 @@ ngram 2=3935
 352 retiro
 122 retiros
 1762 retirou
+1147 retirou-se
 591 reto
 72 retocadas
 554 retoma
@@ -42097,6 +43599,7 @@ ngram 2=3935
 122 reumatismo
 716 reunia
 453 reuniam
+118 reuniam-se
 460 reunida
 759 reunidas
 693 reunido
@@ -42104,10 +43607,14 @@ ngram 2=3935
 75 reunificada
 521 reunificação
 1105 reunindo
+73 reunindo-se
 2321 reunir
+293 reunir-se
 1016 reuniram
+518 reuniram-se
 132 reunirem
 2912 reuniu
+538 reuniu-se
 5467 reunião
 2932 reuniões
 91 reutilizado
@@ -42116,6 +43623,7 @@ ngram 2=3935
 72 reutilizável
 655 revanche
 3854 revela
+295 revela-se
 844 revelada
 309 reveladas
 3387 revelado
@@ -42123,8 +43631,11 @@ ngram 2=3935
 577 revelados
 1026 revelam
 1081 revelando
+111 revelando-se
 1732 revelar
+113 revelar-se
 901 revelaram
+112 revelaram-se
 142 revelaria
 212 revelava
 77 revelavam
@@ -42133,6 +43644,7 @@ ngram 2=3935
 73 revele
 171 revelia
 3998 revelou
+528 revelou-se
 110 revenda
 80 revendedores
 425 rever
@@ -42207,9 +43719,11 @@ ngram 2=3935
 235 revoltado
 117 revoltados
 184 revoltaram
+99 revoltaram-se
 1236 revoltas
 675 revoltosos
 208 revoltou
+107 revoltou-se
 121 revolucionar
 77 revolucionaram
 340 revolucionou
@@ -42230,7 +43744,9 @@ ngram 2=3935
 81 rezava
 79 rezou
 2952 reúne
+155 reúne-se
 813 reúnem
+205 reúnem-se
 184 ri
 293 ria
 791 riacho
@@ -42277,6 +43793,7 @@ ngram 2=3935
 193 rinocerontes
 641 rins
 43842 rio
+84 rio-grandense
 10713 rios
 3909 riqueza
 1327 riquezas
@@ -42508,6 +44025,9 @@ ngram 2=3935
 183 rubrica
 93 rubricas
 142 rubro
+190 rubro-negra
+505 rubro-negro
+70 rubro-negros
 425 rude
 116 rudes
 329 rudimentar
@@ -42578,6 +44098,7 @@ ngram 2=3935
 396 réplicas
 1231 répteis
 313 réptil
+158 rés-do-chão
 390 réu
 258 réus
 718 rígida
@@ -42596,10 +44117,12 @@ ngram 2=3935
 246 rústico
 156 rústicos
 7537 sabe
+1158 sabe-se
 1482 sabedoria
 1045 sabem
 737 sabemos
 1766 sabendo
+115 sabendo-se
 8002 saber
 221 saberem
 180 saberes
@@ -42672,14 +44195,18 @@ ngram 2=3935
 91 sagacidade
 264 sagas
 75 sagaz
+140 sagra-se
 1058 sagrada
 525 sagradas
 1929 sagrado
 905 sagrados
+474 sagrando-se
 96 sagrar
+163 sagrar-se
 76 sagraria
 143 sagração
 462 sagrou
+1501 sagrou-se
 155 saguão
 4427 sai
 752 saia
@@ -42695,6 +44222,7 @@ ngram 2=3935
 168 sairá
 1001 sais
 8224 saiu
+223 saiu-se
 2800 sal
 7965 sala
 207 salada
@@ -42717,6 +44245,7 @@ ngram 2=3935
 88 salgueiros
 77 salicílico
 215 salienta
+80 salienta-se
 79 salientam
 123 salientando
 725 salientar
@@ -42750,6 +44279,7 @@ ngram 2=3935
 1171 saltos
 384 saltou
 1457 salva
+336 salva-vidas
 109 salvado
 248 salvador
 204 salvaguarda
@@ -42758,14 +44288,19 @@ ngram 2=3935
 629 salvamento
 81 salvamentos
 364 salvando
+71 salvando-se
 4171 salvar
 205 salvaram
 209 salvas
 1403 salvação
 131 salve
 2059 salvo
+77 salvo-conduto
 435 salvos
 928 salvou
+267 salvá-la
+248 salvá-lo
+90 salvá-los
 2045 salário
 1709 salários
 2630 salão
@@ -42774,6 +44309,8 @@ ngram 2=3935
 87 samaritano
 106 samaritanos
 5231 samba
+124 samba-canção
+262 samba-enredo
 82 sambaquis
 375 sambas
 271 sambista
@@ -42857,6 +44394,7 @@ ngram 2=3935
 122 sardinha
 80 sardinhas
 790 sargento
+321 sargento-mor
 322 sargentos
 239 sarracenos
 198 sassânida
@@ -42956,6 +44494,7 @@ ngram 2=3935
 746 secretos
 942 secretária
 4950 secretário
+819 secretário-geral
 442 secretários
 680 secreção
 239 secreções
@@ -43019,7 +44558,10 @@ ngram 2=3935
 1088 segredos
 448 segregação
 6733 segue
+313 segue-se
 2614 seguem
+83 seguem-se
+132 segui-lo
 1427 seguia
 601 seguiam
 17751 seguida
@@ -43032,10 +44574,12 @@ ngram 2=3935
 1675 seguidos
 709 seguimento
 5256 seguindo
+495 seguindo-se
 58542 seguinte
 20076 seguintes
 10673 seguir
 2684 seguiram
+236 seguiram-se
 273 seguirem
 289 seguiria
 132 seguiriam
@@ -43043,9 +44587,13 @@ ngram 2=3935
 199 seguisse
 94 seguissem
 5817 seguiu
+415 seguiu-se
 42404 segunda
+800 segunda-feira
 643 segundas
+164 segundas-feiras
 114007 segundo
+156 segundo-tenente
 10610 segundos
 1899 segura
 202 segurado
@@ -43114,6 +44662,8 @@ ngram 2=3935
 195 selêucida
 94 selêucidas
 77133 sem
+79 sem-terra
+124 sem-teto
 13774 semana
 684 semanais
 1773 semanal
@@ -43171,6 +44721,7 @@ ngram 2=3935
 159 senatorial
 92 senda
 135913 sendo
+253 sendo-lhe
 145 senegalês
 439 senha
 227 senhas
@@ -43212,20 +44763,25 @@ ngram 2=3935
 968 sensíveis
 1513 sensível
 153 senta
+87 senta-se
 482 sentada
 202 sentadas
 833 sentado
 460 sentados
 81 sentam
 288 sentar
+152 sentar-se
 2123 sente
+385 sente-se
 642 sentem
+97 sentem-se
 361 sentenciado
 121 sentenciados
 1925 sentença
 598 sentenças
 197 senti
 1174 sentia
+181 sentia-se
 315 sentiam
 344 sentida
 103 sentidas
@@ -43238,18 +44794,23 @@ ngram 2=3935
 3032 sentimentos
 131 sentimos
 573 sentindo
+232 sentindo-se
 118 sentinela
 119 sentinelas
 2412 sentir
+306 sentir-se
 406 sentiram
 122 sentirem
 99 sentisse
 1675 sentiu
+350 sentiu-se
 102 sentou
+104 sentou-se
 85 senzala
 92 senzalas
 1748 senão
 1583 separa
+134 separa-se
 2071 separada
 1062 separadamente
 2097 separadas
@@ -43257,9 +44818,13 @@ ngram 2=3935
 84 separador
 2782 separados
 557 separam
+83 separam-se
 514 separando
+158 separando-se
 1598 separar
+227 separar-se
 672 separaram
+191 separaram-se
 110 separarem
 99 separatismo
 381 separatista
@@ -43269,6 +44834,8 @@ ngram 2=3935
 4509 separação
 94 separações
 1081 separou
+408 separou-se
+75 separá-los
 114 septo
 188 sepulcro
 522 sepultada
@@ -43378,6 +44945,7 @@ ngram 2=3935
 20326 serviço
 19857 serviços
 690 servo
+167 servo-croata
 764 servos
 19390 será
 6071 serão
@@ -43416,7 +44984,9 @@ ngram 2=3935
 20867 sexo
 936 sexos
 3462 sexta
+1254 sexta-feira
 181 sextas
+248 sextas-feiras
 129 sexteto
 4435 sexto
 208 sexuada
@@ -43684,7 +45254,6 @@ ngram 2=3935
 265 sistêmica
 72 sistêmicas
 148 sistêmico
-155 sita
 11983 site
 2701 sites
 201 sitiada
@@ -43695,20 +45264,27 @@ ngram 2=3935
 80 sitiaram
 298 sitio
 148 sitiou
-169 sito
 228 situ
 2043 situa
+4096 situa-se
 11935 situada
 1494 situadas
 9867 situado
 1423 situados
 548 situam
+649 situam-se
+271 situando-se
 318 situar
+177 situar-se
 407 situava
+461 situava-se
 112 situavam
+125 situavam-se
 16294 situação
 5155 situações
 74 situou
+80 situou-se
+716 skate
 171 skinhead
 186 skinheads
 238 slalom
@@ -43741,6 +45317,9 @@ ngram 2=3935
 126 sobraram
 182 sobras
 149235 sobre
+159 sobre-humana
+81 sobre-humanas
+72 sobre-humanos
 331 sobrecarga
 88 sobreiro
 79 sobreiros
@@ -43781,13 +45360,18 @@ ngram 2=3935
 80 sobrevoou
 154 sobriedade
 1420 sobrinha
+82 sobrinha-neta
 91 sobrinhas
 3364 sobrinho
+184 sobrinho-neto
 522 sobrinhos
 207 sobrou
 91 sociabilidade
 12016 sociais
 21342 social
+151 social-democracia
+239 social-democrata
+172 social-democratas
 1418 socialismo
 2047 socialista
 1246 socialistas
@@ -43924,6 +45508,7 @@ ngram 2=3935
 624 solúvel
 12031 som
 3030 soma
+71 soma-se
 217 somada
 228 somadas
 386 somado
@@ -43931,7 +45516,9 @@ ngram 2=3935
 201 somali
 99 somalis
 398 somam
+70 somam-se
 720 somando
+128 somando-se
 450 somar
 214 somaram
 325 somas
@@ -44014,7 +45601,6 @@ ngram 2=3935
 162 sossego
 601 sotaque
 78 sotaques
-80 sotavento
 74 soterrado
 1690 sou
 1613 soube
@@ -44035,6 +45621,8 @@ ngram 2=3935
 130 spa
 102 spaghetti
 222 spam
+528 spin
+81 spins
 263 split
 178 spray
 387 sr
@@ -44058,6 +45646,10 @@ ngram 2=3935
 74 suavizar
 78 suaíli
 340 sub
+96 sub-bacia
+70 sub-bairro
+491 sub-região
+97 sub-regiões
 70 suba
 109 subalterno
 103 subalternos
@@ -44079,6 +45671,7 @@ ngram 2=3935
 147 subdistrito
 101 subdistritos
 137 subdivide
+77 subdivide-se
 77 subdividem
 410 subdividida
 213 subdivididas
@@ -44142,8 +45735,10 @@ ngram 2=3935
 92 submetem
 110 submetendo
 665 submeter
+218 submeter-se
 84 submeteram
 392 submeteu
+127 submeteu-se
 663 submetida
 385 submetidas
 1299 submetido
@@ -44198,16 +45793,20 @@ ngram 2=3935
 175 substituem
 926 substitui
 2804 substituindo
+125 substituindo-o
 86 substituinte
 82 substituintes
 3964 substituir
 107 substituiria
 2766 substituiu
+81 substituiu-o
 3792 substituição
 234 substituições
 334 substituta
 1973 substituto
 271 substitutos
+96 substituí-la
+347 substituí-lo
 112 substituía
 2829 substituída
 860 substituídas
@@ -44252,16 +45851,21 @@ ngram 2=3935
 170 sucata
 575 sucede
 153 sucedem
+72 sucedem-se
 927 sucedendo
 681 suceder
 461 sucederam
+154 sucederam-se
 104 sucederia
 2464 sucedeu
+169 sucedeu-lhe
+116 sucedeu-o
 77 sucedia
 2179 sucedida
 599 sucedidas
 5463 sucedido
 897 sucedidos
+136 sucedê-lo
 164 sucessiva
 1595 sucessivamente
 1434 sucessivas
@@ -44314,6 +45918,7 @@ ngram 2=3935
 94 sugado
 196 sugar
 3081 sugere
+71 sugere-se
 1805 sugerem
 183 sugeria
 94 sugeriam
@@ -44333,8 +45938,10 @@ ngram 2=3935
 266 sui
 429 suicida
 160 suicidar
+99 suicidar-se
 216 suicidas
 219 suicidou
+242 suicidou-se
 2743 suicídio
 193 suicídios
 90 suinocultura
@@ -44349,6 +45956,17 @@ ngram 2=3935
 332 sujo
 143 sujos
 40653 sul
+286 sul-africana
+594 sul-africano
+164 sul-africanos
+389 sul-americana
+190 sul-americanas
+799 sul-americano
+412 sul-americanos
+314 sul-coreana
+530 sul-coreano
+93 sul-coreanos
+75 sul-norte
 286 sulco
 283 sulcos
 491 sulfato
@@ -44380,6 +45998,8 @@ ngram 2=3935
 82 suntuoso
 368 suor
 1538 super
+589 super-herói
+761 super-heróis
 464 supera
 756 superada
 122 superadas
@@ -44403,6 +46023,7 @@ ngram 2=3935
 177 superficialmente
 12886 superfície
 1532 superfícies
+91 supergigante
 192 supergrupo
 532 superintendente
 73 superintendência
@@ -44440,7 +46061,6 @@ ngram 2=3935
 483 supervisor
 104 supervisores
 1444 supervisão
-122 superávit
 109 superóxido
 78 suplantada
 102 suplantado
@@ -44499,6 +46119,7 @@ ngram 2=3935
 78 supérfluo
 108 supôs
 446 supõe
+283 supõe-se
 151 supõem
 195 sura
 362 surda
@@ -44570,6 +46191,7 @@ ngram 2=3935
 190 suserania
 118 suserano
 1390 suspeita
+74 suspeita-se
 95 suspeitam
 71 suspeitando
 297 suspeitar
@@ -44660,6 +46282,7 @@ ngram 2=3935
 120 sésseis
 2468 sétima
 3506 sétimo
+114 sê-lo
 143 sêmen
 694 sênior
 284 sífilis
@@ -44947,6 +46570,7 @@ ngram 2=3935
 76 telégrafos
 76 telões
 183130 tem
+1384 tem-se
 14096 tema
 9920 temas
 308 teme
@@ -45008,11 +46632,16 @@ ngram 2=3935
 150 tendia
 182 tendiam
 70562 tendo
+234 tendo-lhe
+104 tendo-o
+1166 tendo-se
 194 tendão
 4966 tendência
 2287 tendências
 198 tendões
 1801 tenente
+904 tenente-coronel
+439 tenente-general
 240 tenentes
 18447 tenha
 6081 tenham
@@ -45054,6 +46683,7 @@ ngram 2=3935
 303 tento
 377 tentos
 7857 tentou
+91 tentou-se
 305 tentáculos
 72 tença
 2503 teologia
@@ -45072,6 +46702,9 @@ ngram 2=3935
 70 teorizou
 79 teosofia
 90574 ter
+591 ter-se
+104 ter-se-ia
+101 ter-se-á
 309 terapeuta
 105 terapeutas
 1472 terapia
@@ -45172,7 +46805,9 @@ ngram 2=3935
 8212 terá
 1955 terão
 390 terça
+546 terça-feira
 201 terças
+140 terças-feiras
 2000 terço
 1096 terços
 154 teríamos
@@ -45222,6 +46857,7 @@ ngram 2=3935
 102 tetrápodes
 673 teu
 228 teus
+71 teuto-brasileiro
 69991 teve
 128 tevê
 74 texana
@@ -45242,6 +46878,7 @@ ngram 2=3935
 1255 teóricos
 803 ti
 1670 tia
+74 tia-avó
 253 tiara
 195 tias
 174 tibetana
@@ -45272,13 +46909,16 @@ ngram 2=3935
 112 tingimento
 70 tingir
 73113 tinha
+342 tinha-se
 20240 tinham
+117 tinham-se
 1406 tinta
 652 tintas
 188 tinto
 89 tintos
 122 tintura
 4657 tio
+191 tio-avô
 507 tios
 3115 tipicamente
 72 tipificado
@@ -45317,6 +46957,7 @@ ngram 2=3935
 512 tiroteio
 122 tiroteios
 1356 tirou
+103 tirá-lo
 76 tirânico
 117 titulada
 295 titulado
@@ -45344,6 +46985,7 @@ ngram 2=3935
 178 toalha
 108 toalhas
 2994 toca
+98 toca-discos
 1780 tocada
 959 tocadas
 1559 tocado
@@ -45365,10 +47007,12 @@ ngram 2=3935
 85 toco
 142 tocos
 3671 tocou
+82 tocá-la
 36632 toda
 42196 todas
 1652 todavia
 49756 todo
+75 todo-poderoso
 79463 todos
 97 toga
 109 tolera
@@ -45391,6 +47035,7 @@ ngram 2=3935
 550 tomados
 902 tomam
 2398 tomando
+179 tomando-se
 7305 tomar
 127 tomara
 2129 tomaram
@@ -45417,6 +47062,7 @@ ngram 2=3935
 217 tomografia
 141 tomos
 7604 tomou
+77 tomá-la
 595 tona
 117 tonais
 336 tonal
@@ -45462,15 +47108,30 @@ ngram 2=3935
 120 tormento
 91 tormentos
 8499 torna
+93 torna-o
+5725 torna-se
 215 tornada
 3284 tornado
+198 tornado-se
 321 tornados
 2284 tornam
+1136 tornam-se
 6401 tornando
+486 tornando-a
+120 tornando-as
+796 tornando-o
+260 tornando-os
+8617 tornando-se
 11445 tornar
+3728 tornar-se
+292 tornar-se-ia
+77 tornar-se-á
 429 tornara
+208 tornara-se
 4571 tornaram
+3354 tornaram-se
 694 tornarem
+209 tornarem-se
 2775 tornaria
 433 tornariam
 397 tornará
@@ -45478,16 +47139,25 @@ ngram 2=3935
 932 tornasse
 231 tornassem
 922 tornava
+340 tornava-se
 373 tornavam
+128 tornavam-se
 575 torne
+74 torne-se
 12880 torneio
 2837 torneios
 93 torneira
 199 tornem
 13529 torno
 26068 tornou
+137 tornou-o
+29550 tornou-se
 407 tornozelo
 114 tornozelos
+246 torná-la
+70 torná-las
+410 torná-lo
+123 torná-los
 76 toro
 101 torpedeado
 149 torpedeiros
@@ -45583,6 +47253,7 @@ ngram 2=3935
 237 tradutora
 254 tradutores
 706 traduz
+142 traduz-se
 165 traduzem
 78 traduzia
 1216 traduzida
@@ -45626,6 +47297,7 @@ ngram 2=3935
 366 tramas
 159 tramitação
 88 tramo
+114 tramos
 333 trampolim
 97 tranca
 118 trancada
@@ -45670,19 +47342,24 @@ ngram 2=3935
 212 transexual
 95 transexualismo
 460 transfere
+217 transfere-se
 83 transferem
 2201 transferida
 518 transferidas
 3741 transferido
 1085 transferidos
 424 transferindo
+312 transferindo-se
 1151 transferir
+146 transferir-se
 175 transferiram
 2072 transferiu
+1697 transferiu-se
 5286 transferência
 594 transferências
 79 transfiguração
 2072 transforma
+444 transforma-se
 2134 transformada
 522 transformadas
 2437 transformado
@@ -45691,9 +47368,16 @@ ngram 2=3935
 184 transformadores
 608 transformados
 505 transformam
+126 transformam-se
 1196 transformando
+182 transformando-a
+253 transformando-o
+81 transformando-os
+583 transformando-se
 3292 transformar
+348 transformar-se
 656 transformaram
+123 transformaram-se
 108 transformarem
 247 transformaria
 117 transformasse
@@ -45702,6 +47386,9 @@ ngram 2=3935
 1569 transformações
 99 transforme
 2877 transformou
+1157 transformou-se
+153 transformá-la
+193 transformá-lo
 219 transfusão
 112 transfusões
 187 transgressão
@@ -45807,6 +47494,7 @@ ngram 2=3935
 76 traslado
 170 trastes
 4626 trata
+1669 trata-se
 1241 tratada
 768 tratadas
 7097 tratado
@@ -45815,12 +47503,15 @@ ngram 2=3935
 12099 tratamento
 1182 tratamentos
 815 tratando
+227 tratando-se
 3392 tratar
+622 tratar-se
 246 trataram
 84 tratarem
 80 trataria
 192 tratasse
 1342 tratava
+284 tratava-se
 271 tratavam
 231 trate
 946 trato
@@ -45860,6 +47551,7 @@ ngram 2=3935
 120 travesti
 123 travestis
 460 travou
+75 travou-se
 101 través
 89 travões
 4940 traz
@@ -45873,6 +47565,8 @@ ngram 2=3935
 585 trazidas
 1298 trazido
 986 trazidos
+71 trazê-la
+137 trazê-lo
 2981 traça
 232 traçada
 145 traçadas
@@ -46068,6 +47762,7 @@ ngram 2=3935
 206 trotskistas
 111 trouxas
 5738 trouxe
+85 trouxe-lhe
 108 trouxera
 1173 trouxeram
 126 trouxesse
@@ -46155,6 +47850,7 @@ ngram 2=3935
 280 tungstênio
 128 tunisiano
 1758 tupi
+382 tupi-guarani
 201 tupinambás
 78 tupiniquins
 169 tupis
@@ -46226,12 +47922,12 @@ ngram 2=3935
 85 tâmaras
 150 tâmil
 20261 tão
+88 tão-somente
 11760 técnica
 10087 técnicas
 9674 técnico
 3621 técnicos
 160 tédio
-86 ténue
 1770 térmica
 375 térmicas
 741 térmico
@@ -46240,7 +47936,11 @@ ngram 2=3935
 999 térreo
 83 tétano
 138 tétum
+285 tê-la
+509 tê-lo
+101 tê-los
 32375 têm
+267 têm-se
 160 têmpera
 2316 tênis
 187 tênue
@@ -46323,7 +48023,9 @@ ngram 2=3935
 902 unanimidade
 106 uncial
 1603 une
+138 une-se
 687 unem
+127 unem-se
 91 ungido
 72 ungulados
 172 unha
@@ -46359,8 +48061,11 @@ ngram 2=3935
 295 unilateral
 174 unilateralmente
 566 unindo
+127 unindo-se
 1652 unir
+335 unir-se
 766 uniram
+363 uniram-se
 114 unirem
 80 unisse
 326 unitária
@@ -46368,6 +48073,7 @@ ngram 2=3935
 446 unitário
 140 unitários
 1100 uniu
+497 uniu-se
 585 universais
 3263 universal
 177 universalidade
@@ -46431,15 +48137,19 @@ ngram 2=3935
 957 urânio
 243 us
 8560 usa
+615 usa-se
 152 usabilidade
 14434 usada
 6087 usadas
 25515 usado
 9306 usados
 4615 usam
+125 usam-se
 187 usamos
 12916 usando
+296 usando-se
 12534 usar
+95 usar-se
 74 usara
 1302 usaram
 368 usarem
@@ -46473,6 +48183,10 @@ ngram 2=3935
 76 usurpou
 5434 usuário
 6070 usuários
+254 usá-la
+104 usá-las
+447 usá-lo
+160 usá-los
 127 utensílio
 729 utensílios
 121 utentes
@@ -46485,6 +48199,7 @@ ngram 2=3935
 432 utilitário
 302 utilitários
 5691 utiliza
+696 utiliza-se
 11519 utilizada
 5008 utilizadas
 19164 utilizado
@@ -46492,9 +48207,12 @@ ngram 2=3935
 859 utilizadores
 8201 utilizados
 3404 utilizam
+244 utilizam-se
 82 utilizamos
 5714 utilizando
+904 utilizando-se
 6014 utilizar
+184 utilizar-se
 752 utilizaram
 223 utilizarem
 111 utilizaria
@@ -46502,12 +48220,17 @@ ngram 2=3935
 92 utilizasse
 78 utilizassem
 1134 utilizava
+100 utilizava-se
 974 utilizavam
 8465 utilização
 185 utilizações
 256 utilize
 194 utilizem
 2151 utilizou
+145 utilizou-se
+117 utilizá-la
+154 utilizá-lo
+75 utilizá-los
 128 utilizável
 207 utopia
 109 utópica
@@ -46540,6 +48263,7 @@ ngram 2=3935
 267 vagão
 550 vagões
 21488 vai
+170 vai-se
 96 vaiado
 132 vaias
 218 vaidade
@@ -46554,15 +48278,18 @@ ngram 2=3935
 72 valenciana
 162 valenciano
 483 valendo
+119 valendo-se
 272 valente
 127 valentes
 151 valentia
 81 valentão
 585 valer
 207 valeram
+75 valeram-lhe
 108 valeria
 1854 vales
 1087 valeu
+225 valeu-lhe
 569 valia
 83 valiam
 87 valida
@@ -46730,6 +48457,7 @@ ngram 2=3935
 14414 veio
 164 veios
 1535 veja
+122 veja-se
 117 vejam
 196 vejo
 1418 vela
@@ -46778,6 +48506,7 @@ ngram 2=3935
 507 vencidos
 218 vencimento
 107 vencimentos
+99 vencê-lo
 7278 venda
 78 vendados
 457 vendagem
@@ -46800,6 +48529,9 @@ ngram 2=3935
 5728 vendido
 3861 vendidos
 1371 vendo
+135 vendo-se
+114 vendê-lo
+82 vendê-los
 1034 veneno
 192 venenos
 176 venenosa
@@ -46838,6 +48570,7 @@ ngram 2=3935
 270 venture
 72 vença
 15560 ver
+324 ver-se
 73 vera
 486 veracidade
 377 veraneio
@@ -46876,17 +48609,21 @@ ngram 2=3935
 187 veria
 71 veriam
 569 verifica
+460 verifica-se
 340 verificada
 176 verificadas
 508 verificado
 185 verificados
 126 verificam
 147 verificando
+100 verificando-se
 1774 verificar
+85 verificar-se
 130 verificaram
 72 verificava
 815 verificação
 417 verificou
+418 verificou-se
 111 verificável
 88 verifique
 240 verme
@@ -46952,6 +48689,7 @@ ngram 2=3935
 351 vestimentas
 874 vestindo
 902 vestir
+102 vestir-se
 342 vestiu
 224 vestiário
 279 vestiários
@@ -46982,6 +48720,7 @@ ngram 2=3935
 7308 veículos
 684 vi
 13835 via
+92 via-se
 548 viabilidade
 83 viabilizando
 307 viabilizar
@@ -47016,6 +48755,30 @@ ngram 2=3935
 452 vibrações
 144 vicariato
 2390 vice
+212 vice-almirante
+120 vice-artilheiro
+1063 vice-campeonato
+135 vice-campeonatos
+603 vice-campeã
+2383 vice-campeão
+126 vice-campeões
+75 vice-chanceler
+83 vice-cônsul
+138 vice-diretor
+820 vice-governador
+130 vice-liderança
+209 vice-líder
+72 vice-ministro
+90 vice-prefeita
+877 vice-prefeito
+3988 vice-presidente
+121 vice-presidentes
+316 vice-presidência
+96 vice-primeiro-ministro
+1057 vice-rei
+208 vice-reinado
+143 vice-reitor
+909 vice-versa
 82 vices
 116 viciada
 333 viciado
@@ -47032,6 +48795,7 @@ ngram 2=3935
 139 videiras
 192 vidente
 70 videntes
+2103 video
 3822 videoclipe
 995 videoclipes
 965 videogame
@@ -47074,6 +48838,7 @@ ngram 2=3935
 98 vigorosos
 225 vigorou
 1176 vigário
+76 vigário-geral
 72 vigários
 645 vigésima
 779 vigésimo
@@ -47110,6 +48875,7 @@ ngram 2=3935
 77 vingador
 2369 vingança
 1216 vingar
+267 vingar-se
 110 vingativo
 212 vingou
 3602 vinha
@@ -47155,6 +48921,7 @@ ngram 2=3935
 244 violões
 2771 vir
 1145 vira
+79 vira-se
 87 virabrequim
 1826 virada
 183 viradas
@@ -47164,6 +48931,7 @@ ngram 2=3935
 322 virais
 560 viral
 1817 viram
+255 viram-se
 489 virando
 1017 virar
 345 viraram
@@ -47180,6 +48948,7 @@ ngram 2=3935
 128 virilha
 74 virilidade
 2478 virou
+160 virou-se
 847 virtuais
 2372 virtual
 111 virtualização
@@ -47237,6 +49006,8 @@ ngram 2=3935
 767 visitação
 84 visite
 2530 visitou
+120 visitá-la
+156 visitá-lo
 360 visivelmente
 134 vislumbrar
 80 vislumbre
@@ -47294,6 +49065,7 @@ ngram 2=3935
 17759 vitória
 5878 vitórias
 6316 viu
+946 viu-se
 2087 viva
 165 vivacidade
 183 vivam
@@ -47388,6 +49160,7 @@ ngram 2=3935
 1806 voleibol
 71 volt
 38063 volta
+131 volta-se
 2560 voltada
 1193 voltadas
 2612 voltado
@@ -47395,9 +49168,12 @@ ngram 2=3935
 295 voltagem
 1164 voltam
 2309 voltando
+96 voltando-se
 7857 voltar
+94 voltar-se
 127 voltara
 2282 voltaram
+94 voltaram-se
 283 voltarem
 1379 voltaria
 215 voltariam
@@ -47411,6 +49187,7 @@ ngram 2=3935
 397 volte
 110 voltem
 15911 voltou
+335 voltou-se
 245 volts
 7969 volume
 4360 volumes
@@ -47511,6 +49288,10 @@ ngram 2=3935
 637 vésperas
 433 véu
 5229 vê
+319 vê-la
+536 vê-lo
+155 vê-los
+583 vê-se
 2559 vêm
 100 vêneto
 809 vício
@@ -47546,6 +49327,7 @@ ngram 2=3935
 103 xenofobia
 108 xenônio
 281 xeque
+74 xeque-mate
 527 xerife
 319 xiita
 434 xiitas
@@ -47634,6 +49416,7 @@ ngram 2=3935
 100 Áudio
 336 Áurea
 10447 Áustria
+517 Áustria-Hungria
 1194 Ávila
 91 Âncora
 504 Ângela
@@ -47720,6 +49503,7 @@ ngram 2=3935
 1225 ápice
 89 ápices
 6752 árabe
+109 árabe-israelense
 3851 árabes
 1905 árbitro
 529 árbitros
@@ -47827,6 +49611,8 @@ ngram 2=3935
 604 íon
 1243 íons
 239 íris
+92 ítalo-americano
+201 ítalo-brasileiro
 369 óbito
 335 óbitos
 419 óbvia
@@ -48187,6 +49973,7 @@ ngram 2=3935
 470 Aérea Brasileira
 174 Aérea Portuguesa
 148 Aérea Real
+339 BBC Radio
 96 Babado Novo
 96 Bacia Amazônica
 160 Bacia Hidrográfica
@@ -48251,6 +50038,7 @@ ngram 2=3935
 185 Benjamin Franklin
 545 Bento Gonçalves
 102 Bento XIII
+72 Berkeley Califórnia
 203 Berlim Alemanha
 163 Berlim Ocidental
 103 Berlim Oriental
@@ -48346,6 +50134,7 @@ ngram 2=3935
 435 Caixa Econômica
 112 Caixa Geral
 85 Califado Abássida
+80 Califórnia Berkeley
 358 Califórnia Estados
 172 Camargo Luciano
 341 Camarões República
@@ -48390,6 +50179,7 @@ ngram 2=3935
 82 Campeonato Potiguar
 191 Campeonato Sergipano
 120 Campeonato Sueco
+619 Campeonato Sul-Americano
 321 Campeonato Uruguaio
 86 Campeonatos Brasileiros
 77 Campeonatos Europeus
@@ -48543,6 +50333,8 @@ ngram 2=3935
 126 Centro Social
 75 Centro Tecnológico
 543 Centro Universitário
+108 Centro-Africana Chade
+216 Centro-Africana República
 105 Cerqueira César
 91 Cerro Largo
 112 Chade República
@@ -48550,6 +50342,7 @@ ngram 2=3935
 80 Chapeuzinho Vermelho
 401 Charles Darwin
 112 Charles Xavier
+434 Chicago Illinois
 77 Chico Bento
 832 Chico Buarque
 83 Chico César
@@ -48610,6 +50403,7 @@ ngram 2=3935
 880 Ciências Sociais
 92 Clara Machado
 167 Clara Nunes
+113 Clarice Lispector
 96 Clemente VIII
 160 Cleveland Ohio
 857 Clube Atlético
@@ -48707,6 +50501,7 @@ ngram 2=3935
 88 Confederação Asiática
 1192 Confederação Brasileira
 218 Confederação Nacional
+144 Confederação Sul-Americana
 132 Conferência Episcopal
 154 Conferência Geral
 144 Conferência Internacional
@@ -48771,6 +50566,8 @@ ngram 2=3935
 236 Copa Ouro
 143 Copa Paulista
 87 Copa Santa
+539 Copa Sul-Americana
+73 Copa Sul-americana
 94 Copa União
 124 Copacabana Palace
 200 Corinthians Paulista
@@ -48913,6 +50710,7 @@ ngram 2=3935
 95 Dicionário Houaiss
 177 Diego Califórnia
 135 Diego Maradona
+401 Dilma Rousseff
 207 Dinastia Filipina
 167 Diodoro Sículo
 80 Diogo Lopes
@@ -49042,6 +50840,7 @@ ngram 2=3935
 913 El Salvador
 172 Elba Ramalho
 376 Elis Regina
+93 Elza Soares
 204 Emenda Constitucional
 740 Emirados Árabes
 222 Empresa Brasileira
@@ -49146,6 +50945,7 @@ ngram 2=3935
 166 Estudos Avançados
 127 Estudos Sociais
 84 Estudos Superiores
+76 Estádio Beira-Rio
 72 Estádio Centenário
 172 Estádio José
 777 Estádio Municipal
@@ -49161,6 +50961,7 @@ ngram 2=3935
 544 Europa Oriental
 203 Europa África
 324 Europa Ásia
+191 Europeia Sul-Americana
 127 Evangelho Quadrangular
 121 Evangélica Luterana
 89 Evo Morales
@@ -49520,6 +51321,7 @@ ngram 2=3935
 119 Guilherme Santiago
 222 Guimarães Rosa
 613 Guiné Equatorial
+136 Guiné Guiné-Bissau
 102 Guiné Libéria
 168 Guiné Ocidental
 118 Guiné Portuguesa
@@ -49531,6 +51333,7 @@ ngram 2=3935
 86 Han Solo
 108 Havana Cuba
 161 Hebe Camargo
+120 Heitor Villa-Lobos
 77 Heloísa Helena
 77 Helsinque Finlândia
 187 Hemisfério Norte
@@ -49619,6 +51422,7 @@ ngram 2=3935
 110 Imaculado Coração
 177 Imperador Carlos
 121 Imperador Romano
+214 Imperador Romano-Germânico
 70 Imperial Brasileira
 127 Imperial Japonesa
 113 Imperial Japonês
@@ -49643,6 +51447,7 @@ ngram 2=3935
 286 Império Persa
 201 Império Português
 3052 Império Romano
+682 Império Romano-Germânico
 914 Império Russo
 159 Império Sassânida
 101 Império Selêucida
@@ -49743,8 +51548,11 @@ ngram 2=3935
 80 Jogos Mortais
 228 Jogos Mundiais
 14481 Jogos Olímpicos
+1835 Jogos Pan-Americanos
+544 Jogos Pan-americanos
 412 Jogos Paralímpicos
 207 Jogos Paraolímpicos
+168 Jogos Sul-Americanos
 429 Jorge Amado
 72 Jorge Andrade
 72 Jorge Aragão
@@ -50246,7 +52054,6 @@ ngram 2=3935
 129 Miguel VIII
 93 Miguel Ângelo
 334 Miles Davis
-371 Milton Nascimento
 111 Milão Itália
 15048 Minas Gerais
 83 Minas Tênis
@@ -50382,6 +52189,7 @@ ngram 2=3935
 188 Noel Rosa
 89 Norfolk Inglaterra
 153 Normal Superior
+96 Noroeste Rio-Grandense
 80 Norte Americana
 113 Norte América
 75 Norte Austrália
@@ -50551,7 +52359,6 @@ ngram 2=3935
 73 Paraíso Tropical
 80 Pardal Monteiro
 658 Paris França
-110 Paris Hilton
 580 Parlamento Europeu
 102 Parque Aquático
 215 Parque Ecológico
@@ -50583,6 +52390,7 @@ ngram 2=3935
 1533 Partido Republicano
 138 Partido Revolucionário
 781 Partido Social
+184 Partido Social-Democrata
 70 Partido Socialismo
 1329 Partido Socialista
 692 Partido Trabalhista
@@ -50599,6 +52407,7 @@ ngram 2=3935
 75 Patrimônio Natural
 178 Paul Comba
 98 Paul Jones
+702 Paul McCartney
 88 Paul Rubens
 85 Paul Simon
 73 Paula Fernandes
@@ -50676,7 +52485,6 @@ ngram 2=3935
 118 Peter Paul
 85 Petersburgo Rússia
 118 Pico Alto
-85 Pier Paolo
 84 Pinheiro Chagas
 226 Pinheiro Machado
 72 Pinto Balsemão
@@ -50723,6 +52531,7 @@ ngram 2=3935
 74 Ponte Alta
 187 Ponte Nova
 634 Ponte Preta
+76 Ponte Rio-Niterói
 80 Pontifícia Academia
 78 Pontifícia Comissão
 1214 Pontifícia Universidade
@@ -50824,6 +52633,7 @@ ngram 2=3935
 169 Príncipe Real
 202 Príncipe Regente
 198 Prússia Oriental
+113 Punk Rock
 75 Punta Arenas
 155 Pérola Negra
 73 Pôncio Pilatos
@@ -50897,6 +52707,7 @@ ngram 2=3935
 94 Registro Nacional
 109 Região Arequipa
 109 Região Central
+123 Região Centro-Oeste
 90 Região Leste
 106 Região Lima
 1963 Região Metropolitana
@@ -50937,6 +52748,7 @@ ngram 2=3935
 128 Republicano Paulista
 135 Republicano Português
 128 República Argentina
+513 República Centro-Africana
 1573 República Checa
 2082 República Democrática
 927 República Dominicana
@@ -50949,6 +52761,7 @@ ngram 2=3935
 73 República Oriental
 1856 República Popular
 863 República Portuguesa
+93 República Rio-Grandense
 455 República Romana
 597 República Socialista
 94 República Soviética
@@ -51028,6 +52841,7 @@ ngram 2=3935
 150 Rio Uruguai
 478 Rio Verde
 175 Rio Vermelho
+543 Rio-São Paulo
 136 Rito Escocês
 81 Roberto Arruda
 77 Roberto Burle
@@ -51084,6 +52898,7 @@ ngram 2=3935
 129 Rádio Renascença
 81 Rádio Sociedade
 197 Rádio Tupi
+72 Régis Bittencourt
 91 Rússia Imperial
 171 SC Internacional
 95 SIC Notícias
@@ -51266,6 +53081,7 @@ ngram 2=3935
 78 Sete Quedas
 109 Sete Rios
 92 Seul Coreia
+132 Sexta-Feira Santa
 162 Shopping Center
 84 Shopping Iguatemi
 116 Siderúrgica Nacional
@@ -51432,6 +53248,7 @@ ngram 2=3935
 92 São Paio
 210 São Patrício
 59600 São Paulo
+77 São Paulo-SP
 4631 São Pedro
 1941 São Petersburgo
 142 São Rafael
@@ -51479,6 +53296,7 @@ ngram 2=3935
 120 TV Educativa
 102 TV Esporte
 292 TV Gazeta
+112 TV Globinho
 1487 TV Globo
 93 TV Guaíba
 142 TV Guide
@@ -51492,6 +53310,7 @@ ngram 2=3935
 77 TV Senado
 88 TV Tropical
 948 TV Tupi
+107 TVE Brasil
 137 Taj Mahal
 75 Tampa Flórida
 603 Tancredo Neves
@@ -51572,6 +53391,7 @@ ngram 2=3935
 77 Torneio Apertura
 91 Torneio Clausura
 195 Torneio Internacional
+301 Torneio Rio-São
 96 Torneio Roberto
 168 Toronto Canadá
 97 Toronto Maple
@@ -51649,6 +53469,7 @@ ngram 2=3935
 5313 Universidade Federal
 77 Universidade Gama
 261 Universidade Gregoriana
+247 Universidade Harvard
 103 Universidade Hebraica
 149 Universidade Livre
 87 Universidade Lusíada
@@ -51684,6 +53505,8 @@ ngram 2=3935
 70 Valor Econômico
 189 Valor Lealdade
 93 Valores Mobiliários
+75 Vancouver Canadá
+83 Vancouver Colúmbia
 158 Vanderlei Luxemburgo
 198 Vargem Grande
 101 Vasco Fernandes
@@ -51711,6 +53534,8 @@ ngram 2=3935
 77 Vicente Ferrer
 292 Victor Hugo
 71 Vida Nova
+90 Video Game
+90 Video Games
 253 Viena Áustria
 103 Vigilância Sanitária
 133 Vigário Geral
