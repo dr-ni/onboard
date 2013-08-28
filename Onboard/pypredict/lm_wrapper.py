@@ -87,8 +87,19 @@ class _BaseModel:
         """
         Return a copy of self with all ngrams removed whose
         count is less or equal to <prune_count>.
+
+        prune_count==-1  # prune all frequencies
+        prune_count=0    # prune nothing
+        prune_count>0    # prune frequencies below or equal prune_count
         """
-        model = self.__class__(self.order)
+        # drop order for to be emptied n-gram levels
+        order = self.order
+        for prune_count in reversed(prune_counts):
+            if prune_count != -1:
+                break
+            order -= 1
+
+        model = self.__class__(order)
 
         if hasattr(self, "smoothing"): # not for UnigramModel
             model.smoothing = self.smoothing
@@ -101,7 +112,7 @@ class _BaseModel:
             k = min(len(prune_counts), level) - 1
             prune_count = prune_counts[k]
 
-            if count > prune_count:
+            if count > prune_count and  prune_count != -1:
                 model.count_ngram(ngram, count)
 
         return model
