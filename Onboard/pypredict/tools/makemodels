@@ -27,18 +27,19 @@
 #                   (utf-8 encoded).
 #
 
-LANGUAGES="en_US en_GB en_AU en_CA\
-           de_DE de_CH de_AT \
-           fr_FR \
-           it_IT \
-           es_ES \
-           pt_PT pt_BR \
-           ru_RU \
-           gd_GB \
-           ga_IE \
-           tr_TR
-           pl_PL \
-            "
+LANGUAGES=
+LANGUAGES+="en_US en_GB en_AU en_CA "
+LANGUAGES+="de_DE de_CH de_AT "
+LANGUAGES+="fr_FR "
+LANGUAGES+="it_IT "
+LANGUAGES+="es_ES "
+LANGUAGES+="pt_PT pt_BR "
+LANGUAGES+="ru_RU "
+LANGUAGES+="gd_GB "
+LANGUAGES+="ga_IE "
+LANGUAGES+="tr_TR "
+LANGUAGES+="pl_PL "
+LANGUAGES+="nl_NL "   # nl_BE nl_AW nl_AN nl_SR create identical models
 
 MODELDIR="models"
 RAWMODELDIR="../training/raw_models"
@@ -81,7 +82,27 @@ shift $(($OPTIND - 1))
 
 
 # get languages from positional parameters
-[ $# -gt 0 ] && LANGUAGES="$*"
+if [ $# -gt 0 ]; then
+    langs=""
+    for lang in $*; do
+        lang_id=${lang:0:2}
+        if [ "${lang}" == "${lang_id}" ]; then
+
+            # expand language to full lang_country id
+            for l in ${LANGUAGES}; do
+                lid=${l:0:2}
+                if [ "${lang_id}" == "${lid}" ]; then
+                    langs="${langs} ${l}"
+                fi
+            done
+        else
+            # append language as is
+            langs="${langs} ${lang}"
+        fi
+    done
+
+    LANGUAGES="${langs}"
+fi
 
 # make sure the directories exist
 [ -d "$MODELDIR" ] || mkdir $MODELDIR
@@ -151,6 +172,10 @@ for lang in $LANGUAGES; do
 
         ga)
             PRUNE_FREQ=4,4,-1
+            ;;
+
+        nl)
+            PRUNE_FREQ=89,89,-1
             ;;
 
        *)
