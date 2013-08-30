@@ -42,6 +42,7 @@ class LanguageDB:
                        "bn" : "BD",
                        "ca" : "ES",
                        "cs" : "CZ",
+                       "da" : "DK",  # Danish
                        "de" : "DE",
                        "el" : "GR",
                        "en" : "US",
@@ -55,15 +56,16 @@ class LanguageDB:
                        "li" : "NL",
                        "nl" : "NL",
                        "om" : "ET",
-                       "pl" : "PL",
+                       "pl" : "PL",  # Polish
                        "pa" : "PK",
                        "pt" : "PT",
+                       "ro" : "RO",  # Romanian
                        "ru" : "RU",
                        "so" : "SO",
                        "sr" : "RS",
                        "sv" : "SE",
                        "ti" : "ER",
-                       "tr" : "TR", # Turkish
+                       "tr" : "TR",  # Turkish
                       }
 
     def __init__(self, wp = None):
