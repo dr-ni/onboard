@@ -113,7 +113,9 @@ def main():
         spell_checker = SpellChecker()
         spell_checker.set_backend(0)
         if not spell_checker.set_dict_ids([lang_id]):
-            print("No spell checker dictionary found for '{}'".format(lang_id))
+            print("No spell checker dictionary found for '{}'".format(lang_id),
+                  file = sys.stderr)
+            sys.exit(1)
 
     with timeit("loading " + model_in_filename, out):
 
