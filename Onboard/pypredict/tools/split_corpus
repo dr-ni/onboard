@@ -38,7 +38,7 @@ def main():
     for fn,sentences in [("training.txt", training),
                      ("held_out.txt", held_out),
                      ("testing.txt", testing)] :
-        with codecs.open(fn, "wt", encoding='utf-8') as f:
+        with codecs.open(fn, "w", encoding='utf-8') as f:
             f.writelines(s + "\n" for s in sentences)
 
 
@@ -48,20 +48,20 @@ def read_corpus(filename, hstep=20, tstep=20):
     # Split into sentences including separators (punctuation, <s>).
     # "disambiguate" allows to feed saved sentences back into split_sentences
     # without loss, i.e. adjacent sentences cannot join erroneously.
-    sentences = pypredict.split_sentences(text, disambiguate=True)
+    sentences, spans = pypredict.split_sentences(text, disambiguate=True)
 
     # divide corpus into 3 sections: training, held_out, test
     r = range(len(sentences))
-    sh = set(r[hstep/3::hstep])
-    st = set(r[hstep/3*2::tstep])
+    sh = set(r[hstep//3::hstep])
+    st = set(r[hstep//3*2::tstep])
     st = st - sh
     #print len(st - sh), len(set(r) - sh), len(set(r) - st), len(set(r) - st - sh)
     training  = [sentences[i] for i in set(r) - sh - st]
     held_out  = [sentences[i] for i in sh]
     testing   = [sentences[i] for i in st]
 
-    print "sentences: total %d, training %d, held_out %d, testing %d" % \
-          (len(sentences),len(training),len(held_out),len(testing))
+    print("sentences: total {}, training {}, held_out {}, testing {}" \
+          .format(len(sentences),len(training),len(held_out),len(testing)))
 
     return training, held_out, testing
 
