@@ -83,6 +83,21 @@ class _BaseModel:
             totals[len(ng[0])-1] += ng[1]
         return counts, totals
 
+    def copy(self, model):
+        """
+        Copy contents of self to model. The order of the destination
+        stays unchanged.
+        """
+        if hasattr(self, "smoothing"): # not for UnigramModel
+            model.smoothing = self.smoothing
+
+        for it in self.iter_ngrams():
+            ngram = it[0]
+            count = it[1]
+            model.count_ngram(ngram, count)
+
+        return model
+
     def prune(self, prune_counts):
         """
         Return a copy of self with all ngrams removed whose
@@ -99,6 +114,7 @@ class _BaseModel:
                 break
             order -= 1
 
+        order = max(order, 2)
         model = self.__class__(order)
 
         if hasattr(self, "smoothing"): # not for UnigramModel
