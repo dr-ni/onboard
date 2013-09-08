@@ -100,6 +100,9 @@ class PrefixCmp
                 prefix = _prefix;
             options = _options;
 
+            if (options & LanguageModel::CASE_INSENSITIVE_SMART)
+                ;
+            else
             if (options & LanguageModel::CASE_INSENSITIVE)
                 transform (prefix.begin(), prefix.end(), prefix.begin(),
                            op_lower);
@@ -146,6 +149,12 @@ class PrefixCmp
                 c1 = (wint_t) *s++;
                 c2 = (wint_t) *p++;
 
+                if (options & LanguageModel::CASE_INSENSITIVE_SMART)
+                {
+                    if (!iswupper(c2))
+                        c1 = (wint_t) towlower(c1);
+                }
+                else
                 if (options & LanguageModel::CASE_INSENSITIVE)
                 {
                     c1 = (wint_t) towlower(c1);

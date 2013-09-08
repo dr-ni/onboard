@@ -492,7 +492,7 @@ class WordSuggestions:
                 bot_marker = text_context.get_text_begin_marker()
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
-                case_insensitive, ignore_non_caps, \
+                case_insensitive_mode, ignore_non_caps, \
                 capitalize, drop_capitalized = \
                        self._get_prediction_options(tokens,
                                                     bool(self.mods[1]),
@@ -500,8 +500,8 @@ class WordSuggestions:
 
                 _choices = self._wpengine.predict(bot_context,
                        max_choices * 2,
-                       case_insensitive = case_insensitive,
-                       accent_insensitive = False,
+                       case_insensitive = case_insensitive_mode == 1,
+                       case_insensitive_smart = case_insensitive_mode == 2,
                        accent_insensitive_smart = config.wp.accent_insensitive,
                        ignore_non_capitalized = ignore_non_caps)
 
@@ -545,43 +545,49 @@ class WordSuggestions:
 
         # mid-sentence, no tokens
         >>> get_options([], False)
-        (False, False, False, False)
+        (0, False, False, False)
 
         # mid-sentence, lowercase
         >>> get_options(["<s>", "Word", "prefix"], False)
-        (True, False, False, True)
+        (2, False, False, True)
 
         # mid-sentence, capitalized
         >>> get_options(["<s>", "Word", "Prefix"], False)
-        (False, True, False, False)
+        (0, True, False, False)
+
+        # mid-sentence, capitals in word (Irish, e.g. bPoblacht)
+        # Don't drop caps words, smart case-insensitive search already dropped
+        # the lower caps variant.
+        >>> get_options(["<s>", "Word", "pRefix"], False)
+        (2, False, False, False)
 
         # mid-sentence, empty prefix
         >>> get_options(["<s>", "Word", ""], False)
-        (True, False, False, False)
+        (2, False, False, False)
 
         # mid-sentence, empty prefix, with shift
         >>> get_options(["<s>", "Word", ""], True)
-        (False, True, False, False)
+        (0, True, False, False)
 
         # sentence begin, lowercase
         >>> get_options(["<s>", "prefix"], False)
-        (True, False, False, False)
+        (2, False, False, False)
 
         # sentence begin, capitalized
         >>> get_options(["<s>", "Prefix"], False)
-        (True, False, True, False)
+        (1, False, True, False)
 
         # sentence begin, empty prefix
         >>> get_options(["<s>", ""], False)
-        (True, False, False, False)
+        (2, False, False, False)
 
         # sentence begin, empty prefix, with shift
         >>> get_options(["<s>", ""], True)
-        (True, False, True, False)
+        (1, False, True, False)
 
-        # sentence begin with bot marker.
+        # sentence begin at begin of text.
         >>> get_options(["<bot:txt>", "Prefix"], True, "<bot:txt>")
-        (True, False, True, False)
+        (1, False, True, False)
         """
         if tokens:
             prefix = tokens[-1]
@@ -590,9 +596,7 @@ class WordSuggestions:
                               bool(bot_marker) and tokens[-2] == bot_marker)
             capitalized = bool(prefix) and prefix[0].isupper()
             empty_prefix = not bool(prefix)
-
-            case_insensitive = not (not sentence_begin and capitalized or \
-                                    not sentence_begin and shift)
+            all_lower = prefix.islower()
 
             ignore_non_caps  = not sentence_begin and \
                                (capitalized or empty_prefix and shift)
@@ -601,14 +605,25 @@ class WordSuggestions:
 
             drop_capitalized = not sentence_begin and \
                                not capitalized \
-                               and not empty_prefix
+                               and not empty_prefix and \
+                               all_lower
+
+            case_insensitive = sentence_begin or not (capitalized or shift)
+            if not case_insensitive:
+                case_insensitive_mode = 0
+            else:
+                if capitalize:
+                    case_insensitive_mode = 1
+                else:
+                    case_insensitive_mode = 2
+
         else:
-            capitalize = False
-            case_insensitive = False
+            case_insensitive_mode = 0
             ignore_non_caps  = False
+            capitalize = False
             drop_capitalized = False
 
-        return case_insensitive, ignore_non_caps, capitalize, drop_capitalized
+        return case_insensitive_mode, ignore_non_caps, capitalize, drop_capitalized
 
     def get_word_infos(self, text):
         wis = []

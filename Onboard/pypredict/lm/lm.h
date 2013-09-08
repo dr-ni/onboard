@@ -318,23 +318,25 @@ class LanguageModel
         {
             CASE_INSENSITIVE         = 1<<0, // case insensitive completion,
                                              // affects all characters
-            ACCENT_INSENSITIVE       = 1<<1, // accent insensitive completion
+            CASE_INSENSITIVE_SMART   = 1<<1, // case insensitive completion,
+                                             // only for lower case chars
+            ACCENT_INSENSITIVE       = 1<<2, // accent insensitive completion
                                              // affects all characters
-            ACCENT_INSENSITIVE_SMART = 1<<2, // accent insensitive completion
+            ACCENT_INSENSITIVE_SMART = 1<<3, // accent insensitive completion
                                              // only for non-accent characters
-            IGNORE_CAPITALIZED       = 1<<3, // ignore capitalized words,
+            IGNORE_CAPITALIZED       = 1<<4, // ignore capitalized words,
                                              // only affects first character
-            IGNORE_NON_CAPITALIZED   = 1<<4, // ignore non-capitalized words
+            IGNORE_NON_CAPITALIZED   = 1<<5, // ignore non-capitalized words
                                              // only affects first character
-            INCLUDE_CONTROL_WORDS    = 1<<5, // include <s>, <num>, ...
-            NO_SORT                  = 1<<6, // don't sort by weight
+            INCLUDE_CONTROL_WORDS    = 1<<6, // include <s>, <num>, ...
+            NO_SORT                  = 1<<7, // don't sort by weight
 
             // Default to not do explicit normalization for performance
             // reasons. Often results will be implicitely normalized already
             // and predictions for word choices just need the correct word order.
             // Normalization has to be enabled for entropy/perplexity
             // calculations or other verification purposes.
-            NORMALIZE              = 1<<6, // explicit normalization for
+            NORMALIZE              = 1<<8, // explicit normalization for
                                            // overlay and loglinint, everything
                                            // else ought to be normalized already.
             FILTER_OPTIONS         = CASE_INSENSITIVE |

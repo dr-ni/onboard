@@ -84,6 +84,7 @@ class WPLocalEngine(object):
 
     def predict(self, context_line, limit = 20,
                 case_insensitive = False,
+                case_insensitive_smart = False,
                 accent_insensitive = False,
                 accent_insensitive_smart = False,
                 ignore_capitalized = False,
@@ -93,6 +94,8 @@ class WPLocalEngine(object):
         options = 0
         if case_insensitive:
             options |= LanguageModel.CASE_INSENSITIVE
+        if case_insensitive_smart:
+            options |= LanguageModel.CASE_INSENSITIVE_SMART
         if accent_insensitive:
             options |= LanguageModel.ACCENT_INSENSITIVE
         if accent_insensitive_smart:

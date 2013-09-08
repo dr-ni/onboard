@@ -2010,6 +2010,8 @@ moduleinit (void)
         // add constants
         PyDict_SetItemString(LanguageModelType.tp_dict, "CASE_INSENSITIVE",
                              PyInt_FromLong(LanguageModel::CASE_INSENSITIVE));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "CASE_INSENSITIVE_SMART",
+                             PyInt_FromLong(LanguageModel::CASE_INSENSITIVE_SMART));
         PyDict_SetItemString(LanguageModelType.tp_dict, "ACCENT_INSENSITIVE",
                              PyInt_FromLong(LanguageModel::ACCENT_INSENSITIVE));
         PyDict_SetItemString(LanguageModelType.tp_dict, "ACCENT_INSENSITIVE_SMART",
