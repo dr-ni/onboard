@@ -42,7 +42,7 @@ def main():
     parser.add_option("-u", "--max-unigrams", 
               type="int", dest="max_unigrams", default=0,
               help="prune n-grams with counts below or equal the one of the "
-                   "least frequent of the top max_unigrams unigram;"
+                   "least frequent of the top <max-unigrams> unigrams;"
                    "default 0, disabled")
 
     # regex filters
@@ -55,7 +55,7 @@ def main():
                    "ngram string. Matches are dropped.")
     parser.add_option("-t", "--title-case",
               action="store_true", dest="title_case", default=False,
-              help="Keep only all capitalized words for bigrams and up")
+              help="Keep only capitalized words for bigrams and up")
 
     # spell check
     parser.add_option("-l", "--language", type="str", dest="lang_id", default="",
@@ -244,7 +244,7 @@ def caps_bigram_filter(model, word_length):
     return out_model
 
 def title_case_filter(model):
-    """ Leaves all bigrams and up with all words starting uppercase. """
+    """ Leaves only bigrams and up with all words starting uppercase. """
     out_model = model.__class__(model.order)
 
     for it in model.iter_ngrams():
