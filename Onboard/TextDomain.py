@@ -139,6 +139,10 @@ class TextDomain:
         (6, 13, '/usr/bin/bash')
         >>> d.grow_learning_span(TextSpan(18, 1, "word1 /usr/bin/bash word2"))
         (6, 13, '/usr/bin/bash')
+
+        # Large buffer with text offset != 0
+        >>> d.grow_learning_span(TextSpan(116, 1, "word1 /usr/bin/bash word2", 100))
+        (106, 13, '/usr/bin/bash')
         """
         text   = text_span.get_text()
         offset = text_span.text_begin()
@@ -159,7 +163,7 @@ class TextDomain:
                     begin = min(begin, span[0])
                     end = max(end, span[1])
 
-        return begin, end - begin, text[begin:end]
+        return begin+offset, end - begin, text[begin:end]
 
     def can_record_insertion(self, accessible, pos, length):
         return True

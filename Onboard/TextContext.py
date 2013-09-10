@@ -428,7 +428,7 @@ class AtspiTextContext(TextContext):
                 span.text = Atspi.Text.get_text(accessible, begin, end)
                 span.text_pos = begin
 
-           #print(self._changes)
+            #print(self._changes)
 
         self._text_changed = True
 
