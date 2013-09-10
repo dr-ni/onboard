@@ -282,6 +282,7 @@ def tokenize_sentence(sentence):
       (?:^|(?<=\s))
         \S*(\S)\\2{3,}\S*                 # char repeated more than 3 times
       (?=\s|$)
+      | :[^\s:@]+?@                       # password in URL
     ) |
     (                                     # <num>
       (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking

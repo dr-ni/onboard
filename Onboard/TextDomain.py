@@ -188,7 +188,7 @@ class TextDomain:
     def _is_filename(string):
         return  "/" in string
 
-    _growth_tokens_pattern = re.compile("[^\s?#]+", re.DOTALL)
+    _growth_tokens_pattern = re.compile("[^\s?#@]+", re.DOTALL)
 
     def _split_growth_sections(self, text):
         """
@@ -202,6 +202,9 @@ class TextDomain:
 
         >>> d._split_growth_sections("http://www.domain.org/?p=1#anchor")
         (['http://www.domain.org/', 'p=1', 'anchor'], [(0, 22), (23, 26), (27, 33)])
+
+        >>> d._split_growth_sections("http://user:pass@www.domain.org")
+        (['http://user:pass', 'www.domain.org'], [(0, 16), (17, 31)])
         """
         matches = self._growth_tokens_pattern.finditer(text)
         tokens = []

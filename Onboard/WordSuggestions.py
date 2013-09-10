@@ -1193,6 +1193,10 @@ class LearnStrategy:
         >>> p._get_learn_tokens([TextSpan(5, 1, "usr/bin/onboard")],
         ...                          None, None, d)
         [['usr', 'bin', 'onboard']]
+
+        >>> p._get_learn_tokens([TextSpan(0, 11, "user:pass@www.domain.org")],
+        ...                          None, None, d)
+        [['user', '<unk>', 'www', 'domain', 'org']]
         """
         token_sets = []
         span_sets = []
