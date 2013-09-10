@@ -36,7 +36,7 @@ import Onboard.pypredict as pypredict
 
 from Onboard                   import KeyCommon
 from Onboard.TextContext       import AtspiTextContext, InputLine
-from Onboard.TextChanges       import TextSpan
+from Onboard.TextChanges       import TextChanges, TextSpan
 from Onboard.SpellChecker      import SpellChecker
 from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
@@ -361,7 +361,7 @@ class WordSuggestions:
         separator = ""
         if config.wp.punctuation_assistance and \
            allow_separator:
-            # Simulate the change and determine the final text 
+            # Simulate the change and determine the final text
             # before the cursor.
             cursor_span = self.text_context.get_span_at_cursor()
             context = self._simulate_insertion(cursor_span, deletion, insertion)
@@ -1080,39 +1080,47 @@ class LearnStrategy:
         self._tokenize = tokenize if tokenize \
                          else pypredict.tokenize_text  # no D-Bus for tests
 
-    def _learn_spans(self, spans, bot_marker = "", bot_offset = None):
+    def _learn_spans(self, spans, bot_marker = "", bot_offset = None,
+                     text_domain = None):
         if config.wp.can_auto_learn():
-            texts = self._get_learn_texts(spans, bot_marker, bot_offset)
+            texts = self._get_learn_texts(spans, bot_marker, bot_offset,
+                                          text_domain)
 
             #_logger.info("learning " + repr(texts))
+            print("learning " + repr(texts))
 
             engine = self._wp._wpengine
             for text in texts:
                 engine.learn_text(text, True)
 
-    def _learn_scratch_spans(self, spans):
+    def _learn_scratch_spans(self, spans, text_domain = None):
         if config.wp.can_auto_learn():
             engine = self._wp._wpengine
             engine.clear_scratch_models()
             if spans:
-                texts = self._get_learn_texts(spans)
+                texts = self._get_learn_texts(spans, None, None, text_domain)
 
                 for text in texts:
                     engine.learn_scratch_text(text)
 
-    def _get_learn_texts(self, spans, bot_marker = "", bot_offset = None):
-        token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset)
+    def _get_learn_texts(self, spans, bot_marker = "", bot_offset = None,
+                         text_domain = None):
+        token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset,
+                                            text_domain)
         return [" ".join(tokens) for tokens in token_sets]
 
     def _get_learn_tokens(self, text_spans,
-                          bot_marker = "", bot_offset = None):
+                          bot_marker = "", bot_offset = None,
+                          text_domain = None):
         """
         Get disjoint sets of tokens to learn.
         Tokens of overlapping or adjacent spans are joined.
         Expected overlap is at most one word at begin and end.
 
         Doctests:
+        >>> from Onboard.TextDomain import DomainGenericText
         >>> p = LearnStrategy()
+        >>> d = DomainGenericText()
 
         # single span
         >>> p._get_learn_tokens([TextSpan(14, 2, "word1 word2 word3")])
@@ -1157,10 +1165,42 @@ class LearnStrategy:
         >>> p._get_learn_tokens([TextSpan(15, 2, "prompt$ word1 word2")],
         ...                               "<bot:term>", 8)
         [['word2']]
+
+        # The hierarichcal part of URLs is considered changed as a whole
+        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/home/index.html")],
+        ...                          None, None, d)
+        [['http', 'www', 'domain', 'org', 'home', 'index', 'html']]
+
+        # Recognize URLs even without the scheme part
+        >>> p._get_learn_tokens([TextSpan(8, 1, "www.domain.org")],
+        ...                          None, None, d)
+        [['www', 'domain', 'org']]
+
+        # The query part of an URL isn't automatically included.
+        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/?p=1")],
+        ...                          None, None, d)
+        [['http', 'www', 'domain', 'org']]
+
+        # The fragment part of an URL isn't automatically included.
+        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/#anchor")],
+        ...                          None, None, d)
+        [['http', 'www', 'domain', 'org']]
+
+        # File paths are considered changed as a whole
+        >>> p._get_learn_tokens([TextSpan(6, 1, "/usr/bin/onboard")],
+        ...                          None, None, d)
+        [['usr', 'bin', 'onboard']]
+        >>> p._get_learn_tokens([TextSpan(5, 1, "usr/bin/onboard")],
+        ...                          None, None, d)
+        [['usr', 'bin', 'onboard']]
         """
-        text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))
         token_sets = []
         span_sets = []
+
+        if text_domain:
+            text_spans = self._grow_spans(text_spans, text_domain)
+
+        text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))
 
         for text_span in text_spans:
             # Tokenize with one additional token in front so we can
@@ -1201,7 +1241,7 @@ class LearnStrategy:
 
     def _tokenize_span(self, text_span, prepend_tokens = 0):
         """
-        Extend spans text to word boundaries and return as tokens.
+        Expand spans to word boundaries and return as tokens.
         Include <prepend_tokens> before the span.
 
         Doctests:
@@ -1230,15 +1270,10 @@ class LearnStrategy:
         >>> p._tokenize_span(tc.TextSpan(1, 1, "word1 word2 word3"), 1)
         (['word1'], [(0, 5)], None)
         """
+        offset = text_span.text_begin()
         tokens, spans = self._tokenize(text_span.get_text())
 
-        itokens = []
-        offset = text_span.text_begin()
-        begin  = text_span.begin() - offset
-        end    = text_span.end() - offset
-        for i, s in enumerate(spans):
-            if begin < s[1] and end > s[0]: # intersects?
-                itokens.append(i)
+        itokens = self._intersect_span(text_span, tokens, spans)
 
         if prepend_tokens and itokens:
             first = itokens[0]
@@ -1262,6 +1297,43 @@ class LearnStrategy:
         return([unicode_str(tokens[i]) for i in itokens],
                [(offset + spans[i][0], offset + spans[i][1]) for i in itokens],
                span_before)
+
+    def _grow_spans(self, spans, text_domain):
+        """
+        Grow spans to include e.g. whole URLs.
+        """
+        new_spans = [s.copy() for s in spans]
+        modified = False
+
+        for span in new_spans:
+            begin, length, _text = text_domain.grow_learning_span(span)
+            end = begin + length
+            if begin < span.begin() or \
+               end > span.end():
+                span.pos = begin
+                span.length = length
+                modified = True
+
+        if modified:
+            new_spans, _span = TextChanges.consolidate_spans(new_spans)
+
+        return new_spans
+
+    def _intersect_span(self, text_span, tokens, spans):
+        """
+        Returns indices of tokens the given text_span touches.
+        """
+        text = text_span.get_text()
+
+        itokens = []
+        offset = text_span.text_begin()
+        begin  = text_span.begin() - offset
+        end    = text_span.end() - offset
+        for i, s in enumerate(spans):
+            if begin < s[1] and end > s[0]: # intersects?
+                itokens.append(i)
+
+        return itokens
 
 
 class LearnStrategyLRU(LearnStrategy):
@@ -1295,14 +1367,15 @@ class LearnStrategyLRU(LearnStrategy):
         self.reset()
 
         text_context = self._wp.text_context
-        changes = text_context.get_changes()
-        spans = changes.get_spans() # by reference
+        changes = text_context.get_changes()  # by reference
+        spans = changes.get_spans()  # by reference
         if spans:
             engine = self._wp._wpengine
             if engine:
                 bot_marker = text_context.get_text_begin_marker()
                 bot_offset = text_context.get_begin_of_text_offset()
-                self._learn_spans(spans, bot_marker, bot_offset)
+                domain = text_context.get_text_domain()
+                self._learn_spans(spans, bot_marker, bot_offset, domain)
                 engine.clear_scratch_models() # clear short term memory
 
         changes.clear()

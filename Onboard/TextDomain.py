@@ -76,6 +76,9 @@ class TextDomain:
     def read_context(self, accessible):
         return NotImplementedError()
 
+    def get_text_begin_marker(self):
+        return ""
+
     def get_auto_separator(self, context):
         """
         Get word separator to add after inserting a prediction choice.
@@ -99,13 +102,64 @@ class TextDomain:
                 separator = self._url_parser.get_auto_separator(string)
             else:
                 # File name?
-                if  "/" in string:
+                if self._is_filename(string):
                     separator = ""
 
         return separator
 
-    def get_text_begin_marker(self):
-        return ""
+    def grow_learning_span(self, text_span):
+        """
+        Grow span before learning to include e.g. whole URLs.
+
+        Doctests:
+        >>> d = DomainGenericText()
+
+        # Span doesn't change for simple words
+        >>> d.grow_learning_span(TextSpan(8, 1, "word1 word2 word3"))
+        (8, 1, 'r')
+
+        # Span grows to cover a complete URL
+        >>> d.grow_learning_span(TextSpan(13, 1, "http://www.domain.org"))
+        (0, 21, 'http://www.domain.org')
+
+        # Span grows to cover multiple complete URLs
+        >>> d.grow_learning_span(TextSpan(19, 13, "http://www.domain.org word http://slashdot.org"))
+        (0, 46, 'http://www.domain.org word http://slashdot.org')
+
+        # Span grows to cover a complete filename
+        >>> d.grow_learning_span(TextSpan(10, 1, "word1 /usr/bin/bash word2"))
+        (6, 13, '/usr/bin/bash')
+
+        # Edge cases
+        >>> d.grow_learning_span(TextSpan(6, 0, "word1 /usr/bin/bash word2"))
+        (6, 0, '')
+        >>> d.grow_learning_span(TextSpan(19, 0, "word1 /usr/bin/bash word2"))
+        (19, 0, '')
+        >>> d.grow_learning_span(TextSpan(6, 1, "word1 /usr/bin/bash word2"))
+        (6, 13, '/usr/bin/bash')
+        >>> d.grow_learning_span(TextSpan(18, 1, "word1 /usr/bin/bash word2"))
+        (6, 13, '/usr/bin/bash')
+        """
+        text   = text_span.get_text()
+        offset = text_span.text_begin()
+        begin  = text_span.begin() - offset
+        end    = text_span.end() - offset
+
+        tokens, spans = self._split_growth_sections(text)
+
+        for i, s in enumerate(spans):
+            if begin < s[1] and end > s[0]: # intersects?
+
+                token = tokens[i]
+                span = spans[i]
+                if self._url_parser.is_maybe_url(token):  # URL?
+                    begin = min(begin, span[0])
+                    end = max(end, span[1])
+                elif self._is_filename(token):           # file name?
+                    begin = min(begin, span[0])
+                    end = max(end, span[1])
+
+        return begin, end - begin, text[begin:end]
 
     def can_record_insertion(self, accessible, pos, length):
         return True
@@ -125,6 +179,34 @@ class TextDomain:
 
     def handle_key_press(self, keycode, mod_mask):
         return True, None  # entering_text, end_of_editing
+
+    @staticmethod
+    def _is_filename(string):
+        return  "/" in string
+
+    _growth_tokens_pattern = re.compile("[^\s?#]+", re.DOTALL)
+
+    def _split_growth_sections(self, text):
+        """
+        Split text at whitespace and other delimiters where
+        growing learning spans should stop.
+
+        Doctests:
+        >>> d = DomainGenericText()
+        >>> d._split_growth_sections("word1 www.domain.org word2. http://test")
+        (['word1', 'www.domain.org', 'word2.', 'http://test'], [(0, 5), (6, 20), (21, 27), (28, 39)])
+
+        >>> d._split_growth_sections("http://www.domain.org/?p=1#anchor")
+        (['http://www.domain.org/', 'p=1', 'anchor'], [(0, 22), (23, 26), (27, 33)])
+        """
+        matches = self._growth_tokens_pattern.finditer(text)
+        tokens = []
+        spans = []
+        for m in matches:
+            tokens.append(m.group())
+            spans.append(m.span())
+        return tokens, spans
+
 
 class DomainNOP(TextDomain):
     """ Do-nothing domain, no focused accessible. """
@@ -376,9 +458,18 @@ class PartialURLParser:
 
     Doctests:
     >>> p = PartialURLParser()
+
     >>> p.tokenize_url('http://user:pass@www.do-mai_n.nl/path/name.ext')
     ['http', '://', 'user', ':', 'pass', '@', 'www', '.', 'do-mai_n', '.', 'nl', '/', 'path', '/', 'name', '.', 'ext']
 
+    >>> p.tokenize_url('user:pass@www.do-mai_n.nl/path/name.ext')
+    ['user', ':', 'pass', '@', 'www', '.', 'do-mai_n', '.', 'nl', '/', 'path', '/', 'name', '.', 'ext']
+
+    >>> p.tokenize_url('www.do-mai_n.nl/path/name.ext')
+    ['www', '.', 'do-mai_n', '.', 'nl', '/', 'path', '/', 'name', '.', 'ext']
+
+    >>> p.tokenize_url('www.do-mai_n.nl')
+    ['www', '.', 'do-mai_n', '.', 'nl']
     """
     _gTLDs   = ["aero", "asia", "biz", "cat", "com", "coop", "info", "int",
                "jobs", "mobi", "museum", "name", "net", "org", "pro", "tel",
@@ -437,13 +528,38 @@ class PartialURLParser:
         True
         >>> d.is_maybe_url("http://www.domain.org")
         True
+        >>> d.is_maybe_url("www.domain.org")
+        True
+        >>> d.is_maybe_url("www.domain")
+        False
+        >>> d.is_maybe_url("www")
+        False
         """
         tokens = self.tokenize_url(context)
+
+        # with scheme
         if len(tokens) >= 2:
             token  = tokens[0]
             septok = tokens[1]
             if token in self._all_schemes and septok.startswith(":"):
                 return True
+
+        # without scheme
+        if len(tokens) >= 5:
+            if tokens[1] == "." and tokens[3] == ".":
+                try:
+                    index = tokens.index("/")
+                except ValueError:
+                    index = 0
+
+                if index >= 4:
+                    hostname = tokens[:index]
+                else:
+                    hostname = tokens
+
+                if hostname[-1] in self._TLDs:
+                    return True
+
         return False
 
 
@@ -457,9 +573,17 @@ class PartialURLParser:
         '://'
         >>> p.get_auto_separator("www")
         '.'
+        >>> p.get_auto_separator("domain.org")
+        '/'
+        >>> p.get_auto_separator("www.domain.org")
+        '/'
         >>> p.get_auto_separator("http://www.domain")
         '.'
         >>> p.get_auto_separator("http://www.domain.org")
+        '/'
+        >>> p.get_auto_separator("http://www.domain.co")
+        '.'
+        >>> p.get_auto_separator("http://www.domain.co.uk")
         '/'
         >>> p.get_auto_separator("http://www.domain.org/home")
         ''
@@ -504,7 +628,9 @@ class PartialURLParser:
             if component == DOMAIN:
                 if token:
                     separator = "."
-                    if last_septok == "." and token in self._TLDs:
+                    if last_septok == "." and \
+                       token in self._TLDs and \
+                       token != "co":  # special case for co.uk TLD
                         separator = "/"
                         component = PATH
                         continue
@@ -516,4 +642,5 @@ class PartialURLParser:
                 separator = ""
 
         return separator
+
 

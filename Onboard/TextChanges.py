@@ -244,7 +244,7 @@ class TextChanges:
     ...     c = TextChanges()
     ...     _ = c.insert(*test[0]); _ = c.delete(test[1][0], test[1][1], True)
     ...     if c.get_span_ranges() != test[2]:
-    ...        "testi: " + repr(test) + " result: " + repr(c.get_span_ranges())
+    ...        "test1: " + repr(test) + " result: " + repr(c.get_span_ranges())
     ...     c = TextChanges()
     ...     _ = c.insert(*test[0]); _ = c.delete(test[1][0], test[1][1], False)
     ...     if c.get_span_ranges() != test[3]:
@@ -264,8 +264,10 @@ class TextChanges:
 
     """.replace('IGNORE_RESULT', 'doctest: +ELLIPSIS\n    [...')
 
-    def __init__(self):
+    def __init__(self, spans = None):
         self.clear()
+        if spans:
+            self._spans = spans
 
     def clear(self):
         self._spans = []
@@ -396,7 +398,7 @@ class TextChanges:
                 span = TextSpan(pos, 0);
                 self._spans.append(span)
 
-            span = self.join_adjacent_spans(span)
+            self._spans, span = self.consolidate_spans(self._spans, span)
             spans_to_update.append(span)
 
         if spans_to_update:
@@ -404,22 +406,39 @@ class TextChanges:
 
         return spans_to_update
 
-    def join_adjacent_spans(self, tracked_span = None):
+    @staticmethod
+    def consolidate_spans(spans, tracked_span = None):
         """
-        join touching text spans
+        join touching or intersecting text spans
 
         Doctests:
-        >>> c = TextChanges()
-        >>> c._spans.append(TextSpan(0, 1))
-        >>> c._spans.append(TextSpan(2, 4))
-        >>> c._spans.append(TextSpan(1, 1))
-        >>> c._spans.append(TextSpan(10, 3))
-        >>> c._spans.append(TextSpan(8, 2))
-        >>> c.join_adjacent_spans()
-        >>> c.get_span_ranges()
+        # Join touching spans
+        >>> spans = [TextSpan(0, 1),
+        ...          TextSpan(2, 4),
+        ...          TextSpan(1, 1),
+        ...          TextSpan(10, 3),
+        ...          TextSpan(8, 2)]
+        >>> spans, _span = TextChanges.consolidate_spans(spans)
+        >>> TextChanges.to_span_ranges(spans)
         [[0, 6], [8, 5]]
+
+        # Join overlapping spans
+        >>> spans = [TextSpan(2, 5),
+        ...          TextSpan(4, 10),
+        ...          TextSpan(12, 8)]
+        >>> spans, _span = TextChanges.consolidate_spans(spans)
+        >>> TextChanges.to_span_ranges(spans)
+        [[2, 18]]
+
+        # Join contained spans
+        >>> spans = [TextSpan(5, 1),
+        ...          TextSpan(2, 10),
+        ...          TextSpan(3, 4)]
+        >>> spans, _span = TextChanges.consolidate_spans(spans)
+        >>> TextChanges.to_span_ranges(spans)
+        [[2, 10]]
         """
-        spans = sorted(self._spans, key=lambda x: (x.begin(), x.end()))
+        spans = sorted(spans, key=lambda x: (x.begin(), x.end()))
         new_spans = []
         slast = None
         for s in spans:
@@ -432,9 +451,7 @@ class TextChanges:
                 new_spans.append(s)
                 slast = s
 
-        self._spans = new_spans
-
-        return tracked_span
+        return new_spans, tracked_span
 
     def find_span_at(self, pos):
         """
@@ -475,7 +492,11 @@ class TextChanges:
         return None
 
     def get_span_ranges(self):
-        return sorted([[span.pos, span.length] for span in self._spans])
+        return self.to_span_ranges(self._spans)
+
+    @staticmethod
+    def to_span_ranges(spans):
+        return sorted([[span.pos, span.length] for span in spans])
 
     def __repr__(self):
         return "TextChanges " + repr([str(span) for span in self._spans])

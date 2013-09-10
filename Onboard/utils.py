@@ -1292,6 +1292,30 @@ def open_utf8(filename, mode = "r"):
     else:
         return open(filename, mode=mode, encoding="UTF-8")
 
+def permute_mask(mask):
+    """
+    Return all permutations of the bits in mask.
+
+    Doctests:
+    >>> permute_mask(1)
+    [0, 1]
+    >>> permute_mask(5)
+    [0, 1, 4, 5]
+    >>> permute_mask(14)
+    [0, 2, 4, 6, 8, 10, 12, 14]
+    """
+    bit_masks = [bit_mask for bit_mask in (1<<bit for bit in range(8)) \
+                 if mask & bit_mask]
+    n = len(bit_masks)
+    perms = []
+    for i in range(2**n):
+        m = 0
+        for bit in range(n):
+            if i & 1<<bit:
+                m |= bit_masks[bit]
+        perms.append(m)
+    return perms
+
 
 class Translation:
     """
@@ -1402,31 +1426,6 @@ class EventSource(object):
         Cancel pending asynchronous events.
         """
         self._event_queue = None
-
-
-def permute_mask(mask):
-    """
-    Return all permutations of the bits in mask.
-
-    Doctests:
-    >>> permute_mask(1)
-    [0, 1]
-    >>> permute_mask(5)
-    [0, 1, 4, 5]
-    >>> permute_mask(14)
-    [0, 2, 4, 6, 8, 10, 12, 14]
-    """
-    bit_masks = [bit_mask for bit_mask in (1<<bit for bit in range(8)) \
-                 if mask & bit_mask]
-    n = len(bit_masks)
-    perms = []
-    for i in range(2**n):
-        m = 0
-        for bit in range(n):
-            if i & 1<<bit:
-                m |= bit_masks[bit]
-        perms.append(m)
-    return perms
 
 
 class XDGDirs:
