@@ -187,8 +187,19 @@ extension_lm = Extension_lm("Onboard", "Onboard")
 #### custom test command ####
 
 class TestCommand(Command):
+    user_options = [] # required by Command
 
-    user_options = []
+    depends = ["python3-nose",
+               "hunspell",
+               "hunspell-en-us",
+               "hunspell-de-de",
+               "myspell-es",
+               "myspell-pt-pt",
+               "hunspell-fr",
+               "hunspell-ru",
+               "myspell-it",
+               "myspell-el-gr",
+              ]
 
     def initialize_options(self):
         pass
@@ -197,11 +208,36 @@ class TestCommand(Command):
         pass
 
     def run(self):
+        if not self.check_test_dependencies():
+            sys.exit(2)
+
+        # onboard must no be running at test begin
+        subprocess.call(["killall", "onboard"])
+
         import nose
         if nose.run(argv=[__file__, "--with-doctest"]):
-            sys.exit( 0 )
+            sys.exit(0)
         else:
-            sys.exit( 1 )
+            sys.exit(1)
+
+    def check_test_dependencies(self):
+        status = subprocess.getstatusoutput("dpkg --version ")
+        if status[0] == 0: # dpkg exists?
+            status = subprocess.getstatusoutput("dpkg --status " + \
+                                            " ".join(d for d in self.depends))
+            if status[0]:
+                for d in self.depends:
+                    status = subprocess.getstatusoutput("dpkg --status " + d)
+                    if status[0] != 0:
+                        print("Missing test dependency '{}'. "
+                              "You can install all required "
+                              "test dependencies by typing:" \
+                              .format(d))
+                        print("sudo apt-get install " + \
+                              " ".join(d for d in self.depends))
+                return False
+
+        return True
 
 
 ##### setup #####
