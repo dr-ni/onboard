@@ -492,6 +492,8 @@ def suite():
              ["single quote'"]],
          ["under_score's", ["under_score's"], ["under_score's"],
              ["under_score's"]],
+         ["Greek Γ´", ['Greek', 'Γ´'], ['Greek', 'Γ´'], ["Greek Γ´"]], # U+00b4
+         ["Greek Γ΄", ['Greek', 'Γ΄'], ['Greek', 'Γ΄'], ["Greek Γ΄"]], # U+0384
          ["|", ['|'], ['|'], ['|']],
          ["find | grep", ['find', '|', 'grep'], ['find', '|', 'grep'],
              ['find | grep']],

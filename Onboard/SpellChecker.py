@@ -376,6 +376,13 @@ class hunspell(SCBackend):
         >>> sp.query("ОБЕДЕНЫЙ")   # doctest: +ELLIPSIS
         [[[0, 8, 'ОБЕДЕНЫЙ'], ['ОБЕДЕННЫЙ', ...
 
+        # dictionaries come in various encodings, spot-check Greek
+        >>> sp = hunspell(["el_GR"])
+        >>> sp.query("Ωκεανού")
+        []
+        >>> sp.query("Ωκεαανού")   # doctest: +ELLIPSIS
+        [[[0, 8, 'Ωκεαανού'], ['Ωκεανού', ...
+
         """
         results = []
 

@@ -290,7 +290,7 @@ def tokenize_sentence(sentence):
     ) |
     (                                     # word
       (?:[-]{0,2}                         # allow command line options
-        [^\W\d]\w*(?:[-'][\w]+)*[']?)     # word, not starting with a digit
+        [^\W\d]\w*(?:[-'´΄][\w]+)*['´΄]?) # word, not starting with a digit
       | <unk> | <s> | </s> | <num>        # pass through control words
       | <bot:[a-z]*>                      # pass through begin of text merkers
       | (?:^|(?<=\s))
@@ -360,7 +360,7 @@ def tokenize_context(text):
     tokens, spans = tokenize_text(text)
     if not re.match("""
                   ^$                              # empty string
-                | .*[-'\w]$                       # word at the end
+                | .*[-'´΄\w]$                     # word at the end
                 | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$  # operator, equal sign
                 | .*(\S)\\1{3,}$                  # anything repeated > 3 times
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):

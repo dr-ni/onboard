@@ -42,6 +42,7 @@ LANGUAGES+="pl_PL "
 LANGUAGES+="nl_NL "   # nl_BE nl_AW nl_AN nl_SR create identical models
 LANGUAGES+="ro_RO "
 LANGUAGES+="da_DK "
+LANGUAGES+="el_GR "
 
 MODELDIR="models"
 RAWMODELDIR="../training/raw_models"
@@ -186,6 +187,10 @@ for lang in $LANGUAGES; do
 
         ro)
             PRUNE_FREQ=27,27,-1
+            ;;
+
+        el)
+            PRUNE_FREQ=24,24,-1
             ;;
 
        *)
