@@ -222,17 +222,17 @@ class KbdWindowBase:
 
             recreate = False
 
-            # Window decoration?
+            # Window decoration toggled?
             decorated = config.window.window_decoration
             if decorated != self.get_decorated():
                 recreate = True
 
-            # override redirect?
+            # Override redirect toggled?
             ord = self.is_override_redirect_mode()
             if ord != self._override_redirect:
                 recreate = True
 
-            # override redirect?
+            # Window type hint changed?
             type_hint = self._wm_quirks.get_window_type_hint(self)
             if type_hint != self._type_hint:
                 recreate = True
