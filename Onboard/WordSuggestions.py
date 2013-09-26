@@ -1440,7 +1440,7 @@ class LearnStrategyLRU(LearnStrategy):
     def _maybe_update_scratch_models(self):
         """
         Update short term memory if the time is right.
-        This may be time consuming, so we try to limit the
+        This may be a time consuming task, so we try to limit the
         frequency of updates.
         """
         if self._wp._wpengine:
@@ -1466,7 +1466,7 @@ class LearnStrategyLRU(LearnStrategy):
 
     def _update_scratch_memory(self, update_ui):
         """
-        Update short term memory of changes that haven't been learned yet.
+        Update short term memory from changes that haven't been learned yet.
         """
         changes = self._wp.text_context.get_changes()
         spans = changes.get_spans() # by reference
@@ -1544,7 +1544,7 @@ class Punctuator:
                 self._wp.press_keysym("backspace")
 
 class WordInfo:
-    """ Word level information about found matches """
+    """ Word level information about found predictions """
 
     exact_match = False
     partial_match = False

@@ -118,15 +118,15 @@ class TextDomain:
         >>> d.grow_learning_span(TextSpan(8, 1, "word1 word2 word3"))
         (8, 1, 'r')
 
-        # Span grows to cover a complete URL
+        # Span growing to cover a complete URL
         >>> d.grow_learning_span(TextSpan(13, 1, "http://www.domain.org"))
         (0, 21, 'http://www.domain.org')
 
-        # Span grows to cover multiple complete URLs
+        # Span growing to cover multiple complete URLs
         >>> d.grow_learning_span(TextSpan(19, 13, "http://www.domain.org word http://slashdot.org"))
         (0, 46, 'http://www.domain.org word http://slashdot.org')
 
-        # Span grows to cover a complete filename
+        # Span growing to cover a complete filename
         >>> d.grow_learning_span(TextSpan(10, 1, "word1 /usr/bin/bash word2"))
         (6, 13, '/usr/bin/bash')
 
@@ -140,7 +140,7 @@ class TextDomain:
         >>> d.grow_learning_span(TextSpan(18, 1, "word1 /usr/bin/bash word2"))
         (6, 13, '/usr/bin/bash')
 
-        # Large buffer with text offset != 0
+        # Large text with text offset > 0: returned position must be offset too.
         >>> d.grow_learning_span(TextSpan(116, 1, "word1 /usr/bin/bash word2", 100))
         (106, 13, '/usr/bin/bash')
         """
