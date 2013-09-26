@@ -14,7 +14,7 @@ from gi.repository import GLib, Gtk, Gio
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree
-from Onboard.definitions    import InputEventSourceEnum, TouchInputEnum
+from Onboard.definitions    import *
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
 from Onboard.ClickSimulator import CSMousetweaks
@@ -373,6 +373,10 @@ class Config(ConfigObject):
         self.add_key("system-theme-associations", {}, 'a{ss}')
         self.add_key("snippets", {}, "as")
         self.add_key("show-status-icon", True)
+        self.add_key("status-icon-provider", StatusIconProviderEnum.AppIndicator,
+                                             enum={"GtkStatusIcon" : 0,
+                                                   "AppIndicator" : 1,
+                                                  })
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, prop="onboard_xembed_enabled")
         self.add_key("show-tooltips", True)

@@ -23,6 +23,12 @@ Global definitions.
 
 from __future__ import division, print_function, unicode_literals
 
+class StatusIconProviderEnum:
+    (
+        GtkStatusIcon,
+        AppIndicator,
+    ) = range(2)
+
 class InputEventSourceEnum:
     (
         GTK,

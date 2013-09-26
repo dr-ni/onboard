@@ -1,4 +1,9 @@
 <schemalist>
+    <enum id="org.onboard.keyboard.StatusIconProvider">
+        <value nick="GtkStatusIcon" value="0"/>
+        <value nick="AppIndicator" value="1"/>
+    </enum>
+
     <schema id="org.onboard" path="/org/onboard/">
         <key name="schema-version" type="s">
             <default>""</default>
@@ -34,6 +39,13 @@
             <default>true</default>
             <summary>Show status icon instead of the classic minimize.</summary>
             <description>Display an icon in the notification area to hide and show onboard.</description>
+        </key>
+        <key name="status-icon-provider" enum="org.onboard.keyboard.StatusIconProvider">
+            <default>"AppIndicator"</default>
+            <summary>Status icon provider</summary>
+            <description>Choose between status icon implementations. AppIndicator shows Onboard on middle-click activation, GtkStatusIcon on left-click.
+If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
+            </description>
         </key>
         <key name="start-minimized" type="b">
             <default>false</default>

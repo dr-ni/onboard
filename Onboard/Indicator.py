@@ -6,6 +6,7 @@ import os
 
 from gi.repository import GObject, Gtk
 
+from Onboard.definitions import StatusIconProviderEnum
 import Onboard.utils as utils
 
 ### Logging ###
@@ -86,12 +87,15 @@ class Indicator(GObject.GObject):
             self._menu.append(quit_item)
         self._menu.show_all()
 
-        try:
-            self._init_indicator()
-        except ImportError as ex:
-            _logger.info("AppIndicator not available, falling back on"
-                         " GtkStatusIcon:" + utils.unicode_str(ex))
+        if config.status_icon_provider == StatusIconProviderEnum.GtkStatusIcon:
             self._init_status_icon()
+        else:
+            try:
+                self._init_indicator()
+            except ImportError as ex:
+                _logger.info("AppIndicator not available, falling back on"
+                             " GtkStatusIcon:" + utils.unicode_str(ex))
+                self._init_status_icon()
         self.set_visible(False)
 
     def set_keyboard_window(self, keyboard_window):
