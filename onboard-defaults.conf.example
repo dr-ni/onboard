@@ -152,6 +152,7 @@ force-to-top=True
 #show-click-buttons=False
 #sticky-key-behavior={"all" : "cycle"}
 #sticky-key-release-delay=0.0
+#input-event-source=GTK
 
 [auto-show]
 enabled=False
