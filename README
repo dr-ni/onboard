@@ -8,7 +8,7 @@ Description:
 
     It has been designed with simplicity in mind and can be used right away
     without the need of any configuration, as it can read the keyboard layout
-    from the X server. 
+    from the X server.
 
     Among its features are:
     - Support of custom layouts through the use of xml and svg files.
@@ -23,13 +23,13 @@ Description:
     - Support for scanning.
 
 
-
-D-Bus Interface:
+D-Bus Service:
 
     Once running, Onboard provides a D-Bus service at the bus name
-    org.onboard.Onboard. Currently there is single available interface:
-    
-    Interface org.onboard.Onboard.Keyboard:
+    'org.onboard.Onboard', that allows other processes to control the
+    visibiliy of the keyboard window.
+
+    Interface 'org.onboard.Onboard.Keyboard':
 
     Show(), method
         Show the keyboard window.
@@ -48,7 +48,7 @@ D-Bus Interface:
     Hide(), method
         Hide the keyboard window.
         Return value: None
-      
+
         Example:
             dbus-send --type=method_call --dest=org.onboard.Onboard 
             /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
