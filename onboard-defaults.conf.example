@@ -152,6 +152,9 @@ force-to-top=True
 #show-click-buttons=False
 #sticky-key-behavior={"all" : "cycle"}
 #sticky-key-release-delay=0.0
+
+# Source of pointer events
+#input-event-source=XInput
 #input-event-source=GTK
 
 [auto-show]
