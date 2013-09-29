@@ -1137,12 +1137,13 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
 {
     OskDevices       *dev = (OskDevices *) self;
     int               id;
-    Window            win;
+    int               _win;
 
-    if (!PyArg_ParseTuple (args, "ii", &id, &win))
+    if (!PyArg_ParseTuple (args, "ii", &id, &_win))
         return NULL;
 
-    if (win == 0)
+    Window win = (Window)_win;
+    if (!win)
         win = DefaultRootWindow (dev->dpy);
 
     unsigned char mask[1] = {0};
@@ -1210,10 +1211,13 @@ osk_devices_select_events (PyObject *self, PyObject *args)
     unsigned char mask[4] = { 0, 0, 0, 0};
     int           device_id;
     unsigned long event_mask;
-    Window        win = DefaultRootWindow (dev->dpy);
+    int           _win;
 
-    if (!PyArg_ParseTuple (args, "iil", &win, &device_id, &event_mask))
+    if (!PyArg_ParseTuple (args, "iil", &_win, &device_id, &event_mask))
         return NULL;
+
+    Window win = (Window) _win;
+
     if (dev->event_handler)
     {
         int i;
@@ -1248,10 +1252,12 @@ osk_devices_unselect_events (PyObject *self, PyObject *args)
     OskDevices   *dev = (OskDevices *) self;
     unsigned char mask[1] = { 0 };
     int           device_id;
-    Window        win = 0;
+    int           _win;
 
-    if (!PyArg_ParseTuple (args, "ii", &win, &device_id))
+    if (!PyArg_ParseTuple (args, "ii", &_win, &device_id))
         return NULL;
+
+    Window win = (Window) _win;
 
     if (dev->event_handler)
     {
