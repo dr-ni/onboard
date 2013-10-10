@@ -18,7 +18,9 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import os
 import re
+import glob
 
 try:
     from gi.repository import Atspi
@@ -84,13 +86,26 @@ class TextDomain:
         Get word separator to add after inserting a prediction choice.
 
         Doctests:
+        # URL
         >>> d = DomainGenericText()
         >>> d.get_auto_separator("word http")
         ' '
         >>> d.get_auto_separator("word http://www")
         '.'
+
+        # filename
         >>> d.get_auto_separator("/etc")
+        '/'
+        >>> from os.path import abspath, dirname
+        >>> path = dirname(abspath("./onboard-defaults.conf.example"))
+        >>> d.get_auto_separator(path + "/onboard-defaults")
+        '.'
+        >>> d.get_auto_separator(path + "/onboard-defaults.conf")
+        '.'
+        >>> d.get_auto_separator(path + "/onboard-defaults.conf.example")
         ''
+        >>> d.get_auto_separator(path + "/onboard-defaults.conf.example.nexus7")
+        ' '
         """
         separator = " "
 
@@ -100,10 +115,9 @@ class TextDomain:
             string = strings[-1]
             if self._url_parser.is_maybe_url(string):
                 separator = self._url_parser.get_auto_separator(string)
-            else:
-                # File name?
-                if self._is_filename(string):
-                    separator = ""
+            elif self._url_parser._is_maybe_filename(string):
+                url = "file://" + string
+                separator = self._url_parser.get_auto_separator(url)
 
         return separator
 
@@ -156,10 +170,8 @@ class TextDomain:
 
                 token = tokens[i]
                 span = spans[i]
-                if self._url_parser.is_maybe_url(token):  # URL?
-                    begin = min(begin, span[0])
-                    end = max(end, span[1])
-                elif self._is_filename(token):           # file name?
+                if self._url_parser.is_maybe_url(token) or \
+                   self._url_parser._is_maybe_filename(token):
                     begin = min(begin, span[0])
                     end = max(end, span[1])
 
@@ -183,10 +195,6 @@ class TextDomain:
 
     def handle_key_press(self, keycode, mod_mask):
         return True, None  # entering_text, end_of_editing
-
-    @staticmethod
-    def _is_filename(string):
-        return  "/" in string
 
     _growth_tokens_pattern = re.compile("[^\s?#@]+", re.DOTALL)
 
@@ -570,6 +578,9 @@ class PartialURLParser:
         return False
 
 
+    def _is_maybe_filename(self, string):
+            return  "/" in string
+
     def get_auto_separator(self, context):
         """
         Get word separator to add after inserting a prediction choice.
@@ -596,12 +607,24 @@ class PartialURLParser:
         ''
         >>> p.get_auto_separator("mailto")
         ':'
+
+        # local files
         >>> p.get_auto_separator("file")
         ':///'
         >>> p.get_auto_separator("file:///home")
+        '/'
+        >>> from os.path import abspath, dirname
+        >>> url = "file://" + dirname(abspath("./onboard-defaults.conf.example"))
+        >>> p.get_auto_separator(url + "/onboard-defaults")
+        '.'
+        >>> p.get_auto_separator(url + "/onboard-defaults.conf")
+        '.'
+        >>> p.get_auto_separator(url + "/onboard-defaults.conf.example")
         ''
+        >>> p.get_auto_separator(url + "/onboard-defaults.conf.example.nexus7")
+        ' '
         """
-        separator = " " # may be entering search terms, keep space as default
+        separator = None
 
         SCHEME, PROTOCOL, DOMAIN, PATH = range(4)
         component = SCHEME
@@ -647,6 +670,91 @@ class PartialURLParser:
 
             if component == PROTOCOL:
                 separator = ""
+
+        if component == PATH and not separator:
+            file_scheme = "file://"
+            if context.startswith(file_scheme):
+                filename = context[len(file_scheme):]
+                separator = self._get_filename_separator(filename)
+
+        if separator is None:
+             separator = " " # may be entering search terms, keep space as default
+
+        return separator
+
+    def _get_filename_separator(self, filename):
+        files  = glob.glob(filename + "*")
+        files += glob.glob(filename + "/*") # look inside directories too
+        separator = self._get_separator_from_file_list(filename, files)
+        if separator is None:
+            basename = os.path.basename(filename)
+            if "." in basename:
+                separator = " "
+            else:
+                separator = "/"
+
+        return separator
+
+    @staticmethod
+    def _get_separator_from_file_list(filename, files):
+        """
+        Extract separator from a list of matching filenames.
+
+        Doctests:
+        >>> p = PartialURLParser
+
+        # no matching files: return None, assume new file we can't check
+        >>> p._get_separator_from_file_list("/dir/file", [])
+
+        # complete file: we're done, continue with space separator
+        >>> p._get_separator_from_file_list("/dir/file.ext", ["/dir/file.ext"])
+        ' '
+
+        # multiple files with identical separator: return that separator
+        >>> p._get_separator_from_file_list("/dir/file",
+        ...                                ["/dir/file.ext1", "/dir/file.ext2"])
+        '.'
+
+        # multiple files with different separators: return empty separator
+        >>> p._get_separator_from_file_list("/dir/file",
+        ...                                ["/dir/file.ext", "/dir/file-ext"])
+        ''
+
+        # directory
+        >>> p._get_separator_from_file_list("/dir",
+        ...                                ["/dir/file.ext1", "/dir/file.ext2"])
+        '/'
+        >>> p._get_separator_from_file_list("/dir",
+        ...                                ["/dir", "/dir/file.ext2"])
+        '/'
+
+        # multiple extensions
+        >>> files = ["/dir/dir/file.ext1.ext2", "/dir/dir/file.ext1.ext3"]
+        >>> p._get_separator_from_file_list("/dir/dir/file", files)
+        '.'
+        >>> p._get_separator_from_file_list("/dir/dir/file.ext1", files)
+        '.'
+        >>> p._get_separator_from_file_list("/dir/dir/file.ext1.ext2", files)
+        ' '
+        """
+        separator = None
+
+        l = len(filename)
+        separators = set([f[l:l+1] for f in files \
+                         if f.startswith(filename)])
+
+        # directory?
+        if len(separators) == 2 and "/" in separators and "" in separators:
+            separator = "/"
+        # end of filename?
+        elif len(separators) == 1 and "" in separators:
+            separator = " "
+        # unambigous separator?
+        elif len(separators) == 1:
+            separator = separators.pop()
+        # multiple separators
+        elif separators:
+            separator = ""
 
         return separator
 
