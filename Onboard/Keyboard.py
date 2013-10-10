@@ -792,7 +792,7 @@ class Keyboard(WordSuggestions):
                 self.maybe_send_alt_press_for_key(key, view, button, event_type)
 
                 if key_type == KeyCommon.CHAR_TYPE:
-                    # allow to use Atspi for char keys
+                    # allow to use AT-SPI direct text insertion for char keys
                     self.press_key_string(key.code)
                 else:
                     self.send_key_press(key, view, button, event_type)
@@ -801,20 +801,24 @@ class Keyboard(WordSuggestions):
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:
-            # Decrement this before unlock_mod() to skip
-            # updating keys a second time in set_modifiers().
+            # Decrement before unlock_mod() to skip updating
+            # keys a second time in set_modifiers().
             self.mods[modifier] -= 1
 
             # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
                 self._key_synth.unlock_mod(modifier)
 
+            # Update word suggestions on shift unlatch or release.
+            self.invalidate_context_ui()
+
         self.maybe_send_alt_release_for_key(key, view, button, event_type)
 
         # Check modifier counts for plausibility.
         # There might be a bug lurking that gets certain modifers stuck
         # with negative counts. Work around this and be verbose about it
-        # so we can fix it evetually.
+        # so we can fix it eventually.
+        # Seems fixed in 0.99, but keep the check just in case.
         for mod, nkeys in self._mods.items():
             if nkeys < 0:
                 _logger.warning("Negative count {} for modifier {}, reset." \
@@ -931,11 +935,12 @@ class Keyboard(WordSuggestions):
 
         # Insert words on button release to avoid having the wordlist
         # change between button press and release. This also allows for
-        # long presses to trigger a different action, e.g. menu.
+        # long presses to trigger a different action without affecting
+        # the suggestions, e.g. menu.
         WordSuggestions.send_key_up(self, key, button, event_type)
 
         # Don't release latched modifiers for click buttons yet,
-        # Keep them unchanged until the actual click happens
+        # keep them unchanged until the actual click happens.
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
            not (key.type == KeyCommon.BUTTON_TYPE and \
@@ -1292,7 +1297,7 @@ class Keyboard(WordSuggestions):
     def invalidate_ui(self):
         """
         Update everything.
-        Relatively expensive, don't call this while typing.
+        Quite expensive, don't call this while typing.
         """
         self._invalidated_ui |= UIMask.ALL
 
@@ -1311,14 +1316,14 @@ class Keyboard(WordSuggestions):
 
     def invalidate_layout(self):
         """
-        Update everything assuming key sizes don't change.
-        Doesn't invalidate cached surfaces.
+        Recalculate item rectangles.
         """
         self._invalidated_ui |= UIMask.LAYOUT
 
     def invalidate_visible_layers(self):
         """
-        Update the layout tree when the active layer changed.
+        Update visibility of layers in the layout tree,
+        e.g. when the active layer changed.
         """
         self._invalidated_ui |= UIMask.LAYERS
 
