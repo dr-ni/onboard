@@ -606,7 +606,6 @@ class Keyboard(WordSuggestions):
                 if update or \
                    key.type == KeyCommon.BUTTON_TYPE:
                     self.invalidate_context_ui()
-                    self.commit_ui_updates()
 
             # Is the key still nothing but pressed?
             extend_pressed_state = extend_pressed_state and \
@@ -642,6 +641,9 @@ class Keyboard(WordSuggestions):
             self._pressed_keys = []
             self._pressed_key = None
             gc.enable()
+
+        # Process pending UI updates
+        self.commit_ui_updates()
 
     def key_long_press(self, key, view = None, button = 1):
         """ Long press of one of Onboard's key representations. """
@@ -763,9 +765,13 @@ class Keyboard(WordSuggestions):
             if modifier != 8: # not Alt?
                 self._key_synth.lock_mod(modifier)
 
+            # Update word suggestions on shift press.
+            self.invalidate_context_ui()
+
             key.activated = True  # modifiers set -> can't undo press anymore
 
-    def send_key_up(self, key, view = None, button = 1, event_type = EventType.CLICK):
+    def send_key_up(self, key, view = None, button = 1,
+                    event_type = EventType.CLICK):
         if self.is_key_disabled(key):
             _logger.debug("send_key_up: "
                           "rejecting blacklisted key action for '{}'" \
