@@ -3,7 +3,7 @@
 
     <include file='key_defs.xml'/>
 
-    <box border="1" spacing="1.5" orientation="vertical">
+    <box spacing="1.5" orientation="vertical">
 
         <!--- word suggestions -->
         <panel filename='Compact-Alpha.svg' scan_priority='1'>

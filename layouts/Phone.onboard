@@ -4,7 +4,7 @@
 
   <!-- box containing all the keys and buttons -->
   <!-- the rows of keys on the Onboard keyboard are counted bottom to top starting with 1 -->
-  <box border="1" spacing="2.0" orientation="vertical">
+  <box spacing="2.0" orientation="vertical">
 
     <!--- word suggestions -->
     <panel filename="Phone-Alpha.svg">
