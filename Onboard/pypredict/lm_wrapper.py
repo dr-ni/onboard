@@ -361,7 +361,7 @@ def tokenize_context(text):
     if not re.match("""
                   ^$                             # empty string?
                 | .*[-'´΄\w]$                    # word at the end?
-                | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$ # recognized operator?
+                | (?:^|.*\s)[|]=?$               # recognized operator?
                 | .*(\S)\\1{3,}$                 # anything repeated > 3 times?
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
         tokens.append("")

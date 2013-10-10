@@ -470,6 +470,7 @@ def suite():
          ["|", ['|'], ['|'], ['|']],
          ["find | grep", ['find', '|', 'grep'], ['find', '|', 'grep'],
              ['find | grep']],
+         ["cat /", ['cat'], ['cat', ''], ['cat /']],
 
          # passing through control words
          ["<unk> <s> </s> <num>", ['<unk>', '<s>', '</s>', '<num>'],
