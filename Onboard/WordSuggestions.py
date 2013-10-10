@@ -65,7 +65,6 @@ class WordSuggestions:
         self.atspi_text_context = AtspiTextContext(self)
         self.text_context = self.atspi_text_context  # initialize for doctests
         self._learn_strategy = LearnStrategyLRU(self)
-
         self._languagedb = LanguageDB(self)
         self._spell_checker = SpellChecker(self._languagedb)
         self._punctuator = Punctuator(self)
@@ -779,6 +778,7 @@ class WordSuggestions:
     def _replace_text_key_strokes(self, begin, end, cursor, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
+        Fall-back for text entries without support for direct text insertion.
         """
         with self.suppress_modifiers():
             length = end - begin
@@ -801,7 +801,7 @@ class WordSuggestions:
 
     def _replace_text_at_cursor(self, deletion, insertion, auto_separator = ""):
         """
-        Insert a word (-remainder) and add a separator character as needed.
+        Insert a word/word-remainder and add a separator string as needed.
         """
         added_separator = ""
         cursor_span = self.text_context.get_span_at_cursor()
@@ -833,6 +833,9 @@ class WordSuggestions:
         return added_separator
 
     def press_keysym(self, key_name, count = 1):
+        """
+        Generate any number of full key-stroke for the given named key symbol.
+        """
         keysym = get_keysym_from_name(key_name)
         for i in range(count):
             self._key_synth.press_keysym  (keysym)
@@ -969,7 +972,7 @@ class WordSuggestions:
     def on_focusable_gui_opening(self):
         """
         Turn off AT-SPI listeners while there is a dialog open.
-        Onboard and occationally the whole desktop tend to lock up otherwise.
+        Onboard and occasionally the whole desktop tend to lock up otherwise.
         Call this before dialog/popop menus are opened by Onboard itself.
         """
         if self._focusable_count == 0:

@@ -359,10 +359,10 @@ def tokenize_context(text):
     """
     tokens, spans = tokenize_text(text)
     if not re.match("""
-                  ^$                              # empty string
-                | .*[-'´΄\w]$                     # word at the end
-                | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$  # operator, equal sign
-                | .*(\S)\\1{3,}$                  # anything repeated > 3 times
+                  ^$                             # empty string?
+                | .*[-'´΄\w]$                    # word at the end?
+                | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$ # recognized operator?
+                | .*(\S)\\1{3,}$                 # anything repeated > 3 times?
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
         tokens.append("")
         tend = len(text)

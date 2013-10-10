@@ -388,19 +388,7 @@ def suite():
     # input-text, text-tokens, context-tokens, sentences
     tests = [
          ["", [], [], []],
-         ["abc", ["abc"], ["abc"], ["abc"]],
-         #["-", [], [], [u"-"]],
-         ["1", ["<num>"], ["<num>"], ["1"]],
-         ["123", ['<num>'], ['<num>'], ["123"]],
-         ["-3", ["<num>"], ["<num>"], ["-3"]],
-         ["+4", ["<num>"], ["<num>"], ["+4"]],
-         ["123.456", ["<num>"], ["<num>"], ["123.456"]],
-         ["123,456", ["<num>"], ["<num>"], ["123,456"]],
-         ["100,000.00", ["<num>"], ["<num>"], ["100,000.00"]],
-         ["100.000,00", ["<num>"], ["<num>"], ["100.000,00"]],
-         [".5", ["<num>"], ["<num>"], [".5"]],
-         ["-option --option", ['-option', '--option'], ['-option', '--option'],
-             ['-option --option']],
+         ["abc", ["abc"], ["abc"], ["abc"]],         
          ["We saw wha", ['We', 'saw', 'wha'], ['We', 'saw', 'wha'],
              ['We saw wha']],
          ["We saw whales", ['We', 'saw', 'whales'],
@@ -440,10 +428,6 @@ def suite():
          ["sentence.\n sentence. ", ['sentence', '<s>', 'sentence', '<s>'],
              ['sentence', '<s>', 'sentence', '<s>', ''],
              ['sentence.', 'sentence.', '']],
-         ["<bot:txt> sentence. sentence. ", 
-             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>'],
-             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>', ''],
-             ['<bot:txt> sentence.', 'sentence.', '']],
          ["sentence. \nsentence.", ['sentence', '<s>', 'sentence'],
              ['sentence', '<s>', 'sentence', ''],
              ['sentence.', 'sentence.']],
@@ -454,9 +438,6 @@ def suite():
              ['sentence', 'quote', '<s>', 'sentence', ''],
              ['sentence "quote."', 'sentence.']],
          ["sentence <s>", ['sentence'], ['sentence', ''], ['sentence']],
-         ["<unk> <s> </s> <num>", ['<unk>', '<s>', '</s>', '<num>'],
-             ['<unk>', '<s>', '</s>', '<num>', ''],
-             ['<unk>', '</s> <num>']],
          [""""double quotes" 'single quotes'""",
              ['double', 'quotes', 'single', "quotes'"],
              ['double', 'quotes', 'single', "quotes'"],
@@ -465,18 +446,6 @@ def suite():
              ['parens', 'brackets', 'braces'],
              ['parens', 'brackets', 'braces', ''],
              ['(parens) [brackets] {braces}']],
-         ["repeats: a aa aaa aaaa aaaaa",
-             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
-             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
-             ['repeats:', 'a aa aaa aaaa aaaaa']],
-         ["www", ['www'], ['www'], ['www']],
-         ["www.", ['www'], ['www', ''], ['www.']],
-         ["www,", ['www'], ['www', ''], ['www,']],
-         ["www ", ['www'], ['www', ''], ['www']],
-         ["http://user:pass@www.do-mai_n.nl/path/name.ext",
-             ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
-             ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
-             ['http://user:pass@www.do-mai_n.nl/path/name.ext']],
          ["\nnewline ", ['newline'], ['newline', ''], ['newline']],
          ["double\n\nnewline ", ['double', '<s>', 'newline'],
              ['double', '<s>', 'newline', ''], ['double', 'newline']],
@@ -494,15 +463,57 @@ def suite():
              ["under_score's"]],
          ["Greek Γ´", ['Greek', 'Γ´'], ['Greek', 'Γ´'], ["Greek Γ´"]], # U+00b4
          ["Greek Γ΄", ['Greek', 'Γ΄'], ['Greek', 'Γ΄'], ["Greek Γ΄"]], # U+0384
+
+         # command line handling
+         ["-option --option", ['-option', '--option'], ['-option', '--option'],
+             ['-option --option']],
          ["|", ['|'], ['|'], ['|']],
          ["find | grep", ['find', '|', 'grep'], ['find', '|', 'grep'],
              ['find | grep']],
+
+         # passing through control words
+         ["<unk> <s> </s> <num>", ['<unk>', '<s>', '</s>', '<num>'],
+             ['<unk>', '<s>', '</s>', '<num>', ''],
+             ['<unk>', '</s> <num>']],
+
+         # <unk>
+         ["repeats: a aa aaa aaaa aaaaa",
+             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
+             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
+             ['repeats:', 'a aa aaa aaaa aaaaa']],
+
+         # <num>
+         ["1", ["<num>"], ["<num>"], ["1"]],
+         ["123", ['<num>'], ['<num>'], ["123"]],
+         ["-3", ["<num>"], ["<num>"], ["-3"]],
+         ["+4", ["<num>"], ["<num>"], ["+4"]],
+         ["123.456", ["<num>"], ["<num>"], ["123.456"]],
+         ["123,456", ["<num>"], ["<num>"], ["123,456"]],
+         ["100,000.00", ["<num>"], ["<num>"], ["100,000.00"]],
+         ["100.000,00", ["<num>"], ["<num>"], ["100.000,00"]],
+         [".5", ["<num>"], ["<num>"], [".5"]],
+
+         # begin of text markers
          ["<bot:txt> word", ['<bot:txt>', 'word'], ['<bot:txt>', 'word'],
              ['<bot:txt> word']],
          ["<bot:term> word", ['<bot:term>', 'word'], ['<bot:term>', 'word'],
              ['<bot:term> word']],
          ["<bot:url> word", ['<bot:url>', 'word'], ['<bot:url>', 'word'],
              ['<bot:url> word']],
+         ["<bot:txt> sentence. sentence. ", 
+             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>'],
+             ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>', ''],
+             ['<bot:txt> sentence.', 'sentence.', '']],
+
+         # URLs
+         ["www", ['www'], ['www'], ['www']],
+         ["www.", ['www'], ['www', ''], ['www.']],
+         ["www,", ['www'], ['www', ''], ['www,']],
+         ["www ", ['www'], ['www', ''], ['www']],
+         ["http://user:pass@www.do-mai_n.nl/path/name.ext",
+             ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
+             ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
+             ['http://user:pass@www.do-mai_n.nl/path/name.ext']],
         ]
 
     # Low-level regex pattern tests
