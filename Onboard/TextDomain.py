@@ -623,6 +623,14 @@ class PartialURLParser:
         ''
         >>> p.get_auto_separator(url + "/onboard-defaults.conf.example.nexus7")
         ' '
+
+        # Non-existing filename: we don't know, don't guess a separator
+        >>> p.get_auto_separator("file:///tmp/onboard1234")
+        ''
+
+        # Non-existing filename: if basename has an extension assumes we're done
+        >>> p.get_auto_separator("file:///tmp/onboard1234.txt")
+        ' '
         """
         separator = None
 
@@ -683,6 +691,9 @@ class PartialURLParser:
         return separator
 
     def _get_filename_separator(self, filename):
+        """
+        Get auto separator for a partial filename.
+        """
         files  = glob.glob(filename + "*")
         files += glob.glob(filename + "/*") # look inside directories too
         separator = self._get_separator_from_file_list(filename, files)
@@ -691,7 +702,7 @@ class PartialURLParser:
             if "." in basename:
                 separator = " "
             else:
-                separator = "/"
+                separator = ""
 
         return separator
 
