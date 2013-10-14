@@ -54,6 +54,14 @@ class TestDBusService(unittest.TestCase):
             with self.wait_property_changed(keyboard_props, "Visible"):
                 keyboard.Show()
             self.assertEqual(keyboard_props.Get(DBUS_IFACE, "Visible"), True)
+
+            with self.wait_property_changed(keyboard_props, "Visible"):
+                keyboard.ToggleVisible()
+            self.assertEqual(keyboard_props.Get(DBUS_IFACE, "Visible"), False)
+
+            with self.wait_property_changed(keyboard_props, "Visible"):
+                keyboard.ToggleVisible()
+            self.assertEqual(keyboard_props.Get(DBUS_IFACE, "Visible"), True)
         finally:
             process.terminate()
 

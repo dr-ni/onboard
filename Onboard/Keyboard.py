@@ -338,6 +338,10 @@ class Keyboard(WordSuggestions):
         for view in self._layout_views:
             view.set_visible(visible)
 
+    def toggle_views_visible(self):
+        for view in self._layout_views:
+            view.toggle_visible()
+
     def redraw(self, keys = None, invalidate = True):
         for view in self._layout_views:
             view.redraw(keys, invalidate)

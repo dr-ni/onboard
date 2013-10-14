@@ -123,6 +123,12 @@ class LayoutView:
             self.keyboard.invalidate_canvas()
             self.keyboard.commit_ui_updates()
 
+    def toggle_visible(self):
+        pass
+
+    def set_visible(self, visible):
+        pass
+
     def redraw(self, items = None, invalidate = True):
         """
         Queue redrawing for individual keys or the whole keyboard.

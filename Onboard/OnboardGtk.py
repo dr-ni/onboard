@@ -698,6 +698,10 @@ if "dbus" in globals():
         def Hide(self):
             self._keyboard.set_visible(False)
 
+        @dbus.service.method(dbus_interface=IFACE)
+        def ToggleVisible(self):
+            self._keyboard.toggle_visible()
+
         @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                              in_signature='ss', out_signature='v')
         def Get(self, iface, prop):

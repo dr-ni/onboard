@@ -53,6 +53,15 @@ D-Bus Service:
             dbus-send --type=method_call --dest=org.onboard.Onboard 
             /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
 
+    ToggleVisible(), method
+        Show the keyboard window if it was hidden, else hide it.
+        Return value: None
+
+        Example:
+            dbus-send --type=method_call --dest=org.onboard.Onboard 
+            /org/onboard/Onboard/Keyboard
+            org.onboard.Onboard.Keyboard.ToggleVisible
+
     Visible, Boolean property, read-only
         True if the window is currently visible, False otherwise.
         Signal: org.freedesktop.DBus.Properties.PropertiesChanged
