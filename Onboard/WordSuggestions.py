@@ -793,11 +793,14 @@ class WordSuggestions:
                 self.press_keysym("backspace", length - abs(offset))
 
             # insert the new word
+            print("press_key_string", new_text)
             self._key_synth.press_key_string(new_text)
 
             # move cursor back
             if offset >= 0:
                 self.press_keysym("right", offset)
+
+            print()
 
     def _replace_text_at_cursor(self, deletion, insertion, auto_separator = ""):
         """
@@ -838,6 +841,7 @@ class WordSuggestions:
         """
         keysym = get_keysym_from_name(key_name)
         for i in range(count):
+            print("press_keysym", key_name)
             self._key_synth.press_keysym  (keysym)
             self._key_synth.release_keysym(keysym)
 
