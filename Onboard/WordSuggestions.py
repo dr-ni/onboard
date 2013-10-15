@@ -810,11 +810,11 @@ class WordSuggestions:
                                              cursor_span.end() + 1)
             remaining_line = self.text_context.get_line_past_cursor()
 
-            # insert space if the cursor was on a non-space character or
+            # Insert space if the cursor was on a non-space character or
             # the cursor was at the end of the line. The end of the line
             # in the terminal (e.g. in vim) may mean lot's of spaces until
             # the final new line.
-            if next_char != auto_separator or \
+            if auto_separator != next_char or \
                remaining_line.isspace():
                 added_separator = auto_separator
 
@@ -1458,7 +1458,7 @@ class LearnStrategyLRU(LearnStrategy):
                 cursor_span = text_context.get_span_at_cursor()
                 if cursor_span:
                     char = cursor_span.get_char_before_span()
-                    in_word = char.isalnum() or char in ["-"]
+                    in_word = not char.isspace()
                 else:
                     in_word = False
 
@@ -1488,6 +1488,14 @@ class Punctuator:
     Punctiation assistance. Mainly adds and removes spaces around
     punctuation depending on the user action immediately after word completion.
     """
+
+    punctuation_no_capitalize = [",", ":", ";", ")", "}", "]",
+                                 "’",
+                                 "”", "»", '›', # language dependent :/
+                                ]
+    punctuation_capitalize    = [".", "?", "!"]
+    punctuation = punctuation_capitalize + punctuation_no_capitalize
+
     def __init__(self, wp):
         self._wp = wp
         self.reset()
@@ -1509,14 +1517,11 @@ class Punctuator:
             self._added_separator = False
 
             char = key.get_label()
-            if   char in [",", ":", ";", ")", "}", "]",
-                          "’",
-                          "”", "»", '›', # language dependent :/
-                         ]:
+            if   char in self.punctuation_no_capitalize:
                 self.delete_at_cursor()
                 self._separator_removed = True
 
-            elif char in [".", "?", "!"]:
+            elif char in self.punctuation_capitalize:
                 self.delete_at_cursor()
                 self._separator_removed = True
                 if config.is_auto_capitalization_enabled():
