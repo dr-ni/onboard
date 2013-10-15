@@ -467,6 +467,11 @@ def suite():
          # command line handling
          ["-option --option", ['-option', '--option'], ['-option', '--option'],
              ['-option --option']],
+         ["cmd -", ['cmd'], ['cmd', '-'], ['cmd -']],
+         ["cmd - ", ['cmd'], ['cmd', '-', ''], ['cmd -']],
+         ["cmd --", ['cmd'], ['cmd', '--'], ['cmd --']],
+         ["cmd -- ", ['cmd'], ['cmd', '--', ''], ['cmd --']],
+         ["cmd ---", ['cmd', '<unk>'], ['cmd', '<unk>'], ['cmd ---']],
          ["|", ['|'], ['|'], ['|']],
          ["find | grep", ['find', '|', 'grep'], ['find', '|', 'grep'],
              ['find | grep']],

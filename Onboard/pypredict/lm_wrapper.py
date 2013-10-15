@@ -275,12 +275,12 @@ def split_sentences(text, disambiguate=False):
 
     return sentences, spans
 
-def tokenize_sentence(sentence):
 
-    iterator = re.finditer("""
+tokenize_pattern = """
     (                                     # <unk>
       (?:^|(?<=\s))
-        \S*(\S)\\2{3,}\S*                 # char repeated more than 3 times
+        \S*(\S)\\2{{3,}}\S*               # char repeated more than 3 times
+        | [-]{{3}}                        # dash repeated more than 2 times
       (?=\s|$)
       | :[^\s:@]+?@                       # password in URL
     ) |
@@ -289,22 +289,36 @@ def tokenize_sentence(sentence):
       | (?:[.,]\d+)
     ) |
     (                                     # word
-      (?:[-]{0,2}                         # allow command line options
+      (?:[-]{{0,2}}                       # allow command line options
         [^\W\d]\w*(?:[-'´΄][\w]+)*['´΄]?) # word, not starting with a digit
       | <unk> | <s> | </s> | <num>        # pass through control words
       | <bot:[a-z]*>                      # pass through begin of text merkers
       | (?:^|(?<=\s))
           (?:
-            \|                            # common space delimited operators
+            \| {standalone_operators}     # common space delimited operators
           )
         (?=\s|$)
     )
-    """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
+    """
+# Don't learn "-" or "--" as standalone tokens...
+TEXT_PATTERN = re.compile(tokenize_pattern.format(
+                          standalone_operators = ""),
+                          re.UNICODE|re.DOTALL|re.VERBOSE)
+# ...but recognize them in a prediction context as start of a cmd line option.
+CONTEXT_PATTERN = re.compile(tokenize_pattern.format(
+                          standalone_operators = "| [-]{1,2}"),
+                          re.UNICODE|re.DOTALL|re.VERBOSE)
 
+def tokenize_sentence(sentence, is_context = False):
+
+    if is_context:
+        matches = CONTEXT_PATTERN.finditer(sentence)
+    else:
+        matches = TEXT_PATTERN.finditer(sentence)
     tokens = []
     spans = []
 
-    for match in iterator:
+    for match in matches:
         groups = match.groups()
         if groups[3]:
             tokens.append(groups[3])
@@ -318,7 +332,7 @@ def tokenize_sentence(sentence):
 
     return tokens, spans
 
-def tokenize_text(text):
+def tokenize_text(text, is_context = False):
     """ Split text into word tokens.
         The result is ready for use in learn_tokens().
 
@@ -339,7 +353,7 @@ def tokenize_text(text):
     spans = []
     sentences, sentence_spans = split_sentences(text)
     for i, sentence in enumerate(sentences):
-        ts, ss = tokenize_sentence(sentence)
+        ts, ss = tokenize_sentence(sentence, is_context)
 
         sbegin = sentence_spans[i][0]
         ss = [[s[0]+sbegin, s[1]+sbegin] for s in ss]
@@ -357,7 +371,7 @@ def tokenize_context(text):
     """ Split text into word tokens + completion prefix.
         The result is ready for use in predict().
     """
-    tokens, spans = tokenize_text(text)
+    tokens, spans = tokenize_text(text, is_context = True)
     if not re.match("""
                   ^$                             # empty string?
                 | .*[-'´΄\w]$                    # word at the end?
