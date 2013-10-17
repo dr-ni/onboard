@@ -844,6 +844,8 @@ class WordSuggestions:
             print("press_keysym", key_name)
             self._key_synth.press_keysym  (keysym)
             self._key_synth.release_keysym(keysym)
+            if _logger.isEnabledFor(logging.DEBUG):
+                time.sleep(0.1)
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
