@@ -59,7 +59,7 @@ class LayoutView:
         self.update_input_event_source()
 
     def on_layout_loaded(self):
-        """ called when the layout has been loaded """
+        """ Layout has been loaded. """
         self.invalidate_shadow_quality()
 
     def get_layout(self):
@@ -83,7 +83,7 @@ class LayoutView:
 
     def invalidate_keys(self):
         """
-        Clear cached key patterns, e.g. after resizing,
+        Clear cached key surfaces, e.g. after resizing,
         change of theme settings.
         """
         layout = self.get_layout()
@@ -93,7 +93,7 @@ class LayoutView:
 
     def invalidate_shadows(self):
         """
-        Clear cached shadow patterns, e.g. after resizing,
+        Clear cached shadow surfaces, e.g. after resizing,
         change of theme settings.
         """
         layout = self.get_layout()

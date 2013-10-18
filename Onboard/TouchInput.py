@@ -76,9 +76,9 @@ class InputEventSource(EventSource):
         self._device_manager = None
 
         self._master_device = None      # receives enter/leave events
-        self._master_device_id = None   # for convenience/speed only
+        self._master_device_id = None   # for convenience/performance
         self._slave_devices = None      # receive pointer and touch events
-        self._slave_device_ids = None   # for convenience/speed only
+        self._slave_device_ids = None   # for convenience/performance
 
         self._xi_grab_active = False
         self._xi_grab_events_selected = False
@@ -106,7 +106,7 @@ class InputEventSource(EventSource):
 
     def grab_xi_pointer(self, active):
         """
-        Tell the xi event source a drag operation has started/ended
+        Tell the xi event source a drag operation has started (ended)
         and we want to receive events of the whole screen.
         """
         self._xi_grab_active = active
@@ -376,6 +376,8 @@ class InputEventSource(EventSource):
 
         elif event_type == XIEventType.ButtonRelease:
             self._on_button_release_event(self, event)
+
+            # Notify CSButtonMapper, end remapped click.
             if not self._xi_event_handled:
                 EventSource.emit(self, "button-release", event)
 
@@ -457,8 +459,8 @@ class TouchInput(InputEventSource):
                 return
 
         # - Ignore double clicks (GDK_2BUTTON_PRESS),
-        #   we're handling them ourselves.
-        # - no mouse wheel buttons
+        #   we're handling those ourselves.
+        # - Ignore mouse wheel button events
         if event.type == Gdk.EventType.BUTTON_PRESS and \
            1 <= event.button <= 3:
             sequence = InputSequence()
@@ -689,7 +691,7 @@ class TouchInput(InputEventSource):
         sequence = self._get_redir_sequence(sequence)
 
         # Make sure has_input_sequences() returns False inside of func().
-        # The keyboard needs this to detect the end of input.
+        # Class Keyboard needs this to detect the end of input.
         if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
 
@@ -717,23 +719,23 @@ class TouchInput(InputEventSource):
 class InputSequence:
     """
     State of a single click- or touch sequence.
-    On a multi-touch capable touch screen, any number of
+    On a multi-touch capable touch screen any number of
     InputSequences may be in flight simultaneously.
     """
     id          = None  # sequence id, POINTER_SEQUENCE for mouse events
     point       = None  # (x, y)
     root_point  = None  # (x, y)
-    button      = None
+    button      = None  # GDK button number, 1 for touch
     event_type  = None  # Keyboard.EventType
     state       = None  # GDK state mask (Gdk.ModifierType)
     time        = None  # event time
-    update_time = None  # redundant, only used in _discard_stuck_input_sequences
+    update_time = None  # redundant, only used by _discard_stuck_input_sequences
 
     primary     = False # Only primary sequences may move/resize windows.
     delivered   = False # Sent to listeners (keyboard views)?
 
-    active_key         = None  # Currently pressed key for this sequence.
-    initial_active_key = None  # Initial pressed key for this sequence.
+    active_key         = None  # Onboard key currently pressed by this sequence.
+    initial_active_key = None  # First Onboard key pressed by this sequence.
     cancel_key_action  = False # Cancel key action, e.g. due to long press.
 
     def init_from_button_event(self, event):
@@ -771,6 +773,4 @@ class InputSequence:
     def __repr__(self):
         return "{}({})".format(type(self).__name__,
                                repr(self.id))
-
-
 
