@@ -414,7 +414,7 @@ class TouchInput(InputEventSource):
     GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
     GESTURE_DELAY_PAUSE = 3000   # [ms] Suspend delayed sequence begin for this
                                  # amount of time after the last key press.
-    delay_sequence_begin = True  # No delivery, i.e. no key-presses after
+    DELAY_SEQUENCE_BEGIN = True  # No delivery, i.e. no key-presses after
                                  # gesture detection, but delays press-down.
 
     def __init__(self):
@@ -553,9 +553,10 @@ class TouchInput(InputEventSource):
             if not self._gesture_detected:
                 if first_sequence and \
                    self._multi_touch_enabled and \
-                   self.delay_sequence_begin and \
+                   self.DELAY_SEQUENCE_BEGIN and \
                    sequence.time - self._last_sequence_time > \
-                                   self.GESTURE_DELAY_PAUSE:
+                                   self.GESTURE_DELAY_PAUSE and \
+                   self.can_delay_sequence_begin(sequence): # ask Keyboard
                     # Delay the first tap; we may have to stop it
                     # from reaching the keyboard.
                     self._gesture_timer.start(self.GESTURE_DETECTION_SPAN / 1000.0,
@@ -568,6 +569,10 @@ class TouchInput(InputEventSource):
 
         self._last_sequence_time = sequence.time
 
+    def can_delay_sequence_begin(self, sequence):
+        """ Overloaded in LayoutView to veto delay for move buttons. """
+        return True
+        
     def on_delayed_sequence_begin(self, sequence, point):
         if not self._gesture_detected: # work around race condition
             sequence.point = point # return to the original begin point

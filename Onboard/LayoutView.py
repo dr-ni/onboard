@@ -168,6 +168,19 @@ class LayoutView:
         use_gtk = config.keyboard.input_event_source == InputEventSourceEnum.GTK
         self.register_input_events(True, use_gtk)
 
+    def can_delay_sequence_begin(self, sequence):
+        """ 
+        Veto gesture delay for move buttons. Have the keyboard start
+        moving right away and not lag the pointer.
+        """
+        layout = self.get_layout()
+        if layout:
+            for item in layout.find_ids(["move"]):
+                if item.is_path_visible() and \
+                   item.is_point_within(sequence.point):
+                    return False
+        return True
+
     def show_touch_handles(self, show, auto_hide):
         pass
 
