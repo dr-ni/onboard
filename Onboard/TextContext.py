@@ -233,6 +233,16 @@ class AtspiTextContext(TextContext):
         """
         self._accessible.insert_text(offset, text, -1)
 
+        # Move the caret after insertion if the accessible itself
+        # hasn't done so already. This assumes the insertion begins at
+        # the current caret position, which always happens to be the case
+        # currently.
+        # Only the nautilus rename text entry appears to need this.
+        offset_before = offset
+        offset_after = self._accessible.get_caret_offset()
+        if text and offset_before == offset_after:
+            self._accessible.set_caret_offset(offset_before + len(text))
+
     def insert_text_at_cursor(self, text):
         """
         Insert directly, without going through faking key presses.
