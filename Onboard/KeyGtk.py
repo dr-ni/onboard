@@ -11,7 +11,7 @@ from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
 from Onboard.utils       import brighten, roundrect_curve, gradient_line, \
-                                drop_shadow
+                                drop_shadow, unicode_str
 
 ### Logging ###
 import logging
@@ -704,8 +704,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             filename = config.get_image_filename(image_filename)
             if filename:
                 _logger.debug("loading image '{}'".format(filename))
-                pixbuf = GdkPixbuf.Pixbuf. \
-                           new_from_file_at_size(filename, width, height)
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf. \
+                             new_from_file_at_size(filename, width, height)
+                except Exception as ex: # private exception gi._glib.GError when 
+                                        # librsvg2-common wasn't installed
+                    _logger.error("get_image(): " + unicode_str(ex))
+
                 if pixbuf:
                     self._requested_image_size[slot] = (int(width), int(height))
 
