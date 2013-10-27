@@ -1543,7 +1543,7 @@ class Punctuator:
             if self._added_separator_span.end() == caret_span.begin():
                 char = key.get_label()
                 if   char in self.punctuation_no_capitalize:
-                    self.delete_at_caret()
+                    self._delete_at_caret()
                     self._separator_removed = True
 
                 elif char in self.punctuation_capitalize:
