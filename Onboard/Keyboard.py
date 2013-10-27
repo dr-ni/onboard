@@ -797,7 +797,7 @@ class Keyboard(WordSuggestions):
 
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow to use AT-SPI direct text insertion for char keys
-                    self.press_key_string(key.code)
+                    self.insert_string_at_caret(key.code)
                 else:
                     self.send_key_press(key, view, button, event_type)
                     self.send_key_release(key, view, button, event_type)
@@ -897,7 +897,7 @@ class Keyboard(WordSuggestions):
             if len(key.code) == 1:
                 self._key_synth.release_unicode(key.code)
             else:
-                self.press_key_string(key.code)
+                self.insert_string_at_caret(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self._key_synth.release_keysym(key.code)
@@ -917,7 +917,7 @@ class Keyboard(WordSuggestions):
             snippet_id = int(key.code)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                self.press_key_string(mString)
+                self.insert_string_at_caret(mString)
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
@@ -1174,10 +1174,10 @@ class Keyboard(WordSuggestions):
                 behavior = StickyBehavior.from_string(value)
             except KeyError:
                 _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
-                              .format(value, group))
+                                .format(value, group))
         return behavior
 
-    def press_key_string(self, text):
+    def insert_string_at_caret(self, text):
         """
         Send key presses for all characters in a unicode string
         and keep track of the changes in text_context.
@@ -1185,7 +1185,7 @@ class Keyboard(WordSuggestions):
 
         if self.text_context.can_insert_text():
             text = text.replace("\\n", "\n")
-            self.text_context.insert_text_at_cursor(text)
+            self.text_context.insert_text_at_caret(text)
         else:
             self._key_synth.press_key_string(text)
 

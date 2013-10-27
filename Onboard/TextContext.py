@@ -61,13 +61,13 @@ class TextContext:
     def insert_text(self, offset, text):
         return NotImplementedError()
 
-    def insert_text_at_cursor(self, text):
+    def insert_text_at_caret(self, text):
         return NotImplementedError()
 
     def delete_text(self, offset, length = 1):
         return NotImplementedError()
 
-    def delete_text_before_cursor(self, length = 1):
+    def delete_text_before_caret(self, length = 1):
         return NotImplementedError()
 
     def get_context(self):
@@ -76,7 +76,7 @@ class TextContext:
     def get_line(self):
         raise NotImplementedError()
 
-    def get_line_cursor_pos(self):
+    def get_line_caret_pos(self):
         raise NotImplementedError()
 
     def get_changes(self):
@@ -107,8 +107,8 @@ class AtspiTextContext(TextContext):
 
         self._context = ""
         self._line = ""
-        self._line_cursor = 0
-        self._span_at_cursor = TextSpan()
+        self._line_caret = 0
+        self._span_at_caret = TextSpan()
         self._begin_of_text = False        # context starts at begin of text?
         self._begin_of_text_offset = None  # offset of text begin
 
@@ -129,7 +129,7 @@ class AtspiTextContext(TextContext):
     def get_context(self):
         """
         Returns the predictions context, i.e. some range of
-        text before the cursor position.
+        text before the caret position.
         """
         if self._accessible is None:
             return ""
@@ -163,20 +163,20 @@ class AtspiTextContext(TextContext):
         return self._line \
                if self._accessible else ""
 
-    def get_line_cursor_pos(self):
-        return self._line_cursor \
+    def get_line_caret_pos(self):
+        return self._line_caret \
                if self._accessible else 0
 
-    def get_line_past_cursor(self):
-        return self._line[self._line_cursor:] \
+    def get_line_past_caret(self):
+        return self._line[self._line_caret:] \
                if self._accessible else ""
 
-    def get_span_at_cursor(self):
-        return self._span_at_cursor \
+    def get_span_at_caret(self):
+        return self._span_at_caret \
                if self._accessible else None
 
-    def get_cursor(self):
-        return self._span_at_cursor.begin() \
+    def get_caret(self):
+        return self._span_at_caret.begin() \
                if self._accessible else 0
 
     def get_text_begin_marker(self):
@@ -222,7 +222,7 @@ class AtspiTextContext(TextContext):
         """ Delete directly, without going through faking key presses. """
         self._accessible.delete_text(offset, offset + length)
 
-    def delete_text_before_cursor(self, length = 1):
+    def delete_text_before_caret(self, length = 1):
         """ Delete directly, without going through faking key presses. """
         offset = self._accessible.get_caret_offset()
         self.delete_text(offset - length, length)
@@ -243,7 +243,7 @@ class AtspiTextContext(TextContext):
         if text and offset_before == offset_after:
             self._accessible.set_caret_offset(offset_before + len(text))
 
-    def insert_text_at_cursor(self, text):
+    def insert_text_at_caret(self, text):
         """
         Insert directly, without going through faking key presses.
         Fails for terminal and firefox, unfortunately.
@@ -337,11 +337,11 @@ class AtspiTextContext(TextContext):
         # synchrounously notify of text insertion
         if insertion_span:
             try:
-                cursor_offset = self._accessible.get_caret_offset()
+                caret_offset = self._accessible.get_caret_offset()
             except: # gi._glib.GError
                 pass
             else:
-                self._wp.on_text_inserted(insertion_span, cursor_offset)
+                self._wp.on_text_inserted(insertion_span, caret_offset)
 
         self._update_context()
 
@@ -452,8 +452,8 @@ class AtspiTextContext(TextContext):
         if not result is None:
             (self._context,
              self._line,
-             self._line_cursor,
-             self._span_at_cursor,
+             self._line_caret,
+             self._span_at_caret,
              self._begin_of_text,
              self._begin_of_text_offset) = result
 
@@ -482,7 +482,7 @@ class InputLine(TextContext):
 
     def reset(self):
         self.line = ""
-        self.cursor = 0
+        self.caret = 0
         self.valid = True
 
         self.word_infos = {}
@@ -494,35 +494,35 @@ class InputLine(TextContext):
         return len(self.line) == 0
 
     def insert(self, s):
-        self.line   = self.line[:self.cursor] + s + self.line[self.cursor:]
-        self.move_cursor(len(s))
+        self.line   = self.line[:self.caret] + s + self.line[self.caret:]
+        self.move_caret(len(s))
 
     def delete_left(self, n=1):  # backspace
-        self.line = self.line[:self.cursor-n] + self.line[self.cursor:]
-        self.move_cursor(-n)
+        self.line = self.line[:self.caret-n] + self.line[self.caret:]
+        self.move_caret(-n)
 
     def delete_right(self, n=1): # delete
-        self.line = self.line[:self.cursor] + self.line[self.cursor+n:]
+        self.line = self.line[:self.caret] + self.line[self.caret+n:]
 
-    def move_cursor(self, n):
-        self.cursor += n
+    def move_caret(self, n):
+        self.caret += n
 
         # moving into unknown territory -> suggest reset
-        if self.cursor < 0:
-            self.cursor = 0
+        if self.caret < 0:
+            self.caret = 0
             self.valid = False
-        if self.cursor > len(self.line):
-            self.cursor = len(self.line)
+        if self.caret > len(self.line):
+            self.caret = len(self.line)
             self.valid = False
 
     def get_context(self):
-        return self.line[:self.cursor]
+        return self.line[:self.caret]
 
     def get_line(self):
         return self.line
 
-    def get_line_cursor_pos(self):
-        return self.cursor
+    def get_line_caret_pos(self):
+        return self.caret
 
     @staticmethod
     def is_printable(char):
@@ -567,9 +567,9 @@ class InputLine(TextContext):
             if   id == 'DELE':
                 self.delete_right()
             elif id == 'LEFT':
-                self.move_cursor(-1)
+                self.move_caret(-1)
             elif id == 'RGHT':
-                self.move_cursor(1)
+                self.move_caret(1)
             else:
                 end_editing = True
 
@@ -593,9 +593,9 @@ class InputLine(TextContext):
         else:
             end_editing = True
 
-        if not self.is_valid(): # cursor moved outside known range?
+        if not self.is_valid(): # caret moved outside known range?
             end_editing = True
 
-        #print end_editing,"'%s' " % self.line, self.cursor
+        #print end_editing,"'%s' " % self.line, self.caret
         return end_editing
 

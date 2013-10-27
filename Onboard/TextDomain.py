@@ -267,7 +267,7 @@ class DomainGenericText(TextDomain):
             return None
 
         line = unicode_str(r.content).replace("\n","")
-        line_cursor = max(offset - r.start_offset, 0)
+        line_caret = max(offset - r.start_offset, 0)
 
         begin = max(offset - 256, 0)
         end   = min(offset + 100, count)
@@ -275,12 +275,12 @@ class DomainGenericText(TextDomain):
 
         text = unicode_str(text)
 
-        cursor_span = TextSpan(offset, 0, text, begin)
+        caret_span = TextSpan(offset, 0, text, begin)
         context = text[:offset - begin]
         begin_of_text = begin == 0
         begin_of_text_offset = 0
 
-        return (context, line, line_cursor, cursor_span,
+        return (context, line, line_caret, caret_span,
                 begin_of_text, begin_of_text_offset)
 
     def can_spell_check(self):
@@ -335,7 +335,7 @@ class DomainTerminal(TextDomain):
                 return None
 
         # remove prompt from the current or previous lines
-        context, context_start, line, line_start, line_cursor = \
+        context, context_start, line, line_start, line_caret = \
                 self._read_after_prompt(accessible, offset)
         if context_start:
             begin_of_text = True
@@ -347,10 +347,10 @@ class DomainTerminal(TextDomain):
         # remove newlines
         context = context.replace("\n","")
 
-        #cursor_span = TextSpan(offset, 0, text, begin)
-        cursor_span = TextSpan(offset, 0, line, line_start)
+        #caret_span = TextSpan(offset, 0, text, begin)
+        caret_span = TextSpan(offset, 0, line, line_start)
 
-        result = (context, line, line_cursor, cursor_span,
+        result = (context, line, line_caret, caret_span,
                   begin_of_text, begin_of_text_offset)
         return result
 
@@ -359,12 +359,12 @@ class DomainTerminal(TextDomain):
                             Atspi.TextBoundaryType.LINE_START)
         line = unicode_str(r.content).replace("\n","")
         line_start = r.start_offset
-        line_cursor = offset - line_start
+        line_caret = offset - line_start
 
         # remove prompt from the current or previous lines
         context = ""
         context_start = None
-        l = line[:line_cursor]
+        l = line[:line_caret]
         for i in range(2):
 
             # blacklist matches? -> cancel whole context
@@ -378,7 +378,7 @@ class DomainTerminal(TextDomain):
             if i == 0:
                 line = line[context_start:] # cut prompt from input line
                 line_start  += context_start
-                line_cursor -= context_start
+                line_caret -= context_start
             if context_start:
                 break
 
@@ -388,7 +388,7 @@ class DomainTerminal(TextDomain):
                                 Atspi.TextBoundaryType.LINE_START)
             l = unicode_str(r.content).replace("\n","")
 
-        result = (context, context_start, line, line_start, line_cursor)
+        result = (context, context_start, line, line_start, line_caret)
         return result
 
     def _find_prompt(self, context):
@@ -416,7 +416,7 @@ class DomainTerminal(TextDomain):
         # Only record (for learning) when there is a known prompt in sight.
         # Problem: learning won't happen for uncommon prompts, but less random
         # junk scrolling by should enter the user model in return.
-        context, context_start, line, line_start, line_cursor = \
+        context, context_start, line, line_start, line_caret = \
                 self._read_after_prompt(accessible, offset)
         return bool(context_start)
 

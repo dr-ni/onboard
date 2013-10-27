@@ -41,10 +41,10 @@ class TextSpan:
     """
 
     def __init__(self, pos = 0, length = 0, text = "", text_pos = 0):
-        self.pos = pos
-        self.length = length
-        self.text = text
-        self.text_pos = text_pos
+        self.pos = pos              # document caret position
+        self.length = length        # span length
+        self.text = text            # text that includes span, but may be larger
+        self.text_pos = text_pos    # document position of text begin
         self.last_modified = None
 
     def copy(self):

@@ -349,7 +349,7 @@ class WordSuggestions:
         span = self._correction_span # span to correct
         with self.suppress_modifiers():
             self._replace_text(span.begin(), span.end(),
-                               self.text_context.get_span_at_cursor().begin(),
+                               self.text_context.get_span_at_caret().begin(),
                                self._correction_choices[choice_index])
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
@@ -418,7 +418,7 @@ class WordSuggestions:
 
     def _find_correction_choices(self, word_span, auto_capitalize):
         """
-        Find spelling suggestions for the word at or before the cursor.
+        Find spelling suggestions for the word at or before the caret.
 
         Doctests:
         >>> ws = WordSuggestions()
@@ -447,8 +447,8 @@ class WordSuggestions:
 
         text_begin = word_span.text_begin()
         word = word_span.get_span_text()
-        cursor = self.text_context.get_cursor()
-        offset = cursor - text_begin # cursor offset into the word
+        caret = self.text_context.get_caret()
+        offset = caret - text_begin # caret offset into the word
 
         span, choices = \
                 self._spell_checker.find_corrections(word, offset)
@@ -694,20 +694,20 @@ class WordSuggestions:
         >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 
-        # cursor at word end - suppress spelling suggestions while still typing
-        >>> tc._span_at_cursor = TextSpan(8, 0, "binomial proportion")
+        # caret at word end - suppress spelling suggestions while still typing
+        >>> tc._span_at_caret = TextSpan(8, 0, "binomial proportion")
         >>> wp.is_typing = lambda : True  # simulate typing
         >>> print(wp._get_word_to_spell_check())
         None
         """
-        cursor_span  = self.text_context.get_span_at_cursor()
-        word_span = self._get_word_before_span(cursor_span)
+        caret_span  = self.text_context.get_span_at_caret()
+        word_span = self._get_word_before_span(caret_span)
 
         # Don't pop up spelling corrections if we're
         # currently typing the word.
-        cursor = self.text_context.get_cursor()
+        caret = self.text_context.get_caret()
         if word_span and \
-           word_span.end() == cursor and \
+           word_span.end() == caret and \
            self.is_typing():
             word_span = None
 
@@ -722,7 +722,7 @@ class WordSuggestions:
         >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 
-        # cursor right in the middle of a word
+        # caret right in the middle of a word
         >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
         TextSpan(9, 10, 'proportion', 9, None)
 
@@ -730,7 +730,7 @@ class WordSuggestions:
         >>> wp._get_word_before_span(TextSpan(25, 0, "binomial proportion", 10))
         TextSpan(19, 10, 'proportion', 19, None)
 
-        # cursor after whitespace - get the previous word
+        # caret after whitespace - get the previous word
         >>> wp._get_word_before_span(TextSpan(9, 0, "binomial  proportion"))
         TextSpan(0, 8, 'binomial', 0, None)
         """
@@ -738,13 +738,13 @@ class WordSuggestions:
         if span and self._wpengine:
             tokens, spans = self._wpengine.tokenize_text(span.get_text())
 
-            cursor = span.begin()
+            caret = span.begin()
             text_begin = span.text_begin()
-            local_cursor = span.begin() - text_begin
+            local_caret = span.begin() - text_begin
 
             itoken = None
             for i, s in enumerate(spans):
-                if s[0] > local_cursor:
+                if s[0] > local_caret:
                     break
                 itoken = i
 
@@ -759,30 +759,30 @@ class WordSuggestions:
 
         return word_span
 
-    def _replace_text(self, begin, end, cursor, new_text):
+    def _replace_text(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
         """
         if self.text_context.can_insert_text():
-            self._replace_text_direct(begin, end, cursor, new_text)
+            self._replace_text_direct(begin, end, caret, new_text)
         else:
-            self._replace_text_key_strokes(begin, end, cursor, new_text)
+            self._replace_text_key_strokes(begin, end, caret, new_text)
 
-    def _replace_text_direct(self, begin, end, cursor, new_text):
+    def _replace_text_direct(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
         """
         self.text_context.delete_text(begin, end - begin)
         self.text_context.insert_text(begin, new_text)
 
-    def _replace_text_key_strokes(self, begin, end, cursor, new_text):
+    def _replace_text_key_strokes(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
         Fall-back for text entries without support for direct text insertion.
         """
         with self.suppress_modifiers():
             length = end - begin
-            offset = cursor - end  # offset of cursor to word end
+            offset = caret - end  # offset of caret to word end
 
             # delete the old word
             if offset >= 0:
@@ -796,25 +796,25 @@ class WordSuggestions:
             print("press_key_string", new_text)
             self._key_synth.press_key_string(new_text)
 
-            # move cursor back
+            # move caret back
             if offset >= 0:
                 self.press_keysym("right", offset)
 
             print()
 
-    def _replace_text_at_cursor(self, deletion, insertion, auto_separator = ""):
+    def _replace_text_at_caret(self, deletion, insertion, auto_separator = ""):
         """
         Insert a word/word-remainder and add a separator string as needed.
         """
         added_separator = ""
-        cursor_span = self.text_context.get_span_at_cursor()
+        caret_span = self.text_context.get_span_at_caret()
         if auto_separator:
-            next_char = cursor_span.get_text(cursor_span.end(),
-                                             cursor_span.end() + 1)
-            remaining_line = self.text_context.get_line_past_cursor()
+            next_char = caret_span.get_text(caret_span.end(),
+                                             caret_span.end() + 1)
+            remaining_line = self.text_context.get_line_past_caret()
 
-            # Insert space if the cursor was on a non-space character or
-            # the cursor was at the end of the line. The end of the line
+            # Insert space if the caret was on a non-space character or
+            # the caret was at the end of the line. The end of the line
             # in the terminal (e.g. in vim) may mean lot's of spaces until
             # the final new line.
             if auto_separator != next_char or \
@@ -823,13 +823,13 @@ class WordSuggestions:
 
         with self.suppress_modifiers():
             if insertion:
-                self._replace_text(cursor_span.begin() - len(deletion),
-                                   cursor_span.begin(),
-                                   cursor_span.begin(),
+                caret = self._replace_text(caret_span.begin() - len(deletion),
+                                   caret_span.begin(),
+                                   caret_span.begin(),
                                    insertion)
             if auto_separator:
                 if added_separator:
-                    self.press_key_string(auto_separator)
+                    self.insert_string_at_caret(auto_separator)
                 else:
                     self.press_keysym("right") # just skip over the existing space
 
@@ -855,7 +855,7 @@ class WordSuggestions:
         """ A different target widget has been focused """
         self._learn_strategy.on_text_entry_activated()
 
-    def on_text_inserted(self, insertion_span, cursor_offset):
+    def on_text_inserted(self, insertion_span, caret_offset):
         """ Synchronous callback for text insertion """
 
         # auto-correction
@@ -863,12 +863,12 @@ class WordSuggestions:
            self.can_auto_correct():
             word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
-                self._auto_correct_at(word_span, cursor_offset)
+                self._auto_correct_at(word_span, caret_offset)
 
     def on_text_context_changed(self):
         """
         Asynchronous callback for generic context changes.
-        The text of the target widget changed or the cursor moved.
+        The text of the target widget changed or the caret moved.
         Use this for low priority display stuff.
         """
         self.expand_corrections(False)
@@ -929,7 +929,7 @@ class WordSuggestions:
                         layout.set_item_visible(key, False)
 
                     key.set_content(line, self.word_infos,
-                                    self.text_context.get_line_cursor_pos())
+                                    self.text_context.get_line_caret_pos())
                     keys_to_redraw.append(key)
 
         return keys_to_redraw
@@ -994,7 +994,7 @@ class WordSuggestions:
             # Re-enable AT-SPI listeners
             AtspiStateTracker().thaw()
 
-    def _auto_correct_at(self, word_span, cursor_offset):
+    def _auto_correct_at(self, word_span, caret_offset):
         """
         Auto-capitalize/correct a word_span.
         """
@@ -1006,7 +1006,7 @@ class WordSuggestions:
             with self.suppress_modifiers():
                 self._replace_text(correction_span.begin(),
                                    correction_span.end(),
-                                   cursor_offset,
+                                   caret_offset,
                                    replacement)
 
     def _find_auto_correction(self, word_span, auto_capitalize, auto_correct):
@@ -1460,10 +1460,10 @@ class LearnStrategyLRU(LearnStrategy):
             inserted = self._insert_count < changes.insert_count
             deleted = self._delete_count < changes.delete_count
             if inserted or deleted:
-                # cursor inside a word?
-                cursor_span = text_context.get_span_at_cursor()
-                if cursor_span:
-                    char = cursor_span.get_char_before_span()
+                # caret inside a word?
+                caret_span = text_context.get_span_at_caret()
+                if caret_span:
+                    char = caret_span.get_char_before_span()
                     in_word = not char.isspace()
                 else:
                     in_word = False
