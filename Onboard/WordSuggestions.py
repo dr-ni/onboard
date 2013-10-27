@@ -358,49 +358,64 @@ class WordSuggestions:
                 self._get_prediction_choice_changes(choice_index)
 
         separator = ""
+        after_insert_span = None
         if config.wp.punctuation_assistance and \
            allow_separator:
             # Simulate the change and determine the final text
-            # before the cursor.
-            cursor_span = self.text_context.get_span_at_cursor()
-            context = self._simulate_insertion(cursor_span, deletion, insertion)
+            # before the caret.
+            caret_span = self.text_context.get_span_at_caret()
+            after_insert_span = self._simulate_insertion(caret_span,
+                                                         deletion, insertion)
 
-            # Should we add a separator character after the inserted word?
+            # Should we add an auto-separator after the inserted word?
             domain = self.text_context.get_text_domain()
-            separator = domain.get_auto_separator(context)
+            separator = domain.get_auto_separator(after_insert_span.get_text())
 
-        # type remainder/replace word and possibly add separator
-        added_separator = self._replace_text_at_cursor(deletion, insertion,
+        # Type remainder/replace word and possibly add separator.
+        added_separator = self._replace_text_at_caret(deletion, insertion,
                                                        separator)
-        self._punctuator.set_added_separator(added_separator)
 
-    def _simulate_insertion(self, cursor_span, deletion, insertion):
+        # Arm punctuator with the span of the just added separator.
+        separator_span = TextSpan(after_insert_span.end(),
+                                  len(added_separator),
+                                  added_separator,
+                                  after_insert_span.end()) \
+                         if added_separator else None
+        self._punctuator.set_added_separator(separator_span)
+
+    def _simulate_insertion(self, caret_span, deletion, insertion):
         """
-        Return the context up to cursor_span with deletion
+        Return the context up to caret_span with deletion
         and insertion applied.
 
         Doctests:
         >>> ws = WordSuggestions()
-        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "", "")
-        ''
-        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "", "local")
-        'local'
-        >>> ws._simulate_insertion(TextSpan(8, 0, ""), "log", "")
-        ''
-        >>> ws._simulate_insertion(TextSpan(0, 0, ""), "log", "local")
-        'local'
-        >>> ws._simulate_insertion(TextSpan(6, 0, "/var/l"), "", "og")
-        '/var/log'
-        >>> ws._simulate_insertion(TextSpan(8, 0, "/var/log"), "log", "local")
-        '/var/local'
-        >>> ws._simulate_insertion(TextSpan(8, 0, "/var/log"), "log", "")
-        '/var/'
+        >>> def test(caret_span, deletion, insertion):
+        ...     span = ws._simulate_insertion(caret_span, deletion, insertion)
+        ...     return span.begin(), span.text, span.text_begin()
+        >>> test(TextSpan(0, 0, ""), "", "")
+        (0, '', 0)
+        >>> test(TextSpan(0, 0, ""), "", "local")
+        (5, 'local', 0)
+        >>> test(TextSpan(0, 0, ""), "log", "")
+        (0, '', 0)
+        >>> test(TextSpan(8, 0, "", 5), "log", "")
+        (5, '', 5)
+        >>> test(TextSpan(3, 0, ""), "log", "local")
+        (5, 'local', 0)
+        >>> test(TextSpan(6, 0, "/var/l"), "", "og")
+        (8, '/var/log', 0)
+        >>> test(TextSpan(8, 0, "/var/log"), "log", "local")
+        (10, '/var/local', 0)
+        >>> test(TextSpan(8, 0, "/var/log"), "log", "")
+        (5, '/var/', 0)
         """
-        context = cursor_span.get_text_until_span()
+        context = caret_span.get_text_until_span()
         if deletion:
             context = context[:-len(deletion)]
         context += insertion
-        return context
+        text_pos = caret_span.text_begin()
+        return TextSpan(text_pos + len(context), 0, context, text_pos)
 
     def _update_correction_choices(self):
         self._correction_choices = []
@@ -1507,31 +1522,37 @@ class Punctuator:
         self.reset()
 
     def reset(self):
-        self._added_separator = False
+        self._added_separator_span = None
         self._separator_removed = False
         self._capitalize = False
 
-    def set_added_separator(self, separator = ""):
-        self._added_separator = separator;
+    def set_added_separator(self, separator_span = None):
+        """ Notify punctuator of an actually added word separator. """
+        self._added_separator_span = separator_span
 
     def on_before_press(self, key):
         if config.wp.punctuation_assistance and \
-           self._added_separator and \
+           self._added_separator_span and \
            (key.type == KeyCommon.KEYCODE_TYPE or \
             key.type == KeyCommon.KEYSYM_TYPE or \
             key.type == KeyCommon.CHAR_TYPE):
-            self._added_separator = False
 
-            char = key.get_label()
-            if   char in self.punctuation_no_capitalize:
-                self.delete_at_cursor()
-                self._separator_removed = True
+            # Only act if we are still at the caret position
+            # where the separator was added.
+            caret_span = self._get_span_at_caret()
+            if self._added_separator_span.end() == caret_span.begin():
+                char = key.get_label()
+                if   char in self.punctuation_no_capitalize:
+                    self.delete_at_caret()
+                    self._separator_removed = True
 
-            elif char in self.punctuation_capitalize:
-                self.delete_at_cursor()
-                self._separator_removed = True
-                if config.is_auto_capitalization_enabled():
-                    self._capitalize = True
+                elif char in self.punctuation_capitalize:
+                    self._delete_at_caret()
+                    self._separator_removed = True
+                    if config.is_auto_capitalization_enabled():
+                        self._capitalize = True
+
+            self._added_separator_span = None
 
     def on_after_release(self, key):
         """
@@ -1549,13 +1570,18 @@ class Punctuator:
                 self._capitalize = False
                 self._wp.enter_caps_mode()
 
-    def delete_at_cursor(self):
+    def _delete_at_caret(self):
         text_context = self._wp.text_context
         if text_context.can_insert_text():
-            text_context.delete_text_before_cursor()
+            text_context.delete_text_before_caret()
         else:
             with self._wp.suppress_modifiers():
                 self._wp.press_keysym("backspace")
+
+    def _get_span_at_caret(self):
+        text_context = self._wp.text_context
+        return text_context.get_span_at_caret()
+
 
 class WordInfo:
     """ Word level information about found predictions """
