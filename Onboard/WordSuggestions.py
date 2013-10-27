@@ -42,8 +42,7 @@ from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine
-from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce, \
-                                      get_keysym_from_name
+from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -801,21 +800,18 @@ class WordSuggestions:
 
             # delete the old word
             if offset >= 0:
-                self.press_keysym("left", offset)
-                self.press_keysym("backspace", length)
+                self._key_synth.press_keysyms("left", offset)
+                self._key_synth.press_keysyms("backspace", length)
             else:
-                self.press_keysym("delete", abs(offset))
-                self.press_keysym("backspace", length - abs(offset))
+                self._key_synth.press_keysyms("delete", abs(offset))
+                self._key_synth.press_keysyms("backspace", length - abs(offset))
 
             # insert the new word
-            print("press_key_string", new_text)
             self._key_synth.press_key_string(new_text)
 
             # move caret back
             if offset >= 0:
-                self.press_keysym("right", offset)
-
-            print()
+                self._key_synth.press_keysyms("right", offset)
 
     def _replace_text_at_caret(self, deletion, insertion, auto_separator = ""):
         """
@@ -846,21 +842,9 @@ class WordSuggestions:
                 if added_separator:
                     self.insert_string_at_caret(auto_separator)
                 else:
-                    self.press_keysym("right") # just skip over the existing space
+                    self._key_synth.press_keysyms("right") # just skip over the existing space
 
         return added_separator
-
-    def press_keysym(self, key_name, count = 1):
-        """
-        Generate any number of full key-stroke for the given named key symbol.
-        """
-        keysym = get_keysym_from_name(key_name)
-        for i in range(count):
-            print("press_keysym", key_name)
-            self._key_synth.press_keysym  (keysym)
-            self._key_synth.release_keysym(keysym)
-            if _logger.isEnabledFor(logging.DEBUG):
-                time.sleep(0.1)
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -1564,7 +1548,7 @@ class Punctuator:
                 self._separator_removed = False
                 # No direct insertion here. Space must always arrive last,
                 # i.e. after the released key was generated.
-                self._wp.press_keysym("space")
+                self._wp._key_synth.press_keysyms("space")
 
             if self._capitalize:
                 self._capitalize = False
@@ -1576,7 +1560,7 @@ class Punctuator:
             text_context.delete_text_before_caret()
         else:
             with self._wp.suppress_modifiers():
-                self._wp.press_keysym("backspace")
+                self._wp._key_synth.press_keysyms("backspace")
 
     def _get_span_at_caret(self):
         text_context = self._wp.text_context

@@ -148,7 +148,7 @@ class OnboardGtk(object):
 
         # Create the central keyboard model
         self.keyboard = Keyboard()
-        
+
         # Create the initial keyboard widget
         # Care for toolkit independence only once there is another
         # supported one besides GTK.

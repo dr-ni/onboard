@@ -114,7 +114,23 @@ class UnpressTimers:
             self._keyboard.on_key_unpressed(key)
 
 
-class KeySynthVirtkey(object):
+class KeySynth(object):
+
+    _inter_key_stroke_delay = 0.0  # delay between key-strokes in seconds
+
+    def set_inter_key_stroke_delay(self, delay):
+        """
+        Set delay between multiple key-strokes.
+        Firefox and Thunderbird may need this to not lose key-strokes.
+        """
+        self._inter_key_stroke_delay = delay
+
+    def _delay(self):
+        if self._inter_key_stroke_delay:
+            time.sleep(self._inter_key_stroke_delay)
+
+
+class KeySynthVirtkey(KeySynth):
     """ Synthesize key strokes with python-virtkey """
 
     def __init__(self, vk):
@@ -134,6 +150,7 @@ class KeySynthVirtkey(object):
             char = unicode_str(char)[0]
         code_point = ord(char)
         self._vk.release_unicode(code_point)
+        self._delay()
 
     def press_keysym(self, keysym):
         if self._vk:
@@ -142,6 +159,7 @@ class KeySynthVirtkey(object):
     def release_keysym(self, keysym):
         if self._vk:
             self._vk.release_keysym(keysym)
+        self._delay()
 
     def press_keycode(self, keycode):
         if self._vk:
@@ -150,6 +168,7 @@ class KeySynthVirtkey(object):
     def release_keycode(self, keycode):
         if self._vk:
             self._vk.release_keycode(keycode)
+        self._delay()
 
     def lock_mod(self, mod):
         if self._vk:
@@ -158,6 +177,15 @@ class KeySynthVirtkey(object):
     def unlock_mod(self, mod):
         if self._vk:
             self._vk.unlock_mod(mod)
+
+    def press_keysyms(self, key_name, count = 1):
+        """
+        Generate any number of full key-strokes for the given named key symbol.
+        """
+        keysym = get_keysym_from_name(key_name)
+        for i in range(count):
+            self.press_keysym  (keysym)
+            self.release_keysym(keysym)
 
     def press_key_string(self, keystr):
         """
@@ -169,14 +197,14 @@ class KeySynthVirtkey(object):
             for ch in keystr:
                 if ch == "\b":   # backspace?
                     keysym = get_keysym_from_name("backspace")
-                    self.press_keysym  (keysym)
+                    self.press_keysym(keysym)
                     self.release_keysym(keysym)
 
                 elif ch == "\n":
                     # press_unicode("\n") fails in gedit.
                     # -> explicitely send the key symbol instead
                     keysym = get_keysym_from_name("return")
-                    self.press_keysym  (keysym)
+                    self.press_keysym(keysym)
                     self.release_keysym(keysym)
                 else:             # any other printable keys
                     self.press_unicode(ch)
@@ -205,6 +233,7 @@ class KeySynthAtspi(KeySynthVirtkey):
 
     def release_keycode(self, keycode):
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
+        self._delay()
 
 
 class Keyboard(WordSuggestions):
@@ -387,7 +416,7 @@ class Keyboard(WordSuggestions):
             # Button mapper
             # Works with any event source, but may fail on touch-screens.
             clicksim = CSButtonMapper()
-                               
+
         if self._click_sim:
             self._click_sim.cleanup()
         self._click_sim = clicksim

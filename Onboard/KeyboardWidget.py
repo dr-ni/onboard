@@ -825,7 +825,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             hit_handle = self.touch_handles.hit_test(point)
             self.touch_handles.set_pressed(hit_handle)
             if not hit_handle is None:
-                # handle clicked -> stop auto-show until button release
+                # handle clicked -> stop auto-hide until button release
                 self.stop_touch_handles_auto_hide()
             else:
                 # no handle clicked -> hide them now
@@ -938,7 +938,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         else:
             if not hit_handle is None:
-                # handle hovered over -> extend their visible time
+                # handle hovered over: extend the time touch handles are visible
                 self.start_touch_handles_auto_hide()
 
             # Show/hide the input line
