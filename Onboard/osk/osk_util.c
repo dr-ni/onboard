@@ -476,7 +476,8 @@ get_window_name(Display* display, Window window)
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
     gdk_error_trap_push ();
-    stat = XGetTextProperty(display, window, &prop, _NET_WM_NAME);
+    stat = XGetTextProperty(display, window, &prop, _NET_WM_NAME)
+           ? Success : BadRequest;
     if (stat != Success || prop.nitems == 0)
         stat = XGetWMName(display, window, &prop);
     gdk_error_trap_pop_ignored ();
@@ -500,6 +501,9 @@ get_window_name(Display* display, Window window)
     Py_RETURN_NONE;
 }
 
+/*
+ * Return the name of the active window manager.
+ */
 static PyObject *
 osk_util_get_current_wm_name (PyObject *self)
 {
