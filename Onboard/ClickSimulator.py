@@ -113,7 +113,7 @@ class CSButtonMapper(ClickSimulator):
         return self._grab_event_source or \
            self._osk_cm and \
            (self._osk_cm.click_type != self.CLICK_TYPE_SINGLE or \
-            self._osk_cm.button == self.PRIMARY_BUTTON)
+            self._osk_cm.button != self.PRIMARY_BUTTON)
 
     def _on_xi_button_release(self, event):
         """ end of CLICK_TYPE_SINGLE in XInput mode """
