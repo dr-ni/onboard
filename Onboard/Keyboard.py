@@ -561,11 +561,9 @@ class Keyboard(WordSuggestions):
                time.time() - self._last_typing_time <= 0.3
 
     def _is_text_insertion_key(self, key):
-        """ Does key actually insert any characters (not navigation key)? """
-        return not key.is_modifier() and \
-               not key.type in [KeyCommon.KEYSYM_TYPE, # Fx
-                                KeyCommon.KEYPRESS_NAME_TYPE, # cursor
-                               ]
+        """ Does key actually insert any characters (not a navigation key)? """
+        return key and \
+               key.is_text_changing()
 
     def key_down(self, key, view = None, sequence = None, action = True):
         """

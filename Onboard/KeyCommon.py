@@ -315,14 +315,22 @@ class KeyCommon(LayoutItem):
                                      self.scanned)
 
     def is_text_changing(self):
-        return not self.is_modifier() and \
+        if not self.is_modifier() and \
                self.type in [KEYCODE_TYPE,
                              KEYSYM_TYPE,
                              CHAR_TYPE,
                              KEYPRESS_NAME_TYPE,
                              MACRO_TYPE,
                              WORD_TYPE,
-                             CORRECTION_TYPE]
+                             CORRECTION_TYPE]:
+            id = self.id
+            if not (id.startswith("F") and id[1:].isdigit()) and \
+               not id in set(["LEFT", "RGHT", "UP", "DOWN", 
+                              "HOME", "END", "PGUP", "PGDN", 
+                              "INS", "ESC", "MENU",
+                              "Prnt", "Pause", "Scroll"]):
+                return True
+        return False
 
     def is_return(self):
         id = self.id
