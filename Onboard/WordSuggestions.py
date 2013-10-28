@@ -1669,8 +1669,8 @@ class WordListPanel(LayoutPanel):
                                         correction_choices,
                                         rect, wordlist,
                                         key_context, font_size)
-        rect.x += spacing + used_rect.w
-        rect.w -= spacing + used_rect.w
+        rect.x += used_rect.w
+        rect.w -= used_rect.w
 
         # create prediction keys
         if not self.are_corrections_expanded():
@@ -1683,11 +1683,11 @@ class WordListPanel(LayoutPanel):
             for button, button_width, align in buttons:
                 r = rw.copy()
                 r.w = button_width
-                if align == -1:
+                if align == -1:   # left align
                     r.x = rw.left() - button_width
                     rw.x += button_width
                     rw.w -= button_width
-                elif align == 1:
+                elif align == 1:  # right align
                     r.x = rw.right() - button_width
                     rw.w -= button_width
                 button.set_border_rect(r)
@@ -1862,7 +1862,7 @@ class WordListPanel(LayoutPanel):
                 # Find the stretch factor that fills the available
                 # space with all items.
                 scale = (wordlist_rect.w - all_spacings) / \
-                              float(xend - all_spacings - spacing)
+                              float(xend - all_spacings)
             #scale = 1.0  # no stretching, left aligned
 
             # create buttons
@@ -1918,6 +1918,7 @@ class WordListPanel(LayoutPanel):
             class ButtonInfo: pass
             bi = ButtonInfo()
             bi.label_width = label_width
+            bi.x = x
             bi.w = w
             bi.expand = expand  # can stretch into available space?
             bi.label = choice[:]
