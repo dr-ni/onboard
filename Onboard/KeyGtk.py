@@ -28,6 +28,7 @@ PangoUnscale = 1.0 / Pango.SCALE
 class Key(KeyCommon):
     _pango_layouts = None
     _label_extents = None  # resolution independent size {mod_mask: (w, h)}
+    _popup_indicator = ""  # font dependent popup indicator (ellipsis)
 
     _shadow_steps  = 0
     _shadow_alpha  = 0
@@ -405,14 +406,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # popup indicator
         if not self.popup_id is None and \
            not config.xid_mode:
-            label = "︙"         # narrow glyph, but not available on Precise
-            fallback_label = "…" # ellipsis should exist in all fonts
 
+            label = self._get_popup_indicator()
             font_size = self.font_size
-
             layout = self.get_pango_layout(label, font_size, 2)
-            if layout.get_unknown_glyphs_count():
-                layout = self.get_pango_layout(fallback_label, font_size, 2)
 
             src_size = layout.get_size()
             src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
@@ -440,6 +437,28 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             runs.append((layout, x, y, rgba))
 
         return runs
+
+    def _get_popup_indicator(self):
+        """
+        Find the shortest ellipsis possible with the current font.
+        The font is assumed to never change during the livetime of the key.
+        """
+        result = self._popup_indicator
+        if not result:
+            labels = ("…", "...")  # label candidates
+
+            BASE_FONTDESCRIPTION_SIZE = 10000000
+            wmin = None
+            result = ""
+            for label in labels:
+                layout = self.get_pango_layout(label, BASE_FONTDESCRIPTION_SIZE, 2)
+                w = layout.get_size()[0]
+                if wmin is None or w < wmin:
+                    wmin = w
+                    result = label
+            self._popup_indicator = result
+
+        return result
 
     def draw_label(self, context, lod):
         # Skip cairo errors when drawing labels with font size 0
@@ -657,6 +676,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         return extents
 
     def calc_label_base_extents(self, label):
+        """ Calculate font-size independent extents. """
         cr = Gdk.pango_context_get()
         layout = Pango.Layout(cr)
         BASE_FONTDESCRIPTION_SIZE = 10000000
