@@ -443,7 +443,7 @@ class LayoutBuilder:
     def _calc_frame_width(context):
         # calculate border around the layout
         canvas_border = context.scale_log_to_canvas((1, 1))
-        return 7 + min(canvas_border)
+        return config.POPUP_FRAME_WIDTH + min(canvas_border)
 
 
 class LayoutBuilderKeySequence(LayoutBuilder):

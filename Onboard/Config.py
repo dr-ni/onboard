@@ -118,6 +118,9 @@ class Config(ConfigObject):
     # width of frame around onboard when window decoration is disabled
     UNDECORATED_FRAME_WIDTH = 5.0
 
+    # width of frame around onboard when window decoration is disabled
+    POPUP_FRAME_WIDTH = 5.0
+
     # radius of the rounded window corners
     CORNER_RADIUS = 10
 
