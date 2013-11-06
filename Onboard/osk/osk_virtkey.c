@@ -110,7 +110,13 @@ osk_virtkey_init (OskVirtkey *vk, PyObject *args, PyObject *kwds)
     int mod_index, mod_key;
 
     /* set display before anything else! */
-    vk->display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    GdkDisplay* display = gdk_display_get_default ();
+    if (!GDK_IS_X11_DISPLAY (display)) // Wayland, MIR?
+    {
+        PyErr_SetString (OSK_EXCEPTION, "not an X display");
+        return -1;
+    }
+    vk->display = GDK_DISPLAY_XDISPLAY (display);
 
     if (vk_init_keyboard (vk) < 0)
         return -1;

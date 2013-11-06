@@ -140,17 +140,19 @@ class KeySynthVirtkey(KeySynth):
         self._vk = None
 
     def press_unicode(self, char):
-        if sys.version_info.major == 2:
-            char = unicode_str(char)[0]
-        code_point = ord(char)
-        self._vk.press_unicode(code_point)
+        if self._vk:
+            if sys.version_info.major == 2:
+                char = unicode_str(char)[0]
+            code_point = ord(char)
+            self._vk.press_unicode(code_point)
 
     def release_unicode(self, char):
-        if sys.version_info.major == 2:
-            char = unicode_str(char)[0]
-        code_point = ord(char)
-        self._vk.release_unicode(code_point)
-        self._delay()
+        if self._vk:
+            if sys.version_info.major == 2:
+                char = unicode_str(char)[0]
+            code_point = ord(char)
+            self._vk.release_unicode(code_point)
+            self._delay()
 
     def press_keysym(self, keysym):
         if self._vk:

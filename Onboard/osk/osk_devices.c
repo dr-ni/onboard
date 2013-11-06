@@ -206,7 +206,14 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     int major = 2;
     int minor = 2;
 
-    dev->dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    /* set display before anything else! */
+    GdkDisplay* display = gdk_display_get_default ();
+    if (!GDK_IS_X11_DISPLAY (display)) // Wayland, MIR?
+    {
+        PyErr_SetString (OSK_EXCEPTION, "not an X display");
+        return -1;
+    }
+    dev->dpy = GDK_DISPLAY_XDISPLAY (display);
     memset(dev->button_states, 0, sizeof(dev->button_states));
 
     if (!XQueryExtension (dev->dpy, "XInputExtension",
