@@ -615,11 +615,14 @@ class Settings(DialogBuilder):
         self.layoutList = Gtk.ListStore(str, str)
         self.layout_view.set_model(self.layoutList)
 
-        self.update_layouts(os.path.join(config.install_dir, "layouts"))
-        self.update_layouts(self.user_layout_root)
+        sort_order = ["Small", "Compact", "Full Keyboard", "Phone", "Grid"]
+        self.append_to_layoutList(os.path.join(config.install_dir, "layouts"),
+                                  sort_order)
+        self.append_to_layoutList(self.user_layout_root)
 
     def cb_selected_layout_changed(self):
-        self.update_layouts(self.user_layout_root)
+        print("cb_selected_layout_changed")
+        update_layoutList()
 
     def on_add_button_clicked(self, event):
         chooser = Gtk.FileChooserDialog(title=_("Add Layout"),
@@ -669,7 +672,7 @@ class Settings(DialogBuilder):
                                      if len(self.layoutList) else ""
         self.update_layoutList()
 
-    def update_layouts(self, path):
+    def append_to_layoutList(self, path, sort_order = []):
 
         filenames = self.find_layouts(path)
 
@@ -679,12 +682,14 @@ class Settings(DialogBuilder):
             try:
                 sokdoc = minidom.parse(file_object).documentElement
 
-                value = sokdoc.attributes["id"].value
+                id = sokdoc.attributes["id"].value
+                sort_priority = sort_order.index(id) \
+                                if id in sort_order else 1000
                 if os.access(filename, os.W_OK):
-                    layouts.append((value.lower(), value, filename))
+                    layouts.append((sort_priority, id.lower(), id, filename))
                 else:
-                    layouts.append((value.lower(),
-                                   "<i>{0}</i>".format(value),
+                    layouts.append((sort_priority, id.lower(),
+                                   "<i>{0}</i>".format(id),
                                    filename))
 
             except ExpatError as xxx_todo_changeme:
@@ -696,7 +701,7 @@ class Settings(DialogBuilder):
 
             file_object.close()
 
-        for key, value, filename in sorted(layouts):
+        for key1, key2, value, filename in sorted(layouts):
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
                 sel = self.layout_view.get_selection()
