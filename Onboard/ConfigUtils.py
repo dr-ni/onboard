@@ -406,14 +406,14 @@ class ConfigObject(object):
                                user_filename_func = None,
                                system_filename_func = None):
         """
-        Checks a filenames validity and if necessary expands it to a
+        Checks a filename's validity and if necessary expands it to a
         fully qualified path pointing to either the user or system directory.
         User directory has precedence over the system one.
         """
 
         filepath = filename
 
-        if filename and not os.path.isfile(filename):
+        if filename and not ConfigObject._is_valid_filename(filename):
             # assume filename is just a basename instead of a full file path
             _logger.debug(_format("{description} '{filename}' not found yet, "
                                   "retrying in default paths", \
@@ -447,7 +447,7 @@ class ConfigObject(object):
                                   user_filename_func = None,
                                   system_filename_func = None):
         result = filename
-        if result and not os.path.isfile(result):
+        if result and not ConfigObject._is_valid_filename(result):
             if user_filename_func:
                 result = user_filename_func(filename)
                 if not os.path.isfile(result):
@@ -459,6 +459,12 @@ class ConfigObject(object):
                     result = ""
 
         return result
+
+    @staticmethod
+    def _is_valid_filename(filename):
+        return bool(filename) and \
+               os.path.isabs(filename) and \
+               os.path.isfile(filename)
 
     @staticmethod
     def get_unpacked_string_list(gskey, type_spec):
