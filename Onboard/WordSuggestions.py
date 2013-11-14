@@ -1095,7 +1095,7 @@ class LearnStrategy:
                                           text_domain)
 
             #_logger.info("learning " + repr(texts))
-            print("learning " + repr(texts))
+            #print("learning " + repr(texts))
 
             engine = self._wp._wpengine
             for text in texts:

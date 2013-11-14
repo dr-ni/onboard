@@ -621,7 +621,6 @@ class Settings(DialogBuilder):
         self.append_to_layoutList(self.user_layout_root)
 
     def cb_selected_layout_changed(self):
-        print("cb_selected_layout_changed")
         update_layoutList()
 
     def on_add_button_clicked(self, event):
