@@ -598,6 +598,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             rect = self.get_current_rect()
             if not rect is None: # shouldn't happen, fix this
                 self.move_resize(*rect) # sync position
+                self.keyboard_widget.sync_transition_position(rect)
 
         KbdWindowBase.on_visibility_changed(self, visible)
 
@@ -1347,7 +1348,7 @@ class WMQuirksCompiz(WMQuirksDefault):
 
     @staticmethod
     def can_set_override_redirect(window):
-        # Cant't type into unity dash with keys below dash without
+        # Can't type into unity dash with keys below dash without
         # override redirect. -> turn it on even when docking. Apparently
         # Compiz can handle struts with OR windows.
         return True
