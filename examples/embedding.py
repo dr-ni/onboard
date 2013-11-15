@@ -17,78 +17,86 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
+import sys
 import subprocess
 
 from gi.repository import Gtk
 
 
-class KeyboardEntry(Gtk.Window):
+class KeyboardDialog(Gtk.Dialog):
     """ Form with embedded keyboard. """
 
     def __init__(self):
-        super(KeyboardEntry, self).__init__()
+        super(KeyboardDialog, self).__init__()
 
         self._value = ""
+
+        self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.add_button(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+
+        self.set_default_response(Gtk.ResponseType.OK)
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         entry_box = Gtk.Box()
         self._entry = Gtk.Entry()
+        self._entry.set_activates_default(True)
         entry_box.pack_start(self._entry, True, True, 1)
 
-        button = Gtk.Button("Done")
+        button = Gtk.Button("Enter")
         button.connect("clicked", self._on_done_clicked)
         entry_box.pack_start(button, False, False, 1)
         box.pack_start(entry_box, False, False, 1)
 
         socket = Gtk.Socket()
+        socket.set_size_request(800, 200)
         box.pack_end(socket, True, True, 1)
 
-        self.resize(800, 220)
-        self.add(box)
-        self.connect("destroy", self._quit)
+        self.get_content_area().add(box)
 
         xid = self._start_onboard()
         socket.add_id(xid)
 
+        self.show_all()
+
+        self.connect("response", self._on_response)
+
     def get_value(self):
         return self._value
 
-    def _quit(self, widget=None):
-         Gtk.main_quit()
-         self._onboard.terminate()
+    def _on_response(self, widget, response):
+        if response == Gtk.ResponseType.OK:
+            self._value = self._entry.get_text()
+        self._onboard.terminate()
 
     def _on_done_clicked(self, widget):
         """docstring for _on_done_clicked"""
         self._value = self._entry.get_text()
-        self._quit()
+        self.response(Gtk.ResponseType.OK)
 
     def _start_onboard(self):
         """ Start Onboard and return the xid of the keyboard plug. """
 
         self._onboard = None
         xid = 0
+        args = ["onboard", "--xid",
+                "-l", "Compact"]
         try:
-            self._onboard = subprocess.Popen(["onboard", "--xid",
-                                              "-l", "Compact"],
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE,
-                                       close_fds=True)
+            self._onboard = subprocess.Popen(args,
+                                             stdin=subprocess.PIPE,
+                                             stdout=subprocess.PIPE,
+                                             close_fds=True)
             line = self._onboard.stdout.readline()
             xid = int(line)
         except OSError as e:
-            _logger.error(_format("Failed to execute '{}', {}", \
-                            " ".join(args), e))
+            print("Failed to execute '{}', {}".format(" ".join(args), e),
+                  file=sys.stderr)
 
         return xid
 
 
-entry = KeyboardEntry()
-entry.show_all()
-
-Gtk.main()
-
-print("KeyboardEntry returned", repr(entry.get_value()))
+dialog = KeyboardDialog()
+if dialog.run() == Gtk.ResponseType.OK:
+    print("KeyboardDialog returned", repr(dialog.get_value()))
 
 
