@@ -52,7 +52,7 @@ class AutoShow(object):
         else:
             self._state_tracker.disconnect("text-entry-activated",
                                         self._on_text_entry_activated)
-            self._state_tracker.connect("text-caret-moved",
+            self._state_tracker.disconnect("text-caret-moved",
                                         self._on_text_caret_moved)
 
         if enable:
