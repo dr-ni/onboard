@@ -623,12 +623,12 @@ class WordSuggestions:
 
             case_insensitive = sentence_begin or not (capitalized or shift)
             if not case_insensitive:
-                case_insensitive_mode = 0
+                case_insensitive_mode = 0      # case sensitive
             else:
                 if capitalize:
-                    case_insensitive_mode = 1
+                    case_insensitive_mode = 1  # simple
                 else:
-                    case_insensitive_mode = 2
+                    case_insensitive_mode = 2  # smart
 
         else:
             case_insensitive_mode = 0
@@ -665,13 +665,15 @@ class WordSuggestions:
         Doctests:
         >>> WordSuggestions._capitalize_choices(["word1", "Word1", "Word2", "word3"])
         ['Word1', 'Word2', 'Word3']
+        >>> WordSuggestions._capitalize_choices(["Word", "woRD", "WORD"])
+        ['Word', 'WoRD', 'WORD']
         """
         results = []
         seen = set()
 
         for choice in choices:
             if choice:
-                choice = choice.capitalize()
+                choice = choice[:1].upper() + choice[1:]
                 if not choice in seen:
                     results.append(choice)
                     seen.add(choice)
