@@ -118,7 +118,7 @@ class Config(ConfigObject):
     # width of frame around onboard when window decoration is disabled
     UNDECORATED_FRAME_WIDTH = 5.0
 
-    # width of frame around onboard when window decoration is disabled
+    # width of frame around popup windows
     POPUP_FRAME_WIDTH = 5.0
 
     # radius of the rounded window corners
@@ -289,8 +289,8 @@ class Config(ConfigObject):
         # Load system defaults (if there are any, not required).
         # Used for distribution specific settings, aka branding.
         paths = XDGDirs.get_all_config_dirs(USER_DIR) + \
-                [os.path.join(self.install_dir, SYSTEM_DEFAULTS_FILENAME),
-                 os.path.join("/etc/onboard", SYSTEM_DEFAULTS_FILENAME)]
+                [self.install_dir, "/etc/onboard"]
+        paths = [os.path.join(p, SYSTEM_DEFAULTS_FILENAME) for p in paths]
         self.load_system_defaults(paths)
 
         # initialize all property values
