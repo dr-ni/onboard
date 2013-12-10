@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # Copyright © 2013, marmuta
 #
@@ -70,7 +71,6 @@ class KeyboardDialog(Gtk.Dialog):
         self._onboard.terminate()
 
     def _on_done_clicked(self, widget):
-        """docstring for _on_done_clicked"""
         self._value = self._entry.get_text()
         self.response(Gtk.ResponseType.OK)
 
