@@ -130,7 +130,7 @@ class WindowManipulator(object):
         # - counts from drag end in fallback mode
         # - counts from drag start in system mode
         #   (unfortunately)
-        self.temporary_unlock_delay = 6.0 
+        self.temporary_unlock_delay = 6.0
 
         self.min_window_size = (50, 50)
 
@@ -147,7 +147,7 @@ class WindowManipulator(object):
         self._lock_y_axis         = False
 
         self._last_drag_handle    = None
-        self._monitor_rects       = None  # cache them to save the lookup time 
+        self._monitor_rects       = None  # cache them to save the lookup time
 
     def set_min_window_size(self, w, h):
         self.min_window_size = (w, h)
@@ -747,7 +747,7 @@ class WindowRectTracker:
 
             self._window_rect = Rect.from_position_size(pos, size)
             self._origin = origin
-            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1]) 
+            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1])
             self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):
@@ -1035,7 +1035,7 @@ def get_monitor_dimensions(window):
         return None, None
 
 def physical_to_monitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
-    """ 
+    """
     Convert a physical size in mm to pixels of windows's monitor,
     """
     sz, sz_mm = get_monitor_dimensions(window)

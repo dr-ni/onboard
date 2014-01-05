@@ -24,13 +24,14 @@ import locale
 import time
 import codecs
 import re
-from traceback import print_exc
+
+import logging
+_logger = logging.getLogger(__name__)
 
 try:
     from gi.repository import Atspi
 except ImportError as e:
-    _logger.info(_("Atspi unavailable, "
-                   "word prediction may not be fully functional"))
+    _logger.warning("Atspi typelib missing, word suggestions unavailable")
 
 import Onboard.pypredict as pypredict
 
@@ -48,11 +49,6 @@ from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce
 from Onboard.Config import Config
 config = Config()
 ########################
-
-### Logging ###
-import logging
-_logger = logging.getLogger(__name__)
-###############
 
 
 class WordSuggestions:

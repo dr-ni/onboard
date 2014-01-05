@@ -21,11 +21,13 @@ from __future__ import division, print_function, unicode_literals
 import time
 import unicodedata
 
+import logging
+_logger = logging.getLogger(__name__)
+
 try:
     from gi.repository import Atspi
 except ImportError as e:
-    _logger.info(_("Atspi unavailable, "
-                   "word suggestions not fully functional"))
+    pass
 
 from Onboard.AtspiStateTracker import AtspiStateTracker, AtspiStateType
 from Onboard.TextDomain        import TextDomains
@@ -36,12 +38,6 @@ from Onboard                   import KeyCommon
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
-
-### Logging ###
-import logging
-_logger = logging.getLogger(__name__)
-###############
 
 
 class TextContext:
@@ -359,11 +355,11 @@ class AtspiTextContext(TextContext):
         if key.is_text_changing():
             keycode = 0
             if key.is_return():
-                keycode = KeyCode.KP_Enter 
+                keycode = KeyCode.KP_Enter
             else:
                 label = key.get_label()
                 if label == "C" or label == "c":
-                    keycode = KeyCode.C 
+                    keycode = KeyCode.C
 
             self._handle_key_press(keycode, mod_mask)
 
@@ -378,7 +374,7 @@ class AtspiTextContext(TextContext):
                     self._wp.commit_changes()
                 elif end_of_editing == False:
                     self._wp.discard_changes()
- 
+
     def _record_text_change(self, pos, length, insert):
         accessible = self._accessible
 

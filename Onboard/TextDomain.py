@@ -22,19 +22,16 @@ import os
 import re
 import glob
 
+import logging
+_logger = logging.getLogger("TextDomain")
+
 try:
     from gi.repository import Atspi
 except ImportError as e:
-    _logger.info(_("Atspi unavailable, "
-                   "word suggestions not fully functional"))
+    pass
 
 from Onboard.TextChanges  import TextSpan
 from Onboard.utils        import KeyCode, Modifiers, unicode_str
-
-### Logging ###
-import logging
-_logger = logging.getLogger("TextDomain")
-###############
 
 
 class TextDomains:

@@ -6,7 +6,15 @@ import sys
 import gc
 from contextlib import contextmanager
 
-from gi.repository import Gtk, Gdk, Atspi
+from gi.repository import Gtk, Gdk
+
+import logging
+_logger = logging.getLogger(__name__)
+
+try:
+    from gi.repository import Atspi
+except ImportError as e:
+    _logger.warning("Atspi typelib missing, at-spi key-synth unavailable")
 
 from Onboard.KeyGtk          import *
 from Onboard                 import KeyCommon
@@ -32,11 +40,6 @@ except DeprecationWarning:
 from Onboard.Config import Config
 config = Config()
 ########################
-
-### Logging ###
-import logging
-_logger = logging.getLogger("Keyboard")
-###############
 
 
 # enum of event types for key press/release
@@ -228,12 +231,18 @@ class KeySynthAtspi(KeySynthVirtkey):
         super(KeySynthAtspi, self).__init__(vk)
 
     def press_key_string(self, string):
+        if not "Atspi" in globals():
+            return
         Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
 
     def press_keycode(self, keycode):
+        if not "Atspi" in globals():
+            return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
 
     def release_keycode(self, keycode):
+        if not "Atspi" in globals():
+            return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
         self._delay()
 
@@ -405,7 +414,7 @@ class Keyboard(WordSuggestions):
         if event_source == InputEventSourceEnum.XINPUT:
             # XInput click simulator
             # Recommended, but requires the XInput event source.
-            clicksim = CSFloatingSlave(self)  
+            clicksim = CSFloatingSlave(self)
 
             # Fall back to button mapper if XInput 2.2 is unavaliable
             if not clicksim.is_valid():

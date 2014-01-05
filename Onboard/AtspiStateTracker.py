@@ -3,17 +3,15 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils        import Rect, EventSource, Process, unicode_str
-
-### Logging ###
 import logging
 _logger = logging.getLogger(__name__)
-###############
 
 try:
     from gi.repository import Atspi
 except ImportError as e:
-    _logger.info(_("Atspi unavailable, auto-hide won't be available"))
+    _logger.warning("Atspi typelib missing, auto-show unavailable")
+
+from Onboard.utils        import Rect, EventSource, Process, unicode_str
 
 
 class AsyncEvent:
@@ -142,6 +140,9 @@ class AtspiStateTracker(EventSource):
             self._focus_listeners_registered = register
 
     def _register_atspi_text_listeners(self, register):
+        if not "Atspi" in globals():
+            return
+
         if self._text_listeners_registered != register:
             if register:
                 self.atspi_connect("_listener_text_changed",
@@ -159,6 +160,9 @@ class AtspiStateTracker(EventSource):
         self._text_listeners_registered = register
 
     def _register_atspi_keystroke_listeners(self, register):
+        if not "Atspi" in globals():
+            return
+
         if self._keystroke_listeners_registered != register:
             modifier_masks = range(16)
 
