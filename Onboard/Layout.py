@@ -86,8 +86,17 @@ class KeyContext(object):
     def scale_canvas_to_log_y(self, y):
         return y * self.log_rect.h / self.canvas_rect.h
 
+    def log_to_canvas_path(self, path):
+        result = path.copy()
+        log_to_canvas_x = self.log_to_canvas_x
+        log_to_canvas_y = self.log_to_canvas_y
+        for op, coords in result.commands:
+            for i in range(0, len(coords), 2):
+                coords[i]   = log_to_canvas_x(coords[i])
+                coords[i+1] = log_to_canvas_y(coords[i+1])
+        return result
 
-    ##### Speed optimized overloads #####
+    ##### Speed-optimized overloads #####
 
     def log_to_canvas(self, coord):
         canvas_rect = self.canvas_rect
@@ -251,10 +260,13 @@ class LayoutRoot:
         x, y = point
         hit_rects = self._get_hit_rects(active_layer)
         for x0, y0, x1, y1, k in hit_rects:
+            # Inlined test, i.e. not using Rect.is_point_within, for speed.
             if x >= x0 and x < x1 and \
                y >= y0 and y < y1:
-                key = k
-                break
+                if k.path is None or \
+                   k.get_hit_path().is_point_within(point):
+                    key = k
+                    break
 
         self._last_hit_args = args
         self._last_hit_key = key

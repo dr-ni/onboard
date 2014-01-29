@@ -169,9 +169,9 @@ class LayoutView:
         self.register_input_events(True, use_gtk)
 
     def can_delay_sequence_begin(self, sequence):
-        """ 
+        """
         Veto gesture delay for move buttons. Have the keyboard start
-        moving right away and not lag the pointer.
+        moving right away and not lag behind the pointer.
         """
         layout = self.get_layout()
         if layout:

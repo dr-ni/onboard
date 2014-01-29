@@ -10,7 +10,7 @@ import traceback
 import colorsys
 import gettext
 from subprocess import Popen
-from math import pi, sin, cos, exp, sqrt, log
+from math import pi, sin, cos, sqrt, log
 from contextlib import contextmanager
 
 from gi.repository import GLib, Gtk
@@ -767,7 +767,6 @@ def roundrect_arc(context, rect, r = 15):
 
     context.close_path ()
 
-
 def roundrect_curve(context, rect, r_pct = 100):
     """
     Uses B-splines for less even looks than with arcs, but
@@ -807,39 +806,89 @@ def roundrect_curve(context, rect, r_pct = 100):
 
     context.close_path ()
 
-def roundrect_curve_old(context, rect, r_pct = 100):
+def rounded_polygon(cr, coords, r_pct, chamfer_size):
+    path = polygon_to_rounded_path(coords, r_pct, chamfer_size)
+    rounded_polygon_path_to_cairo_path(cr, path)
+
+def polygon_to_rounded_path(coords, r_pct, chamfer_size):
     """
-    Uses B-splines for less even looks than with arcs, but
-    still allows for approximate circles at r_pct = 100.
+    Doctests:
+    # simple rectangle, chamfer radius 0.
+    >>> coords = [0, 0, 10, 0, 10, 10, 0, 10]
+    >>> polygon_to_rounded_path(coords, 0, 0) # doctest: +NORMALIZE_WHITESPACE
+    [(0.0, 0.0), (10.0, 0.0), (10.0, 0.0, 10.0, 0.0, 10.0, 0.0),
+     (10.0, 10.0), (10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
+     (0.0, 10.0), (0.0, 10.0, 0.0, 10.0, 0.0, 10.0),
+     (0.0, 0.0), (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)]
     """
-    x0, y0 = rect.x, rect.y
-    x1, y1 = rect.x + rect.w, rect.y + rect.h
-    w, h   = rect.w, rect.h
+    path = []
+    r = chamfer_size * 2.0 * min(r_pct/100.0, 0.5) # full range at 50%
 
-    r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
-    k = (r-1) * r_pct/200.0 # position of control points for circular curves
+    n = len(coords)
+    for i in range(0, n, 2):
+        i0 = i
+        i1 = i + 2
+        if i1 >= n:
+            i1 -= n
+        i2 = i + 4
+        if i2 >= n:
+            i2 -= n
+        x0 = coords[i0]
+        y0 = coords[i0+1]
+        x1 = coords[i1]
+        y1 = coords[i1+1]
+        x2 = coords[i2]
+        y2 = coords[i2+1]
 
-    # top left
-    context.move_to(x0+r, y0)
+        vax = x1 - x0
+        vay = y1 - y0
+        la = sqrt(vax*vax + vay*vay)
+        uax = vax / la
+        uay = vay / la
 
-    # top right
-    context.line_to(x1-r,y0)
-    context.curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
+        vbx = x2 - x1
+        vby = y2 - y1
+        lb = sqrt(vbx*vbx + vby*vby)
+        ubx = vbx / lb
+        uby = vby / lb
 
-    # bottom right
-    context.line_to(x1, y1-r)
-    context.curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+        ra = min(r, la * 0.5)     # offset of curve begin and end
+        rb = min(r, lb * 0.5)
+        ka = (ra-1) * r_pct/200.0 # offset of control points
+        kb = (rb-1) * r_pct/200.0
 
-    # bottom left
-    context.line_to(x0+r, y1)
-    context.curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+        if i == 0:
+            x = x0 + ra*uax
+            y = y0 + ra*uay
+            path.append((x, y))
 
-    # top left
-    context.line_to(x0, y0+r)
-    context.curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+        x = x1 - ra*uax
+        y = y1 - ra*uay
+        path.append((x, y))
 
-    context.close_path ()
+        x = x1 + rb*ubx
+        y = y1 + rb*uby
+        c0x = x1 - ka*uax
+        c0y = y1 - ka*uay
+        c1x = x1 + kb*ubx
+        c1y = y1 + kb*uby
+        path.append((x, y, c0x, c0y, c1x, c1y))
 
+    return path
+
+def rounded_polygon_path_to_cairo_path(cr, path):
+    if path:
+        cr.move_to(*path[0])
+        for i in range(1, len(path), 2):
+            p = path[i]
+            cr.line_to(p[0], p[1])
+            p = path[i+1]
+            cr.curve_to(p[2], p[3], p[4], p[5], p[0], p[1])
+        cr.close_path()
+
+def rounded_path(cr, path, r_pct, chamfer_size):
+    for polygon in path.iter_polygons():
+        rounded_polygon(cr, polygon, r_pct, chamfer_size)
 
 def round_corners(cr, r, x, y, w, h):
     """
@@ -1261,10 +1310,10 @@ def chmodtree(path, mode = 0o777, only_dirs = False):
     os.chmod(path, mode)
     for root, dirs, files in os.walk(path):
         for d in dirs:
-            os.chmod(os.path.join(root, d), mode)                    
+            os.chmod(os.path.join(root, d), mode)
         if not only_dirs:
             for f in files:
-                os.chmod(os.path.join(root, f), mode)                    
+                os.chmod(os.path.join(root, f), mode)
 
 def unicode_str(obj, encoding = "utf-8"):
     """
@@ -1385,7 +1434,7 @@ class EventSource(object):
             callbacks.remove(callback)
 
     def has_listeners(self, event_names = None):
-        """ 
+        """
         Are there callbacks registered for the given event_names or any event?
         """
         if event_names:
@@ -1517,7 +1566,7 @@ class XDGDirs:
         value = os.environ.get("XDG_CONFIG_DIRS")
         if not value:
             value = "/etc/xdg"
-        
+
         paths = value.split(":")
         paths = [p for p in paths if os.path.isabs(p)]
 
@@ -1575,7 +1624,7 @@ class XDGDirs:
         value = os.environ.get("XDG_DATA_DIRS")
         if not value:
             value = "/usr/local/share/:/usr/share/"
-        
+
         paths = value.split(":")
         paths = [p for p in paths if os.path.isabs(p)]
 

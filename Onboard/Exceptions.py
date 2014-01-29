@@ -43,8 +43,7 @@ class ChainableError(Exception):
     def __str__(self):
         message = unicode_str(self._message)
         if self.chained_exception:
-            message += "\n%s: %s" % (type(self.chained_exception).__name__,
-                unicode_str(self.chained_exception))
+            message += ", " + unicode_str(self.chained_exception)
         return message
 
 class SVGSyntaxError(ChainableError):
@@ -60,7 +59,7 @@ class ThemeFileError(ChainableError):
     pass
 
 class ColorSchemeFileError(ChainableError):
-    """Error raised when Onboard can't comprehend color 
+    """Error raised when Onboard can't comprehend color
        scheme definition file."""
     pass
 

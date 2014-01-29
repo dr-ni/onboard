@@ -15,15 +15,17 @@ from xml.dom import minidom
 
 from Onboard                 import Exceptions
 from Onboard                 import KeyCommon
-from Onboard.KeyCommon       import StickyBehavior, ImageSlot
-from Onboard.KeyGtk          import RectKey, WordlistKey, BarKey, \
-                                    WordKey, InputlineKey
+from Onboard.KeyCommon       import StickyBehavior, ImageSlot, KeyPath
 from Onboard.Layout          import LayoutRoot, LayoutBox, LayoutPanel
-from Onboard.utils           import hexstring_to_float, modifiers, Rect, \
+from Onboard.utils           import modifiers, Rect, \
                                     toprettyxml, Version, open_utf8, \
                                     permute_mask, LABEL_MODIFIERS, \
                                     unicode_str, XDGDirs
+
+# Layout items that can be created dynamically via the 'class' XML attribute.
 from Onboard.WordSuggestions import WordListPanel
+from Onboard.KeyGtk          import RectKey, WordlistKey, BarKey, \
+                                    WordKey, InputlineKey
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -119,7 +121,7 @@ class LayoutLoaderSVG:
             root = LayoutPanel() # root, representing the 'keyboard' tag
             root.set_id("__root__") # id for debug prints
 
-            # Init included root with the parent items svg filename.
+            # Init included root with the parent item's svg filename.
             # -> Allows to skip specifying svg filenames in includes.
             if parent_item:
                 root.filename = parent_item.filename
@@ -367,7 +369,7 @@ class LayoutLoaderSVG:
         # get key geometry from the closest svg file
         filename = key.get_filename()
         if not filename:
-            if not attribute.get("group") == "wsbutton": 
+            if not attribute.get("group") == "wsbutton":
                 _logger.warning(_format("Ignoring key '{}'."
                                         " No svg filename defined.",
                                         key.id))
@@ -375,7 +377,7 @@ class LayoutLoaderSVG:
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
             if svg_keys:
-                # try svg_id first
+                # try svg_id first, if there is one
                 if key.svg_id != key.id:
                     svg_key = svg_keys.get(key.svg_id)
                 else:
@@ -383,9 +385,10 @@ class LayoutLoaderSVG:
                     svg_key = svg_keys.get(key.id)
 
                 if svg_key:
-                    r = svg_key.get_border_rect()
+                    r = svg_key.rect
                     key.set_initial_border_rect(r.copy())
                     key.set_border_rect(r.copy())
+                    key.path = svg_key.path
                     result = key
 
         return result  # ignore keys not found in an svg file
@@ -543,6 +546,9 @@ class LayoutLoaderSVG:
         if "popup_id" in attributes:
             key.popup_id = attributes["popup_id"]
 
+        if "chamfer_size" in attributes:
+            key.chamfer_size = float(attributes["chamfer_size"])
+
         key.color_scheme = self._color_scheme
 
     def _parse_key_labels(self, attributes, key):
@@ -650,31 +656,73 @@ class LayoutLoaderSVG:
             with open_utf8(filename) as svg_file:
                 svg_dom = minidom.parse(svg_file).documentElement
                 svg_keys = self._parse_svg(svg_dom)
-
-        except Exception as xxx_todo_changeme1:
-            (exception) = xxx_todo_changeme1
-            raise Exceptions.LayoutFileError(_("Error loading ")
-                + filename, chained_exception = exception)
-
+        except Exceptions.LayoutFileError as ex:
+            raise Exceptions.LayoutFileError(
+                "error loading '{}'".format(filename),
+                chained_exception = (ex))
         return svg_keys
 
     def _parse_svg(self, svg_dom):
         keys = {}
-        for rect in svg_dom.getElementsByTagName("rect"):
-            id = rect.attributes["id"].value
+        for child in svg_dom.childNodes:
+            if child.nodeType == minidom.Node.ELEMENT_NODE:
+                tag = child.tagName
+                if tag in ("rect", "path"):
+                    key = SVGKey()
+                    id = child.attributes["id"].value
 
-            rect = Rect(float(rect.attributes['x'].value),
-                        float(rect.attributes['y'].value),
-                        float(rect.attributes['width'].value),
-                        float(rect.attributes['height'].value))
+                    if tag == "rect":
+                        key.rect = Rect(float(child.attributes['x'].value),
+                                        float(child.attributes['y'].value),
+                                        float(child.attributes['width'].value),
+                                        float(child.attributes['height'].value))
 
-            # Use RectKey as cache for svg provided properties.
-            # This key instance doesn't enter the layout and will
-            # be discarded after the layout tree has been loaded.
-            key = RectKey(id, rect)
+                    elif tag == "path":
+                        data = child.attributes['d'].value
 
-            keys[id] = key
+                        try:
+                            key.path = KeyPath.from_svg_path(data)
+                        except ValueError as ex:
+                            raise Exceptions.LayoutFileError(
+                                  "while reading path with id '{}'".format(id),
+                                  chained_exception = (ex))
 
+                        key.rect = key.path.get_bounds()
+
+                    keys[id] = key
+        return keys
+
+
+    def _parse_svg(self, node):
+        keys = {}
+        for child in node.childNodes:
+            if child.nodeType == minidom.Node.ELEMENT_NODE:
+                tag = child.tagName
+                if tag in ("rect", "path"):
+                    key = SVGKey()
+                    id = child.attributes["id"].value
+
+                    if tag == "rect":
+                        key.rect = Rect(float(child.attributes['x'].value),
+                                        float(child.attributes['y'].value),
+                                        float(child.attributes['width'].value),
+                                        float(child.attributes['height'].value))
+
+                    elif tag == "path":
+                        data = child.attributes['d'].value
+
+                        try:
+                            key.path = KeyPath.from_svg_path(data)
+                        except ValueError as ex:
+                            raise Exceptions.LayoutFileError(
+                                  "while reading path with id '{}'".format(id),
+                                  chained_exception = (ex))
+
+                        key.rect = key.path.get_bounds()
+
+                    keys[id] = key
+
+                keys.update(self._parse_svg(child))
         return keys
 
     def find_template(self, scope_item, classinfo, ids):
@@ -1001,6 +1049,14 @@ class LayoutLoaderSVG:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
                 for node in LayoutLoaderSVG._iter_dom_nodes(child):
                     yield node
+
+
+class SVGKey:
+    """
+    Cache of SVG provided key attributes.
+    """
+    rect = None     # logical bounding rect, aka border rect
+    path = None     # optional path for arbitrary shapes
 
 
 

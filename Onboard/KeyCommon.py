@@ -7,9 +7,9 @@ UI-specific keys should be defined in KeyGtk or KeyKDE files.
 from __future__ import division, print_function, unicode_literals
 
 from math import pi
+import re
 
-from Onboard.utils import Rect, brighten, \
-                          LABEL_MODIFIERS, Modifiers
+from Onboard.utils import Rect, LABEL_MODIFIERS, Modifiers
 from Onboard.Layout import LayoutItem
 
 ### Logging ###
@@ -276,7 +276,7 @@ class KeyCommon(LayoutItem):
         theme_id = prefix
         comps = self.theme_id.split(".")[1:]
         if comps:
-            theme_id += "." + comps[0] 
+            theme_id += "." + comps[0]
         return theme_id
 
     def is_layer_button(self):
@@ -325,8 +325,8 @@ class KeyCommon(LayoutItem):
                              CORRECTION_TYPE]:
             id = self.id
             if not (id.startswith("F") and id[1:].isdigit()) and \
-               not id in set(["LEFT", "RGHT", "UP", "DOWN", 
-                              "HOME", "END", "PGUP", "PGDN", 
+               not id in set(["LEFT", "RGHT", "UP", "DOWN",
+                              "HOME", "END", "PGUP", "PGDN",
                               "INS", "ESC", "MENU",
                               "Prnt", "Pause", "Scroll"]):
                 return True
@@ -355,6 +355,12 @@ class KeyCommon(LayoutItem):
 
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
+
+    # optional geometry for keys with arbitrary shapes
+    path = None
+
+    # size of rounded corners at 100% round_rect_radius
+    chamfer_size = None
 
     # Optional key_style to override the default theme's style.
     style = None
@@ -458,7 +464,7 @@ class RectKeyCommon(KeyCommon):
         return self.context.log_to_canvas_rect(self.get_fullsize_rect())
 
     def get_unpressed_rect(self):
-        """ 
+        """
         Get bounding box in logical coordinates.
         Just the relatively static unpressed rect withough fake key action.
         """
@@ -504,7 +510,7 @@ class RectKeyCommon(KeyCommon):
             # keys with aspect > 1.0, e.g. space, shift
             bx = by
         else:
-            # keys with aspect < 1.0, e.g. click, move, number block + and enter 
+            # keys with aspect < 1.0, e.g. click, move, number block + and enter
             by = bx
 
         return rect.deflate(bx, by)
@@ -526,6 +532,55 @@ class RectKeyCommon(KeyCommon):
         log_rect = self.get_label_rect()
         return self.context.log_to_canvas_rect(log_rect)
 
+    def get_border_path(self):
+        """ Original path, including border. """
+        return self.path
+
+    def get_path(self):
+        """
+        Path of the key geometry in logical coordinates.
+        Key size and fake press movement are applied.
+        """
+        return self.path.fit_in_rect(self.get_rect())
+
+    def get_canvas_path(self):
+        path = self.get_path()
+        return self.context.log_to_canvas_path(path)
+
+    def get_canvas_border_path(self):
+        path = self.get_border_path()
+        return self.context.log_to_canvas_path(path)
+
+    def get_hit_path(self):
+        return self.get_canvas_border_path()
+
+    def get_chamfer_size(self, rect = None):
+        """ Max size of the rounded corner areas in logical coordinates. """
+        if not self.chamfer_size is None:
+            return self.chamfer_size
+        if not rect:
+            if self.path:
+                rect = self.path.get_bounds()
+            else:
+                rect = self.get_rect()
+        return min(rect.w, rect.h) * 0.5
+
+    def get_path_polygons(self, bounds):
+        """
+        Unify access to the key geometry.
+        If there is no path geometry, the key rectangle
+        is returned as polygon.
+        """
+        if self.path:
+            path = self.path.fit_in_rect(bounds)
+            return list(path.iter_polygons())
+        else:
+            l = bounds.x
+            t = bounds.y
+            r = bounds.right()
+            b = bounds.bottom()
+            return [[l, t, r, t, r, b, l, b]]
+
 
 class InputlineKeyCommon(RectKeyCommon):
     """ An abstract class for InputLine keyboard buttons """
@@ -539,5 +594,277 @@ class InputlineKeyCommon(RectKeyCommon):
 
     def get_label(self):
         return ""
+
+
+class KeyPath:
+    """
+    Cairo-friendly geometry description for non-rectangular keys.
+    Currently there is support for straight line-loops/polygons, but
+    not for arcs and splines.
+    """
+    (
+        MOVE_TO,
+        LINE_TO,
+        CLOSE_PATH,
+    ) = range(3)
+
+    _last_abs_pos = (0.0, 0.0)
+
+    def __init__(self):
+        self.commands = []
+
+    @staticmethod
+    def from_svg_path(path_str):
+        path = KeyPath()
+        path.append_svg_path(path_str)
+        return path
+
+    _svg_path_pattern = re.compile("([+-]?[0-9.]*)")
+
+    def copy(self):
+        result = KeyPath()
+        for op, coords in self.commands:
+            result.commands.append([op, coords[:]])
+        return result
+
+    def append_svg_path(self, path_str):
+        """
+        Append a SVG path data string to the path.
+
+        Doctests:
+        # absolute move_to command
+        >>> p = KeyPath.from_svg_path("M 100 200 120 -220")
+        >>> print(p.commands)
+        [[0, [100.0, 200.0]], [1, [120.0, -220.0]]]
+
+        # relative move_to command
+        >>> p = KeyPath.from_svg_path("m 100 200 10 -10")
+        >>> print(p.commands)
+        [[0, [100.0, 200.0]], [1, [110.0, 190.0]]]
+
+        # relative move_to and close_path commands
+        >>> p = KeyPath.from_svg_path("m 100 200 10 -10 z")
+        >>> print(p.commands)
+        [[0, [100.0, 200.0]], [1, [110.0, 190.0]], [2, []]]
+
+        # spaces and commas and are optional where possible
+        >>> p = KeyPath.from_svg_path("m100,200 10-10z")
+        >>> print(p.commands)
+        [[0, [100.0, 200.0]], [1, [110.0, 190.0]], [2, []]]
+        """
+
+        cmd_str = ""
+        coords = []
+        tokens = self._tokenize_svg_path(path_str)
+        for token in tokens:
+            try:
+                val = float(token)   # raises value error
+                coords.append(val)
+            except ValueError:
+                if token.isalpha():
+                    if cmd_str:
+                        self.append_command(cmd_str, coords)
+                    cmd_str = token
+                    coords = []
+
+                elif token == ",":
+                    pass
+
+                else:
+                    raise ValueError(
+                          "unexpected token '{}' in svg path data" \
+                          .format(token))
+
+        if cmd_str:
+            self.append_command(cmd_str, coords)
+
+    def append_command(self, cmd_str, coords):
+        """
+        Append a single command and it's coordinate data to the path.
+
+        Doctests:
+        # first lowercase move_to position is absolute
+        >>> p = KeyPath()
+        >>> p.append_command("m", [100, 200])
+        >>> print(p.commands)
+        [[0, [100, 200]]]
+
+        # move_to commands become line_to commands after the first position
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200, 110, 190])
+        >>> print(p.commands)
+        [[0, [100, 200]], [1, [110, 190]]]
+
+        # further lowercase move_to positions are relative, must become absolute
+        >>> p = KeyPath()
+        >>> p.append_command("m", [100, 200, 10, -10, 10, -10])
+        >>> print(p.commands)
+        [[0, [100, 200]], [1, [110, 190, 120, 180]]]
+
+        # further lowercase commands must still be become absolute
+        >>> p = KeyPath()
+        >>> p.append_command("m", [100, 200, 10, -10, 10, -10])
+        >>> p.append_command("l", [1, -1, 1, -1])
+        >>> print(p.commands)
+        [[0, [100, 200]], [1, [110, 190, 120, 180]], [1, [121, 179, 122, 178]]]
+        """
+
+        # Convert lowercase commands from relative to absolute coordinates.
+        if cmd_str in ("m", "l"):
+
+            # Don't convert the very first coordinate, it is already absolute.
+            if self.commands:
+                start = 0
+                x, y = self._last_abs_pos
+            else:
+                start = 2
+                x, y = coords[0], coords[1]
+
+            for i in range(start, len(coords), 2):
+                x += coords[i]
+                y += coords[i+1]
+                coords[i]   = x
+                coords[i+1] = y
+
+        cmd = cmd_str.lower()
+        if cmd == "m":
+            self.commands.append([self.MOVE_TO, coords[:2]])
+            if len(coords) > 2:
+                self.commands.append([self.LINE_TO, coords[2:]])
+
+        elif cmd == "l":
+            self.commands.append([self.LINE_TO, coords])
+
+        elif cmd == "z":
+            self.commands.append([self.CLOSE_PATH, []])
+
+        # remember last absolute position
+        if len(coords) >= 2:
+            self._last_abs_pos = coords[-2:]
+
+    @staticmethod
+    def _tokenize_svg_path(path_str):
+        """
+        Split SVG path date into command and coordinate tokens.
+
+        Doctests:
+        >>> KeyPath._tokenize_svg_path("m 10,20")
+        ['m', '10', ',', '20']
+        >>> KeyPath._tokenize_svg_path("   m   10  , \\n  20 ")
+        ['m', '10', ',', '20']
+        >>> KeyPath._tokenize_svg_path("m 10,20 30,40 z")
+        ['m', '10', ',', '20', '30', ',', '40', 'z']
+        >>> KeyPath._tokenize_svg_path("m10,20 30,40z")
+        ['m', '10', ',', '20', '30', ',', '40', 'z']
+        >>> KeyPath._tokenize_svg_path("M100.32 100.09 100. -100.")
+        ['M', '100.32', '100.09', '100.', '-100.']
+        >>> KeyPath._tokenize_svg_path("m123+23 20,-14L200,200")
+        ['m', '123', '+23', '20', ',', '-14', 'L', '200', ',', '200']
+        >>> KeyPath._tokenize_svg_path("m123+23 20,-14L200,200")
+        ['m', '123', '+23', '20', ',', '-14', 'L', '200', ',', '200']
+        """
+        tokens = [token.strip() \
+                  for token in KeyPath._svg_path_pattern.split(path_str)]
+        return [token for token in tokens if token]
+
+    def get_bounds(self):
+        """
+        Compute the bounding box of the path.
+
+        Doctests:
+        # Simple move_to path, something inkscape would create.
+        >>> p = KeyPath.from_svg_path("m 100,200 10,-10 z")
+        >>> print(p.get_bounds())
+        Rect(x=100.0 y=190.0 w=10.0 h=10.0)
+        """
+
+        try:
+            xmin = xmax = self.commands[0][1][0]
+            ymin = ymax = self.commands[0][1][1]
+        except IndexError:
+            return Rect()
+
+        for command in self.commands:
+            coords = command[1]
+            for i in range(0, len(coords), 2):
+                x = coords[i]
+                y = coords[i+1]
+                if xmin > x:
+                    xmin = x
+                if xmax < x:
+                    xmax = x
+                if ymin > y:
+                    ymin = y
+                if ymax < y:
+                    ymax = y
+
+        return Rect(xmin, ymin, xmax - xmin, ymax - ymin)
+
+    def fit_in_rect(self, rect):
+        """
+        Scales and translates the path so that rect
+        becomes its new bounding box.
+        """
+        result = self.copy()
+        bounds = self.get_bounds()
+        scalex = rect.w / bounds.w
+        scaley = rect.h / bounds.h
+        dorgx, dorgy = bounds.get_center()
+        dx = rect.x - (dorgx + (bounds.x - dorgx) * scalex)
+        dy = rect.y - (dorgy + (bounds.y - dorgy) * scaley)
+
+        for op, coords in result.commands:
+            for i in range(0, len(coords), 2):
+                coords[i] = dx + dorgx + (coords[i] - dorgx) * scalex
+                coords[i+1] = dy + dorgy + (coords[i+1] - dorgy) * scaley
+
+        return result
+
+    def iter_polygons(self):
+        """
+        Loop through all independent polygons in the path.
+        Can't handle splines and arcs, everything has to
+        be polygons from here.
+        """
+        polygon = []
+
+        for op, coords in self.commands:
+
+            if op == self.LINE_TO:
+                polygon.extend(coords)
+
+            elif op == self.MOVE_TO:
+                polygon = []
+                polygon.extend(coords)
+
+            elif op == self.CLOSE_PATH:
+                yield polygon
+
+    def is_point_within(self, point):
+        for polygon in self.iter_polygons():
+            if self.is_point_in_polygon(polygon, point[0], point[1]):
+                return True
+
+    @staticmethod
+    def is_point_in_polygon(vertices, x, y):
+        c = False
+        n = len(vertices)
+
+        try:
+            x0 = vertices[n - 2]
+            y0 = vertices[n - 1]
+        except IndexError:
+            return False
+
+        for i in range(0, n, 2):
+            x1 = vertices[i]
+            y1 = vertices[i+1]
+            if (y1 <= y and y < y0 or y0 <= y and y < y1) and \
+               (x < (x0 - x1) * (y - y1) / (y0 - y1) + x1):
+                c = not c
+            x0 = x1
+            y0 = y1
+
+        return c
 
 
