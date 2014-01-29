@@ -9,7 +9,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="full-alpha"
    height="135"
-   width="391"
+   width="388"
    version="1.0"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="Full Keyboard-Alpha.svg"
@@ -23,19 +23,27 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1161"
+     inkscape:window-width="1586"
      inkscape:window-height="827"
      id="namedview3396"
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:zoom="2.1892583"
-     inkscape:cx="206.10424"
-     inkscape:cy="113.25941"
-     inkscape:window-x="485"
-     inkscape:window-y="245"
+     inkscape:zoom="6.5370904"
+     inkscape:cx="195.95249"
+     inkscape:cy="34.923146"
+     inkscape:window-x="50"
+     inkscape:window-y="33"
      inkscape:window-maximized="0"
-     inkscape:current-layer="full-alpha" />
+     inkscape:current-layer="full-alpha"
+     inkscape:object-paths="false"
+     inkscape:bbox-paths="false"
+     inkscape:snap-global="true"
+     inkscape:snap-nodes="false"
+     inkscape:snap-bbox-edge-midpoints="false"
+     inkscape:object-nodes="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-bbox-midpoints="false" />
   <defs
      id="defs4958">
     <filter
@@ -61,15 +69,15 @@
   <rect
      id="wordlist"
      height="15.965445"
-     width="369.96542"
+     width="366.96545"
      y="0.51727772"
      x="0.51727772"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:1.03455544" />
   <rect
      id="inputline"
-     style="fill:#e5d8b2;stroke:#000000"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
      height="18"
-     width="325"
+     width="322"
      y="19.5"
      x="19.5" />
   <rect
@@ -224,7 +232,7 @@
      height="18"
      width="23"
      y="116.5"
-     x="262.5"
+     x="259.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="LCTL"
@@ -271,10 +279,10 @@
   <rect
      id="BKSP"
      height="18"
-     width="38"
+     width="35"
      y="40.5"
      x="247.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994" />
   <rect
      id="CAPS"
      height="18"
@@ -285,24 +293,17 @@
   <rect
      id="BKSL"
      height="18"
-     width="28"
-     y="59.5"
-     x="257.5"
-     style="fill:#e5d8b2;stroke:#000000" />
-  <rect
-     id="RTRN"
-     height="18"
-     width="42"
+     width="18.344828"
      y="78.5"
      x="243.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1" />
   <rect
      id="MENU"
      height="18"
-     width="23"
+     width="22.999998"
      y="116.5"
-     x="238.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     x="235.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1" />
   <rect
      id="AD10"
      height="18"
@@ -474,24 +475,24 @@
   <rect
      id="RWIN"
      height="18"
-     width="23"
+     width="20"
      y="116.5"
      x="214.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994" />
   <rect
      id="SPCE"
      height="18"
      width="113"
      y="116.5"
      x="76.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1" />
   <rect
      id="RTSH"
      height="18"
-     width="50"
+     width="47"
      y="97.5"
      x="235.5"
-     style="fill:#e5d8b2;stroke:#000000" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1" />
   <rect
      id="LWIN"
      height="18"
@@ -511,70 +512,70 @@
      height="18"
      width="18"
      y="40.5"
-     x="288.5"
+     x="285.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="HOME"
      height="18"
      width="18"
      y="40.5"
-     x="307.5"
+     x="304.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="DELE"
      height="18"
      width="18"
      y="59.5"
-     x="288.5"
+     x="285.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="END"
      height="18"
      width="18"
      y="59.5"
-     x="307.5"
+     x="304.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="PGUP"
      height="18"
      width="18"
      y="40.5"
-     x="326.5"
+     x="323.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="PGDN"
      height="18"
      width="18"
      y="59.5"
-     x="326.5"
+     x="323.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="UP"
      height="18"
      width="18"
      y="97.5"
-     x="307.5"
+     x="304.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="DOWN"
      height="18"
      width="18"
      y="116.5"
-     x="307.5"
+     x="304.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="LEFT"
      height="18"
      width="18"
      y="116.5"
-     x="288.5"
+     x="285.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="RGHT"
      height="18"
      width="18"
      y="116.5"
-     x="326.5"
+     x="323.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="F10"
@@ -582,7 +583,7 @@
      height="18"
      width="18"
      y="19.5"
-     x="220" />
+     x="219" />
   <rect
      id="F3"
      style="fill:#e5d8b2;stroke:#000000"
@@ -610,21 +611,21 @@
      height="18"
      width="18"
      y="19.5"
-     x="258" />
+     x="257" />
   <rect
      id="F11"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="19.5"
-     x="239" />
+     x="238" />
   <rect
      id="F9"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="19.5"
-     x="201" />
+     x="200" />
   <rect
      id="F6"
      style="fill:#e5d8b2;stroke:#000000"
@@ -672,42 +673,42 @@
      height="18"
      width="18"
      y="19.5"
-     x="288.5"
+     x="285.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="Scroll"
      height="18"
      width="18"
      y="19.5"
-     x="307.5"
+     x="304.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="Pause"
      height="18"
      width="18"
      y="19.5"
-     x="326.5"
+     x="323.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="hide"
      height="18"
      width="23"
      y="19.5"
-     x="347.5"
+     x="344.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="move"
      height="18"
      width="23"
      y="40.5"
-     x="347.5"
+     x="344.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="showclick"
      height="18"
      width="23"
      y="59.5"
-     x="347.5"
+     x="344.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="layer0"
@@ -715,55 +716,14 @@
      height="27.490999"
      width="23"
      y="78.509003"
-     x="347.5" />
+     x="344.5" />
   <rect
      id="layer1"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
      height="27.490999"
      width="22.990999"
      y="107.009"
-     x="347.5" />
-  <g
-     id="click_helper_group"
-     style="opacity:0.5;filter:url(#filter3145)"
-     inkscape:label="#layer2"
-     transform="translate(0,-2)">
-    <rect
-       id="middleclick"
-       style="fill:#e5d8b2;stroke:#000000"
-       height="18"
-       width="18.5"
-       y="21.5"
-       x="247.5" />
-    <rect
-       id="secondaryclick"
-       style="fill:#e5d8b2;stroke:#000000"
-       height="18"
-       width="18.5"
-       y="21.5"
-       x="267" />
-    <rect
-       id="doubleclick"
-       style="fill:#e5d8b2;stroke:#000000"
-       height="18"
-       width="18"
-       y="80.5"
-       x="288.5" />
-    <rect
-       id="dragclick"
-       style="fill:#e5d8b2;stroke:#000000"
-       height="18"
-       width="18"
-       y="80.5"
-       x="307.5" />
-    <rect
-       id="hoverclick"
-       style="fill:#e5d8b2;stroke:#000000"
-       height="18"
-       width="18"
-       y="80.5"
-       x="326.5" />
-  </g>
+     x="344.5" />
   <rect
      id="prediction"
      height="16"
@@ -787,7 +747,7 @@
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.31794274" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.01971734"
-     x="352.50986"
+     x="347.5"
      y="0.50985956"
      width="17.980282"
      height="15.980283"
@@ -798,7 +758,7 @@
      height="18"
      width="23"
      y="19.5"
-     x="371.5"
+     x="368.5"
      style="fill:#e5d8b2;stroke:#000000"
      inkscape:label="" />
   <rect
@@ -806,19 +766,19 @@
      height="18"
      width="23"
      y="40.5"
-     x="371.5"
+     x="368.5"
      style="fill:#e5d8b2;stroke:#000000"
      inkscape:label="" />
   <rect
-     x="371.5"
+     x="368.5"
      y="59.324417"
      width="23"
      height="36.910427"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
      id="layer0.wordlist"
      inkscape:label="" />
   <rect
-     x="371.5"
+     x="368.5"
      y="97.589569"
      width="22.999626"
      height="36.910427"
@@ -831,6 +791,48 @@
      height="15.980283"
      width="17.980282"
      y="0.50985956"
-     x="333.50986"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.01971734" />
+     x="328.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1" />
+  <path
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     d="m 257.5,59.5 25,0 0,37 -19.65626,0 0,-19 -5.34374,0 z"
+     id="RTRN" />
+  <g
+     id="g4006">
+    <rect
+       id="doubleclick"
+       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
+       height="18"
+       width="18"
+       y="78.5"
+       x="285.5" />
+    <rect
+       id="dragclick"
+       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
+       height="18"
+       width="18"
+       y="78.5"
+       x="304.5" />
+    <rect
+       id="hoverclick"
+       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
+       height="18"
+       width="18"
+       y="78.5"
+       x="323.5" />
+    <rect
+       id="secondaryclick"
+       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
+       height="18"
+       width="17"
+       y="19.5"
+       x="247.5" />
+    <rect
+       id="middleclick"
+       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
+       height="18"
+       width="17"
+       y="19.5"
+       x="265.5" />
+  </g>
 </svg>
