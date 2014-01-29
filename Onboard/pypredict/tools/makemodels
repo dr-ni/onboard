@@ -44,6 +44,7 @@ LANGUAGES+="ro_RO "
 LANGUAGES+="da_DK "
 LANGUAGES+="el_GR "
 LANGUAGES+="sv_SE "
+LANGUAGES+="lb_LU "
 
 MODELDIR="models"
 RAWMODELDIR="../training/raw_models"
@@ -196,6 +197,10 @@ for lang in $LANGUAGES; do
 
         sv)
             PRUNE_FREQ=54,54,-1
+            ;;
+
+        lb)
+            PRUNE_FREQ=1,1,-1
             ;;
 
        *)
