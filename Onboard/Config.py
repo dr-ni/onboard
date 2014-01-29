@@ -116,7 +116,7 @@ class Config(ConfigObject):
     SUPERKEY_SIZE_GROUP = "super"
 
     # width of frame around onboard when window decoration is disabled
-    UNDECORATED_FRAME_WIDTH = 5.0
+    UNDECORATED_FRAME_WIDTH = 6.0
 
     # width of frame around popup windows
     POPUP_FRAME_WIDTH = 5.0
