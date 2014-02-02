@@ -10,10 +10,9 @@ try:
 except ImportError:
     pass
 
-from gi.repository.Gio   import Settings, SettingsBindFlags
-from gi.repository       import GLib, GObject, Gtk
+from gi.repository       import GObject
 
-from Onboard.utils       import DelayedLauncher, EventSource
+from Onboard.utils       import DelayedLauncher, EventSource, unicode_str
 from Onboard.ConfigUtils import ConfigObject
 from Onboard.XInput      import XIDeviceManager, XIEventType, XIEventMask
 
@@ -310,7 +309,7 @@ class CSFloatingSlave(ClickSimulator):
 
         if position is None:
             return
-        
+
         # single click
         if click_type == self.CLICK_TYPE_SINGLE:
             if event_type == XIEventType.ButtonPress:
@@ -392,10 +391,10 @@ class CSFloatingSlave(ClickSimulator):
 
 
 class CSMousetweaks(ConfigObject, ClickSimulator):
-    """ Mousetweaks settings, D-bus control and signal handling """
-
-    CLICK_TYPE_RIGHT  = 0
-    CLICK_TYPE_MIDDLE = 4
+    """
+    Abstract base class for mousetweaks settings,
+    D-bus control and signal handling.
+    """
 
     MOUSE_A11Y_SCHEMA_ID = "org.gnome.desktop.a11y.mouse"
     MOUSETWEAKS_SCHEMA_ID = "org.gnome.mousetweaks"
@@ -503,6 +502,43 @@ class CSMousetweaks(ConfigObject, ClickSimulator):
             self._click_type = click_type
             self._iface.Set(self.MT_DBUS_IFACE, self.MT_DBUS_PROP, click_type)
 
+    def _click_type_to_mt(self, button, click_type):
+        if click_type == self.CLICK_TYPE_SINGLE:
+            if button == self.PRIMARY_BUTTON:
+                return self.MT_CLICK_TYPE_PRIMARY
+            elif button == self.MIDDLE_BUTTON:
+                return self.MT_CLICK_TYPE_MIDDLE
+            elif button == self.SECONDARY_BUTTON:
+                return self.MT_CLICK_TYPE_SECONDARY
+            else:
+                return None
+        elif click_type == self.CLICK_TYPE_DOUBLE:
+            if button == self.PRIMARY_BUTTON:
+                return self.MT_CLICK_TYPE_DOUBLE
+            else:
+                return None
+        elif click_type == self.CLICK_TYPE_DRAG:
+            if button == self.PRIMARY_BUTTON:
+                return self.MT_CLICK_TYPE_DRAG
+            else:
+                return None
+        else:
+            return None
+
+    def _click_type_from_mt(self, mt_click_type):
+        if mt_click_type == self.MT_CLICK_TYPE_PRIMARY:
+            return self.PRIMARY_BUTTON, self.CLICK_TYPE_SINGLE
+        elif mt_click_type == self.MT_CLICK_TYPE_MIDDLE:
+            return self.MIDDLE_BUTTON, self.CLICK_TYPE_SINGLE
+        elif mt_click_type == self.MT_CLICK_TYPE_SECONDARY:
+            return self.SECONDARY_BUTTON, self.CLICK_TYPE_SINGLE
+        elif mt_click_type == self.MT_CLICK_TYPE_DOUBLE:
+            return self.PRIMARY_BUTTON, self.CLICK_TYPE_DOUBLE
+        elif mt_click_type == self.MT_CLICK_TYPE_DRAG:
+            return self.PRIMARY_BUTTON, self.CLICK_TYPE_DRAG
+        else:
+            return None, None
+
     ##########
     # Public
     ##########
@@ -533,25 +569,129 @@ class CSMousetweaks(ConfigObject, ClickSimulator):
         return True
 
     def map_primary_click(self, event_source, button, click_type):
-        mt_click_type = click_type
-        if button == self.SECONDARY_BUTTON:
-            mt_click_type = self.CLICK_TYPE_RIGHT
-        if button == self.MIDDLE_BUTTON:
-            mt_click_type = self.CLICK_TYPE_MIDDLE
-        self._set_mt_click_type(mt_click_type)
+        mt_click_type = self._click_type_to_mt(button, click_type)
+        if not mt_click_type is None:
+            self._set_mt_click_type(mt_click_type)
 
     def get_click_button(self):
         mt_click_type = self._get_mt_click_type()
-        if mt_click_type == self.CLICK_TYPE_RIGHT:
-            return self.SECONDARY_BUTTON
-        if mt_click_type == self.CLICK_TYPE_MIDDLE:
-            return self.MIDDLE_BUTTON
-        return self.PRIMARY_BUTTON
+        button, click_type = self._click_type_from_mt(mt_click_type)
+        return button
 
     def get_click_type(self):
         mt_click_type = self._get_mt_click_type()
-        if mt_click_type in [self.CLICK_TYPE_RIGHT, self.CLICK_TYPE_MIDDLE]:
-            return self.CLICK_TYPE_SINGLE
-        return mt_click_type
+        button, click_type = self._click_type_from_mt(mt_click_type)
+        return click_type
+
+
+class CSMousetweaks0(CSMousetweaks):
+    """
+    Mousetweaks, old API up to version 3.8
+    """
+
+    MT_CLICK_TYPE_PRIMARY = 3     # MT_DWELL_CLICK_TYPE_SINGLE
+    MT_CLICK_TYPE_SECONDARY  = 0  # MT_DWELL_CLICK_TYPE_RIGHT
+    MT_CLICK_TYPE_MIDDLE = 4      # MT_DWELL_CLICK_TYPE_MIDDLE
+    MT_CLICK_TYPE_DOUBLE = 2      # MT_DWELL_CLICK_TYPE_DOUBLE
+    MT_CLICK_TYPE_DRAG = 1        # MT_DWELL_CLICK_TYPE_DRAG
+
+    MOUSETWEAKS_SCHEMA_ID = "org.gnome.mousetweaks"
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        _logger.info("'{}' selected for mousetweaks up to version 3.8." \
+                        .format(self.__class__.__name__))
+
+    def init_click_type_window_visible(self, hide):
+        """ Init click selection window on startup. """
+        # remember state of mousetweaks click-selection window
+        self.old_click_type_window_visible = self.click_type_window_visible
+
+        if self.is_active() and hide:
+            self.click_type_window_visible = False
+
+    def restore_click_type_window_visible(self, show):
+        """ Restore click selection window on exit. """
+        if show:
+            self.click_type_window_visible = True
+        else:
+            self.click_type_window_visible = \
+                self.old_click_type_window_visible
+
+    def allow_system_click_type_window(self, allow, hide):
+        """
+        Called before hover click is activated and after it is deactivated.
+        """
+        # This assumes that mousetweaks.click_type_window_visible never
+        # changes between activation and deactivation of mousetweaks.
+        if allow:
+            self.click_type_window_visible = self.old_click_type_window_visible
+        else:
+            # hide the mousetweaks window when onboard's settings say so
+            if hide:
+                self.old_click_type_window_visible = \
+                            self.click_type_window_visible
+
+                self.click_type_window_visible = False
+
+    def on_hide_click_type_window_changed(self, hide):
+        """ GSettings property changed """
+        if self.is_active():
+            if hide:
+                self.click_type_window_visible = False
+            else:
+                self.click_type_window_visible = \
+                            self.old_click_type_window_visible
+
+
+class CSMousetweaks1(CSMousetweaks):
+    """
+    Mousetweaks, new API from version 3.10
+    """
+
+    MT_CLICK_TYPE_PRIMARY = 0
+    MT_CLICK_TYPE_MIDDLE = 1
+    MT_CLICK_TYPE_SECONDARY = 2
+    MT_CLICK_TYPE_DOUBLE = 3
+    MT_CLICK_TYPE_DRAG = 4
+
+    MOUSETWEAKS_SCHEMA_ID = "org.gnome.Mousetweaks"
+
+    _MT_HIDE_CLICKSELECTION_NAME  = "org.gnome.Mousetweaks.ClickSelection"
+
+    def __init__(self):
+        self._mt_hide_name_status = None
+        super(self.__class__, self).__init__()
+        _logger.info("'{}' selected for mousetweaks 3.10 or later." \
+                        .format(self.__class__.__name__))
+
+    def init_click_type_window_visible(self, hide):
+        """ Init click selection window on startup. """
+        self._hide_click_type_window(hide)
+
+    def restore_click_type_window_visible(self, show):
+        """ Restore the click selection window on exit. """
+        self._hide_click_type_window(False)
+
+    def allow_system_click_type_window(self, allow, hide):
+        """ called from hover click button """
+        self._hide_click_type_window(hide)
+
+    def on_hide_click_type_window_changed(self, hide):
+        self._hide_click_type_window(hide)
+
+    def _hide_click_type_window(self, hide):
+        """ Hide/unhide mousetweaks' native click selection window. """
+        try:
+            if hide:
+                if self._bus and self._mt_hide_name_status is None:
+                    self._mt_hide_name_status = \
+                       self._bus.request_name(self._MT_HIDE_CLICKSELECTION_NAME)
+            else:
+                if self._bus and self._mt_hide_name_status:
+                    self._bus.release_name(self._MT_HIDE_CLICKSELECTION_NAME)
+                    self._mt_hide_name_status = None
+        except dbus.DBusException as e:
+            _logger.error(unicode_str(e))
 
 

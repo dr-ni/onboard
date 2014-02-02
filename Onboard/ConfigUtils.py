@@ -59,7 +59,7 @@ class ConfigObject(object):
         # check if the gsettings schema is installed
         if not self.schema in Gio.Settings.list_schemas():
             raise SchemaError(_("gsettings schema for '{}' is not installed").
-                                                             format(self.schema))
+                                                          format(self.schema))
 
         # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.schema)

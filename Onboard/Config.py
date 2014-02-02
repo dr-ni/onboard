@@ -10,14 +10,14 @@ import sys
 from shutil import copytree
 from optparse import OptionParser
 
-from gi.repository import GLib, Gtk, Gio
+from gi.repository import Gtk, Gio
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree
 from Onboard.definitions    import *
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
-from Onboard.ClickSimulator import CSMousetweaks
+from Onboard.ClickSimulator import CSMousetweaks0, CSMousetweaks1
 from Onboard.Exceptions     import SchemaError
 
 ### Logging ###
@@ -319,14 +319,10 @@ class Config(ConfigObject):
         # misc initializations
         self._last_snippets = dict(self.snippets)  # store a copy
 
-        # remember state of mousetweaks click-type window
+        # init state of mousetweaks' click-type window
         if self.mousetweaks:
-            self.mousetweaks.old_click_type_window_visible = \
-                          self.mousetweaks.click_type_window_visible
-
-            if self.mousetweaks.is_active() and \
-                self.universal_access.hide_click_type_window:
-                self.mousetweaks.click_type_window_visible = False
+            self.mousetweaks.init_click_type_window_visible(
+                self.universal_access.hide_click_type_window)
 
         # remember if we are running under GDM
         self.running_under_gdm = 'RUNNING_UNDER_GDM' in os.environ
@@ -350,15 +346,9 @@ class Config(ConfigObject):
 
     def final_cleanup(self):
         if self.mousetweaks:
-            if self.xid_mode:
-                self.mousetweaks.click_type_window_visible = \
-                        self.mousetweaks.old_click_type_window_visible
-            else:
-                if self.universal_access.enable_click_type_window_on_exit:
-                    self.mousetweaks.click_type_window_visible = True
-                else:
-                    self.mousetweaks.click_type_window_visible = \
-                        self.mousetweaks.old_click_type_window_visible
+            self.mousetweaks.restore_click_type_window_visible(
+                self.universal_access.enable_click_type_window_on_exit and \
+                not self.xid_mode)
 
     def _init_keys(self):
         """ Create key descriptions """
@@ -411,12 +401,18 @@ class Config(ConfigObject):
                           self.scanner,
                           self.typing_assistance]
 
-        try:
-            self.mousetweaks = CSMousetweaks()
-            self.children.append(self.mousetweaks)
-        except (SchemaError, ImportError) as e:
-            _logger.warning(unicode_str(e))
-            self.mousetweaks = None
+        for _class in [CSMousetweaks1, CSMousetweaks0]:
+            _class.MOUSETWEAKS_SCHEMA_ID
+            try:
+                self.mousetweaks = _class()
+                self.children.append(self.mousetweaks)
+                break
+            except (SchemaError, ImportError) as e:
+                _logger.info(unicode_str(e))
+                self.mousetweaks = None
+        if self.mousetweaks is None:
+            _logger.warning("mousetweaks GSettings schema not found, "
+                            "mousetweaks integration disabled.")
 
     def init_from_gsettings(self):
         """
@@ -692,32 +688,14 @@ class Config(ConfigObject):
     def get_system_model_dir(self):
         return os.path.join(self.install_dir, "models")
 
-    def allow_system_click_type_window(self, allow):
-        """ called from hover click button """
-        if not self.mousetweaks:
-            return
-
-        # This assumes that mousetweaks.click_type_window_visible never
-        # changes between activation and deactivation of mousetweaks.
-        if allow:
-            self.mousetweaks.click_type_window_visible = \
-                self.mousetweaks.old_click_type_window_visible
-        else:
-            # hide the mousetweaks window when onboard's settings say so
-            if self.universal_access.hide_click_type_window:
-
-                self.mousetweaks.old_click_type_window_visible = \
-                            self.mousetweaks.click_type_window_visible
-
-                self.mousetweaks.click_type_window_visible = False
-
     def enable_hover_click(self, enable):
+        hide = self.universal_access.hide_click_type_window
         if enable:
-            self.allow_system_click_type_window(False)
+            self.mousetweaks.allow_system_click_type_window(False, hide)
             self.mousetweaks.set_active(True)
         else:
             self.mousetweaks.set_active(False)
-            self.allow_system_click_type_window(True)
+            self.mousetweaks.allow_system_click_type_window(True, hide)
 
     def is_hover_click_active(self):
         return bool(self.mousetweaks) and self.mousetweaks.is_active()
@@ -1205,15 +1183,9 @@ class ConfigUniversalAccess(ConfigObject):
     def _post_notify_hide_click_type_window(self):
         """ called when changed in gsettings (preferences window) """
         mousetweaks = self.parent.mousetweaks
-
-        if not mousetweaks:
-            return
-        if mousetweaks.is_active():
-            if self.hide_click_type_window:
-                mousetweaks.click_type_window_visible = False
-            else:
-                mousetweaks.click_type_window_visible = \
-                            mousetweaks.old_click_type_window_visible
+        if mousetweaks:
+            mousetweaks.on_hide_click_type_window_changed(
+                self.hide_click_type_window)
 
 
 class ConfigTheme(ConfigObject):

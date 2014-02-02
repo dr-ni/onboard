@@ -24,10 +24,9 @@ from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
-from Onboard.XInput          import XIDeviceManager, XIEventType, XIEventMask
+from Onboard.XInput          import XIDeviceManager, XIEventType
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
-                                    exists_in_path, \
                                     unicode_str, open_utf8
 
 app = "onboard"

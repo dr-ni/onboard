@@ -426,7 +426,8 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
         <key name="enable-click-type-window-on-exit" type="b">
             <default>true</default>
             <summary>Enable click-type window on exit</summary>
-            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
+            <description>Always enable the system provided window for click-type selection when exiting onboard.
+This key is deprecated and has no effect with mousetweaks version 3.10.0 or later.</description>
         </key>
     </schema>
 
