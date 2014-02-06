@@ -3,7 +3,7 @@
 
     <include file='key_defs.xml'/>
 
-    <box spacing='3' orientation="vertical">
+    <box border='0.5' spacing='3' orientation="vertical">
 
         <!--- word suggestions -->
         <panel filename='Full Keyboard-Alpha.svg' scan_priority="1">
