@@ -29,21 +29,23 @@
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:zoom="6.5370904"
-     inkscape:cx="195.95249"
-     inkscape:cy="34.923146"
-     inkscape:window-x="50"
-     inkscape:window-y="33"
+     inkscape:zoom="2.7984694"
+     inkscape:cx="196"
+     inkscape:cy="53.146273"
+     inkscape:window-x="37"
+     inkscape:window-y="48"
      inkscape:window-maximized="0"
      inkscape:current-layer="full-alpha"
      inkscape:object-paths="false"
      inkscape:bbox-paths="false"
      inkscape:snap-global="true"
-     inkscape:snap-nodes="false"
+     inkscape:snap-nodes="true"
      inkscape:snap-bbox-edge-midpoints="false"
      inkscape:object-nodes="true"
      inkscape:snap-smooth-nodes="true"
-     inkscape:snap-bbox-midpoints="false" />
+     inkscape:snap-bbox-midpoints="false"
+     showguides="true"
+     inkscape:guide-bbox="true" />
   <defs
      id="defs4958">
     <filter
@@ -293,10 +295,10 @@
   <rect
      id="BKSL"
      height="18"
-     width="18.344828"
+     width="18"
      y="78.5"
      x="243.5"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994" />
   <rect
      id="MENU"
      height="18"
@@ -713,16 +715,16 @@
   <rect
      id="layer0"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
-     height="27.490999"
+     height="27.5"
      width="23"
-     y="78.509003"
+     y="78.5"
      x="344.5" />
   <rect
      id="layer1"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
-     height="27.490999"
-     width="22.990999"
-     y="107.009"
+     height="27.5"
+     width="23"
+     y="107.0"
      x="344.5" />
   <rect
      id="prediction"
@@ -793,46 +795,63 @@
      y="0.50985956"
      x="328.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1" />
-  <path
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
-     d="m 257.5,59.5 25,0 0,37 -19.65626,0 0,-19 -5.34374,0 z"
-     id="RTRN" />
+     id="g4172">
+  <rect
+     id="doubleclick"
+     style="fill:#e4700d;fill-opacity:0.5022831;stroke:#000000"
+     height="18"
+     width="18"
+     y="78.5"
+     x="285.5" />
+  <rect
+     id="dragclick"
+     style="fill:#e4700d;fill-opacity:0.5022831;stroke:#000000"
+     height="18"
+     width="18"
+     y="78.5"
+     x="304.5" />
+  <rect
+     id="hoverclick"
+     style="fill:#e4700d;fill-opacity:0.5022831;stroke:#000000"
+     height="18"
+     width="18"
+     y="78.5"
+     x="323.5" />
+  <rect
+     id="secondaryclick"
+     style="fill:#e4700d;fill-opacity:0.5022831;stroke:#000000;stroke-width:0.99999994000000003"
+     height="18"
+     width="17"
+     y="19.5"
+     x="247.5" />
+  <rect
+     id="middleclick"
+     style="fill:#e4700d;fill-opacity:0.5022831;stroke:#000000;stroke-width:0.99999994000000003"
+     height="18"
+     width="17"
+     y="19.5"
+     x="265.5" />
   <g
-     id="g4006">
-    <rect
-       id="doubleclick"
-       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
-       height="18"
-       width="18"
-       y="78.5"
-       x="285.5" />
-    <rect
-       id="dragclick"
-       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
-       height="18"
-       width="18"
-       y="78.5"
-       x="304.5" />
-    <rect
-       id="hoverclick"
-       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;filter:url(#filter3145)"
-       height="18"
-       width="18"
-       y="78.5"
-       x="323.5" />
-    <rect
-       id="secondaryclick"
-       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
-       height="18"
-       width="17"
-       y="19.5"
-       x="247.5" />
-    <rect
-       id="middleclick"
-       style="opacity:0.5;fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
-       height="18"
-       width="17"
-       y="19.5"
-       x="265.5" />
+     id="RTRN">
+    <path
+       sodipodi:nodetypes="ccccccc"
+       inkscape:connector-curvature="0"
+       id="RTRN_100pct"
+       d="m 257.5,59.5 25,0 0,37 -20,0 0,-19 -5,0 z"
+       style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1" />
+    <path
+       inkscape:label="#RTRN_50pct"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:connector-curvature="0"
+       id="RTRN_50pct"
+       d="m 262.25,64.25 15.5,0 0,27.5 -10.5,0 0,-19 -5,0 z"
+       style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1;enable-background:new;opacity:0.2">
+      <desc
+         id="desc4182">Scaled-down key at 50% key_size.
+
+Group this with the full size return key to enable interpolation between these two paths when key_size is applied.
+
+To draw this and similar keys, first create a scaffold of rectangles that closest resemble the desired key shape at full size. Then shrink all sides of those rectangles by 1/4 of their width or heigth, whichever is smaller. Draw the final shape by snapping vertices to the rectangle scaffold and delete the rectangles.</desc>
+    </path>
   </g>
 </svg>
