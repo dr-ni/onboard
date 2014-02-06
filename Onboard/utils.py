@@ -491,7 +491,7 @@ class Rect:
 
     def __str__(self):
         return "Rect(" + \
-            " ".join(a+"="+str(getattr(self, a)) for a in self.attributes) + \
+            " ".join("{}={:.2f}".format(a, getattr(self, a)) for a in self.attributes) + \
             ")"
 
     def __eq__(self, other):

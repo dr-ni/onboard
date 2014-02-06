@@ -9,7 +9,9 @@ from __future__ import division, print_function, unicode_literals
 from math import pi
 import re
 
-from Onboard.utils import Rect, LABEL_MODIFIERS, Modifiers
+from Onboard.utils import Rect, LABEL_MODIFIERS, Modifiers, \
+                          polygon_to_rounded_path
+
 from Onboard.Layout import LayoutItem
 
 ### Logging ###
@@ -356,8 +358,8 @@ class KeyCommon(LayoutItem):
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
-    # optional geometry for keys with arbitrary shapes
-    path = None
+    # optional path data for keys with arbitrary shapes
+    geometry = None
 
     # size of rounded corners at 100% round_rect_radius
     chamfer_size = None
@@ -480,28 +482,20 @@ class RectKeyCommon(KeyCommon):
 
         # fake physical key action
         if self.pressed:
-            key_style = self.get_style()
-            if key_style == "gradient":
-                k = 0.2
-                rect.x += k
-                rect.y += 2 * k
-                rect.w - 2 * k
-                rect.h - k
-            elif key_style == "dish":
-                k = 0.45
-                rect.x += k
-                rect.y += 2 * k
-                rect.w - 2 * k
-                rect.h - k
+            dx, dy, dw, dh = self.get_pressed_deltas()
+            rect.x += dx
+            rect.y += dy
+            rect.w += dw
+            rect.h += dh
 
         return self._apply_key_size(rect, horizontal)
 
     @staticmethod
     def _apply_key_size(rect, horizontal = None):
         """ shrink keys to key_size """
-        size = config.theme_settings.key_size / 100.0
-        bx = rect.w * (1.0 - size) / 2.0
-        by = rect.h * (1.0 - size) / 2.0
+        scale = (1.0 - config.theme_settings.key_size / 100.0) * 0.5
+        bx = rect.w * scale
+        by = rect.h * scale
 
         if horizontal is None:
             horizontal = rect.h < rect.w
@@ -515,6 +509,19 @@ class RectKeyCommon(KeyCommon):
 
         return rect.deflate(bx, by)
 
+    def get_pressed_deltas(self):
+        """
+        dx, dy, dw, dh for fake physical key action of pressed keys.
+        Logical coordinate system.
+        """
+        key_style = self.get_style()
+        if key_style == "gradient":
+            k = 0.2
+        elif key_style == "dish":
+            k = 0.45
+        else:
+            k = 0.0
+        return k, 2*k, 0.0, 0.0
 
     def get_label_rect(self, rect = None):
         """ Label area in logical coordinates """
@@ -533,22 +540,24 @@ class RectKeyCommon(KeyCommon):
         return self.context.log_to_canvas_rect(log_rect)
 
     def get_border_path(self):
-        """ Original path, including border. """
-        return self.path
+        """ Original path including border in logical coordinates. """
+        return self.geometry.get_full_size_path()
 
     def get_path(self):
         """
         Path of the key geometry in logical coordinates.
         Key size and fake press movement are applied.
         """
-        return self.path.fit_in_rect(self.get_rect())
-
-    def get_canvas_path(self):
-        path = self.get_path()
-        return self.context.log_to_canvas_path(path)
+        offset_x, offset_y, size_x, size_y = self.get_key_offset_size()
+        return self.geometry.get_transformed_path(offset_x, offset_y,
+                                                  size_x, size_y)
 
     def get_canvas_border_path(self):
         path = self.get_border_path()
+        return self.context.log_to_canvas_path(path)
+
+    def get_canvas_path(self):
+        path = self.get_path()
         return self.context.log_to_canvas_path(path)
 
     def get_hit_path(self):
@@ -559,27 +568,37 @@ class RectKeyCommon(KeyCommon):
         if not self.chamfer_size is None:
             return self.chamfer_size
         if not rect:
-            if self.path:
-                rect = self.path.get_bounds()
+            if self.geometry:
+                rect = self.get_border_path().get_bounds()
             else:
                 rect = self.get_rect()
         return min(rect.w, rect.h) * 0.5
 
-    def get_path_polygons(self, bounds):
-        """
-        Unify access to the key geometry.
-        If there is no path geometry, the key rectangle
-        is returned as polygon.
-        """
-        if self.path:
-            path = self.path.fit_in_rect(bounds)
-            return list(path.iter_polygons())
-        else:
-            l = bounds.x
-            t = bounds.y
-            r = bounds.right()
-            b = bounds.bottom()
-            return [[l, t, r, t, r, b, l, b]]
+    def get_key_offset_size(self, geometry = None):
+        size_x = size_y = config.theme_settings.key_size / 100.0
+        offset_x = offset_y = 0.0
+
+        if self.pressed:
+            offset_x, offset_y, dw, dh = self.get_pressed_deltas()
+            if dw != 0.0 or dh != 0.0:
+                if geometry is None:
+                    geometry = self.geometry
+                dw, dh = geometry.scale_log_to_size((dw, dh))
+                size_x += dw * 0.5
+                size_y += dh * 0.5
+
+        return offset_x, offset_y, size_x, size_y
+
+    def get_canvas_polygons(self, geometry,
+                          offset_x, offset_y, size_x, size_y,
+                          radius_pct, chamfer_size):
+        path = geometry.get_transformed_path(offset_x, offset_y, size_x, size_y)
+        canvas_path = self.context.log_to_canvas_path(path)
+        polygons = list(canvas_path.iter_polygons())
+        polygon_paths = \
+            [polygon_to_rounded_path(p, radius_pct, chamfer_size) \
+            for p in polygons]
+        return polygons, polygon_paths
 
 
 class InputlineKeyCommon(RectKeyCommon):
@@ -596,11 +615,124 @@ class InputlineKeyCommon(RectKeyCommon):
         return ""
 
 
+class KeyGeometry:
+    """
+    Full description of a key's shape.
+
+    This class generates path variants for a given key_size by path
+    interpolation. This allows for key_size dependent shape changes,
+    controlled solely by a SVG layout file. See 'Return' key in
+    'Full Keyboard' layout for an example.
+    """
+
+    path0 = None          # KeyPath at 100% size
+    path1 = None          # KepPath at 50% size, optional
+
+    @staticmethod
+    def from_paths(paths):
+        assert(len(paths) >= 1)
+
+        path0 = paths[0]
+        if len(paths) >= 2:
+            path1 = paths[1]
+
+            # Equal number of path segments?
+            if len(path0.segments) != len(path1.segments):
+                raise ValueError(
+                    "paths to interpolate differ in number of segments "
+                    "({} vs. {})" \
+                        .format(len(path0.segments), len(path1.segments)))
+
+            # Same operations in all path segments?
+            for i in range(len(path0.segments)):
+                op0, coords0 = path0.segments[i]
+                op1, coords1 = path1.segments[i]
+                if op0 != op1:
+                    raise ValueError(
+                        "paths to interpolate have different operations "
+                        "at segment {} (op. {} vs. op. {})" \
+                            .format(i, op0, op1))
+
+        geometry = KeyGeometry()
+        geometry.path0 = path0
+        geometry.path1 = path1
+        return geometry
+
+    @staticmethod
+    def from_rect(rect):
+        geometry = KeyGeometry()
+        geometry.path0 = KeyPath.from_rect(rect)
+        return geometry
+
+    def get_transformed_path(self, offset_x = 0.0, offset_y = 0.0,
+                             size_x = 1.0, size_y = 1.0):
+        """
+        Everything in the logical coordinate system.
+        size: 1.0 => path0, 0.5 => path1
+        """
+        path0 = self.path0
+        path1 = self.path1
+        if path1:
+            pos_x = (1 - size_x) * 2.0
+            pos_y = (1 - size_y) * 2.0
+            return path0.linint(path1, pos_x, pos_y, offset_x, offset_y)
+        else:
+            r0 = self.get_full_size_bounds()
+            r1 = self.get_half_size_bounds()
+            rect = r1.inflate((size_x - 0.5) * (r0.w - r1.w),
+                              (size_y - 0.5) * (r0.h - r1.h))
+            rect.x += offset_x
+            rect.y += offset_y
+            return path0.fit_in_rect(rect)
+
+    def get_full_size_path(self):
+        return self.path0
+
+    def get_full_size_bounds(self):
+        """
+        Bounding box at size 1.0.
+        """
+        return self.path0.get_bounds()
+
+    def get_half_size_bounds(self):
+        """
+        Bounding box at size 0.5.
+        """
+        path1 = self.path1
+        if path1:
+            rect = path1.get_bounds()
+        else:
+            rect = self.path0.get_bounds()
+            if rect.h < rect.w:
+                dx = dy = rect.h * 0.25
+            else:
+                dy = dx = rect.w * 0.25
+            rect = rect.deflate(dx, dy)
+        return rect
+
+    def scale_log_to_size(self, v):
+        """ Scale from logical distances to key size. """
+        r0 = self.get_full_size_bounds()
+        r1 = self.get_half_size_bounds()
+        log_h = (r0.h - r1.h) * 2.0
+        log_w = (r0.w - r1.w) * 2.0
+        return (v[0] / log_h,
+                v[1] / log_w)
+
+    def scale_size_to_log(self, v):
+        """ Scale from logical distances to key size. """
+        r0 = self.get_full_size_bounds()
+        r1 = self.get_half_size_bounds()
+        log_h = (r0.h - r1.h) * 2.0
+        log_w = (r0.w - r1.w) * 2.0
+        return (v[0] * log_h,
+                v[1] * log_w)
+
+
 class KeyPath:
     """
-    Cairo-friendly geometry description for non-rectangular keys.
-    Currently there is support for straight line-loops/polygons, but
-    not for arcs and splines.
+    Cairo-friendly path description for non-rectangular keys.
+    Can handle straight line-loops/polygons, but not arcs and splines.
     """
     (
         MOVE_TO,
@@ -611,7 +743,7 @@ class KeyPath:
     _last_abs_pos = (0.0, 0.0)
 
     def __init__(self):
-        self.commands = []
+        self.segments = []   # normalized list of path segments (all absolute)
 
     @staticmethod
     def from_svg_path(path_str):
@@ -619,12 +751,24 @@ class KeyPath:
         path.append_svg_path(path_str)
         return path
 
+    @staticmethod
+    def from_rect(rect):
+        x0 = rect.x
+        y0 = rect.y
+        x1 = rect.right()
+        y1 = rect.bottom()
+        path = KeyPath()
+        path.segments = [[KeyPath.MOVE_TO, [x0, y0]],
+                         [KeyPath.LINE_TO, [x1, y0, x1, y1, x0, y1]],
+                         [KeyPath.CLOSE_PATH, []]]
+        return path
+
     _svg_path_pattern = re.compile("([+-]?[0-9.]*)")
 
     def copy(self):
         result = KeyPath()
-        for op, coords in self.commands:
-            result.commands.append([op, coords[:]])
+        for op, coords in self.segments:
+            result.segments.append([op, coords[:]])
         return result
 
     def append_svg_path(self, path_str):
@@ -634,22 +778,22 @@ class KeyPath:
         Doctests:
         # absolute move_to command
         >>> p = KeyPath.from_svg_path("M 100 200 120 -220")
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100.0, 200.0]], [1, [120.0, -220.0]]]
 
         # relative move_to command
         >>> p = KeyPath.from_svg_path("m 100 200 10 -10")
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100.0, 200.0]], [1, [110.0, 190.0]]]
 
-        # relative move_to and close_path commands
+        # relative move_to and close_path segments
         >>> p = KeyPath.from_svg_path("m 100 200 10 -10 z")
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100.0, 200.0]], [1, [110.0, 190.0]], [2, []]]
 
         # spaces and commas and are optional where possible
         >>> p = KeyPath.from_svg_path("m100,200 10-10z")
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100.0, 200.0]], [1, [110.0, 190.0]], [2, []]]
         """
 
@@ -686,34 +830,34 @@ class KeyPath:
         # first lowercase move_to position is absolute
         >>> p = KeyPath()
         >>> p.append_command("m", [100, 200])
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100, 200]]]
 
-        # move_to commands become line_to commands after the first position
+        # move_to segments become line_to segments after the first position
         >>> p = KeyPath()
         >>> p.append_command("M", [100, 200, 110, 190])
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100, 200]], [1, [110, 190]]]
 
         # further lowercase move_to positions are relative, must become absolute
         >>> p = KeyPath()
         >>> p.append_command("m", [100, 200, 10, -10, 10, -10])
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100, 200]], [1, [110, 190, 120, 180]]]
 
-        # further lowercase commands must still be become absolute
+        # further lowercase segments must still be become absolute
         >>> p = KeyPath()
         >>> p.append_command("m", [100, 200, 10, -10, 10, -10])
         >>> p.append_command("l", [1, -1, 1, -1])
-        >>> print(p.commands)
+        >>> print(p.segments)
         [[0, [100, 200]], [1, [110, 190, 120, 180]], [1, [121, 179, 122, 178]]]
         """
 
-        # Convert lowercase commands from relative to absolute coordinates.
+        # Convert lowercase segments from relative to absolute coordinates.
         if cmd_str in ("m", "l"):
 
             # Don't convert the very first coordinate, it is already absolute.
-            if self.commands:
+            if self.segments:
                 start = 0
                 x, y = self._last_abs_pos
             else:
@@ -728,15 +872,15 @@ class KeyPath:
 
         cmd = cmd_str.lower()
         if cmd == "m":
-            self.commands.append([self.MOVE_TO, coords[:2]])
+            self.segments.append([self.MOVE_TO, coords[:2]])
             if len(coords) > 2:
-                self.commands.append([self.LINE_TO, coords[2:]])
+                self.segments.append([self.LINE_TO, coords[2:]])
 
         elif cmd == "l":
-            self.commands.append([self.LINE_TO, coords])
+            self.segments.append([self.LINE_TO, coords])
 
         elif cmd == "z":
-            self.commands.append([self.CLOSE_PATH, []])
+            self.segments.append([self.CLOSE_PATH, []])
 
         # remember last absolute position
         if len(coords) >= 2:
@@ -779,12 +923,12 @@ class KeyPath:
         """
 
         try:
-            xmin = xmax = self.commands[0][1][0]
-            ymin = ymax = self.commands[0][1][1]
+            xmin = xmax = self.segments[0][1][0]
+            ymin = ymax = self.segments[0][1][1]
         except IndexError:
             return Rect()
 
-        for command in self.commands:
+        for command in self.segments:
             coords = command[1]
             for i in range(0, len(coords), 2):
                 x = coords[i]
@@ -800,6 +944,13 @@ class KeyPath:
 
         return Rect(xmin, ymin, xmax - xmin, ymax - ymin)
 
+    def inflate(self, dx, dy = None):
+        """
+        Returns a new path which is larger by dx and dy on all sides.
+        """
+        rect = self.get_bounds().inflate(dx, dy)
+        return self.fit_in_rect(rect)
+
     def fit_in_rect(self, rect):
         """
         Scales and translates the path so that rect
@@ -813,10 +964,35 @@ class KeyPath:
         dx = rect.x - (dorgx + (bounds.x - dorgx) * scalex)
         dy = rect.y - (dorgy + (bounds.y - dorgy) * scaley)
 
-        for op, coords in result.commands:
+        for op, coords in result.segments:
             for i in range(0, len(coords), 2):
                 coords[i] = dx + dorgx + (coords[i] - dorgx) * scalex
                 coords[i+1] = dy + dorgy + (coords[i+1] - dorgy) * scaley
+
+        return result
+
+    def linint(self, path1, pos_x = 1.0, pos_y = 1.0,
+               offset_x = 0.0, offset_y = 0.0):
+        """
+        Interpolate between self and path1.
+        Paths must have the same structure (length and operations).
+        pos: 0.0 = self, 1.0 = path1.
+        """
+        result = self.copy()
+        segments = result.segments
+        segments1 = path1.segments
+        for i in range(len(segments)):
+            op, coords = segments[i]
+            op1, coords1 = segments1[i]
+            for j in range(0, len(coords), 2):
+                x = coords[j]
+                y = coords[j+1]
+                x1 = coords1[j]
+                y1 = coords1[j+1]
+                dx = x1 - x
+                dy = y1 - y
+                coords[j] = x + pos_x * dx + offset_x
+                coords[j+1] = y + pos_y * dy + offset_y
 
         return result
 
@@ -828,7 +1004,7 @@ class KeyPath:
         """
         polygon = []
 
-        for op, coords in self.commands:
+        for op, coords in self.segments:
 
             if op == self.LINE_TO:
                 polygon.extend(coords)

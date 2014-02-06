@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+import time
 import gc
 from contextlib import contextmanager
 

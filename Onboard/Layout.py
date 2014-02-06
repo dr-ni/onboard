@@ -74,10 +74,14 @@ class KeyContext(object):
                     self.scale_canvas_to_log_y(rect.h))
 
     def canvas_to_log_x(self, x):
-        return x * self.log_rect.w / self.canvas_rect.w + self.log_rect.x
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return (x - canvas_rect.x) * log_rect.w / canvas_rect.w + log_rect.x
 
     def canvas_to_log_y(self, y):
-        return y * self.log_rect.h / self.canvas_rect.h + self.log_rect.y
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return (y - canvas_rect.y) * log_rect.h / canvas_rect.h + log_rect.y
 
 
     def scale_canvas_to_log_x(self, x):
@@ -90,7 +94,7 @@ class KeyContext(object):
         result = path.copy()
         log_to_canvas_x = self.log_to_canvas_x
         log_to_canvas_y = self.log_to_canvas_y
-        for op, coords in result.commands:
+        for op, coords in result.segments:
             for i in range(0, len(coords), 2):
                 coords[i]   = log_to_canvas_x(coords[i])
                 coords[i+1] = log_to_canvas_y(coords[i+1])
@@ -260,10 +264,10 @@ class LayoutRoot:
         x, y = point
         hit_rects = self._get_hit_rects(active_layer)
         for x0, y0, x1, y1, k in hit_rects:
-            # Inlined test, i.e. not using Rect.is_point_within, for speed.
+            # Inlined test, not using Rect.is_point_within for speed.
             if x >= x0 and x < x1 and \
                y >= y0 and y < y1:
-                if k.path is None or \
+                if k.geometry is None or \
                    k.get_hit_path().is_point_within(point):
                     key = k
                     break

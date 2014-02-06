@@ -2,7 +2,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import time
 from math import pi, sin, cos, sqrt
 
 import cairo
@@ -13,7 +12,7 @@ from Onboard.WindowUtils import DwellProgress
 from Onboard.utils       import brighten, unicode_str, \
                                 gradient_line, drop_shadow, \
                                 roundrect_curve, rounded_path, \
-                                polygon_to_rounded_path
+                                rounded_polygon_path_to_cairo_path
 
 ### Logging ###
 import logging
@@ -162,7 +161,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if not self.show_face and not self.show_border:
             return
 
-        rect = self.get_canvas_rect()
         if lod == LOD.FULL and self.show_border:
             scale = config.theme_settings.key_stroke_width / 100.0
             if scale:
@@ -180,16 +178,16 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         key_style = self.get_style()
         if key_style == "flat":
-            self.draw_flat_key(cr, rect, fill, line_width)
+            self.draw_flat_key(cr, fill, line_width)
 
         elif key_style == "gradient":
-            self.draw_gradient_key(cr, rect, fill, line_width, lod)
+            self.draw_gradient_key(cr, fill, line_width, lod)
 
         elif key_style == "dish":
-            self.draw_dish_key(cr, rect, fill, line_width, lod)
+            self.draw_dish_key(cr, fill, line_width, lod)
 
-    def draw_flat_key(self, cr, rect, fill, line_width):
-        self._build_path(cr, rect)
+    def draw_flat_key(self, cr, fill, line_width):
+        self._build_canvas_path(cr)
 
         if self.show_face:
             cr.set_source_rgba(*fill)
@@ -203,13 +201,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             cr.set_line_width(line_width)
             cr.stroke()
 
-    def draw_gradient_key(self, cr, rect, fill, line_width, lod):
+    def draw_gradient_key(self, cr, fill, line_width, lod):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
-        self._build_path(cr, rect)
+        rect = self.get_canvas_rect()
+        self._build_canvas_path(cr, rect)
         gline = gradient_line(rect, alpha)
 
         # fill
@@ -248,165 +247,76 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             cr.set_line_width(line_width)
         cr.stroke()
 
-    def draw_dish_key(self, cr, rect, fill, line_width, lod):
+    def draw_dish_key(self, cr, fill, line_width, lod):
+        canvas_rect = self.get_canvas_rect()
+        if self.geometry:
+            geometry = self.geometry
+        else:
+            geometry = KeyGeometry.from_rect(self.get_border_rect())
+        size_scale_x, size_scale_y = geometry.scale_log_to_size((1.0, 1.0))
+
         # compensate for smaller size due to missing stroke
-        rect = rect.inflate(1.0)
+        canvas_rect = canvas_rect.inflate(1.0)
 
         # parameters for the base path
-        radius_pct = config.theme_settings.roundrect_radius
-        radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
-        chamfer_size = self.get_chamfer_size()
-        chamfer_size = self.context.scale_log_to_canvas_y(chamfer_size)
-        polygons = self.get_path_polygons(rect)
-        polygon_paths = [polygon_to_rounded_path(p, radius_pct, chamfer_size) \
-                         for p in polygons]
-
         base_rgba = brighten(-0.200, *fill)
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        light_dir = self.get_light_direction()
-        light_dir -= pi / 2   # 0 = light from top
+        light_dir = self.get_light_direction() - pi * 0.5  # 0 = light from top
         lightx = cos(light_dir)
         lighty = sin(light_dir)
 
+        key_offset_x, key_offset_y, key_size_x, key_size_y = \
+                                            self.get_key_offset_size(geometry)
+        radius_pct = max(config.theme_settings.roundrect_radius, 2)
+        radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
+        chamfer_size = self.get_chamfer_size()
+        chamfer_size = (self.context.scale_log_to_canvas_x(chamfer_size) +
+                        self.context.scale_log_to_canvas_y(chamfer_size)) * 0.5
+
         # parameters for the top path, key face
-        scale  = config.theme_settings.key_stroke_width / 100.0
         border = config.DISH_KEY_BORDER
-        border = (border[0] * scale, border[1] * scale)
-        border = self.context.scale_log_to_canvas(border)
-        offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
-        rect_top = rect.deflate(*border).offset(0, -offset_top)
-        rect_top.w = max(rect_top.w, 0.0)
-        rect_top.h = max(rect_top.h, 0.0)
-        top_radius_scale = rect_top.h / float(rect.h)
-        chamfer_size_top = chamfer_size * top_radius_scale
-        polygons_top = self.get_path_polygons(rect_top.deflate(1))
-        polygon_paths_top = \
-            [polygon_to_rounded_path(p, radius_pct, chamfer_size_top) \
-            for p in polygons_top]
+        stroke_width  = config.theme_settings.key_stroke_width / 100.0
+        scale_top_x = 1.0 - (border[0] * stroke_width * size_scale_x * 2.0)
+        scale_top_y = 1.0 - (border[1] * stroke_width * size_scale_y * 2.0)
+        key_size_top_x = key_size_x * scale_top_x
+        key_size_top_y = key_size_y * scale_top_y
+        chamfer_size_top = chamfer_size * (scale_top_x + scale_top_y) * 0.5
+
+        # realize all paths we're going to use
+        polygons, polygon_paths = \
+            self.get_canvas_polygons(geometry,
+                                   key_offset_x, key_offset_y,
+                                   key_size_x, key_size_y,
+                                   radius_pct, chamfer_size)
+        polygons_top, polygon_paths_top = \
+            self.get_canvas_polygons(geometry,
+                                   key_offset_x, key_offset_y,
+                                   key_size_top_x - size_scale_x,
+                                   key_size_top_y - size_scale_y,
+                                   radius_pct, chamfer_size_top)
+        polygons_top1, polygon_paths_top1 = \
+            self.get_canvas_polygons(geometry,
+                                   key_offset_x, key_offset_y,
+                                   key_size_top_x, key_size_top_y,
+                                   radius_pct, chamfer_size_top)
 
         # draw key border
         if self.show_border:
             if not lod:
-                self._build_path(cr, rect)
                 cr.set_source_rgba(*base_rgba)
-                cr.fill()
+                for path in polygon_paths:
+                    rounded_polygon_path_to_cairo_path(cr, path)
+                    cr.fill()
             else:
-
                 for ipg, polygon in enumerate(polygons):
                     polygon_top = polygons_top[ipg]
                     path = polygon_paths[ipg]
                     path_top = polygon_paths_top[ipg]
-                    n = len(polygon)
-                    m = len(path)
 
-                    # Lambert lighting
-                    edge_colors = []
-                    for i in range(0, n, 2):
-                        x0 = polygon[i]
-                        y0 = polygon[i+1]
-                        if i < n-2:
-                            x1 = polygon[i+2]
-                            y1 = polygon[i+3]
-                        else:
-                            x1 = polygon[0]
-                            y1 = polygon[1]
-
-                        nx = y1 - y0
-                        ny = -(x1 - x0)
-                        ln = sqrt(nx*nx + ny*ny)
-                        I = (nx * lightx + ny * lighty) / ln \
-                            * stroke_gradient * 0.8 \
-                            if ln else 0.0
-                        edge_colors.append(brighten(I, *base_rgba))
-
-                    # draw corner sections
-                    edge = 0
-                    for i in range(0, m-2, 2):
-                        # collect path points
-                        i1 = i + 1
-                        i2 = i + 2
-                        if i2 >= m:
-                            i2 -= m
-                        i3 = i + 3
-                        if i3 >= m:
-                            i3 = 1
-
-                        p0 = path[i]
-                        p0x = p0[0]
-                        p0y = p0[1]
-
-                        p1 = path[i1]
-                        p1x = p1[0]
-                        p1y = p1[1]
-
-                        p2 = path[i2]
-                        p2x = p2[0]
-                        p2y = p2[1]
-
-                        p3 = path[i3]
-                        p3x = p3[0]
-                        p3y = p3[1]
-
-                        p = path_top[i]
-                        ptop0x = p[0]
-                        ptop0y = p[1]
-
-                        p = path_top[i1]
-                        ptop1x = p[0]
-                        ptop1y = p[1]
-
-                        p = path_top[i2]
-                        ptop2x = p[0]
-                        ptop2y = p[1]
-
-                        # Collect polygon points.
-                        # This only to fill in gaps at concave corners.
-                        j0 = edge*2
-                        j1 = j0 + 2
-                        if j1 >= n:
-                            j1 -= n
-                        j2 = j0 + 4
-                        if j2 >= n:
-                            j2 -= n
-
-                        ptopax = polygon_top[j0]
-                        ptopay = polygon_top[j0 + 1]
-                        ptopbx = polygon_top[j1]
-                        ptopby = polygon_top[j1 + 1]
-                        ptopcx = polygon_top[j2]
-                        ptopcy = polygon_top[j2 + 1]
-                        vax = ptopbx - ptopax
-                        vay = ptopby - ptopay
-                        nbx = ptopcy - ptopby
-                        nby = -(ptopcx - ptopbx)
-                        concave = vax*nbx + vay*nby < 0.0
-
-                        # Fake Gouraud shading: draw a gradient between mid points
-                        # of the lines connecting the base with the top path.
-                        pat = cairo.LinearGradient((p1x + ptop1x) * 0.5,
-                                                   (p1y + ptop1y) * 0.5,
-                                                   (p2x + ptop2x) * 0.5,
-                                                   (p2y + ptop2y) * 0.5)
-                        edge1 = (edge + 1) % len(edge_colors)
-                        pat.add_color_stop_rgba(0.0, *edge_colors[edge])
-                        pat.add_color_stop_rgba(1.0, *edge_colors[edge1])
-                        cr.set_source (pat)
-
-                        # Draw corners and edges with enough overlap to avoid
-                        # artefacts at touching line boundaries.
-                        cr.move_to(p0x, p0y)
-                        cr.line_to(p1x, p1y)
-                        cr.curve_to(p2[2], p2[3], p2[4], p2[5], p2[0], p2[1])
-                        cr.line_to(p3x, p3y)
-                        cr.line_to(ptop2x, ptop2y)
-                        if concave:
-                            cr.line_to(ptopbx, ptopby)
-                        cr.line_to(ptop1x, ptop1y)
-                        cr.line_to(ptop0x, ptop0y)
-                        cr.close_path()
-                        cr.fill()
-
-                        edge += 1
+                    self._draw_dish_key_border(cr, path, path_top,
+                                               polygon, polygon_top,
+                                               base_rgba, stroke_gradient,
+                                               lightx, lighty)
 
         # Draw the key face, the smaller top rectangle.
         if self.show_face:
@@ -422,7 +332,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
                 dark_rgba = brighten(-fill_gradient*.5, *fill)
                 bright_rgba = brighten(+fill_gradient*.5, *fill)
-                gline = gradient_line(rect, angle)
+                gline = gradient_line(canvas_rect, angle)
 
                 pat = cairo.LinearGradient (*gline)
                 pat.add_color_stop_rgba(0.0, *dark_rgba)
@@ -430,8 +340,124 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 pat.add_color_stop_rgba(1.0, *dark_rgba)
                 cr.set_source (pat)
 
-            self._build_path(cr, rect_top, top_radius_scale)
+            for path in polygon_paths_top1:
+                rounded_polygon_path_to_cairo_path(cr, path)
+                cr.fill()
+
+    def _draw_dish_key_border(self, cr, path, path_top,
+                              polygon, polygon_top,
+                              base_rgba, stroke_gradient, lightx, lighty):
+        n = len(polygon)
+        m = len(path)
+
+        # Lambert lighting
+        edge_colors = []
+        for i in range(0, n, 2):
+            x0 = polygon[i]
+            y0 = polygon[i+1]
+            if i < n-2:
+                x1 = polygon[i+2]
+                y1 = polygon[i+3]
+            else:
+                x1 = polygon[0]
+                y1 = polygon[1]
+
+            nx = y1 - y0
+            ny = -(x1 - x0)
+            ln = sqrt(nx*nx + ny*ny)
+            I = (nx * lightx + ny * lighty) / ln \
+                * stroke_gradient * 0.8 \
+                if ln else 0.0
+            edge_colors.append(brighten(I, *base_rgba))
+
+        # draw border sections
+        edge = 0
+        for i in range(0, m-2, 2):
+            # get path points
+            i1 = i + 1
+            i2 = i + 2
+            if i2 >= m:
+                i2 -= m
+            i3 = i + 3
+            if i3 >= m:
+                i3 = 1
+
+            p0 = path[i]
+            p0x = p0[0]
+            p0y = p0[1]
+
+            p1 = path[i1]
+            p1x = p1[0]
+            p1y = p1[1]
+
+            p2 = path[i2]
+            p2x = p2[0]
+            p2y = p2[1]
+
+            p3 = path[i3]
+            p3x = p3[0]
+            p3y = p3[1]
+
+            p = path_top[i]
+            ptop0x = p[0]
+            ptop0y = p[1]
+
+            p = path_top[i1]
+            ptop1x = p[0]
+            ptop1y = p[1]
+
+            p = path_top[i2]
+            ptop2x = p[0]
+            ptop2y = p[1]
+
+            # get polygon points, only to
+            # fill in gaps at concave corners.
+            j0 = edge*2
+            j1 = j0 + 2
+            if j1 >= n:
+                j1 -= n
+            j2 = j0 + 4
+            if j2 >= n:
+                j2 -= n
+
+            ptopax = polygon_top[j0]
+            ptopay = polygon_top[j0 + 1]
+            ptopbx = polygon_top[j1]
+            ptopby = polygon_top[j1 + 1]
+            ptopcx = polygon_top[j2]
+            ptopcy = polygon_top[j2 + 1]
+            vax = ptopbx - ptopax
+            vay = ptopby - ptopay
+            nbx = ptopcy - ptopby
+            nby = -(ptopcx - ptopbx)
+            concave = vax*nbx + vay*nby < 0.0
+
+            # Fake Gouraud shading: draw a gradient between mid points
+            # of the lines connecting the base with the top path.
+            pat = cairo.LinearGradient((p1x + ptop1x) * 0.5,
+                                        (p1y + ptop1y) * 0.5,
+                                        (p2x + ptop2x) * 0.5,
+                                        (p2y + ptop2y) * 0.5)
+            edge1 = (edge + 1) % len(edge_colors)
+            pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+            pat.add_color_stop_rgba(1.0, *edge_colors[edge1])
+            cr.set_source (pat)
+
+            # Draw corners and edges with enough overlap to avoid
+            # artefacts at touching line boundaries.
+            cr.move_to(p0x, p0y)
+            cr.line_to(p1x, p1y)
+            cr.curve_to(p2[2], p2[3], p2[4], p2[5], p2[0], p2[1])
+            cr.line_to(p3x, p3y)
+            cr.line_to(ptop2x, ptop2y)
+            if concave:
+                cr.line_to(ptopbx, ptopby)
+            cr.line_to(ptop1x, ptop1y)
+            cr.line_to(ptop0x, ptop0y)
+            cr.close_path()
             cr.fill()
+
+            edge += 1
 
     def get_label_runs(self):
         runs = []
@@ -652,7 +678,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context.clip()
 
         context.push_group_with_content(cairo.CONTENT_ALPHA)
-        self._build_path(context, rect)
+        self._build_canvas_path(context, rect)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.fill()
         shape = context.pop_group()
@@ -668,31 +694,32 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # cut out the key area, the key may be transparent
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-        self._build_path(context, rect)
+        self._build_canvas_path(context, rect)
         context.fill()
 
         context.restore()
 
         return surface
 
-    def _build_path(self, cr, rect, radius_scale = 1.0):
-        """ Build cairo path of the key geomotry. """
-        if self.path:
-            self._build_complex_path(cr, rect, radius_scale)
+    def _build_canvas_path(self, cr, rect = None, path = None):
+        """ Build cairo path of the key geometry. """
+        if self.geometry:
+            if not path:
+                path = self.get_canvas_path()
+            self._build_complex_path(cr, path)
         else:
-            self._build_rect_path(cr, rect, radius_scale)
+            if not rect:
+                rect = self.get_canvas_rect()
+            self._build_rect_path(cr, rect)
 
-    def _build_complex_path(self, cr, rect, radius_scale = 1.0):
+    def _build_complex_path(self, cr, path):
         roundness = config.theme_settings.roundrect_radius
-
-        chamfer_size = self.get_chamfer_size(rect) * radius_scale
+        chamfer_size = self.get_chamfer_size()
         chamfer_size = self.context.scale_log_to_canvas_y(chamfer_size)
+        rounded_path(cr, path, roundness, chamfer_size)
 
-        canvas_path = self.path.fit_in_rect(rect)
-        rounded_path(cr, canvas_path, roundness, chamfer_size)
-
-    def _build_rect_path(self, context, rect, radius_scale = 1.0):
-        roundness = config.theme_settings.roundrect_radius * radius_scale
+    def _build_rect_path(self, context, rect):
+        roundness = config.theme_settings.roundrect_radius
         if roundness:
             roundrect_curve(context, rect, roundness)
         else:
