@@ -633,6 +633,7 @@ class KeyGeometry:
         assert(len(paths) >= 1)
 
         path0 = paths[0]
+        path1 = None
         if len(paths) >= 2:
             path1 = paths[1]
 
@@ -741,6 +742,7 @@ class KeyPath:
     ) = range(3)
 
     _last_abs_pos = (0.0, 0.0)
+    _bounds = None           # cached bounding box
 
     def __init__(self):
         self.segments = []   # normalized list of path segments (all absolute)
@@ -761,6 +763,7 @@ class KeyPath:
         path.segments = [[KeyPath.MOVE_TO, [x0, y0]],
                          [KeyPath.LINE_TO, [x1, y0, x1, y1, x0, y1]],
                          [KeyPath.CLOSE_PATH, []]]
+        path._bounds = rect.copy()
         return path
 
     _svg_path_pattern = re.compile("([+-]?[0-9.]*)")
@@ -912,6 +915,13 @@ class KeyPath:
         return [token for token in tokens if token]
 
     def get_bounds(self):
+        bounds = self._bounds
+        if bounds is None:
+            bounds = self._calc_bounds()
+            self._bounds = bounds
+        return bounds
+
+    def _calc_bounds(self):
         """
         Compute the bounding box of the path.
 
