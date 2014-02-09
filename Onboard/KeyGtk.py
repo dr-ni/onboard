@@ -274,8 +274,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                         self.context.scale_log_to_canvas_y(chamfer_size)) * 0.5
 
         # parameters for the top path, key face
+        stroke_width  = self.get_stroke_width()
+        key_offset_top_y = key_offset_y - \
+            config.DISH_KEY_Y_OFFSET * stroke_width
         border = config.DISH_KEY_BORDER
-        stroke_width  = config.theme_settings.key_stroke_width / 100.0
         scale_top_x = 1.0 - (border[0] * stroke_width * size_scale_x * 2.0)
         scale_top_y = 1.0 - (border[1] * stroke_width * size_scale_y * 2.0)
         key_size_top_x = key_size_x * scale_top_x
@@ -290,13 +292,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                                    radius_pct, chamfer_size)
         polygons_top, polygon_paths_top = \
             self.get_canvas_polygons(geometry,
-                                   key_offset_x, key_offset_y,
+                                   key_offset_x, key_offset_top_y,
                                    key_size_top_x - size_scale_x,
                                    key_size_top_y - size_scale_y,
                                    radius_pct, chamfer_size_top)
         polygons_top1, polygon_paths_top1 = \
             self.get_canvas_polygons(geometry,
-                                   key_offset_x, key_offset_y,
+                                   key_offset_x, key_offset_top_y,
                                    key_size_top_x, key_size_top_y,
                                    radius_pct, chamfer_size_top)
 

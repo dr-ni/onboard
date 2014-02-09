@@ -529,8 +529,12 @@ class RectKeyCommon(KeyCommon):
             rect = self.get_rect()
         style = self.get_style()
         if style == "dish":
-            rect = rect.deflate(*config.DISH_KEY_BORDER)
-            rect.y -= config.DISH_KEY_Y_OFFSET
+            stroke_width  = self.get_stroke_width()
+            border_x, border_y = config.DISH_KEY_BORDER
+            border_x *= stroke_width
+            border_y *= stroke_width
+            rect = rect.deflate(border_x, border_y)
+            rect.y -= config.DISH_KEY_Y_OFFSET * stroke_width
             return rect
         else:
             return rect.deflate(*self.label_margin)

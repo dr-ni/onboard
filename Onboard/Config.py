@@ -125,7 +125,7 @@ class Config(ConfigObject):
     CORNER_RADIUS = 10
 
     # y displacement of the key face of dish keys
-    DISH_KEY_Y_OFFSET = 1.0
+    DISH_KEY_Y_OFFSET = 0.8
 
     # raised border size of dish keys
     DISH_KEY_BORDER = (2.5, 2.5)
