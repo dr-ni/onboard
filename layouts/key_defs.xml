@@ -64,7 +64,7 @@
 
     <key_template id='TAB'  keycode='23'  label='⇥'  label_x_align='0.0' action='single-stroke'/>
     <key_template id='BKSP' keycode='22'  image='erase-left.svg' action='single-stroke'/>
-    <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0' action='single-stroke'/>
+    <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.1' action='single-stroke'/>
     <key_template id='MENU' keycode='135' label='Menu'  action='delayed-stroke'/>
 
     <key_template id='SPCE' keycode='65'/>
