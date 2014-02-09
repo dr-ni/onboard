@@ -11,9 +11,9 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2"
    height="115"
-   width="331"
+   width="330"
    version="1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="Compact-Numbers.svg">
   <defs
      id="defs3462" />
@@ -26,13 +26,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="640"
-     inkscape:window-height="480"
+     inkscape:window-width="1196"
+     inkscape:window-height="546"
      id="namedview3460"
      showgrid="false"
-     inkscape:zoom="1.5317221"
-     inkscape:cx="165.5"
-     inkscape:cy="47.5"
+     inkscape:zoom="3.1761789"
+     inkscape:cx="150.77866"
+     inkscape:cy="43.497801"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
@@ -54,119 +54,119 @@
      height="18"
      width="18"
      y="96.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="NMLK"
      style="fill:#f2e5d8;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="KPEN"
      style="fill:#d8cca5;stroke:#000000"
      height="37"
      width="18"
      y="77.5"
-     x="267.5" />
+     x="266.5" />
   <rect
      id="KP0"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="37"
      y="96.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="KP1"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="KP2"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="229.5" />
+     x="228.5" />
   <rect
      id="KP3"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="KP4"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="KP5"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="229.5" />
+     x="228.5" />
   <rect
      id="KP6"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="KP7"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="KP8"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="229.5" />
+     x="228.5" />
   <rect
      id="KP9"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="KPSU"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="267.5" />
+     x="266.5" />
   <rect
      id="KPDV"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="229.5" />
+     x="228.5" />
   <rect
      id="KPAD"
      style="fill:#e5d8b2;stroke:#000000"
      height="37"
      width="18"
      y="39.5"
-     x="267.5" />
+     x="266.5" />
   <rect
      id="KPMU"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="LEFT"
      style="fill:#d8cca5;stroke:#000000"

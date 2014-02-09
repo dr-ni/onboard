@@ -11,7 +11,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2"
    height="115"
-   width="331"
+   width="330"
    version="1.0"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="Compact-Alpha.svg">
@@ -26,14 +26,14 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1215"
-     inkscape:window-height="1000"
+     inkscape:window-width="1920"
+     inkscape:window-height="1176"
      id="namedview88"
      showgrid="false"
-     inkscape:zoom="3.0564972"
-     inkscape:cx="177"
-     inkscape:cy="56"
-     inkscape:window-x="65"
+     inkscape:zoom="4.401356"
+     inkscape:cx="136.86691"
+     inkscape:cy="1.1050784"
+     inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
@@ -46,7 +46,9 @@
      fit-margin-bottom="0"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:snap-global="true">
+     inkscape:snap-global="true"
+     inkscape:object-paths="false"
+     inkscape:object-nodes="true">
     <sodipodi:guide
        orientation="1,0"
        position="-8.8560886,101.84502"
@@ -65,30 +67,31 @@
   </metadata>
   <rect
      id="wordlist"
-     height="16.028313"
-     width="311.02832"
-     y="3.4858444"
+     height="14.733308"
+     width="307.02832"
+     y="4.7904754"
      x="0.48584402"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.97168803;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="prediction"
-     height="16"
+     height="14.707282"
      width="49"
-     y="3.5000002"
+     y="4.8034878"
      x="110.5"
      style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="correction"
-     height="16"
+     height="14.707282"
      width="49"
-     y="3.5000002"
+     y="4.8034878"
      x="30.5"
-     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     inkscape:label="#correction" />
   <rect
      id="expand-corrections"
-     height="16"
+     height="14.707282"
      width="17.272728"
-     y="3.5000002"
+     y="4.8034878"
      x="85.657127"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.3142575;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
@@ -97,7 +100,7 @@
      height="18"
      width="18"
      y="77.5"
-     x="45.5" />
+     x="47.5" />
   <rect
      id="AE02"
      style="fill:#e5d8b2;stroke:#000000"
@@ -118,7 +121,7 @@
      height="18"
      width="18"
      y="39.5"
-     x="181.5" />
+     x="183" />
   <rect
      id="AE01"
      style="fill:#e5d8b2;stroke:#000000"
@@ -160,21 +163,21 @@
      height="18"
      width="18"
      y="39.5"
-     x="67.5" />
+     x="69" />
   <rect
      id="AD02"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="48.5" />
+     x="50" />
   <rect
      id="AD01"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="29.5" />
+     x="31" />
   <rect
      id="AE09"
      style="fill:#e5d8b2;stroke:#000000"
@@ -188,49 +191,49 @@
      height="18"
      width="18"
      y="39.5"
-     x="143.5" />
+     x="145" />
   <rect
      id="AD06"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="124.5" />
+     x="126" />
   <rect
      id="AD05"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="105.5" />
+     x="107" />
   <rect
      id="AD04"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="86.5" />
+     x="88" />
   <rect
      id="AB10"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="216.5" />
+     x="218.5" />
   <rect
      id="AC11"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="224.5" />
+     x="225.49995" />
   <rect
      id="AC10"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="205.5" />
+     x="206.49995" />
   <rect
      id="TLDE"
      style="fill:#e5d8b2;stroke:#000000"
@@ -244,42 +247,42 @@
      height="18"
      width="18"
      y="77.5"
-     x="26.5" />
+     x="28.5" />
   <rect
      id="BKSL"
-     style="fill:#e5d8b2;stroke:#000000"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="28"
-     y="39.5"
-     x="257.5" />
+     width="18"
+     y="58.5"
+     x="244.49995" />
   <rect
      id="AD10"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="200.5" />
+     x="202" />
   <rect
      id="AD11"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="219.5" />
+     x="221" />
   <rect
      id="AD12"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="238.5" />
+     x="240" />
   <rect
      id="AB08"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="178.5" />
+     x="180.5" />
   <rect
      id="AE11"
      style="fill:#e5d8b2;stroke:#000000"
@@ -307,70 +310,70 @@
      height="18"
      width="18"
      y="58.5"
-     x="91.5" />
+     x="92.499962" />
   <rect
      id="AC05"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="110.5" />
+     x="111.49996" />
   <rect
      id="AC06"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="129.5" />
+     x="130.49995" />
   <rect
      id="AC07"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="148.5" />
+     x="149.49995" />
   <rect
      id="AB09"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="197.5" />
+     x="199.5" />
   <rect
      id="AC01"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="34.5" />
+     x="35.499962" />
   <rect
      id="AC02"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="53.5" />
+     x="54.499962" />
   <rect
      id="AC03"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="72.5" />
+     x="73.499962" />
   <rect
      id="AB05"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="121.5" />
+     x="123.5" />
   <rect
      id="AB04"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="102.5" />
+     x="104.5" />
   <rect
      id="AE08"
      style="fill:#e5d8b2;stroke:#000000"
@@ -384,56 +387,56 @@
      height="18"
      width="18"
      y="77.5"
-     x="140.5" />
+     x="142.5" />
   <rect
      id="AC08"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="167.5" />
+     x="168.49995" />
   <rect
      id="AC09"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="186.5" />
+     x="187.49995" />
   <rect
      id="AB03"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="83.5" />
+     x="85.5" />
   <rect
      id="AB02"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="64.5" />
+     x="66.5" />
   <rect
      id="AD08"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="162.5" />
+     x="164" />
   <rect
      id="AB07"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="159.5" />
+     x="161.5" />
   <rect
      id="RCTL"
      style="fill:#f2e5d8;stroke:#000000"
      height="18"
      width="23"
      y="96.5"
-     x="262.5" />
+     x="261.5" />
   <rect
      id="LCTL"
      style="fill:#f2e5d8;stroke:#000000"
@@ -454,14 +457,14 @@
      height="18"
      width="23"
      y="96.5"
-     x="238.5" />
+     x="237.5" />
   <rect
      id="RWIN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="23"
      y="96.5"
-     x="214.5" />
+     x="213.5" />
   <rect
      id="LWIN"
      style="fill:#f2e5d8;stroke:#000000"
@@ -471,58 +474,59 @@
      x="28.5" />
   <rect
      id="BKSP"
-     style="fill:#d8cca5;stroke:#000000"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="19"
+     width="18"
      y="20.5"
      x="247.5" />
   <rect
      id="DELE"
-     style="fill:#d8cca5;stroke:#000000"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:0.99999988"
      height="18"
      width="18"
      y="20.5"
-     x="267.5" />
+     x="266.5" />
   <rect
      id="TAB"
-     style="fill:#d8cca5;stroke:#000000"
+     style="fill:#d8cca5;stroke:#000000;stroke-width:1"
      height="18"
-     width="28"
+     width="29.5"
      y="39.5"
      x="0.5" />
   <rect
      id="CAPS"
-     style="fill:#f2e5d8;stroke:#000000"
+     style="fill:#f2e5d8;stroke:#000000;stroke-width:1"
      height="18"
-     width="33"
+     width="34"
      y="58.5"
      x="0.5" />
   <rect
-     id="RTRN"
+     id="RTRN_"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="42"
-     y="58.5"
-     x="243.5" />
+     y="-57.318851"
+     x="250.37061"
+     inkscape:label="#RTRN" />
   <rect
      id="LFSH"
-     style="fill:#f2e5d8;stroke:#000000"
+     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="25"
+     width="26.999998"
      y="77.5"
-     x="0.5" />
+     x="0.49999997" />
   <rect
      id="RTSH"
-     style="fill:#f2e5d8;stroke:#000000"
+     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="50"
+     width="47"
      y="77.5"
-     x="235.5" />
+     x="237.5" />
   <rect
      id="SPCE"
-     style="fill:#e5d8b2;stroke:#000000"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="110"
+     width="108.99999"
      y="96.5"
      x="76.5" />
   <rect
@@ -531,121 +535,121 @@
      height="18"
      width="22"
      y="96.5"
-     x="187.5" />
+     x="186.5" />
   <rect
      id="LEFT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="210.5" />
+     x="209.5" />
   <rect
      id="RGHT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="229.5" />
+     x="228.5" />
   <rect
      id="UP"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="248.5" />
+     x="247.5" />
   <rect
      id="DOWN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="267.5" />
+     x="266.5" />
   <rect
      id="middleclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="286.5" />
+     x="285.5" />
   <rect
      id="secondaryclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="286.5" />
+     x="285.5" />
   <rect
      id="doubleclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="286.5" />
+     x="285.5" />
   <rect
      id="dragclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="286.5" />
+     x="285.5" />
   <rect
      id="hoverclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="286.5" />
+     x="285.5" />
   <rect
      id="hide"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="20.5"
-     x="305.5" />
+     x="304.5" />
   <rect
      id="showclick"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
      y="39.5"
-     x="305.5" />
+     x="304.5" />
   <rect
      id="move"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
      y="39.5"
-     x="318.5" />
+     x="317.5" />
   <rect
      id="layer0"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="58.5"
-     x="305.5" />
+     x="304.5" />
   <rect
      id="layer1"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="77.5"
-     x="305.5" />
+     x="304.5" />
   <rect
      id="layer2"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="96.5"
-     x="305.5" />
+     x="304.5" />
   <rect
      id="inputline"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     style="fill:#151530;fill-opacity:0.59360729;stroke:#000000;stroke-width:1"
      height="18"
      width="246"
-     y="20.5"
-     x="0.5" />
+     y="-53.768021"
+     x="-50.211643" />
   <rect
-     x="331.5"
+     x="330.5"
      y="20.5"
      width="22"
      height="18"
@@ -659,9 +663,9 @@
      height="18"
      width="22"
      y="39.5"
-     x="331.5" />
+     x="330.5" />
   <rect
-     x="331.5"
+     x="330.5"
      y="58.5"
      width="22"
      height="18"
@@ -669,7 +673,7 @@
      id="layer0.wordlist"
      inkscape:label="" />
   <rect
-     x="331.5"
+     x="330.5"
      y="77.5"
      width="22"
      height="18"
@@ -677,7 +681,7 @@
      id="layer1.wordlist"
      inkscape:label="" />
   <rect
-     x="331.5"
+     x="330.5"
      y="96.5"
      width="22"
      height="18"
@@ -686,18 +690,36 @@
      inkscape:label="" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
-     x="293.5"
-     y="3.5000005"
+     x="285.5"
+     y="4.8034878"
      width="18"
-     height="16"
+     height="14.707282"
      id="hide.wordlist"
      inkscape:label="" />
   <rect
      inkscape:label=""
      id="language.wordlist"
-     height="16"
+     height="14.707282"
      width="18"
-     y="3.5000005"
-     x="274.5"
+     y="4.8034878"
+     x="265.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <g
+     id="RTRN"
+     inkscape:label="#RTRN">
+    <path
+       inkscape:label="#RTRN_100pct"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:connector-curvature="0"
+       id="RTRN_100pct"
+       d="m 259,39.5 25.5,0 0,37 -21.00001,0 0,-19 -4.49999,0 z"
+       style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1" />
+    <path
+       style="opacity:0.2;fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1"
+       d="m 263.75,44.25 16,0 0,27.5 -11.5,0 0,-19 -4.5,0 z"
+       id="RTRN_50pct"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc"
+       inkscape:label="#RTRN_50pct" />
+  </g>
 </svg>
