@@ -962,6 +962,7 @@ class ConfigKeyboard(ConfigObject):
 
         self.add_key("show-click-buttons", False)
         self.add_key("sticky-key-release-delay", 0.0)
+        self.add_key("sticky-key-release-on-hide-delay", 5.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"}, 'a{ss}')
         self.add_key("long-press-delay", 0.5)
         self.add_key("default-key-action", self.DEFAULT_KEY_ACTION,

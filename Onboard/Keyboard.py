@@ -1304,16 +1304,20 @@ class Keyboard(WordSuggestions):
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)
 
-    def release_locked_sticky_keys(self):
+    def release_locked_sticky_keys(self, release_all = False):
         """ release locked sticky (modifier) keys """
         if len(self._locked_sticky_keys) > 0:
             for key in self._locked_sticky_keys[:]:
-                self.send_key_up(key)
-                self._locked_sticky_keys.remove(key)
-                key.active = False
-                key.locked = False
-                key.pressed = False
-                self.redraw([key])
+                # NumLock is special, keep its state on exit
+                # if not told otherwise.
+                if release_all or \
+                   not key.modifier == Modifiers.NUMLK:
+                    self.send_key_up(key)
+                    self._locked_sticky_keys.remove(key)
+                    key.active = False
+                    key.locked = False
+                    key.pressed = False
+                    self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)
@@ -1484,13 +1488,11 @@ class Keyboard(WordSuggestions):
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
 
-        # NumLock is special, keep its state on exit
-        if not config.keyboard.sticky_key_release_delay:
-            for key in self._locked_sticky_keys[:]:
-                if key.modifier == Modifiers.NUMLK:
-                    self._locked_sticky_keys.remove(key)
-
-        self.release_locked_sticky_keys()
+        # NumLock is special. Keep its state on exit, except when
+        # sticky_key_release_delay is set, when we assume to be
+        # in kiosk mode and everything has to be cleaned up.
+        release_all = bool(config.keyboard.sticky_key_release_delay)
+        self.release_locked_sticky_keys(release_all)
 
         # Clear key.pressed for all keys that have already been released
         # but are still waiting for redrawing the unpressed state.

@@ -19,7 +19,7 @@ from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
 from Onboard.AutoShow       import AutoShow
-from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
+from Onboard.utils          import Rect, Timer, FadeTimer
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
                                    canvas_to_root_window_rect, \
                                    canvas_to_root_window_point, \
@@ -51,19 +51,32 @@ class AutoReleaseTimer(Timer):
     def __init__(self, keyboard):
         self._keyboard = keyboard
 
-    def start(self):
+    def start(self, visibility_change = None):
         self.stop()
         delay = config.keyboard.sticky_key_release_delay
+        if visibility_change == False:
+            hide_delay = config.keyboard.sticky_key_release_on_hide_delay
+            if hide_delay:
+                if delay:
+                    delay = min(delay, hide_delay)
+                else:
+                    delay = hide_delay
         if delay:
             Timer.start(self, delay)
 
     def on_timer(self):
+        # When sticky_key_release_delay is set, release NumLock too.
+        # We then assume Onboard is used in a kiosk setting, and
+        # everything has to be reset for the next customer.
+        release_all_keys = bool(config.keyboard.sticky_key_release_delay)
+
         self._keyboard.release_latched_sticky_keys()
-        self._keyboard.release_locked_sticky_keys()
+        self._keyboard.release_locked_sticky_keys(release_all_keys)
         self._keyboard.active_layer_index = 0
         self._keyboard.invalidate_ui_no_resize()
         self._keyboard.commit_ui_updates()
         return False
+
 
 class InactivityTimer(Timer):
     """
@@ -588,6 +601,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 if not visible and \
                    self.inactivity_timer.is_enabled():
                     self.inactivity_timer.begin_transition(False)
+
+                # start/stop on-hide-release timer
+                self._auto_release_timer.start(visible)
 
             if done:
                 window.on_transition_done(visible_before, visible_later)

@@ -133,7 +133,12 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
         <key name="sticky-key-release-delay" type="d">
             <default>0.0</default>
             <summary>Auto-release sticky keys</summary>
-            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. This applies no matter if the keyboard is hidden or visible, but when hidden, "sticky-key-release-on-hide-delay" may release the keys earlier. Leave at 0.0 to not automatically release them.</description>
+        </key>
+        <key name="sticky-key-release-on-hide-delay" type="d">
+            <default>5.0</default>
+            <summary>Auto-release sticky keys after hiding the keyboard</summary>
+            <description>Time after hiding the keyboard in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to not automatically release them.</description>
         </key>
         <key name='sticky-key-behavior' type='a{ss}'>
             <default>{'all' : 'cycle'}</default>
