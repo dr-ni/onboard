@@ -20,7 +20,7 @@
         icon1, icon2,
         language.wordlist, hide.wordlist
 
-	<!-- word suggestions -->
+        <!-- word suggestions -->
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
             <color element="label" rgb="#C00000"/>
@@ -47,13 +47,13 @@
             layer.like_rtrn
         </key_group>
 
-        <!-- very light gray, bottom row -->
+        <!-- very light gray, sidebar -->
         <key_group>
-            <color element="fill" rgb="#e1e1e1"/>
-            <color element="fill" rgb="#c1c1c1" active="true"/>
+            <color element="fill" rgb="#d8d8d1"/>
+            <color element="fill" rgb="#b0b0a8" active="true"/>
             hide, move, showclick, layer
         </key_group>
-        
+
     </key_group>
 </color_scheme>
 
