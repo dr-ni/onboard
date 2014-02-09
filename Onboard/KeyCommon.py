@@ -420,6 +420,12 @@ class RectKeyCommon(KeyCommon):
             return self.style
         return config.theme_settings.key_style
 
+    def get_stroke_width(self):
+        return config.theme_settings.key_stroke_width / 100.0
+
+    def get_stroke_gradient(self):
+        return config.theme_settings.key_stroke_gradient / 100.0
+
     def get_light_direction(self):
         return config.theme_settings.key_gradient_direction * pi / 180.0
 

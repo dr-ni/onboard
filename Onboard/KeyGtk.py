@@ -162,7 +162,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             return
 
         if lod == LOD.FULL and self.show_border:
-            scale = config.theme_settings.key_stroke_width / 100.0
+            scale = self.get_stroke_width()
             if scale:
                 root = self.get_layout_root()
                 t    = root.context.scale_log_to_canvas((1.0, 1.0))
@@ -204,7 +204,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def draw_gradient_key(self, cr, fill, line_width, lod):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        stroke_gradient = self.get_stroke_gradient()
         alpha = self.get_gradient_angle()
 
         rect = self.get_canvas_rect()
@@ -260,7 +260,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         # parameters for the base path
         base_rgba = brighten(-0.200, *fill)
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        stroke_gradient = self.get_stroke_gradient()
         light_dir = self.get_light_direction() - pi * 0.5  # 0 = light from top
         lightx = cos(light_dir)
         lighty = sin(light_dir)
@@ -830,7 +830,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         return pixbuf
 
     def _label_iterations(self, lod):
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        stroke_gradient = self.get_stroke_gradient()
         if lod == LOD.FULL and \
            self.get_style() != "flat" and stroke_gradient:
             root = self.get_layout_root()
@@ -909,8 +909,19 @@ class WordlistKey(RectKey):
             style = "gradient"
         return style
 
+    def get_stroke_width(self):
+        # Turn down stroke width -> Only subtly bevel the wordlist bar.
+        value = super(WordlistKey, self).get_stroke_width()
+        return min(value, 0.6)
+
+    def get_stroke_gradient(self):
+        # Turn down stroke gradient -> Only subtly bevel the wordlist bar.
+        value = super(WordlistKey, self).get_stroke_gradient()
+        return min(value, 0.3)
+
     def get_light_direction(self):
         return -0.3 * pi / 180
+
 
 
 class FullSizeKey(WordlistKey):
@@ -934,12 +945,17 @@ class BarKey(FullSizeKey):
         self.draw_image(context, lod)
         self.draw_label(context, lod)
 
-    def draw_shadow_cached(self, context):
-        pass
-
     def can_show_label_popup(self):
         return False
 
+    def get_stroke_width(self):
+        # Turn down stroke width -> no annoying banding at
+        # what should be flat key edges.
+        return 0.0
+
+    def draw_shadow_cached(self, context):
+        # no shadow
+        pass
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
