@@ -54,189 +54,189 @@
      height="18"
      width="18"
      y="96.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="NMLK"
      style="fill:#f2e5d8;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="KPEN"
      style="fill:#d8cca5;stroke:#000000"
      height="37"
      width="18"
      y="77.5"
-     x="266.5" />
+     x="266" />
   <rect
      id="KP0"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="37"
      y="96.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="KP1"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="KP2"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="KP3"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="KP4"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="KP5"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="KP6"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="KP7"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="KP8"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="KP9"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="KPSU"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="266.5" />
+     x="266" />
   <rect
      id="KPDV"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="KPAD"
      style="fill:#e5d8b2;stroke:#000000"
      height="37"
      width="18"
      y="39.5"
-     x="266.5" />
+     x="266" />
   <rect
      id="KPMU"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="LEFT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="146.34" />
+     x="145.84" />
   <rect
      id="RGHT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="184.34" />
+     x="183.84" />
   <rect
      id="UP"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="165.34" />
+     x="164.84" />
   <rect
      id="DOWN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="165.34" />
+     x="164.84" />
   <rect
      id="INS"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="146.34" />
+     x="145.84" />
   <rect
      id="DELE"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="146.34" />
+     x="145.84" />
   <rect
      id="HOME"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="165.34" />
+     x="164.84" />
   <rect
      id="END"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="165.34" />
+     x="164.84" />
   <rect
      id="PGUP"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="184.34" />
+     x="183.84" />
   <rect
      id="PGDN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="184.34" />
+     x="183.84" />
   <rect
      id="Pause"
      style="fill:#e5d8b2;stroke:#000000"

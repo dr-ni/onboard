@@ -30,9 +30,9 @@
      inkscape:window-height="1176"
      id="namedview88"
      showgrid="false"
-     inkscape:zoom="4.401356"
-     inkscape:cx="136.86691"
-     inkscape:cy="1.1050784"
+     inkscape:zoom="5.2816272"
+     inkscape:cx="175.39418"
+     inkscape:cy="-1.8497121"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -68,7 +68,7 @@
   <rect
      id="wordlist"
      height="14.733308"
-     width="307.02832"
+     width="306.52832"
      y="4.7904754"
      x="0.48584402"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.97168803;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -107,14 +107,14 @@
      height="18"
      width="18"
      y="20.5"
-     x="38.5" />
+     x="38" />
   <rect
      id="AE03"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="57.5" />
+     x="57" />
   <rect
      id="AD09"
      style="fill:#e5d8b2;stroke:#000000"
@@ -128,35 +128,35 @@
      height="18"
      width="18"
      y="20.5"
-     x="19.5" />
+     x="19" />
   <rect
      id="AE06"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="114.5" />
+     x="114" />
   <rect
      id="AE07"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="133.5" />
+     x="133" />
   <rect
      id="AE04"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="76.5" />
+     x="76" />
   <rect
      id="AE05"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="95.5" />
+     x="95" />
   <rect
      id="AD03"
      style="fill:#e5d8b2;stroke:#000000"
@@ -184,7 +184,7 @@
      height="18"
      width="18"
      y="20.5"
-     x="171.5" />
+     x="171" />
   <rect
      id="AD07"
      style="fill:#e5d8b2;stroke:#000000"
@@ -236,9 +236,9 @@
      x="206.49995" />
   <rect
      id="TLDE"
-     style="fill:#e5d8b2;stroke:#000000"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="18"
+     width="17.5"
      y="20.5"
      x="0.5" />
   <rect
@@ -289,21 +289,21 @@
      height="18"
      width="18"
      y="20.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="AE10"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="190.5" />
+     x="190" />
   <rect
      id="AE12"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="AC04"
      style="fill:#e5d8b2;stroke:#000000"
@@ -380,7 +380,7 @@
      height="18"
      width="18"
      y="20.5"
-     x="152.5" />
+     x="152" />
   <rect
      id="AB06"
      style="fill:#e5d8b2;stroke:#000000"
@@ -436,7 +436,7 @@
      height="18"
      width="23"
      y="96.5"
-     x="261.5" />
+     x="261" />
   <rect
      id="LCTL"
      style="fill:#f2e5d8;stroke:#000000"
@@ -457,14 +457,14 @@
      height="18"
      width="23"
      y="96.5"
-     x="237.5" />
+     x="237" />
   <rect
      id="RWIN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="23"
      y="96.5"
-     x="213.5" />
+     x="213" />
   <rect
      id="LWIN"
      style="fill:#f2e5d8;stroke:#000000"
@@ -478,14 +478,14 @@
      height="18"
      width="18"
      y="20.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="DELE"
      style="fill:#d8cca5;stroke:#000000;stroke-width:0.99999988"
      height="18"
      width="18"
      y="20.5"
-     x="266.5" />
+     x="266" />
   <rect
      id="TAB"
      style="fill:#d8cca5;stroke:#000000;stroke-width:1"
@@ -519,14 +519,14 @@
      id="RTSH"
      style="fill:#f2e5d8;stroke:#000000;stroke-width:0.99999994"
      height="18"
-     width="47"
+     width="46.5"
      y="77.5"
      x="237.5" />
   <rect
      id="SPCE"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
      height="18"
-     width="108.99999"
+     width="108.5"
      y="96.5"
      x="76.5" />
   <rect
@@ -535,112 +535,112 @@
      height="18"
      width="22"
      y="96.5"
-     x="186.5" />
+     x="186" />
   <rect
      id="LEFT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="209.5" />
+     x="209" />
   <rect
      id="RGHT"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="228.5" />
+     x="228" />
   <rect
      id="UP"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="247.5" />
+     x="247" />
   <rect
      id="DOWN"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="266.5" />
+     x="266" />
   <rect
      id="middleclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="20.5"
-     x="285.5" />
+     x="285" />
   <rect
      id="secondaryclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="39.5"
-     x="285.5" />
+     x="285" />
   <rect
      id="doubleclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="58.5"
-     x="285.5" />
+     x="285" />
   <rect
      id="dragclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="77.5"
-     x="285.5" />
+     x="285" />
   <rect
      id="hoverclick"
      style="fill:#d8cca5;stroke:#000000"
      height="18"
      width="18"
      y="96.5"
-     x="285.5" />
+     x="285" />
   <rect
      id="hide"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="20.5"
-     x="304.5" />
+     x="304" />
   <rect
      id="showclick"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
      y="39.5"
-     x="304.5" />
+     x="304" />
   <rect
      id="move"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
      y="39.5"
-     x="317.5" />
+     x="317" />
   <rect
      id="layer0"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="58.5"
-     x="304.5" />
+     x="304" />
   <rect
      id="layer1"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="77.5"
-     x="304.5" />
+     x="304" />
   <rect
      id="layer2"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
      y="96.5"
-     x="304.5" />
+     x="304" />
   <rect
      id="inputline"
      style="fill:#151530;fill-opacity:0.59360729;stroke:#000000;stroke-width:1"
@@ -649,7 +649,7 @@
      y="-53.768021"
      x="-50.211643" />
   <rect
-     x="330.5"
+     x="330"
      y="20.5"
      width="22"
      height="18"
@@ -663,9 +663,9 @@
      height="18"
      width="22"
      y="39.5"
-     x="330.5" />
+     x="330" />
   <rect
-     x="330.5"
+     x="330"
      y="58.5"
      width="22"
      height="18"
@@ -673,7 +673,7 @@
      id="layer0.wordlist"
      inkscape:label="" />
   <rect
-     x="330.5"
+     x="330"
      y="77.5"
      width="22"
      height="18"
@@ -681,7 +681,7 @@
      id="layer1.wordlist"
      inkscape:label="" />
   <rect
-     x="330.5"
+     x="330"
      y="96.5"
      width="22"
      height="18"
@@ -705,18 +705,17 @@
      x="265.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   <g
-     id="RTRN"
-     inkscape:label="#RTRN">
+     id="RTRN">
     <path
        inkscape:label="#RTRN_100pct"
        sodipodi:nodetypes="ccccccc"
        inkscape:connector-curvature="0"
        id="RTRN_100pct"
-       d="m 259,39.5 25.5,0 0,37 -21.00001,0 0,-19 -4.49999,0 z"
+       d="m 259,39.5 25,0 0,37 -20.50001,0 0,-19 -4.49999,0 z"
        style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1" />
     <path
        style="opacity:0.2;fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1"
-       d="m 263.75,44.25 16,0 0,27.5 -11.5,0 0,-19 -4.5,0 z"
+       d="m 263.75,44.25 15.5,0 0,27.5 -11,0 0,-19 -4.5,0 z"
        id="RTRN_50pct"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc"
