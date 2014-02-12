@@ -20,6 +20,7 @@ import tempfile
 import unittest
 from Onboard.pypredict import *
 
+
 class _TestPatterns(unittest.TestCase):
 
     def __init__(self, test, text, result):
@@ -209,8 +210,8 @@ class _TestMultiOrder(unittest.TestCase):
 class _TestModel(unittest.TestCase):
 
     def setUp(self):
-        self.tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
-        self.dir = self.tmp_dir.name
+        self._tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        self._dir = self._tmp_dir.name
 
     def test_case_insensitive(self):
         model = DynamicModel()
@@ -269,7 +270,7 @@ class _TestModel(unittest.TestCase):
         self.assertEqual(choices, ['ABCDE'])
 
     def test_save_load_unigram_model(self):
-        fn = os.path.join(self.dir, "unigram.lm")
+        fn = os.path.join(self._dir, "unigram.lm")
 
         model = UnigramModel()
         tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
@@ -311,7 +312,7 @@ class _TestModel(unittest.TestCase):
         )
 
     def test_save_load_trigram_model(self):
-        fn = os.path.join(self.dir, "unigram.lm")
+        fn = os.path.join(self._dir, "unigram.lm")
 
         model = DynamicModel()
         tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
@@ -366,7 +367,7 @@ class _TestModel(unittest.TestCase):
         )
 
     def test_read_order(self):
-        fn = os.path.join(self.dir, "model.lm")
+        fn = os.path.join(self._dir, "model.lm")
 
         self.assertEqual(read_order(fn), None) # file not found
 
@@ -388,7 +389,7 @@ def suite():
     # input-text, text-tokens, context-tokens, sentences
     tests = [
          ["", [], [], []],
-         ["abc", ["abc"], ["abc"], ["abc"]],         
+         ["abc", ["abc"], ["abc"], ["abc"]],
          ["We saw wha", ['We', 'saw', 'wha'], ['We', 'saw', 'wha'],
              ['We saw wha']],
          ["We saw whales", ['We', 'saw', 'whales'],
@@ -506,7 +507,7 @@ def suite():
              ['<bot:term> word']],
          ["<bot:url> word", ['<bot:url>', 'word'], ['<bot:url>', 'word'],
              ['<bot:url> word']],
-         ["<bot:txt> sentence. sentence. ", 
+         ["<bot:txt> sentence. sentence. ",
              ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>'],
              ['<bot:txt>', 'sentence', '<s>', 'sentence', '<s>', ''],
              ['<bot:txt> sentence.', 'sentence.', '']],
