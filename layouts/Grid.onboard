@@ -69,6 +69,7 @@
     <!-- popup definition -->
     <layout id="RTRN_popup" filename="Grid-Alpha.svg">
         <box compact="true">
+            <key group='bottomrow' id="quit"/>
             <key id="settings"/>
             <key id="move"/>
             <key id="showclick"/>
