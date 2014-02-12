@@ -578,6 +578,12 @@ class RectKeyCommon(KeyCommon):
         if not self.chamfer_size is None:
             return self.chamfer_size
         if not rect:
+            if 0:
+                layer_id = self.get_layer()
+                root = self.get_layout_root()
+                chamfer_size = root.get_chamfer_size(layer_id)
+                return chamfer_size
+
             if self.geometry:
                 rect = self.get_border_path().get_bounds()
             else:

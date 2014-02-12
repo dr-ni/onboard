@@ -143,6 +143,7 @@ class LayoutRoot:
     def __init__(self, item):
         self.__dict__['_item'] = item    # item to decorate
         self.invalidate_caches()
+        self.init_chamfer_sizes()
 
     def __getattr__(self, name):
         return getattr(self._item, name)
@@ -294,6 +295,31 @@ class LayoutRoot:
 
         return hit_rects
 
+    def init_chamfer_sizes(self):
+        chamfer_sizes = self._calc_chamfer_sizes()
+        for key in self.iter_global_keys():
+            if key.chamfer_size is None:
+                layer_id = key.get_layer()
+                chamfer_size = chamfer_sizes.get(layer_id)
+                if not chamfer_size is None:
+                    key.chamfer_size = chamfer_size
+
+    def _calc_chamfer_sizes(self):
+        chamfer_sizes = {}
+        for layer_id in [None] + self.get_layer_ids():
+            # find the most frequent key width or height of the layer
+            hist = {}
+            for key in self.iter_layer_keys(layer_id):
+                r = key.get_border_rect()
+                s = min(r.w, r.h)
+                hist[s] = hist.get(s, 0) + 1
+            most_frequent_size = \
+                max(list(zip(list(hist.values()), list(hist.keys()))))[1] \
+                if hist else None
+            chamfer_size = most_frequent_size * 0.5
+            chamfer_sizes[layer_id] = chamfer_size
+        return chamfer_sizes
+
 
 class LayoutItem(TreeItem):
     """ Abstract base class for layoutable items """
@@ -334,10 +360,6 @@ class LayoutItem(TreeItem):
     # parent item of sublayout roots
     sublayout_parent = None
 
-    # parsing helpers, only valid while loading a layout
-    templates = None
-    keysym_rules = None
-
     # override switching back to layer 0 on key press
     # True:  do switch to layer 0 on press
     # False: dont't
@@ -350,6 +372,9 @@ class LayoutItem(TreeItem):
     # Determines scanning order
     scan_priority = None
 
+    # parsing helpers, only valid while loading a layout
+    templates = None
+    keysym_rules = None
 
     def __init__(self):
         self.context = KeyContext()
@@ -535,8 +560,16 @@ class LayoutItem(TreeItem):
                 return item
             item = item.parent
 
+    def get_global_layout_root(self):
+        """ Return the root layout item """
+        item = self
+        while item:
+            if item.parent is None:
+                return item
+            item = item.parent
+
     def get_layer(self):
-        """ Return the first layer on the path from the tree root to self """
+        """ Return the first layer_id on the path from the tree root to self """
         layer_id = None
         item = self
         while item:

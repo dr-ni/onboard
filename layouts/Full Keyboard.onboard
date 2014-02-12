@@ -50,7 +50,7 @@
 
                     <key id='TAB' group='misc'/>
                     <key id='BKSP' group='backspace' label_x_align='0.0'/>
-                    <key id='RTRN' group='misc' label_x_align='0.65' chamfer_size='9'/>
+                    <key id='RTRN' group='misc' label_x_align='0.65'/>
                     <key id='MENU' group='bottomrow'/>
                     <key id='AD10' group='alphanumeric'/>
                     <key id='AD11' group='alphanumeric'/>

@@ -562,7 +562,7 @@ class LayoutBuilderKeySequence(LayoutBuilder):
 
         if line:
             lines.append(line)
-    
+
         return lines, ncolumns
 
 
@@ -578,6 +578,6 @@ class LayoutBuilderAlternatives(LayoutBuilderKeySequence):
             key.code  = label[0]
             key_sequence.append(key)
 
-        return LayoutBuilderKeySequence.build(source_key, color_scheme, 
+        return LayoutBuilderKeySequence.build(source_key, color_scheme,
                                               key_sequence)
 

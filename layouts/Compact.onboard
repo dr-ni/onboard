@@ -76,7 +76,7 @@
                         <key group="bottomrow" id="DELE.next-to-backspace"/>
                         <key group="bottomrow" id="BKSP"/>
                         <key group="misc" id="TAB"/>
-                        <key group="misc" id="RTRN" label_x_align='0.65' chamfer_size='9'/>
+                        <key group="misc" id="RTRN" label_x_align='0.65'/>
                         <key group="directions_alpha" id="LEFT"/>
                         <key group="directions_alpha" id="RGHT"/>
                         <key group="directions_alpha" id="UP"/>
