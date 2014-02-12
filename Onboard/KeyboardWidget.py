@@ -1190,10 +1190,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
 
-    def emit_quit_onboard(self, data=None):
-        _logger.debug("Entered emit_quit_onboard")
-        self.get_kbd_window().emit("quit-onboard")
-
     def _overcome_initial_key_resistance(self, sequence):
         """
         Drag-select: Increase the hit area of the initial key

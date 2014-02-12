@@ -4,6 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import time
+import weakref
 import gc
 from contextlib import contextmanager
 
@@ -334,9 +335,10 @@ class Keyboard(WordSuggestions):
 
 ##################
 
-    def __init__(self):
+    def __init__(self, application):
         WordSuggestions.__init__(self)
 
+        self._application = weakref.ref(application)
         self._pressed_key = None
         self._last_typing_time = 0
         self._suppress_modifiers_stack = []
@@ -367,6 +369,9 @@ class Keyboard(WordSuggestions):
         self._locked_sticky_keys = []
         self._non_modifier_released = False
         self._disabled_keys = None
+
+    def get_application(self):
+        return self._application()
 
     def register_view(self, layout_view):
         self._layout_views.append(layout_view)
@@ -457,7 +462,7 @@ class Keyboard(WordSuggestions):
 
         WordSuggestions.on_layout_loaded(self)
 
-        # Update Onboard to show the initial modifiers
+        # show the currently active modifiers
         keymap = Gdk.Keymap.get_default()
         if keymap:
             mod_mask = keymap.get_modifier_state()
@@ -1828,7 +1833,9 @@ class BCQuit(ButtonController):
     id = "quit"
 
     def release(self, view, button, event_type):
-        view.emit_quit_onboard()
+        app = self.keyboard.get_application()
+        if app:
+            app.emit_quit_onboard()
 
     def update(self):
         self.set_visible(not config.xid_mode and \

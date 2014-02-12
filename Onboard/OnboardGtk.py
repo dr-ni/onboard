@@ -147,7 +147,7 @@ class OnboardGtk(object):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         # Create the central keyboard model
-        self.keyboard = Keyboard()
+        self.keyboard = Keyboard(self)
 
         # Create the initial keyboard widget
         # Care for toolkit independence only once there is another
@@ -610,6 +610,9 @@ class OnboardGtk(object):
 
 
     # Methods concerning the application
+    def emit_quit_onboard(self):
+        self._window.emit_quit_onboard()
+
     def do_quit_onboard(self):
         _logger.debug("Entered do_quit_onboard")
         self.final_cleanup()
@@ -641,13 +644,13 @@ class OnboardGtk(object):
     @staticmethod
     def _can_show_in_current_desktop():
         """
-        When GNOME's "Typing Assistent" is enabled in GNOME Shell, Onboard 
-        starts simultaneously with the Shell's built-in screen keyboard. 
+        When GNOME's "Typing Assistent" is enabled in GNOME Shell, Onboard
+        starts simultaneously with the Shell's built-in screen keyboard.
         With GNOME Shell 3.5.4-0ubuntu2 there is no known way to choose
-        one over the other (LP: 879942). 
+        one over the other (LP: 879942).
 
-        Adding NotShowIn=GNOME; to onboard-autostart.desktop prevents it 
-        from running not only in GNOME Shell, but also in the GMOME Fallback 
+        Adding NotShowIn=GNOME; to onboard-autostart.desktop prevents it
+        from running not only in GNOME Shell, but also in the GMOME Fallback
         session, which is undesirable. Both share the same xdg-desktop name.
 
         -> Do it ourselves: optionally check for GNOME Shell and yield to the
@@ -659,7 +662,7 @@ class OnboardGtk(object):
             bus = dbus.SessionBus()
             current = os.environ.get("XDG_CURRENT_DESKTOP", "")
             names = config.options.not_show_in.split(",")
-            for name in names:                
+            for name in names:
                 if name == "GNOME":
                     if bus.name_has_owner("org.gnome.Shell"):
                         result = False

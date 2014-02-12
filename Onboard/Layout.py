@@ -13,7 +13,7 @@ config = Config()
 
 class KeyContext(object):
     """
-    Transforms logical coordinates into canvas coordinates and vice versa.
+    Transforms logical coordinates to canvas coordinates and vice versa.
     """
     def __init__(self):
         # logical rectangle as defined by the keyboard layout,

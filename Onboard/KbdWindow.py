@@ -113,6 +113,9 @@ class KbdWindowBase:
         self.check_alpha_support()
         self.queue_draw()
 
+    def emit_quit_onboard(self):
+        self.emit("quit-onboard")
+
     def detect_window_manager(self):
         """ Detect the WM and select WM specific behavior. """
 
@@ -1082,15 +1085,12 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             return self.keyboard_widget.limit_size(rect)
         return rect
 
-    def _emit_quit_onboard(self, event, data=None):
-        self.emit("quit-onboard")
-
     def _on_delete_event(self, event, data=None):
         if config.lockdown.disable_quit:
             if self.keyboard_widget:
                 return True
         else:
-            self._emit_quit_onboard(event)
+            self.emit_quit_onboard()
 
     def on_docking_notify(self):
         self.update_docking()
