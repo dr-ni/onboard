@@ -18,20 +18,14 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import sys
-import os, errno
 import locale
 import time
-import codecs
 import re
 
 import logging
 _logger = logging.getLogger(__name__)
 
-try:
-    from gi.repository import Atspi
-except ImportError as e:
-    _logger.warning("Atspi typelib missing, word suggestions unavailable")
+from gi.repository import GLib
 
 import Onboard.pypredict as pypredict
 
@@ -278,7 +272,7 @@ class WordSuggestions:
                     self._latched_sticky_keys.append(key)
                 self.redraw([key])
 
-        self._key_synth.lock_mod(1)
+        self._text_changer.lock_mod(1)
         self.mods[1] = 1   # shift
         self.redraw_labels(False)
 
@@ -368,7 +362,7 @@ class WordSuggestions:
 
         # Type remainder/replace word and possibly add separator.
         added_separator = self._replace_text_at_caret(deletion, insertion,
-                                                       separator)
+                                                      separator)
 
         # Arm punctuator with the span of the just added separator.
         separator_span = TextSpan(after_insert_span.end(),
@@ -798,18 +792,19 @@ class WordSuggestions:
 
             # delete the old word
             if offset >= 0:
-                self._key_synth.press_keysyms("left", offset)
-                self._key_synth.press_keysyms("backspace", length)
+                self._text_changer.press_keysyms("left", offset)
+                self._text_changer.press_keysyms("backspace", length)
             else:
-                self._key_synth.press_keysyms("delete", abs(offset))
-                self._key_synth.press_keysyms("backspace", length - abs(offset))
+                self._text_changer.press_keysyms("delete", abs(offset))
+                self._text_changer.press_keysyms("backspace",
+                                                 length - abs(offset))
 
             # insert the new word
-            self._key_synth.press_key_string(new_text)
+            self._text_changer.press_key_string(new_text)
 
             # move caret back
             if offset >= 0:
-                self._key_synth.press_keysyms("right", offset)
+                self._text_changer.press_keysyms("right", offset)
 
     def _replace_text_at_caret(self, deletion, insertion, auto_separator = ""):
         """
@@ -838,9 +833,10 @@ class WordSuggestions:
                                    insertion)
             if auto_separator:
                 if added_separator:
-                    self.insert_string_at_caret(auto_separator)
+                    self._text_changer.insert_string_at_caret(auto_separator)
                 else:
-                    self._key_synth.press_keysyms("right") # just skip over the existing space
+                     # just skip over the existing space
+                    self._text_changer.press_keysyms("right")
 
         return added_separator
 
@@ -1522,7 +1518,8 @@ class Punctuator:
             # Only act if we are still at the caret position
             # where the separator was added.
             caret_span = self._get_span_at_caret()
-            if self._added_separator_span.end() == caret_span.begin():
+            if caret_span and \
+               self._added_separator_span.end() == caret_span.begin():
                 char = key.get_label()
                 if   char in self.punctuation_no_capitalize:
                     self._delete_at_caret()
@@ -1546,19 +1543,14 @@ class Punctuator:
                 self._separator_removed = False
                 # No direct insertion here. Space must always arrive last,
                 # i.e. after the released key was generated.
-                self._wp._key_synth.press_keysyms("space")
+                self._wp._text_changer.press_keysyms("space")
 
             if self._capitalize:
                 self._capitalize = False
                 self._wp.enter_caps_mode()
 
     def _delete_at_caret(self):
-        text_context = self._wp.text_context
-        if text_context.can_insert_text():
-            text_context.delete_text_before_caret()
-        else:
-            with self._wp.suppress_modifiers():
-                self._wp._key_synth.press_keysyms("backspace")
+        self._wp._text_changer.delete_at_caret()
 
     def _get_span_at_caret(self):
         text_context = self._wp.text_context

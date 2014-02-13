@@ -26,11 +26,11 @@ from Onboard.Sound           import Sound
 from Onboard.ClickSimulator  import ClickSimulator, \
                                     CSButtonMapper, CSFloatingSlave
 from Onboard.Scanner         import Scanner
-from Onboard.utils           import Timer, Modifiers, parse_key_combination, \
+from Onboard.utils           import Timer, Modifiers, LABEL_MODIFIERS, \
+                                    parse_key_combination, \
                                     unicode_str
 from Onboard.definitions     import InputEventSourceEnum
 from Onboard.WordSuggestions import WordSuggestions
-from Onboard.AutoShow        import AutoShow
 from Onboard.canonical_equivalents import *
 
 try:
@@ -130,7 +130,7 @@ class KeySynth(object):
         """
         self._inter_key_stroke_delay = delay
 
-    def _delay(self):
+    def _pause(self):
         if self._inter_key_stroke_delay:
             time.sleep(self._inter_key_stroke_delay)
 
@@ -157,7 +157,7 @@ class KeySynthVirtkey(KeySynth):
                 char = unicode_str(char)[0]
             code_point = ord(char)
             self._vk.release_unicode(code_point)
-            self._delay()
+            self._pause()
 
     def press_keysym(self, keysym):
         if self._vk:
@@ -166,7 +166,7 @@ class KeySynthVirtkey(KeySynth):
     def release_keysym(self, keysym):
         if self._vk:
             self._vk.release_keysym(keysym)
-        self._delay()
+        self._pause()
 
     def press_keycode(self, keycode):
         if self._vk:
@@ -175,7 +175,7 @@ class KeySynthVirtkey(KeySynth):
     def release_keycode(self, keycode):
         if self._vk:
             self._vk.release_keycode(keycode)
-        self._delay()
+        self._pause()
 
     def lock_mod(self, mod):
         if self._vk:
@@ -184,15 +184,6 @@ class KeySynthVirtkey(KeySynth):
     def unlock_mod(self, mod):
         if self._vk:
             self._vk.unlock_mod(mod)
-
-    def press_keysyms(self, key_name, count = 1):
-        """
-        Generate any number of full key-strokes for the given named key symbol.
-        """
-        keysym = get_keysym_from_name(key_name)
-        for i in range(count):
-            self.press_keysym  (keysym)
-            self.release_keysym(keysym)
 
     def press_key_string(self, keystr):
         """
@@ -246,7 +237,102 @@ class KeySynthAtspi(KeySynthVirtkey):
         if not "Atspi" in globals():
             return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
-        self._delay()
+        self._pause()
+
+
+class TextChanger():
+    """
+    Insert and delete text by all means available to Onboard.
+    - KeySynthVirtkey
+    - KeySynthAtspi (not used by default)
+    - Direct insertion/deletion via AtspiTextContext
+    """
+
+    def __init__(self, keyboard, vk):
+        self._keyboard = weakref.ref(keyboard)
+        self._key_synth_virtkey = KeySynthVirtkey(vk)
+        self._key_synth_atspi = KeySynthAtspi(vk)
+
+        if config.keyboard.key_synth: # == KeySynth.ATSPI:
+            self._text_changer = self._key_synth_atspi
+        else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
+            self._text_changer = self._key_synth_virtkey
+
+    def cleanup(self):
+        # Somehow keyboard objects don't get released
+        # when switching layouts, there are still
+        # excess references/memory leaks somewhere.
+        # We need to manually release virtkey references or
+        # Xlib runs out of client connections after a couple
+        # dozen layout switches.
+        if self._key_synth_virtkey:
+            self._key_synth_virtkey.cleanup()
+            self._key_synth_virtkey = None
+        if self._key_synth_atspi:
+            self._key_synth_atspi.cleanup()
+            self._key_synth_atspi = None
+
+    def get_keyboard(self):
+        return self._keyboard()
+
+    # KeySynth interface
+    def press_unicode(self, char):
+        self._text_changer.press_unicode(char)
+
+    def release_unicode(self, char):
+        self._text_changer.release_unicode(char)
+
+    def press_key_string(self, string):
+        self._text_changer.press_key_string(string)
+
+    def press_keycode(self, keycode):
+        self._text_changer.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        self._text_changer.release_keycode(keycode)
+
+    def press_keysym(self, keysym):
+        self._text_changer.press_keysym(keysym)
+
+    def release_keysym(self, keysym):
+        self._text_changer.release_keysym(keysym)
+
+    def lock_mod(self, mod):
+        self._text_changer.lock_mod(mod)
+
+    def unlock_mod(self, mod):
+        self._text_changer.unlock_mod(mod)
+
+    # Higher-level functions
+    def press_keysyms(self, key_name, count = 1):
+        """
+        Generate any number of full key-strokes for the given named key symbol.
+        """
+        keysym = get_keysym_from_name(key_name)
+        for i in range(count):
+            self.press_keysym  (keysym)
+            self.release_keysym(keysym)
+
+    def insert_string_at_caret(self, text):
+        """
+        Send key presses for all characters in a unicode string
+        and keep track of the changes in text_context.
+        """
+        text_context = self.get_keyboard().text_context
+        if text_context.can_insert_text():
+            text = text.replace("\\n", "\n")
+            text_context.insert_text_at_caret(text)
+        else:
+            self._text_changer.press_key_string(text)
+
+    def delete_at_caret(self):
+        keyboard = self.get_keyboard()
+        text_context = keyboard.text_context
+        if text_context.can_insert_text():
+            text_context.delete_text_before_caret()
+        else:
+            with keyboard.suppress_modifiers():
+                self.press_keysyms("backspace")
 
 
 class Keyboard(WordSuggestions):
@@ -257,7 +343,7 @@ class Keyboard(WordSuggestions):
     _layer_locked = False
     _last_alt_key = None
     _alt_locked   = False
-    _key_synth    = None
+    _text_changer    = None
     _click_sim    = None
 
 ### Properties ###
@@ -280,24 +366,27 @@ class Keyboard(WordSuggestions):
                    if self.mods[mask])  # bit mask of current modifiers
 
     @contextmanager
-    def suppress_modifiers(self):
+    def suppress_modifiers(self, modifiers = LABEL_MODIFIERS):
         """ Turn modifiers off temporarily. May be nested. """
-        self._push_and_clear_modifiers()
+        self._push_and_clear_modifiers(modifiers)
         yield None
         self._pop_and_restore_modifiers()
 
-    def _push_and_clear_modifiers(self):
-        self._suppress_modifiers_stack.append(self._mods.copy())
-        for mod, nkeys in self._mods.items():
+    def _push_and_clear_modifiers(self, modifiers):
+        mods = {mod : key for mod, key in self._mods.items()
+                if mod & modifiers}
+        self._suppress_modifiers_stack.append(mods)
+        for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = 0
-                self._key_synth.unlock_mod(mod)
+                self._text_changer.unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
-        self._mods = self._suppress_modifiers_stack.pop()
-        for mod, nkeys in self._mods.items():
+        mods = self._suppress_modifiers_stack.pop()
+        for mod, nkeys in mods.items():
             if nkeys:
-                self._key_synth.lock_mod(mod)
+                self._mods[mod] = nkeys
+                self._text_changer.lock_mod(mod)
 
     # currently active layer
     def _get_active_layer_index(self):
@@ -353,7 +442,7 @@ class Keyboard(WordSuggestions):
         self._unpress_timers = UnpressTimers(self)
         self._touch_feedback = TouchFeedback()
 
-        self._key_synth = None
+        self._text_changer = None
         self._key_synth_virtkey = None
         self._key_synth_atspi = None
 
@@ -473,14 +562,8 @@ class Keyboard(WordSuggestions):
         self.invalidate_ui()
         self.commit_ui_updates()
 
-    def init_key_synth(self, vk):
-        self._key_synth_virtkey = KeySynthVirtkey(vk)
-        self._key_synth_atspi = KeySynthAtspi(vk)
-
-        if config.keyboard.key_synth: # == KeySynth.ATSPI:
-            self._key_synth = self._key_synth_atspi
-        else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
-            self._key_synth = self._key_synth_virtkey
+    def set_virtkey(self, vk):
+        self._text_changer = TextChanger(self, vk)
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
@@ -811,7 +894,7 @@ class Keyboard(WordSuggestions):
 
             # Alt is special because it activates the window manager's move mode.
             if modifier != 8: # not Alt?
-                self._key_synth.lock_mod(modifier)
+                self._text_changer.lock_mod(modifier)
 
             # Update word suggestions on shift press.
             self.invalidate_context_ui()
@@ -855,7 +938,7 @@ class Keyboard(WordSuggestions):
 
             # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
-                self._key_synth.unlock_mod(modifier)
+                self._text_changer.unlock_mod(modifier)
 
             # Update word suggestions on shift unlatch or release.
             self.invalidate_context_ui()
@@ -892,14 +975,14 @@ class Keyboard(WordSuggestions):
             self._alt_locked = True
             if self._last_alt_key:
                 self.send_key_press(self._last_alt_key, view, button, event_type)
-            self._key_synth.lock_mod(8)
+            self._text_changer.lock_mod(8)
 
     def maybe_send_alt_release(self, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
                 self.send_key_release(self._last_alt_key, view, button, event_type)
-            self._key_synth.unlock_mod(8)
+            self._text_changer.unlock_mod(8)
 
     def send_key_press(self, key, view, button, event_type):
         """ Actually generate a fake key press """
@@ -907,17 +990,17 @@ class Keyboard(WordSuggestions):
         key_type = key.type
 
         if key_type == KeyCommon.KEYCODE_TYPE:
-            self._key_synth.press_keycode(key.code)
+            self._text_changer.press_keycode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self._key_synth.press_keysym(key.code)
+            self._text_changer.press_keysym(key.code)
 
         elif key_type == KeyCommon.CHAR_TYPE:
             if len(key.code) == 1:
-                self._key_synth.press_unicode(key.code)
+                self._text_changer.press_unicode(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self._key_synth.press_keysym(get_keysym_from_name(key.code))
+            self._text_changer.press_keysym(get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             activated = False
@@ -939,18 +1022,18 @@ class Keyboard(WordSuggestions):
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
             if len(key.code) == 1:
-                self._key_synth.release_unicode(key.code)
+                self._text_changer.release_unicode(key.code)
             else:
                 self.insert_string_at_caret(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self._key_synth.release_keysym(key.code)
+            self._text_changer.release_keysym(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self._key_synth.release_keysym(get_keysym_from_name(key.code))
+            self._text_changer.release_keysym(get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.KEYCODE_TYPE:
-            self._key_synth.release_keycode(key.code);
+            self._text_changer.release_keycode(key.code);
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             controller = self.button_controllers.get(key)
@@ -981,12 +1064,6 @@ class Keyboard(WordSuggestions):
         # release key
         self.send_key_up(key, view, button, event_type)
 
-        # Insert words on button release to avoid having the wordlist
-        # change between button press and release. This also allows for
-        # long presses to trigger a different action without affecting
-        # the suggestions, e.g. menu.
-        WordSuggestions.send_key_up(self, key, button, event_type)
-
         # Don't release latched modifiers for click buttons yet,
         # keep them unchanged until the actual click happens.
         # -> allow clicks with modifiers
@@ -999,6 +1076,12 @@ class Keyboard(WordSuggestions):
 
             # undo temporary suppression of the text display
             WordSuggestions.show_input_line_on_key_release(self, key)
+
+        # Insert words on button release to avoid having the wordlist
+        # change between button press and release.
+        # Make sure latched modifiers have been released, else they will
+        # affect the whole inserted string.
+        WordSuggestions.send_key_up(self, key, button, event_type)
 
         # Send punctuation after the key press and after sticky keys have
         # been released, since this may trigger latching right shift.
@@ -1220,18 +1303,6 @@ class Keyboard(WordSuggestions):
                 _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
                                 .format(value, group))
         return behavior
-
-    def insert_string_at_caret(self, text):
-        """
-        Send key presses for all characters in a unicode string
-        and keep track of the changes in text_context.
-        """
-
-        if self.text_context.can_insert_text():
-            text = text.replace("\\n", "\n")
-            self.text_context.insert_text_at_caret(text)
-        else:
-            self._key_synth.press_key_string(text)
 
     def on_snippets_dialog_closed(self):
         self.editing_snippet = False
@@ -1517,17 +1588,9 @@ class Keyboard(WordSuggestions):
                               .format(key.id))
                 self.send_key_up(key)
 
-        # Somehow keyboard objects don't get released
-        # when switching layouts, there are still
-        # excess references/memory leaks somewhere.
-        # We need to manually release virtkey references or
-        # Xlib runs out of client connections after a couple
-        # dozen layout switches.
-        if self._key_synth_virtkey:
-            self._key_synth_virtkey.cleanup()
-        if self._key_synth_atspi:
-            self._key_synth_atspi.cleanup()
-        self.layout = None  # free the memory
+        if self._text_changer:
+            self._text_changer.cleanup()
+        self.layout = None
 
         if self._click_sim:
             self._click_sim.cleanup()
