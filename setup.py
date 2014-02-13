@@ -274,6 +274,7 @@ DistUtilsExtra.auto.setup(
                   ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
 
                   ('share/onboard/models', glob.glob('models/*.lm')),
+                  ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
                  ],
 
     scripts = ['onboard', 'onboard-settings'],
