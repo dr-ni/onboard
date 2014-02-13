@@ -18,6 +18,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import stat
+import shutil
 import unittest
 import tempfile
 import subprocess
@@ -57,6 +59,33 @@ class TestCheckModels(unittest.TestCase):
 
             self._models.append(model)
             self._model_contents.append([fn, lines])
+
+    def test_can_run_outside_source_tree(self):
+        tool_name = os.path.basename(self.TOOL)
+        fn = os.path.join(self._dir, "not-there.lm")
+        for base_dir in [None,
+                         os.path.join(os.path.expanduser("~"), ".cache"),
+                         os.path.expanduser("~")]:
+            error = None
+            ret = out = err = None
+            try:
+                tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_",
+                                                      dir=base_dir)
+                tmp_dir_name = tmp_dir.name
+                tool = os.path.join(tmp_dir_name, tool_name)
+                shutil.copyfile(self.TOOL, tool)
+                os.chmod(tool, 0o544) # make it executable
+                ret, out, err = self._run_tool(fn, tool)
+                break
+            except PermissionError as e:
+                error = "cannot execute '{}': {}" \
+                          .format(tool_name, e)
+            except FileNotFoundError as e: #
+                error = "cannot copy '{}': {}" \
+                          .format(tool_name, e)
+        if error:
+            self.skipTest(error)
+        self.assertEqual(['FILE_NOT_FOUND, []'], err)
 
     def test_file_not_found(self):
         fn = os.path.join(self._dir, "test.lm")
@@ -260,8 +289,10 @@ class TestCheckModels(unittest.TestCase):
         self.assertEqual(expected, out, "at order {}".format(order))
 
 
-    def _run_tool(self, fn):
-        p = subprocess.Popen([self.TOOL, "--test", fn],
+    def _run_tool(self, fn, tool=None):
+        if tool is None:
+            tool = self.TOOL
+        p = subprocess.Popen([tool, "--test", fn],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         try:

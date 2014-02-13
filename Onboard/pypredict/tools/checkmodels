@@ -23,7 +23,11 @@ import sys
 import glob
 import re
 import optparse
-import Onboard.pypredict
+try:
+    import pypredict
+except ImportError:
+    import Onboard.pypredict
+
 
 def main():
     parser = optparse.OptionParser(usage=
@@ -72,28 +76,6 @@ def main():
             for e in errors:
                 print("{}, {}".format(e.id, e.params), file=sys.stderr)
 
-
-class Error:
-
-    def __init__(self, id, format, *params):
-        self.id = id
-        self.format = format
-        self.params = list(params)
-
-    def __str__(self):
-        return self.format.format(*self.params)
-
-
-class FileInfo:
-    file_size = None
-    num_lines = None
-
-class LevelData:
-    data_count = None
-    encountered_count = 0
-    num_fields = None
-
-
 def check_model(filename):
     errors = []
     lineno = 0
@@ -138,7 +120,7 @@ def check_model(filename):
                 if not line:
                     continue
 
-                # section line?
+                # start of a section?
                 if line.startswith("\\"):
                     if line.startswith("\\data\\"):
                         sections.append("data")
@@ -157,7 +139,7 @@ def check_model(filename):
                         state = DONE
                         break
 
-
+                # in data section?
                 if state == COUNTS:
                     match = re.search("^ngram\s*(\d+)=(\d+)$", line)
                     groups = match.groups() if match else ()
@@ -173,6 +155,7 @@ def check_model(filename):
                         ld.data_count = count
                         levels[level] = ld
 
+                # in ngram section?
                 if state == NGRAMS:
                     fields = line.split()
                     n = len(fields)
@@ -235,6 +218,29 @@ def check_model(filename):
     file_info.num_lines = lineno
 
     return file_info, levels, errors
+
+
+class Error:
+
+    def __init__(self, id, format, *params):
+        self.id = id
+        self.format = format
+        self.params = list(params)
+
+    def __str__(self):
+        return self.format.format(*self.params)
+
+
+class FileInfo:
+    file_size = None
+    num_lines = None
+
+
+class LevelData:
+    data_count = None
+    encountered_count = 0
+    num_fields = None
+
 
 if __name__ == '__main__':
     main()
