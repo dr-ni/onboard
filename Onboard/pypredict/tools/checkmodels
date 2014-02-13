@@ -23,7 +23,7 @@ import sys
 import glob
 import re
 import optparse
-import pypredict
+import Onboard.pypredict
 
 def main():
     parser = optparse.OptionParser(usage=
