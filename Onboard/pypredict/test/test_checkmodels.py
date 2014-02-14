@@ -91,19 +91,22 @@ class TestCheckModels(unittest.TestCase):
         fn = os.path.join(self._dir, "test.lm")
         ret, out, err = self._run_tool(fn)
         self.assertEqual(['FILE_NOT_FOUND, []'], err)
+        self.assertTrue(ret != 0)
 
     def test_not_a_file(self):
         fn = os.path.join(self._dir, "dir.lm")
         os.mkdir(fn)
         ret, out, err = self._run_tool(fn)
-        self.assertEqual(['NOT_A_FILE, []'], err)
         os.rmdir(fn)
+        self.assertEqual(['NOT_A_FILE, []'], err)
+        self.assertTrue(ret != 0)
 
     def test_empty_file(self):
         fn = os.path.join(self._dir, "test.lm")
         self._touch(fn)
         ret, out, err = self._run_tool(fn)
         self.assertEqual(['EMPTY_FILE, []'], err)
+        self.assertTrue(ret != 0)
 
     def test_no_errors(self):
         for i, (fn, lines) in enumerate(self._model_contents):
@@ -111,6 +114,7 @@ class TestCheckModels(unittest.TestCase):
             ret, out, err = self._run_tool(fn)
             self.assertEqual([], err, "at order {}".format(order))
             self._test_model_info(out, order, lines)
+            self.assertTrue(ret == 0, "at order {}".format(order))
 
     def test_no_data_section(self):
         for i, (fn, lines) in enumerate(self._model_contents):

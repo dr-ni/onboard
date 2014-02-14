@@ -76,6 +76,9 @@ def main():
             for e in errors:
                 print("{}, {}".format(e.id, e.params), file=sys.stderr)
 
+    if errors:
+        sys.exit(2)
+
 def check_model(filename):
     errors = []
     lineno = 0
@@ -221,7 +224,6 @@ def check_model(filename):
 
 
 class Error:
-
     def __init__(self, id, format, *params):
         self.id = id
         self.format = format
