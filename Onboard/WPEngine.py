@@ -19,8 +19,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from contextlib import contextmanager, closing
-
 import os
 import time
 
@@ -36,7 +34,9 @@ _logger = logging.getLogger(__name__)
 
 
 class WPLocalEngine(object):
-    """ Low level word predictor, local in-process engine. """
+    """
+    Singleton class for low-level word prediction, local in-process engine.
+    """
 
     def __new__(cls, *args, **kwargs):
         """
@@ -69,6 +69,7 @@ class WPLocalEngine(object):
         self._model_cache.save_models()
 
     def set_models(self, persistent_models, auto_learn_models, scratch_models):
+        """ Fixme: rename to "set_model_ids" """
         self.models = persistent_models + scratch_models
         self.persistent_models = persistent_models
         self.auto_learn_models = auto_learn_models
@@ -279,6 +280,9 @@ class ModelCache:
     def __init__(self):
         self._language_models = {}
 
+    def clear(self):
+        self._language_models = {}
+
     def get_models(self, lmids):
         models = []
         for lmid in lmids:
@@ -364,6 +368,16 @@ class ModelCache:
             result[i] = field
         return ":".join(result)
 
+    @staticmethod
+    def split_lmid(lmid):
+        lmid = ModelCache.canonicalize_lmid(lmid)
+        return lmid.split(":")
+
+    @staticmethod
+    def is_user_lmid(lmid):
+        type_, class_, name = ModelCache.split_lmid(lmid)
+        return class_ == "user"
+
     def load_model(self, lmid):
         type_, class_, name  = lmid.split(":")
 
@@ -409,10 +423,13 @@ class ModelCache:
                 if not ex.errno is None: # not n-gram count mismatch
                     errno = ex.errno
                     errstr = os.strerror(errno)
-                    _logger.error("Failed to load language model '{}': {} ({})" \
-                                .format(filename, errstr, errno))
+                    msg = _format(
+                            "Failed to load language model '{}': {} ({})", \
+                            filename, errstr, errno)
                 else:
-                    _logger.error(utils.unicode_str(ex))
+                    msg = utils.unicode_str(ex)
+                _logger.error(msg)
+                model.load_error_msg = msg
 
                 if class_ == "user":
                     _logger.error("Saving word suggestions disabled "
@@ -431,6 +448,7 @@ class ModelCache:
     def save_model(self, model, lmid):
         type_, class_, name  = lmid.split(":")
         filename = self.get_filename(lmid)
+        backup_filename = self.get_backup_filename(filename)
 
         if filename and \
            model.modified:
@@ -454,7 +472,7 @@ class ModelCache:
 
                         # rename to final file
                         if os.path.exists(filename):
-                            os.rename(filename, filename + ".bak")
+                            os.rename(filename, backup_filename)
                         os.rename(tempfile, filename)
 
                     model.modified = False
@@ -476,6 +494,47 @@ class ModelCache:
             filename = os.path.join(path, name + "." + ext)
 
         return filename
+
+    @staticmethod
+    def get_backup_filename(filename):
+        return filename + ".bak"
+
+    @staticmethod
+    def get_broken_filename(filename):
+        """
+        Filename broken files are renamed to.
+
+        Doctests:
+        >>> import tempfile
+        >>> import subprocess
+        >>> from os.path import basename
+        >>> td = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        >>> dir = td.name
+        >>> fn = os.path.join(dir, "en_US.lm")
+        >>>
+        >>> def test(fn):
+        ...     bfn = ModelCache.get_broken_filename(fn)
+        ...     print(repr(basename(bfn)))
+        ...     _ignore = subprocess.call(["touch", bfn])
+
+        >>> test(fn)   # doctest: +ELLIPSIS
+        'en_US.lm.broken-..._001'
+
+        >>> test(fn)   # doctest: +ELLIPSIS
+        'en_US.lm.broken-..._002'
+
+        >>> test(fn)   # doctest: +ELLIPSIS
+        'en_US.lm.broken-..._003'
+        """
+        count = 1
+        while True:
+            fn = "{}.broken-{}_{:03}".format(filename,
+                                             time.strftime("%Y-%m-%d"),
+                                             count)
+            if not os.path.exists(fn):
+                break
+            count += 1
+        return fn
 
 
 class AutoSaveTimer(utils.Timer):

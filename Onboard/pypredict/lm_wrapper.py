@@ -32,6 +32,7 @@ class _BaseModel:
 
     modified = False
     load_error = False
+    load_error_msg = ""
 
     def learn_tokens(self, tokens, allow_new_words=True):
         """ Extract n-grams from tokens and count them. """
@@ -135,6 +136,7 @@ class _BaseModel:
 
     def load(self, filename):
         self.load_error = False
+        self.load_error_msg = ""
         self.modified = False
         try:
             super(_BaseModel, self).load(filename)

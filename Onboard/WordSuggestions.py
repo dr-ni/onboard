@@ -18,14 +18,17 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import locale
+import os
 import time
+import locale
 import re
+import shutil
+import weakref
+
+from gi.repository import Gtk
 
 import logging
 _logger = logging.getLogger(__name__)
-
-from gi.repository import GLib
 
 import Onboard.pypredict as pypredict
 
@@ -36,8 +39,9 @@ from Onboard.SpellChecker      import SpellChecker
 from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.WPEngine          import WPLocalEngine
+from Onboard.WPEngine          import WPLocalEngine, ModelCache
 from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce
+import Onboard.utils as utils
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -57,6 +61,8 @@ class WordSuggestions:
         self._languagedb = LanguageDB(self)
         self._spell_checker = SpellChecker(self._languagedb)
         self._punctuator = Punctuator(self)
+        self._load_error_recovery = ModelErrorRecovery(self)
+        self._load_errors_reported = False
         self._wpengine  = None
 
         self._correction_choices = []
@@ -162,7 +168,13 @@ class WordSuggestions:
             # Make sure to load the language models, so there is no
             # delay on first key press. Don't burden the startup
             # with this either, run it a little delayed.
-            TimerOnce(1, self._wpengine.load_models)
+            TimerOnce(1, self._load_models)
+
+    def _load_models(self):
+        self._wpengine.load_models()
+        if not self._load_errors_reported:
+            self._load_errors_reported = True
+            self._load_error_recovery.report_errors(self._wpengine)
 
     def get_system_model_names(self):
         """ Union of all system and user models """
@@ -1922,5 +1934,177 @@ class WordListPanel(LayoutPanel):
 
         return button_infos, filled_up, x
 
+
+class ModelErrorRecovery:
+    """ Recover from load errors in user models. """
+
+    def __init__(self, keyboard = None):
+        self._keyboard = weakref.ref(keyboard) if keyboard else None
+
+    def get_keyboard(self):
+        if self._keyboard:
+            return self._keyboard()
+
+    def get_wpengine(self):
+        keyboard = self.get_keyboard()
+        if keyboard:
+            return keyboard._wpengine
+        return None
+
+    def get_model_cache(self):
+        wpengine = self.get_wpengine()
+        if wpengine:
+            return wpengine._model_cache
+        return None
+
+    def report_errors(self, wpengine):
+        wpengine = self.get_wpengine()
+        cache = self.get_model_cache()
+
+        retry = False
+        for lmid in wpengine.models:
+            if cache.is_user_lmid(lmid):
+                model = cache.get_model(lmid)
+                filename = cache.get_filename(lmid)
+                if model.load_error:
+                    retry = retry or \
+                        self._report_load_error(filename, model.load_error_msg)
+
+        # clear the model cache and have models reloaded lazily
+        if retry:
+            cache.clear()
+
+    def _report_load_error(self, filename, msg, _test_mode=False):
+        """
+        Handle model load failure.
+
+        Doctests:
+        >>> import tempfile
+        >>> import subprocess
+        >>> import glob
+        >>> from os.path import basename, join
+        >>> td = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        >>> tdir = td.name
+        >>> fn = os.path.join(tdir, "en_US.lm")
+        >>> mc = ModelErrorRecovery()
+
+        >>> def touch(fn):
+        ...     with open(fn, mode="w") as f: pass
+        >>>
+        >>> def test(fn):
+        ...    mc._report_load_error(fn, "Failed to load model", True)
+        ...    for f in sorted(f for f in glob.glob(join(tdir, "*"))):
+        ...        print(repr(basename(f)))
+        ...        os.remove(f)
+
+        # If there is no backup, the old model shall be removed and saved
+        # under the broken name.
+        >>> touch(fn)
+        >>> test(fn)    # doctest: +ELLIPSIS
+        'en_US.lm.broken-..._001'
+
+        # Test rename failure
+        >>> test(fn)    # doctest: +ELLIPSIS
+        Failed to rename broken model: ...
+
+        # If there is a backup, the old model shall be saved under the broken
+        # name and a copy of the backup becomes the new model.
+        >>> touch(fn)
+        >>> touch(mc.get_backup_filename(fn))
+        >>> test(fn)    # doctest: +ELLIPSIS
+        'en_US.lm'
+        'en_US.lm.bak'
+        'en_US.lm.broken-..._001'
+
+        # Test rename failure
+        >>> touch(mc.get_backup_filename(fn))
+        >>> test(fn)    # doctest: +ELLIPSIS
+        Failed to revert to backup model: ...
+        """
+        retry = False
+        keyboard = self.get_keyboard()
+        parent = keyboard.get_application()._window if keyboard else None
+        backup_filename = self.get_backup_filename(filename)
+        broken_filename = self.get_broken_filename(filename)
+
+        if _test_mode:
+            class Logger:
+                def error(self, s): print(s)
+            _logger = Logger()
+
+        if os.path.exists(backup_filename):
+            markup = _format(
+                "<big>Onboard failed to open learned "
+                "word suggestions.</big>\n\n"
+                "The error was:\n<tt>{}</tt>\n\n"
+                "Revert word suggestions to the last backup (recommended)?",
+                msg)
+            reply = self._show_dialog(markup, parent, buttons="yes_no") \
+                   if not _test_mode else True
+
+            if reply:
+                try:
+                    os.rename(filename, broken_filename)
+                    shutil.copy(backup_filename, filename)
+                except OSError as ex:
+                    _logger.error("Failed to revert to backup model: {}" \
+                                    .format(utils.unicode_str(ex)))
+                retry = True
+        else:
+            markup = _format(
+                "<big>Onboard failed to open learned "
+                "word suggestions.</big>\n\n"
+                "The error was:\n<tt>{}</tt>\n\n"
+                "The suggestions have to be reset, but "
+                "the erroneous file will remain at \n'{}'",
+                msg, broken_filename)
+            if not _test_mode:
+                self._show_dialog(markup, parent)
+            try:
+                os.rename(filename, broken_filename)
+            except OSError as ex:
+                _logger.error("Failed to rename broken model: {}" \
+                                .format(utils.unicode_str(ex)))
+        return retry
+
+    def _show_dialog(self, markup, parent=None, message_type = "error", buttons="ok"):
+        keyboard = self.get_keyboard()
+
+        if message_type == "question":
+            message_type = Gtk.MessageType.QUESTION
+        else:
+            message_type = Gtk.MessageType.ERROR
+
+        if buttons == "yes_no":
+            buttons = Gtk.ButtonsType.YES_NO
+        else:
+            buttons = Gtk.ButtonsType.OK
+
+        message_type = Gtk.MessageType.QUESTION
+        dialog = Gtk.MessageDialog(message_type=message_type,
+                                   buttons=buttons)
+        dialog.set_markup(markup)
+        if parent:
+            dialog.set_transient_for(parent)
+
+        # Don't hide dialog behind the keyboard in force-to-top mode.
+        if config.is_force_to_top():
+            dialog.set_position(Gtk.WindowPosition.CENTER)
+
+        if keyboard:
+            keyboard.on_focusable_gui_opening()
+        response = dialog.run() #dlg.connect("response", self._on_confirmation_dialog_response)
+        dialog.destroy()
+        if keyboard:
+            keyboard.on_focusable_gui_closed()
+
+        return response == Gtk.ResponseType.YES
+
+
+    def get_backup_filename(self, filename):
+        return ModelCache.get_backup_filename(filename)
+
+    def get_broken_filename(self, filename):
+        return ModelCache.get_broken_filename(filename)
 
 
