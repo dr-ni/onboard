@@ -1974,18 +1974,11 @@ class BCLanguage(ButtonController):
 
     def __init__(self, keyboard, key):
         ButtonController.__init__(self, keyboard, key)
-        self._opened_on_long_press = False
 
     def release(self, view, button, event_type):
-        if not self._opened_on_long_press:
-            self.set_active(not self.key.active)
-            if self.key.active:
-                self._show_menu(view, self.key, button)
-        self._opened_on_long_press = False
-
-    def long_press(self, view, button):
-        self._opened_on_long_press = True
-        self._show_menu(view, self.key, button)
+        self.set_active(not self.key.active)
+        if self.key.active:
+            self._show_menu(view, self.key, button)
 
     def _show_menu(self, view, key, button):
         self.keyboard.hide_touch_feedback()
