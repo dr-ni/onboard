@@ -1944,7 +1944,7 @@ class BCPauseLearning(ButtonController):
             keyboard.discard_changes()
 
     def update(self):
-        self.set_active(config.word_suggestions.pause_learning == 1)
+        self.set_active(config.word_suggestions.pause_learning >= 1)
         self.set_locked(config.word_suggestions.pause_learning == 2)
 
 
