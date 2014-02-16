@@ -1632,13 +1632,12 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons
         for word correction and prediction.
         """
-        spacing = self._get_spacing()
         wordlist = self._get_child_button("wordlist")
         fixed_background = list(self.find_ids(["wordlist",
                                                "prediction",
                                                "correction"]))
-        fixed_buttons    = list(self.find_ids(["expand-corrections",
-                                               "language",
+        fixed_buttons    = list(self.find_ids(["expand-corrections"]))
+        hideable_buttons = list(self.find_ids(["language",
                                                "hide"]))
         if not wordlist:
             return []
@@ -1647,20 +1646,19 @@ class WordListPanel(LayoutPanel):
         wordlist_rect = wordlist.get_rect()
         rect = wordlist_rect.copy()
 
+        # align visible buttons
         buttons = []
-        button = self._get_child_button("hide")
-        if button and button.visible:
-            button_width = self._get_button_width(button)
-            rect.w -= button_width
-            buttons.append((button, button_width, 1))
-
-        if 1:
-            button = self._get_child_button("language")
+        visible_button_ids = config.word_suggestions.wordlist_buttons
+        for button_id in reversed(visible_button_ids):
+            button = self._get_child_button(button_id)
             if button and button.visible:
                 button_width = self._get_button_width(button)
                 rect.w -= button_width
-                #rect.x += button_width
                 buttons.append((button, button_width, 1))
+
+        # hide buttons disabled in preferences
+        for button in hideable_buttons:
+            button.set_visible(button.get_id() in visible_button_ids)
 
         # font size is based on the height of the word list background
         font_size = WordKey().calc_font_size(key_context, rect.get_size())
@@ -1700,7 +1698,8 @@ class WordListPanel(LayoutPanel):
         color_scheme = fixed_buttons[0].color_scheme
         for key in keys:
             key.color_scheme = color_scheme
-        self.set_items(fixed_background + keys + fixed_buttons)
+        self.set_items(fixed_background + keys + \
+                       fixed_buttons + hideable_buttons)
 
         return keys
 

@@ -1418,6 +1418,7 @@ class ConfigWordSuggestions(ConfigObject):
         self.add_key("accent-insensitive", True)
         self.add_key("max-word-choices", 5)
         self.add_key("spelling-suggestions-enabled", True)
+        self.add_key("wordlist-buttons", ["language", "hide"])
 
         self.add_key("show-context-line", False)
 
@@ -1430,5 +1431,25 @@ class ConfigWordSuggestions(ConfigObject):
         return self.enabled and \
                self.auto_learn and \
                not self.stealth_mode
+
+    def show_language_button(self, show):
+        key_id = "language"
+        buttons = self.wordlist_buttons[:]
+        if show:
+            if not key_id in buttons:
+                try:
+                    index = buttons.index("hide")
+                    buttons.insert(index, key_id)
+                except ValueError:
+                    buttons.append(key_id)
+
+                self.wordlist_buttons = buttons
+        else:
+            if key_id in buttons:
+                buttons.remove(key_id)
+                self.wordlist_buttons = buttons
+
+    def can_show_language_button(self):
+        return "language" in self.wordlist_buttons
 
 

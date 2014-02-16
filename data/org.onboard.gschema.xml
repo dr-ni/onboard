@@ -701,6 +701,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Show the context line</summary>
             <description>Display the currently edited text line in the keyboard.</description>
         </key>
+        <key name="wordlist-buttons" type="as">
+            <default>["language", "hide"]</default>
+            <summary>Buttons visible in the word suggestion bar</summary>
+            <description>Key ids and order of buttons visible on the word suggestion bar.</description>
+        </key>
     </schema>
 </schemalist>
 
