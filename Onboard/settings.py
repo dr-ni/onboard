@@ -100,17 +100,34 @@ class DialogBuilder(object):
             callback(value)
 
     # checkbox
-    def bind_check(self, name, config_object, key, widget_callback = None):
+    def bind_check(self, name, config_object, key,
+                   config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
-        w.set_active(getattr(config_object, key))
-        if widget_callback:
-            w.connect("toggled", widget_callback, config_object, key)
+        if config_get_callback:
+            active = config_get_callback(config_object, key)
         else:
-            w.connect("toggled", self.bind_check_callback, config_object, key)
-        getattr(config_object, key + '_notify_add')(w.set_active)
+            active = getattr(config_object, key)
+        w.set_active(active)
+        w.connect("toggled", self._bind_check_callback,
+                  config_object, key, config_set_callback)
+        getattr(config_object, key + '_notify_add')( \
+             lambda x: self._notify_check_callback(w, config_object, key,
+                                                     config_get_callback))
 
-    def bind_check_callback(self, widget, config_object, key):
-        setattr(config_object, key, widget.get_active())
+    def _notify_check_callback(self, widget, config_object,
+                              key, config_get_callback):
+        if config_get_callback:
+            active = config_get_callback(config_object, key)
+        else:
+            active = getattr(config_object, key)
+        widget.set_active(active)
+
+    def _bind_check_callback(self, widget, config_object,
+                            key, config_set_callback):
+        if config_set_callback:
+            config_set_callback(config_object, key, widget.get_active())
+        else:
+            setattr(config_object, key, widget.get_active())
 
     # combobox with id column
     def bind_combobox_id(self, name, config_object, key,
@@ -301,12 +318,12 @@ class Settings(DialogBuilder):
                              builder.get_object("docking_enabled_toggle")
         self.docking_box = builder.get_object("docking_box")
 
-        def on_docking_enabled_toggle(widget, config_object, key):
-            setattr(config_object, key, widget.get_active())
+        def on_docking_enabled_config_set(config_object, key, value):
+            setattr(config_object, key, value)
             self.update_window_widgets()
         self.bind_check("docking_enabled_toggle",
                         config.window, "docking_enabled",
-                        widget_callback = on_docking_enabled_toggle)
+                        config_set_callback = on_docking_enabled_config_set)
         self.bind_button("docking_settings_button",
                          lambda widget: DockingDialog().run(self.window))
 
@@ -944,6 +961,14 @@ class PageWordSuggestions(DialogBuilder):
                             config.typing_assistance, "auto_correction")
         self.bind_check("enable_spell_check_toggle",
                             config.word_suggestions, "spelling_suggestions_enabled")
+
+        self.bind_check("language_button_toggle",
+            config.word_suggestions, "wordlist_buttons",
+            config_get_callback = lambda co, key: \
+                        config.word_suggestions.can_show_language_button(),
+            config_set_callback = lambda co, key, value: \
+                        config.word_suggestions.show_language_button(value))
+
         #self.bind_check("show_context_line_toggle",
         #                config.word_suggestions, "show_context_line")
         self._init_spell_checker_backend_combo()
