@@ -30,6 +30,8 @@ except ImportError:
 
 
 def main():
+    exit_code = 0
+
     parser = optparse.OptionParser(usage=
              "Usage: %prog [options] [model1 model2 ...]")
     parser.add_option("-t", "--test", action="store_true",
@@ -45,39 +47,48 @@ def main():
     if not filenames:
         print("No models found in default paths. "
               "Please specify one or more filenames.", file=sys.stderr)
-        sys.exit(1)
+        exit_code = 1
 
-    for fn in filenames:
-        if not options.test_mode:
-            print("checking '{}'".format(fn))
+    if not exit_code:
+        for i, fn in enumerate(filenames):
+            if not options.test_mode:
+                if i > 0:
+                    print()
+                print("checking '{}'".format(fn))
 
-        file_info, levels, errors = check_model(fn)
+            file_info, levels, errors = check_model(fn)
 
-        if not options.test_mode:
-            print("File size {}; Number of lines {}" \
-                .format(file_info.file_size, file_info.num_lines))
-            for level, ld in sorted(levels.items()):
-                print("Number of {}-grams: declared {:8}, found {:8}, {}" \
-                    .format(level, ld.data_count, ld.encountered_count,
-                    "OK" if ld.data_count == ld.encountered_count else "Error"))
+            if not options.test_mode:
+                print("File size {}; Number of lines {}" \
+                    .format(file_info.file_size, file_info.num_lines))
+                for level, ld in sorted(levels.items()):
+                    print("Number of {}-grams: declared {:8}, found {:8}, {}" \
+                        .format(level, ld.data_count, ld.encountered_count,
+                        "OK" if ld.data_count == ld.encountered_count else "Error"))
+
+                if errors:
+                    print("Errors found:")
+                    for i, e in enumerate(errors):
+                        print("{:3}: {}".format(i+1, e), file=sys.stderr)
+                else:
+                    print("No errors.")
+            else:
+                print("{}, {}" \
+                    .format(file_info.file_size, file_info.num_lines))
+                for level, ld in sorted(levels.items()):
+                    print("{}, {}, {}" \
+                        .format(level, ld.data_count, ld.encountered_count))
+                for e in errors:
+                    print("{}, {}".format(e.id, e.params), file=sys.stderr)
 
             if errors:
-                print("Errors found:")
-                for i, e in enumerate(errors):
-                    print("{:3}: {}".format(i+1, e), file=sys.stderr)
-            else:
-                print("No errors.")
-        else:
-            print("{}, {}" \
-                .format(file_info.file_size, file_info.num_lines))
-            for level, ld in sorted(levels.items()):
-                print("{}, {}, {}" \
-                    .format(level, ld.data_count, ld.encountered_count))
-            for e in errors:
-                print("{}, {}".format(e.id, e.params), file=sys.stderr)
+                exit_code = 2
 
-    if errors:
-        sys.exit(2)
+    if exit_code and \
+       not options.test_mode and \
+       len(filenames) > 1:
+        print("\nThere were errors.")
+    sys.exit(exit_code)
 
 def check_model(filename):
     errors = []
