@@ -1919,15 +1919,33 @@ class BCPauseLearning(ButtonController):
     id = "pause-learning"
 
     def release(self, view, button, event_type):
-        config.word_suggestions.pause_learning = \
-            not config.word_suggestions.pause_learning
+        keyboard = self.keyboard
+        key = self.key
 
-        # don't learn, immediately forget changes
-        if config.word_suggestions.pause_learning:
-            self.keyboard.discard_changes()
+        active, locked = keyboard.step_sticky_key_state(key,
+                                                        key.active, key.locked,
+                                                        button, event_type)
+        key.active  = active
+        key.locked  = locked
+
+        value = 0
+        if active:
+            value += 1
+        if locked:
+            value += 1
+
+        begin = config.word_suggestions.pause_learning == 0 and \
+                value > 0
+
+        config.word_suggestions.pause_learning = value
+
+        # immediately forget changes
+        if begin:
+            keyboard.discard_changes()
 
     def update(self):
-        self.set_active(config.word_suggestions.pause_learning)
+        self.set_active(config.word_suggestions.pause_learning == 1)
+        self.set_locked(config.word_suggestions.pause_learning == 2)
 
 
 class BCLanguage(ButtonController):

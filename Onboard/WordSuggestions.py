@@ -860,7 +860,8 @@ class WordSuggestions:
         self.commit_changes()
 
         # deactivate the pause button
-        config.word_suggestions.pause_learning = False
+        if config.word_suggestions.pause_learning == 1:  # not locked?
+            config.word_suggestions.pause_learning = 0
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """

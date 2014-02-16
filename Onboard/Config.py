@@ -1422,7 +1422,7 @@ class ConfigWordSuggestions(ConfigObject):
 
         self.add_key("show-context-line", False)
 
-        self.pause_learning = False  # not in gsettings
+        self.pause_learning = 0  # 0=off, 1=latched, 2=locked; not in gsettings
 
     def word_prediction_notify_add(self, callback):
         self.auto_learn_notify_add(callback)
