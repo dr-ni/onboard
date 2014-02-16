@@ -292,7 +292,8 @@ tokenize_pattern = """
     ) |
     (                                     # word
       (?:[-]{{0,2}}                       # allow command line options
-        [^\W\d]\w*(?:[-'´΄][\w]+)*['´΄]?) # word, not starting with a digit
+        [^\W\d]\w*(?:[-'´΄][\w]+)*        # word, not starting with a digit
+        [{trailing_characters}'´΄]?)
       | <unk> | <s> | </s> | <num>        # pass through control words
       | <bot:[a-z]*>                      # pass through begin of text merkers
       | (?:^|(?<=\s))
@@ -304,10 +305,12 @@ tokenize_pattern = """
     """
 # Don't learn "-" or "--" as standalone tokens...
 TEXT_PATTERN = re.compile(tokenize_pattern.format(
+                          trailing_characters = "",
                           standalone_operators = ""),
                           re.UNICODE|re.DOTALL|re.VERBOSE)
 # ...but recognize them in a prediction context as start of a cmd line option.
 CONTEXT_PATTERN = re.compile(tokenize_pattern.format(
+                          trailing_characters = "-",
                           standalone_operators = "| [-]{1,2}"),
                           re.UNICODE|re.DOTALL|re.VERBOSE)
 

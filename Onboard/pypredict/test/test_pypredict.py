@@ -455,7 +455,7 @@ def suite():
          ["double_newline \n \n \n", ['double_newline', '<s>'],
              ['double_newline', '<s>', ''], ['double_newline', '']],
          ["dash-dash", ["dash-dash"], ["dash-dash"], ["dash-dash"]],
-         ["dash-", ['dash'], ['dash'], ['dash-']],
+         ["dash-", ['dash'], ['dash-'], ['dash-']],
          ["single quote's", ['single', "quote's"], ['single', "quote's"],
              ["single quote's"]],
          ["single quote'", ['single', "quote'"], ['single', "quote'"],
@@ -513,10 +513,10 @@ def suite():
              ['<bot:txt> sentence.', 'sentence.', '']],
 
          # URLs
-         ["www", ['www'], ['www'], ['www']],
+         ["www",  ['www'], ['www'],     ['www']],
+         ["www ", ['www'], ['www', ''], ['www']],
          ["www.", ['www'], ['www', ''], ['www.']],
          ["www,", ['www'], ['www', ''], ['www,']],
-         ["www ", ['www'], ['www', ''], ['www']],
          ["http://user:pass@www.do-mai_n.nl/path/name.ext",
              ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
              ['http', 'user', '<unk>', 'www', 'do-mai_n', 'nl', 'path', 'name', 'ext'],
