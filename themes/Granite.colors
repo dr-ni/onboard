@@ -38,7 +38,7 @@
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
-                wordlist, prediction, language.wordlist, hide.wordlist
+                wordlist, prediction, pause-learning.wordlist, language.wordlist, hide.wordlist
             </key_group>
         </key_group>
         

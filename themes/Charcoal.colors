@@ -42,7 +42,7 @@
                 prediction
                 <key_group>
                     <color element="fill" rgb="#111920" opacity="0.8"/>
-                    wordlist, language.wordlist, hide.wordlist
+                    wordlist, pause-learning.wordlist, language.wordlist, hide.wordlist
                 </key_group>
             </key_group>
         </key_group>
