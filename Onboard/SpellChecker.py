@@ -310,8 +310,9 @@ class hunspell(SCBackend):
         """
         Query for spelling suggestions.
         Text may contain one or more words. Each word generates its own
-        list of suggestions. Word boundaries are choses to match the bahavior
-        of the hunspell command line tool, i.e. split at '-','_' and whitespace.
+        list of suggestions. Word boundaries are chosen to match the
+        behavior of the hunspell command line tool, i.e. split at '-','_'
+        and whitespace.
 
         Doctests:
         # one prediction token, two words for the spell checker
@@ -409,10 +410,11 @@ class hunspell(SCBackend):
     def get_supported_dict_ids(self):
         """
         Return raw supported dictionary ids.
-        They may not all be valid language ids, e.g. en-GB for myspell dicts.
+        They may not all be valid language ids, e.g. en-GB
+        instead of en_GB for myspell dicts.
 
         Doctests:
-        # Just check it does something at all
+        # Just check it does anything at all
         >>> sp = hunspell(["en_US"])
         >>> sp.get_supported_dict_ids()   # doctest: +ELLIPSIS
         ['...
