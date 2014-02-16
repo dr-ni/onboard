@@ -316,7 +316,8 @@ class LayoutRoot:
             most_frequent_size = \
                 max(list(zip(list(hist.values()), list(hist.keys()))))[1] \
                 if hist else None
-            chamfer_size = most_frequent_size * 0.5
+            chamfer_size = most_frequent_size * 0.5 \
+                if not most_frequent_size is None else None
             chamfer_sizes[layer_id] = chamfer_size
         return chamfer_sizes
 
