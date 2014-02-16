@@ -2000,13 +2000,13 @@ class BCLanguage(ButtonController):
             keyboard = self.keyboard
             langdb = keyboard._languagedb
 
-            lang_id = keyboard.get_active_lang_id()
-            visible = bool(lang_id)
-            label = langdb.get_language_code(lang_id).capitalize()
+            active_lang_id = keyboard.get_active_lang_id()
+            lang_id = keyboard.get_lang_id()
+            label = langdb.get_language_code(active_lang_id).capitalize()
 
-            if key.visible != visible or label != key.get_label():
+            if label != key.get_label():
                 key.set_labels({0: label})
                 key.tooltip = langdb.get_language_full_name(lang_id)
-                self.set_visible(visible)
+                key.show_image = not active_lang_id
                 keyboard.invalidate_ui()
 
