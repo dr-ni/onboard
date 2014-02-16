@@ -1663,7 +1663,7 @@ class WordListPanel(LayoutPanel):
                 rect.w -= button_width
                 buttons.append((button, button_width, 1))
 
-        # hide buttons disabled in preferences
+        # hide buttons disabled by preferences
         for button in hideable_buttons:
             button.set_visible(button.get_id() in visible_button_ids)
 

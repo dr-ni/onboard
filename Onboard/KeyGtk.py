@@ -922,6 +922,10 @@ class WordlistKey(RectKey):
     def get_light_direction(self):
         return -0.3 * pi / 180
 
+    def draw_shadow_cached(self, context):
+        # no shadow
+        pass
+
 
 
 class FullSizeKey(WordlistKey):
@@ -953,9 +957,6 @@ class BarKey(FullSizeKey):
         # what should be flat key edges.
         return 0.0
 
-    def draw_shadow_cached(self, context):
-        # no shadow
-        pass
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
