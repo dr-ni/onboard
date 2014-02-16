@@ -951,8 +951,12 @@ class PageWordSuggestions(DialogBuilder):
                 .connect_after("toggled", lambda x: self._update_ui())
         self.bind_check("enable_word_suggestions_toggle",
                         config.word_suggestions, "enabled")
+
+        self.wid("auto_learn_toggle") \
+                .connect_after("toggled", lambda x: self._update_ui())
         self.bind_check("auto_learn_toggle",
                             config.wp, "auto_learn")
+
         self.bind_check("punctuation_assistence_toggle",
                             config.wp, "punctuation_assistance")
         self.bind_check("auto_capitalization_toggle",
@@ -997,6 +1001,8 @@ class PageWordSuggestions(DialogBuilder):
     def _update_ui(self):
         self.wid("word_suggestions_general_box1") \
                 .set_sensitive(config.are_word_suggestions_enabled())
+        self.wid("pause_learning_button_toggle") \
+                .set_sensitive(config.word_suggestions.auto_learn)
 
 
 class DockingDialog(DialogBuilder):

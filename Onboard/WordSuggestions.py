@@ -1655,7 +1655,8 @@ class WordListPanel(LayoutPanel):
         rect = wordlist_rect.copy()
 
         # hide buttons disabled by preferences
-        visible_button_ids = config.word_suggestions.wordlist_buttons
+        visible_button_ids = \
+            config.word_suggestions.get_shown_wordlist_button_ids()
         for button in hideable_buttons:
             button.set_visible(button.get_id() in visible_button_ids)
 

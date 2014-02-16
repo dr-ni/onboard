@@ -1438,6 +1438,14 @@ class ConfigWordSuggestions(ConfigObject):
     KEY_ID_LANGUAGE = "language"
     KEY_ID_PAUSE_LEARNING = "pause-learning"
 
+    def get_shown_wordlist_button_ids(self):
+        result = []
+        for button_id in self.wordlist_buttons:
+            if button_id != self.KEY_ID_PAUSE_LEARNING or \
+                self.can_show_pause_learning_button():
+                result.append(button_id)
+        return result
+
     def can_show_language_button(self):
         return self.KEY_ID_LANGUAGE in self.wordlist_buttons
 
@@ -1459,7 +1467,8 @@ class ConfigWordSuggestions(ConfigObject):
                 self.wordlist_buttons = buttons
 
     def can_show_pause_learning_button(self):
-        return self.KEY_ID_PAUSE_LEARNING in self.wordlist_buttons
+        return self.auto_learn and \
+               self.KEY_ID_PAUSE_LEARNING in self.wordlist_buttons
 
     def show_pause_learning_button(self, show):
         key_id = self.KEY_ID_PAUSE_LEARNING

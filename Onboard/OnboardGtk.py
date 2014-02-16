@@ -275,6 +275,8 @@ class OnboardGtk(object):
         config.word_suggestions.show_context_line_notify_add(update_ui)
         config.word_suggestions.enabled_notify_add(lambda x: \
                                  self.keyboard.on_word_suggestions_enabled(x))
+        config.word_suggestions.auto_learn_notify_add(
+                                 update_ui_no_resize)
         config.typing_assistance.active_language_notify_add(lambda x: \
                                  self.keyboard.on_active_lang_id_changed())
         config.typing_assistance.spell_check_backend_notify_add(lambda x: \
@@ -283,7 +285,8 @@ class OnboardGtk(object):
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.word_suggestions.spelling_suggestions_enabled_notify_add(lambda x: \
                                  self.keyboard.on_spell_checker_changed())
-        config.word_suggestions.wordlist_buttons_notify_add(update_ui_no_resize)
+        config.word_suggestions.wordlist_buttons_notify_add(
+                                 update_ui_no_resize)
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
