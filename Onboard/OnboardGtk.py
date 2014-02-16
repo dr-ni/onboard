@@ -283,13 +283,13 @@ class OnboardGtk(object):
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.word_suggestions.spelling_suggestions_enabled_notify_add(lambda x: \
                                  self.keyboard.on_spell_checker_changed())
-        config.word_suggestions.wordlist_buttons_notify_add(update_ui)
+        config.word_suggestions.wordlist_buttons_notify_add(update_ui_no_resize)
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
 
         config.window.resize_handles_notify_add(lambda x: \
-                                    self.keyboard_widget.update_resize_handles())
+                                 self.keyboard_widget.update_resize_handles())
 
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)

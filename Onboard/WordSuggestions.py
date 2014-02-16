@@ -859,6 +859,9 @@ class WordSuggestions:
         """ The current accessible lost focus. """
         self.commit_changes()
 
+        # deactivate the pause button
+        config.word_suggestions.pause_learning = False
+
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
         self._learn_strategy.on_text_entry_activated()
@@ -1402,7 +1405,10 @@ class LearnStrategyLRU(LearnStrategy):
         changes.clear()
 
     def discard_changes(self):
-        """ Learn and remove all changes """
+        """ Discard and remove all changes """
+        engine = self._wp._wpengine
+        if engine:
+            engine.clear_scratch_models() # clear short term memory
         self.reset()
 
     def commit_expired_changes(self):

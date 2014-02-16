@@ -1432,6 +1432,7 @@ class ConfigWordSuggestions(ConfigObject):
     def can_auto_learn(self):
         return self.enabled and \
                self.auto_learn and \
+               not self.pause_learning and \
                not self.stealth_mode
 
     KEY_ID_LANGUAGE = "language"

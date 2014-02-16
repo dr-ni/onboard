@@ -35,6 +35,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Function keys"),
     _("Number block and function keys"),
     _("Hide Onboard"),
+    _("Pause learning new words"),
     # translators: very short label of the HOME key
     _("Hm"),
     # translators: very short label of the INSERT key
