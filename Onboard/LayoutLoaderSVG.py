@@ -401,6 +401,10 @@ class LayoutLoaderSVG:
         svg_id = attributes.get("svg_id")
         key.set_id(full_id, theme_id, svg_id)
 
+        if "_" in key.get_id():
+            _logger.warning("underscore in key id '{}', please use dashes" \
+                            .format(id))
+
         value = attributes.get("modifier")
         if value:
             try:
