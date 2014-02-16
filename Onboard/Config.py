@@ -1422,6 +1422,8 @@ class ConfigWordSuggestions(ConfigObject):
 
         self.add_key("show-context-line", False)
 
+        self.pause_learning = False  # not in gsettings
+
     def word_prediction_notify_add(self, callback):
         self.auto_learn_notify_add(callback)
         self.punctuation_assistance_notify_add(callback)
@@ -1432,8 +1434,14 @@ class ConfigWordSuggestions(ConfigObject):
                self.auto_learn and \
                not self.stealth_mode
 
+    KEY_ID_LANGUAGE = "language"
+    KEY_ID_PAUSE_LEARNING = "pause-learning"
+
+    def can_show_language_button(self):
+        return self.KEY_ID_LANGUAGE in self.wordlist_buttons
+
     def show_language_button(self, show):
-        key_id = "language"
+        key_id = self.KEY_ID_LANGUAGE
         buttons = self.wordlist_buttons[:]
         if show:
             if not key_id in buttons:
@@ -1449,7 +1457,20 @@ class ConfigWordSuggestions(ConfigObject):
                 buttons.remove(key_id)
                 self.wordlist_buttons = buttons
 
-    def can_show_language_button(self):
-        return "language" in self.wordlist_buttons
+    def can_show_pause_learning_button(self):
+        return self.KEY_ID_PAUSE_LEARNING in self.wordlist_buttons
+
+    def show_pause_learning_button(self, show):
+        key_id = self.KEY_ID_PAUSE_LEARNING
+        buttons = self.wordlist_buttons[:]
+        if show:
+            if not key_id in buttons:
+                buttons.insert(0, key_id)
+
+                self.wordlist_buttons = buttons
+        else:
+            if key_id in buttons:
+                buttons.remove(key_id)
+                self.wordlist_buttons = buttons
 
 

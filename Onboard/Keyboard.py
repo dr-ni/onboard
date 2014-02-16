@@ -574,8 +574,8 @@ class Keyboard(WordSuggestions):
                    [BCMiddleClick, BCSingleClick, BCSecondaryClick,
                     BCDoubleClick, BCDragClick, BCHoverClick,
                     BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
+                    BCExpandCorrections, BCPauseLearning, BCLanguage,
                     BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
-                    BCExpandCorrections, BCLanguage,
                    ]
                 }
         for key in self.layout.iter_global_keys():
@@ -1914,6 +1914,70 @@ class BCExpandCorrections(ButtonController):
         wordlist.expand_corrections(not wordlist.are_corrections_expanded())
 
 
+class BCPauseLearning(ButtonController):
+
+    id = "pause-learning"
+
+    def release(self, view, button, event_type):
+        config.word_suggestions.pause_learning = \
+            not config.word_suggestions.pause_learning
+
+        # don't learn, immediately forget changes
+        if config.word_suggestions.pause_learning:
+            self.keyboard.discard_changes()
+
+    def update(self):
+        self.set_active(config.word_suggestions.pause_learning)
+
+
+class BCLanguage(ButtonController):
+
+    id = "language"
+
+    def __init__(self, keyboard, key):
+        ButtonController.__init__(self, keyboard, key)
+
+    def release(self, view, button, event_type):
+        self.set_active(not self.key.active)
+        if self.key.active:
+            self._show_menu(view, self.key, button)
+
+    def _show_menu(self, view, key, button):
+        self.keyboard.hide_touch_feedback()
+        view.show_language_menu(key, button, self._on_menu_closed)
+
+    def _on_menu_closed(self):
+        self.set_active(False)
+
+    def update(self):
+        if config.are_word_suggestions_enabled():
+            key = self.key
+            keyboard = self.keyboard
+            langdb = keyboard._languagedb
+
+            active_lang_id = keyboard.get_active_lang_id()
+            lang_id = keyboard.get_lang_id()
+            label = langdb.get_language_code(active_lang_id).capitalize()
+
+            if label != key.get_label():
+                key.set_labels({0: label})
+                key.tooltip = langdb.get_language_full_name(lang_id)
+                key.show_image = not active_lang_id
+                keyboard.invalidate_ui()
+
+#---------------------------------------------------------
+# deprecated buttons
+#---------------------------------------------------------
+
+class BCInputline(ButtonController):
+
+    id = "inputline"
+
+    def release(self, view, button, event_type):
+        # hide the input line display when it is clicked
+        self.keyboard.hide_input_line()
+
+
 class BCAutoLearn(ButtonController):
 
     id = "learnmode"
@@ -1960,46 +2024,4 @@ class BCStealthMode(ButtonController):
         self.set_active(config.wp.stealth_mode)
 
 
-class BCInputline(ButtonController):
-
-    id = "inputline"
-
-    def release(self, view, button, event_type):
-        # hide the input line display when it is clicked
-        self.keyboard.hide_input_line()
-
-class BCLanguage(ButtonController):
-
-    id = "language"
-
-    def __init__(self, keyboard, key):
-        ButtonController.__init__(self, keyboard, key)
-
-    def release(self, view, button, event_type):
-        self.set_active(not self.key.active)
-        if self.key.active:
-            self._show_menu(view, self.key, button)
-
-    def _show_menu(self, view, key, button):
-        self.keyboard.hide_touch_feedback()
-        view.show_language_menu(key, button, self._on_menu_closed)
-
-    def _on_menu_closed(self):
-        self.set_active(False)
-
-    def update(self):
-        if config.are_word_suggestions_enabled():
-            key = self.key
-            keyboard = self.keyboard
-            langdb = keyboard._languagedb
-
-            active_lang_id = keyboard.get_active_lang_id()
-            lang_id = keyboard.get_lang_id()
-            label = langdb.get_language_code(active_lang_id).capitalize()
-
-            if label != key.get_label():
-                key.set_labels({0: label})
-                key.tooltip = langdb.get_language_full_name(lang_id)
-                key.show_image = not active_lang_id
-                keyboard.invalidate_ui()
 

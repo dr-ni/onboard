@@ -32,9 +32,9 @@
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:zoom="2.8324022"
-     inkscape:cx="236.80471"
-     inkscape:cy="6.515123"
+     inkscape:zoom="12.178811"
+     inkscape:cx="162.96278"
+     inkscape:cy="77.73502"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -461,4 +461,12 @@
      width="18"
      y="96.499992"
      x="210.5" />
+  <rect
+     inkscape:label=""
+     id="pause-learning.wordlist"
+     height="14.969875"
+     width="11.969875"
+     y="4.0148773"
+     x="118.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
 </svg>

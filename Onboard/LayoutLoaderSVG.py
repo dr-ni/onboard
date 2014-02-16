@@ -390,6 +390,10 @@ class LayoutLoaderSVG:
                     key.set_border_rect(r.copy())
                     key.geometry = geometry
                     result = key
+                else:
+                    _logger.info("Ignoring key '{}'."
+                                 " No svg object found for '{}'." \
+                                 .format(key.id, key.svg_id))
 
         return result  # ignore keys not found in an svg file
 

@@ -965,9 +965,16 @@ class PageWordSuggestions(DialogBuilder):
         self.bind_check("language_button_toggle",
             config.word_suggestions, "wordlist_buttons",
             config_get_callback = lambda co, key: \
-                        config.word_suggestions.can_show_language_button(),
+                    config.word_suggestions.can_show_language_button(),
             config_set_callback = lambda co, key, value: \
-                        config.word_suggestions.show_language_button(value))
+                    config.word_suggestions.show_language_button(value))
+
+        self.bind_check("pause_learning_button_toggle",
+            config.word_suggestions, "wordlist_buttons",
+            config_get_callback = lambda co, key: \
+                    config.word_suggestions.can_show_pause_learning_button(),
+            config_set_callback = lambda co, key, value: \
+                    config.word_suggestions.show_pause_learning_button(value))
 
         #self.bind_check("show_context_line_toggle",
         #                config.word_suggestions, "show_context_line")

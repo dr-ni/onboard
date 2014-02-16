@@ -1637,7 +1637,8 @@ class WordListPanel(LayoutPanel):
                                                "prediction",
                                                "correction"]))
         fixed_buttons    = list(self.find_ids(["expand-corrections"]))
-        hideable_buttons = list(self.find_ids(["language",
+        hideable_buttons = list(self.find_ids(["pause-learning",
+                                               "language",
                                                "hide"]))
         if not wordlist:
             return []

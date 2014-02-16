@@ -22,18 +22,18 @@
    guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
-   inkscape:window-width="1586"
-   inkscape:window-height="827"
+   inkscape:window-width="1920"
+   inkscape:window-height="1176"
    id="namedview3396"
    showgrid="false"
    inkscape:snap-bbox="true"
    inkscape:bbox-nodes="true"
-   inkscape:zoom="2.7984694"
-   inkscape:cx="175.98906"
-   inkscape:cy="67.439801"
-   inkscape:window-x="37"
-   inkscape:window-y="48"
-   inkscape:window-maximized="0"
+   inkscape:zoom="6.9634874"
+   inkscape:cx="322.92727"
+   inkscape:cy="84.114207"
+   inkscape:window-x="0"
+   inkscape:window-y="24"
+   inkscape:window-maximized="1"
    inkscape:current-layer="full-alpha"
    inkscape:object-paths="false"
    inkscape:bbox-paths="false"
@@ -797,6 +797,7 @@
    style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1" />
 
 
+
      id=&quot;g4172&quot;&gt;
   <rect
    id="doubleclick"
@@ -854,4 +855,12 @@
 Group this with the full size return key to enable interpolation between these two paths when key_size is applied.</desc>
   </path>
 </g>
+<rect
+   style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1"
+   x="305.5"
+   y="0.50985956"
+   width="17.980282"
+   height="15.980283"
+   id="pause-learning.wordlist"
+   inkscape:label="" />
 </svg>
