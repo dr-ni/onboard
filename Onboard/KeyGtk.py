@@ -571,7 +571,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         Fixme: merge with draw_label, can't do this for 0.99 because
         the Gdk.flush() workaround on the nexus 7 might fail.
         """
-        if not self.image_filenames:
+        if not self.image_filenames or not self.show_image:
             return
 
         log_rect = self.get_label_rect()

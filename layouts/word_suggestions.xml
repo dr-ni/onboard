@@ -13,8 +13,8 @@
 
         <!-- wordlist buttons -->
         <key group='wordlist' id='expand-corrections' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
-        <key group='wsbutton' id='language.wordlist' svg_id='language.wordlist' label='' button='true' class='BarKey' scannable='false'/>
-        <key group='wsbutton' id='hide.wordlist' svg_id='hide.wordlist' image='close.svg' button='true' class='BarKey' label_margin=", 1.5" scannable='false' tooltip='Hide Onboard'/>
+        <key group='wsbutton' id='language.wordlist' svg_id='language.wordlist' label='' image='sphere.svg' button='true' class='BarKey' scannable='false'/>
+        <key group='wsbutton' id='hide.wordlist' svg_id='hide.wordlist' image='close.svg' button='true' class='BarKey' label_margin=", 1.45" scannable='false' tooltip='Hide Onboard'/>
     </panel>
 </keyboard>
 

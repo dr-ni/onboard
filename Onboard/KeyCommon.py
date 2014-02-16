@@ -371,6 +371,7 @@ class RectKeyCommon(KeyCommon):
     show_face = True
     show_border = True
     show_label = True
+    show_image = True
 
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
