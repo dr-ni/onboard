@@ -1596,9 +1596,8 @@ class WordInfo:
 
 
 from gi.repository        import Gdk, Pango
-from Onboard.KeyGtk       import RectKey, FullSizeKey, BarKey, WordKey
+from Onboard.KeyGtk       import FullSizeKey, WordKey
 from Onboard.utils        import Rect
-from Onboard.Layout       import LayoutBox
 
 class WordListPanel(LayoutPanel):
     """ Panel populated with correction and prediction keys at run-time """
@@ -1622,7 +1621,7 @@ class WordListPanel(LayoutPanel):
 
     def _get_button_width(self, button):
         return button.get_initial_border_rect().w * \
-               config.theme_settings.key_size / 100.0
+               config.theme_settings.key_size / 100.0 *.9
 
     def _get_spacing(self):
         return config.WORDLIST_BUTTON_SPACING[0] \
@@ -1939,7 +1938,7 @@ class WordListPanel(LayoutPanel):
 
 
 class ModelErrorRecovery:
-    """ Recover from load errors in user models. """
+    """ Notify of and recover from errors when loading user models. """
 
     def __init__(self, keyboard = None):
         self._keyboard = weakref.ref(keyboard) if keyboard else None
