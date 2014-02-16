@@ -1653,19 +1653,19 @@ class WordListPanel(LayoutPanel):
         wordlist_rect = wordlist.get_rect()
         rect = wordlist_rect.copy()
 
+        # hide buttons disabled by preferences
+        visible_button_ids = config.word_suggestions.wordlist_buttons
+        for button in hideable_buttons:
+            button.set_visible(button.get_id() in visible_button_ids)
+
         # align visible buttons
         buttons = []
-        visible_button_ids = config.word_suggestions.wordlist_buttons
         for button_id in reversed(visible_button_ids):
             button = self._get_child_button(button_id)
             if button and button.visible:
                 button_width = self._get_button_width(button)
                 rect.w -= button_width
                 buttons.append((button, button_width, 1))
-
-        # hide buttons disabled by preferences
-        for button in hideable_buttons:
-            button.set_visible(button.get_id() in visible_button_ids)
 
         # font size is based on the height of the word list background
         font_size = WordKey().calc_font_size(key_context, rect.get_size())
