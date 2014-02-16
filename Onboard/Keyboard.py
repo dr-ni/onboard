@@ -924,7 +924,7 @@ class Keyboard(WordSuggestions):
 
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow to use AT-SPI direct text insertion for char keys
-                    self.insert_string_at_caret(key.code)
+                    self._text_changer.insert_string_at_caret(key.code)
                 else:
                     self.send_key_press(key, view, button, event_type)
                     self.send_key_release(key, view, button, event_type)
@@ -1024,7 +1024,7 @@ class Keyboard(WordSuggestions):
             if len(key.code) == 1:
                 self._text_changer.release_unicode(key.code)
             else:
-                self.insert_string_at_caret(key.code)
+                self._text_changer.insert_string_at_caret(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self._text_changer.release_keysym(key.code)
@@ -1044,7 +1044,7 @@ class Keyboard(WordSuggestions):
             snippet_id = int(key.code)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                self.insert_string_at_caret(mString)
+                self._text_changer.insert_string_at_caret(mString)
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
