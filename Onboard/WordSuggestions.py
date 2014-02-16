@@ -140,7 +140,7 @@ class WordSuggestions:
                              .find_system_model_language_id(lang_id)
 
             system_models  = ["lm:system:" + system_lang_id]
-            user_models    = ["lm:user:user"]
+            user_models    = ["lm:user:" + lang_id]
             scratch_models = ["lm:mem"]
 
             persistent_models = system_models + user_models
@@ -195,8 +195,11 @@ class WordSuggestions:
         """
         lang_id = self.get_active_lang_id()
         if not lang_id:
-            lang_id = locale.getdefaultlocale()[0]
+            lang_id = self.get_system_default_lang_id()
         return lang_id
+
+    def get_system_default_lang_id(self):
+        return locale.getdefaultlocale()[0]
 
     def get_active_lang_id(self):
         """
