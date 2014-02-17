@@ -39,7 +39,10 @@ LANGUAGES+="gd_GB "
 LANGUAGES+="ga_IE "
 LANGUAGES+="tr_TR "
 LANGUAGES+="pl_PL "
-LANGUAGES+="nl_NL "   # nl_BE nl_AW nl_AN nl_SR create identical models
+# All Dutch models are currently identical, but the spell checkers
+# might have differences. Keep them for now so we can easily
+# select all flavours in the language menu.
+LANGUAGES+="nl_NL nl_BE nl_AW nl_AN nl_SR " 
 LANGUAGES+="ro_RO "
 LANGUAGES+="da_DK "
 LANGUAGES+="el_GR "
