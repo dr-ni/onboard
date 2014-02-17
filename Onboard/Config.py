@@ -135,11 +135,14 @@ class Config(ConfigObject):
     UNPRESS_DELAY = 0.15
 
     # Margin to leave around wordlist labels; smaller margins leave
-    # room for more prediction choices
+    # more room for prediction choices
     WORDLIST_LABEL_MARGIN = (2, 2)
 
     # Gap between wordlist buttons
-    WORDLIST_BUTTON_SPACING = (0, 0)
+    WORDLIST_BUTTON_SPACING = (0.5, 0.5)
+
+    # Gap between wordlist predictions and correctios
+    WORDLIST_ENTRY_SPACING = (1.0, 1.0)
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
