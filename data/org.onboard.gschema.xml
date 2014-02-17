@@ -676,6 +676,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Enable automatic learning</summary>
             <description>Continiously improve the word prediction with typed and selected words.</description>
         </key>
+        <key name="pause-learning-locked" type="b">
+            <default>false</default>
+            <summary>Pause learning</summary>
+            <description>Lock the button to pause learning.</description>
+        </key>
         <key name="punctuation-assistance" type="b">
             <default>true</default>
             <summary>Enable punctuation assistance</summary>

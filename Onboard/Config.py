@@ -1425,15 +1425,17 @@ class ConfigWordSuggestions(ConfigObject):
         self.add_key("enabled", False)
         self.add_key("auto-learn", True)
         self.add_key("punctuation-assistance", True)
-        self.add_key("stealth-mode", False)
         self.add_key("accent-insensitive", True)
         self.add_key("max-word-choices", 5)
         self.add_key("spelling-suggestions-enabled", True)
         self.add_key("wordlist-buttons", ["language", "hide"])
+        self.add_key("pause-learning-locked", False)
 
+        self._pause_learning = 0  # 0=off, 1=latched, 2=locked; not in gsettings
+
+        # deprecated
+        self.add_key("stealth-mode", False)
         self.add_key("show-context-line", False)
-
-        self.pause_learning = 0  # 0=off, 1=latched, 2=locked; not in gsettings
 
     def word_prediction_notify_add(self, callback):
         self.auto_learn_notify_add(callback)
@@ -1443,8 +1445,21 @@ class ConfigWordSuggestions(ConfigObject):
     def can_auto_learn(self):
         return self.enabled and \
                self.auto_learn and \
-               not self.pause_learning and \
+               not self._pause_learning and \
                not self.stealth_mode
+
+    def get_pause_learning(self):
+        if self.pause_learning_locked:
+            return 2
+        else:
+            return self._pause_learning
+
+    def set_pause_learning(self, value):
+        self._pause_learning = value
+        self.pause_learning_locked = value == 2
+
+    def _post_notify_pause_learning_locked(self):
+        self._pause_learning = 2 if self.pause_learning_locked else 0
 
     KEY_ID_LANGUAGE = "language"
     KEY_ID_PAUSE_LEARNING = "pause-learning"

@@ -860,8 +860,8 @@ class WordSuggestions:
         self.commit_changes()
 
         # deactivate the pause button
-        if config.word_suggestions.pause_learning == 1:  # not locked?
-            config.word_suggestions.pause_learning = 0
+        if config.word_suggestions.get_pause_learning() == 1:  # not locked?
+            config.word_suggestions.set_pause_learning(0)
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
@@ -1628,7 +1628,7 @@ class WordListPanel(LayoutPanel):
 
     def _get_button_width(self, button):
         return button.get_initial_border_rect().w * \
-               config.theme_settings.key_size / 100.0 *.9
+               config.theme_settings.key_size / 100.0
 
     def _get_button_spacing(self):
         return config.WORDLIST_BUTTON_SPACING[0] \

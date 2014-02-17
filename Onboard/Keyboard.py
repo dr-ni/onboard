@@ -1934,18 +1934,19 @@ class BCPauseLearning(ButtonController):
         if locked:
             value += 1
 
-        begin = config.word_suggestions.pause_learning == 0 and \
+        begin = config.word_suggestions.get_pause_learning() == 0 and \
                 value > 0
 
-        config.word_suggestions.pause_learning = value
+        config.word_suggestions.set_pause_learning(value)
 
         # immediately forget changes
         if begin:
             keyboard.discard_changes()
 
     def update(self):
-        self.set_active(config.word_suggestions.pause_learning >= 1)
-        self.set_locked(config.word_suggestions.pause_learning == 2)
+        co = config.word_suggestions
+        self.set_active(co.get_pause_learning() >= 1)
+        self.set_locked(co.get_pause_learning() == 2)
 
 
 class BCLanguage(ButtonController):
