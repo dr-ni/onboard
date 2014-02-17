@@ -300,18 +300,26 @@ class Config(ConfigObject):
             old_bak = ModelCache.get_backup_filename(old_fn)
             new_bak = ModelCache.get_backup_filename(new_fn)
 
-            _logger.info(_format("Migrating user language model "
-                                 "'{}' to '{}'.", \
-                                 old_fn, new_fn))
-            try:
-                for old, new in [[old_fn, new_fn], [old_bak, new_bak]]:
+            _logger.info("Starting migration, user.lm has been deprecated.")
+            for old, new in [[old_fn, new_fn], [old_bak, new_bak]]:
+                if os.path.exists(old):
                     if os.path.exists(new):
-                        os.rename(new, new + ".migration-backup")
-                    os.rename(old, new)
-            except OSError as ex:
-                _logger.error(_format("failed to migrate "
-                                      "user language model. ") + \
-                                      unicode_str(ex))
+                        _logger.info("Migration target already exists, "
+                                     "skipping renaming "
+                                     "'{}' to '{}'." \
+                                     .format(old, new))
+                        break # skip backup
+
+                    _logger.info("Migrating user language model "
+                                    "'{}' to '{}'." \
+                                    .format(old, new))
+                    try:
+                        os.rename(old, new)
+                    except OSError as ex:
+                        _logger.error("Failed to migrate "
+                                        "user language model. " + \
+                                        unicode_str(ex))
+                        break
 
         # Load system defaults (if there are any, not required).
         # Used for distribution specific settings, aka branding.
