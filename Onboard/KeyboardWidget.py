@@ -1461,13 +1461,18 @@ class LanguageMenu:
         self._closure = closure
         self._keyboard.on_focusable_gui_opening()
 
+        keyboard = self._keyboard
+        languagedb = keyboard._languagedb
+
+        active_lang_id = keyboard.get_active_lang_id()
+        system_lang_id = keyboard.get_system_default_lang_id()
+
+        lang_ids = set(languagedb.get_language_ids())
+        if system_lang_id in lang_ids:
+            lang_ids.remove(system_lang_id)
+
         max_mru_languages = config.typing_assistance.max_recent_languages
         all_mru_lang_ids = config.typing_assistance.recent_languages
-
-        languagedb = self._keyboard._languagedb
-        lang_ids = set(languagedb.get_language_ids())
-        active_lang_id = self._keyboard.get_active_lang_id()
-
         mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
                           [:max_mru_languages]
         other_lang_ids  = set(lang_ids).difference(mru_lang_ids)
@@ -1476,6 +1481,9 @@ class LanguageMenu:
             name = languagedb.get_language_full_name(lang_id)
             if name:
                 other_langs.append((name, lang_id))
+
+        def add_system_indicator(name):
+            return name + _(" - System Language")
 
         # language sub menu
         lang_menu = Gtk.Menu()
@@ -1487,7 +1495,9 @@ class LanguageMenu:
         # popup menu
         menu = Gtk.Menu()
 
-        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_System Language"))
+        active_lang_id = keyboard.get_active_lang_id()
+        name = languagedb.get_language_full_name(system_lang_id)
+        item = Gtk.CheckMenuItem.new_with_mnemonic(name)
         item.set_draw_as_radio(True)
         item.set_active(not active_lang_id)
         item.connect("activate", self._on_language_activated, "")
@@ -1538,11 +1548,17 @@ class LanguageMenu:
         return x, r.bottom(), True
 
     def _on_language_activated(self, menu, lang_id):
-        self._keyboard.set_active_lang_id(lang_id)
+        system_lang_id = self._keyboard.get_system_default_lang_id()
+        if lang_id == system_lang_id:
+            lang_id = ""
+        self._set_active_lang_id(lang_id)
 
     def _on_other_language_activated(self, menu, lang_id):
         if lang_id:  # empty string = system default
             self._set_mru_lang_id(lang_id)
+        self._set_active_lang_id(lang_id)
+
+    def _set_active_lang_id(self, lang_id):
         self._keyboard.set_active_lang_id(lang_id)
 
     def _set_mru_lang_id(self, lang_id):
