@@ -2530,7 +2530,7 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkCheckButton" id="pause_learning_button_toggle">
-                                                    <property name="label" translatable="yes">Show button to pause learning temporarily</property>
+                                                    <property name="label" translatable="yes">Show button to pause learning</property>
                                                     <property name="name"> </property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
