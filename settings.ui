@@ -2535,7 +2535,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
-                                                    <property name="tooltip_text" translatable="yes">The "Pause learning" button prevents text changes from being remembered.</property>
+                                                    <property name="tooltip_text" translatable="yes">Words typed while this button is pressed won't be remembered.</property>
                                                     <property name="use_underline">True</property>
                                                     <property name="xalign">0</property>
                                                     <property name="draw_indicator">True</property>
