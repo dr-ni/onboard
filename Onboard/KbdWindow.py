@@ -117,8 +117,14 @@ class KbdWindowBase:
         self.emit("quit-onboard")
 
     def detect_window_manager(self):
-        """ Detect the WM and select WM specific behavior. """
+        """
+        Detect the WM and select WM specific behavior.
 
+        Doctests:
+        >>> osk_util = osk.Util()
+        >>> len(osk_util.get_current_wm_name().lower()) > 0
+        True
+        """
         wm = config.quirks
         if not wm:
             # Returns None on X error BadWindow (LP: 1016980)
