@@ -47,7 +47,7 @@
                 <key group='alphanumeric' id='b' keycode='56'/>
                 <key group='alphanumeric' id='n' keycode='57'/>
                 <key group='alphanumeric' id='m' keycode='58'/>
-                <key group='alphanumeric' id='full_stop' keycode='60'/>
+                <key group='alphanumeric' id='full-stop' keycode='60'/>
                 <key group='alphanumeric' id='comma' keycode='59'/>
                 <key group='bottomrow' id='LFSH.grid'/>
                 <key group='bottomrow' id='SPCE.grid' label='Space'/>
