@@ -15,6 +15,7 @@ override_dh_auto_clean:
 	rm -rf build
 	rm -rf Onboard/osk*.so
 	rm -rf Onboard/pypredict/lm*.so
+	rm data/layoutstrings_generated.py
 	find . -name __pycache__ -prune | xargs rm -rf
 
 override_dh_auto_build:

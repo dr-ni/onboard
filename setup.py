@@ -239,6 +239,12 @@ class TestCommand(Command):
 
         return True
 
+# scan for translatable layout strings in layouts
+if True: #"build_i18n" in sys.argv:
+    args = ["./tools/gen_i18n_strings",
+            "-o./data/layoutstrings_generated.py"]
+    print("Running '{}'".format(" ".join(args)))
+    subprocess.check_call(args)
 
 ##### setup #####
 
