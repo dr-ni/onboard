@@ -11,6 +11,6 @@
   </rdf:RDF>
  </metadata>
  <rect id="rect3760" style="color:#000000;stroke:#000;stroke-width:.75;fill:none" ry="0" height="7.2" width="9.6" y="4.7" x="3.2"/>
- <path id="path3764" style="stroke:#000;stroke-linecap:round;stroke-width:.75;fill:none" d="m6.3456 9.9543 3.3088-3.3087"/>
- <path id="path3772" style="stroke:#000;stroke-linecap:round;stroke-width:.75;fill:none" d="m9.6544 9.9543-3.3088-3.3087"/>
+ <path id="path3764" style="stroke:#000;stroke-width:.75;stroke-linecap:round;fill:none" d="m6.3456 9.9543 3.3088-3.3087"/>
+ <path id="path3772" style="stroke:#000;stroke-width:.75;stroke-linecap:round;fill:none" d="m9.6544 9.9543-3.3088-3.3087"/>
 </svg>
