@@ -162,8 +162,34 @@ class DialogBuilder(object):
             if not id is None:
                 setattr(config_object, key, int(widget.get_active_id()))
 
+    def select_tree_view_row(self, view, column, value, _it = None):
+        model = view.get_model()
+        if _it is None:
+            _it = model.get_iter_first()
+        while _it:
+            child_it = model.iter_children(_it)
+            if child_it:
+                self.select_tree_view_row(view, column, value, child_it)
+
+            fn = model.get_value(_it, column)
+            if fn == value:
+                sel = view.get_selection()
+                if sel:
+                    sel.select_iter(_it)
+
+            _it = model.iter_next(_it)
+
 
 class Settings(DialogBuilder):
+
+    # column ids of the layout view
+    LAYOUT_COL_NAME = 0
+    LAYOUT_COL_SUMMARY = 1
+    LAYOUT_COL_FILENAME = 2
+    LAYOUT_COL_HAS_ABOUT_INFO = 3
+    LAYOUT_COL_IS_ROW_SENSITIVE = 4
+
+
     def __init__(self,mainwin):
         self.themes = {}       # cache of theme objects
 
@@ -331,15 +357,9 @@ class Settings(DialogBuilder):
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
-        self.layout_view.append_column( \
-                Gtk.TreeViewColumn(None, Gtk.CellRendererText(), markup=0))
-
         self.user_layout_root = config.get_user_layout_dir()
-
-        self.layout_remove_button = \
-                             builder.get_object("layout_remove_button")
-
-        self.update_layoutList()
+        config.layout_notify_add(lambda x: self.update_layout_view_selection())
+        self.update_layout_view()
         self.update_layout_widgets()
 
         # theme view
@@ -564,7 +584,7 @@ class Settings(DialogBuilder):
             new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
                            config.LAYOUT_FILE_EXTENSION
             LayoutLoaderSVG.copy_layout(config.layout_filename, new_filename)
-            self.update_layoutList()
+            self.update_layout_view()
             self.open_user_layout_dir()
 
     def on_scanner_enabled_toggled(self, widget):
@@ -627,108 +647,133 @@ class Settings(DialogBuilder):
         self.window.destroy()
         Gtk.main_quit()
 
-    def update_layoutList(self):
-        self.layoutList = Gtk.ListStore(str, str)
-        self.layout_view.set_model(self.layoutList)
+    def update_layout_view(self):
+        model = self.layout_view.get_model()
+        self.layout_view_model = model
+        model.clear()
 
         sort_order = ["Small", "Compact", "Full Keyboard", "Phone", "Grid"]
-        self.append_to_layoutList(os.path.join(config.install_dir, "layouts"),
-                                  sort_order)
-        self.append_to_layoutList(self.user_layout_root)
+        layout_infos = self._read_layouts(
+            os.path.join(config.install_dir, "layouts"), sort_order)
 
-    def cb_selected_layout_changed(self):
-        update_layoutList()
+        system = [li for li in layout_infos
+                    if li.layout_section == "system"]
+        contributed = [li for li in layout_infos
+                    if li.layout_section == "contributions"]
 
-    def on_add_button_clicked(self, event):
-        chooser = Gtk.FileChooserDialog(title=_("Add Layout"),
-                                        parent=self.window,
-                                        action=Gtk.FileChooserAction.OPEN,
-                                        buttons=(Gtk.STOCK_CANCEL,
-                                                 Gtk.ResponseType.CANCEL,
-                                                 Gtk.STOCK_OPEN,
-                                                 Gtk.ResponseType.OK))
-        filterer = Gtk.FileFilter()
-        filterer.add_pattern("*.sok")
-        filterer.add_pattern("*" + config.LAYOUT_FILE_EXTENSION)
-        filterer.set_name(_("Onboard layout files"))
-        chooser.add_filter(filterer)
+        user = self._read_layouts(self.user_layout_root)
 
-        filterer = Gtk.FileFilter()
-        filterer.add_pattern("*")
-        filterer.set_name(_("All files"))
-        chooser.add_filter(filterer)
+        self._add_layout_section(model, system, _("Core layouts"))
+        self._add_layout_section(model, contributed, _("Contributions"))
+        self._add_layout_section(model, user, _("User layouts"))
 
-        response = chooser.run()
-        if response == Gtk.ResponseType.OK:
-            filename = chooser.get_filename()
+        self.layout_view.expand_all()
+        self.update_layout_view_selection()
 
-            f = open_utf8(filename)
-            sokdoc = minidom.parse(f).documentElement
-            for p in sokdoc.getElementsByTagName("pane"):
-                fn = p.attributes['filename'].value
+    def update_layout_view_selection(self):
+        self.select_tree_view_row(self.layout_view, self.LAYOUT_COL_FILENAME,
+                                  config.layout_filename)
 
-                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn),
-                                "%s%s" % (self.user_layout_root, fn))
+    def _add_layout_section(self, model, lis, section_name):
+        if lis:
+            parent_iter = model.append(None)
+            model.set(parent_iter,
+                    self.LAYOUT_COL_NAME, "<b>{}</b>".format(section_name))
+            for li in lis:
+                child_iter = model.append(parent_iter)
+                model.set(child_iter,
+                        self.LAYOUT_COL_NAME, li.id_string,
+                        self.LAYOUT_COL_SUMMARY, li.summary,
+                        self.LAYOUT_COL_FILENAME, li.filename,
+                        self.LAYOUT_COL_HAS_ABOUT_INFO, li.has_about_info,
+                        self.LAYOUT_COL_IS_ROW_SENSITIVE, bool(li.filename))
 
-            shutil.copyfile(filename,"%s%s" % (self.user_layout_root,
-                                               os.path.basename(filename)))
+    def on_layout_about_button_clicked(self, event = None):
+        fn = self.get_selected_layout_filename()
+        li = self._read_layout(fn)
+        if li is None:
+            return
 
-            self.update_layoutList()
-        chooser.destroy()
+        markup = "<big>{}</big>\n".format(li.id)
+        body = li.description or li.summary
+        if body:
+            markup += "\n{}\n".format(body)
+        if li.author:
+            markup += ("\n" + _("Author: {}") + "\n").format(li.author)
+        markup += "\n <tt>{}</tt>\n".format(li.filename)
+
+        dialog = Gtk.MessageDialog(title=_("About Layout"),
+                                   message_type=Gtk.MessageType.QUESTION,
+                                   buttons=Gtk.ButtonsType.OK)
+        dialog.set_markup(markup)
+        dialog.set_transient_for(self.window)
+        dialog.run()
+        dialog.destroy()
 
     def on_layout_remove_button_clicked(self, event):
-        sel = self.layout_view.get_selection()
-        if sel:
-            filename = self.layoutList.get_value(sel.get_selected()[1], 1)
-
+        filename = self.get_selected_layout_filename()
+        if filename:
             LayoutLoaderSVG.remove_layout(filename)
 
-            config.layout_filename = self.layoutList[0][1] \
-                                     if len(self.layoutList) else ""
-        self.update_layoutList()
+            config.layout_filename = self.layout_view_model[0][1] \
+                                     if len(self.layout_view_model) else ""
+        self.update_layout_view()
 
-    def append_to_layoutList(self, path, sort_order = []):
+    def _read_layouts(self, path,  sort_order=()):
+        filenames = self._find_layouts(path)
 
-        filenames = self.find_layouts(path)
-
-        layouts = []
+        layout_infos = []
         for filename in filenames:
+            li = self._read_layout(filename, sort_order)
+            if li:
+                layout_infos.append(li)
+
+        return sorted(layout_infos, key=lambda x: x.sort_key)
+
+    def _read_layout(self, filename, sort_order=()):
+        li = None
+
+        if filename and os.path.exists(filename):
             file_object = open_utf8(filename)
             try:
-                sokdoc = minidom.parse(file_object).documentElement
+                dom_node = minidom.parse(file_object).documentElement
 
-                id = sokdoc.attributes["id"].value
+                class LayoutInfo: pass
+                li = LayoutInfo()
+                id = dom_node.attributes["id"].value
                 sort_priority = sort_order.index(id) \
                                 if id in sort_order else 1000
+                li.id = id
+                li.filename = filename
+                li.layout_section = self._get_dom_string(dom_node, "section")
+                li.summary = self._get_dom_string(dom_node, "summary")
+                li.description = self._get_dom_string(dom_node, "description")
+                li.author = self._get_dom_string(dom_node, "author")
+                li.sort_key = (li.layout_section.lower(), sort_priority, id.lower())
+                li.has_about_info = True
                 if os.access(filename, os.W_OK):
-                    layouts.append((sort_priority, id.lower(), id, filename))
+                    li.id_string = id
                 else:
-                    layouts.append((sort_priority, id.lower(),
-                                   "<i>{0}</i>".format(id),
-                                   filename))
+                    li.id_string = "<i>{0}</i>".format(id)
 
-            except ExpatError as xxx_todo_changeme:
-                (strerror) = xxx_todo_changeme
-                print("XML in %s %s" % (filename, strerror))
-            except KeyError as xxx_todo_changeme1:
-                (strerror) = xxx_todo_changeme1
-                print("key %s required in %s" % (strerror,filename))
+            except ExpatError as ex:
+                _logger.error("XML in %s %s" % (filename, unicode_str(ex)))
+                li = None
+            except KeyError as ex:
+                _logger.error("key %s required in %s" % (unicode_str(ex), filename))
+                li = None
 
             file_object.close()
 
-        for key1, key2, value, filename in sorted(layouts):
-            it = self.layoutList.append((value, filename))
-            if filename == config.layout_filename:
-                sel = self.layout_view.get_selection()
-                if sel:
-                    sel.select_iter(it)
+        return li
 
-    def update_layout_widgets(self):
-        filename = self.get_selected_layout_filename()
-        self.layout_remove_button.set_sensitive(not filename is None and \
-                                         os.access(filename, os.W_OK))
+    @staticmethod
+    def _get_dom_string(dom_node, attribute, default = ""):
+        if dom_node.hasAttribute(attribute):
+            return dom_node.attributes[attribute].value
+        return default
 
-    def find_layouts(self, path):
+    def _find_layouts(self, path):
         layouts = []
         try:
             files = os.listdir(path)
@@ -739,6 +784,22 @@ class Settings(DialogBuilder):
                filename.endswith(config.LAYOUT_FILE_EXTENSION):
                 layouts.append(os.path.join(path, filename))
         return layouts
+
+    def update_layout_widgets(self):
+        filename = self.get_selected_layout_filename()
+        self.wid("layout_remove_button").set_sensitive(not filename is None and \
+                                         os.access(filename, os.W_OK))
+        has_about_info = bool( \
+            self.get_selected_layout_value(self.LAYOUT_COL_HAS_ABOUT_INFO))
+        self.wid("layout_about_button").set_sensitive(has_about_info)
+
+    def on_layout_view_select_cursor_row(self, treeview, *args):
+        print(args)
+        return False
+
+    def on_layout_view_row_activated(self, treeview, path, view_column):
+        #self.on_layout_about_button_clicked() # too annoying
+        pass
 
     def on_layout_view_cursor_changed(self, widget):
         filename = self.get_selected_layout_filename()
@@ -751,7 +812,16 @@ class Settings(DialogBuilder):
         if sel:
             it = sel.get_selected()[1]
             if it:
-                return self.layoutList.get_value(it,1)
+                return self.layout_view_model.get_value(it,
+                                                    self.LAYOUT_COL_FILENAME)
+        return None
+
+    def get_selected_layout_value(self, col_index):
+        sel = self.layout_view.get_selection()
+        if sel:
+            it = sel.get_selected()[1]
+            if it:
+                return self.layout_view_model.get_value(it, col_index)
         return None
 
     def on_new_theme_button_clicked(self, widget):

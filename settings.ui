@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.16.1 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkAdjustment" id="_background_gradient_adjustment">
@@ -81,6 +82,20 @@
       </row>
     </data>
   </object>
+  <object class="GtkTreeStore" id="_layout_view_model">
+    <columns>
+      <!-- column-name Name -->
+      <column type="gchararray"/>
+      <!-- column-name Description -->
+      <column type="gchararray"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name has_about_info -->
+      <column type="gboolean"/>
+      <!-- column-name row_sensitive -->
+      <column type="gboolean"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="_pages_model">
     <columns>
       <!-- column-name page -->
@@ -132,53 +147,6 @@
         <col id="0">aspell</col>
       </row>
     </data>
-  </object>
-  <object class="GtkHBox" id="spell_check_backend_box">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="spacing">12</property>
-    <child>
-      <object class="GtkLabel" id="spell_check_backend_label">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="has_tooltip">True</property>
-        <property name="tooltip_markup" translatable="yes">The spell check engine to use.</property>
-        <property name="tooltip_text" translatable="yes">The spell check engine to use.</property>
-        <property name="label" translatable="yes">Spell-check backend:</property>
-        <property name="use_underline">True</property>
-        <property name="mnemonic_widget">spell_check_backend_combobox</property>
-        <accessibility>
-          <relation type="label-for" target="spell_check_backend_combobox"/>
-        </accessibility>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkComboBox" id="spell_check_backend_combobox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="model">_spell_check_backend_model</property>
-        <property name="id_column">0</property>
-        <child>
-          <object class="GtkCellRendererText" id="cellrenderertext2"/>
-          <attributes>
-            <attribute name="text">0</attribute>
-          </attributes>
-        </child>
-        <accessibility>
-          <relation type="labelled-by" target="spell_check_backend_label"/>
-        </accessibility>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
   </object>
   <object class="GtkListStore" id="_sticky_key_behavior_model">
     <columns>
@@ -1316,10 +1284,39 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="events">GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="model">_layout_view_model</property>
                             <property name="headers_visible">False</property>
+                            <property name="search_column">0</property>
+                            <property name="level_indentation">16</property>
                             <signal name="cursor-changed" handler="on_layout_view_cursor_changed" swapped="no"/>
+                            <signal name="row-activated" handler="on_layout_view_row_activated" swapped="no"/>
+                            <signal name="select-cursor-row" handler="on_layout_view_select_cursor_row" swapped="no"/>
                             <child internal-child="selection">
                               <object class="GtkTreeSelection" id="treeview-selection2"/>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="layout_column_name">
+                                <property name="title" translatable="yes">Name</property>
+                                <property name="sort_column_id">0</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="layout_renderer_name"/>
+                                  <attributes>
+                                    <attribute name="markup">0</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="layout_column_description">
+                                <property name="title" translatable="yes">Description</property>
+                                <property name="sort_column_id">1</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="layout_renderer_description"/>
+                                  <attributes>
+                                    <attribute name="markup">1</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
                             </child>
                           </object>
                         </child>
@@ -1337,21 +1334,6 @@
                         <property name="spacing">6</property>
                         <property name="layout_style">start</property>
                         <child>
-                          <object class="GtkButton" id="add_button">
-                            <property name="label">gtk-add</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_add_button_clicked" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkButton" id="layout_remove_button">
                             <property name="label">gtk-remove</property>
                             <property name="visible">True</property>
@@ -1363,7 +1345,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -1378,7 +1360,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -1393,7 +1375,23 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="layout_about_button">
+                            <property name="label">gtk-about</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="on_layout_about_button_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
                             <property name="position">3</property>
+                            <property name="secondary">True</property>
                           </packing>
                         </child>
                       </object>
@@ -2639,12 +2637,12 @@
                                 <property name="no_show_all">True</property>
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkHBox" id="spell_check_backend_box1">
+                                  <object class="GtkBox" id="spell_check_backend_box">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="spacing">12</property>
                                     <child>
-                                      <object class="GtkLabel" id="spell_check_backend_label1">
+                                      <object class="GtkLabel" id="spell_check_backend_label">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="has_tooltip">True</property>
@@ -2652,10 +2650,6 @@
                                         <property name="tooltip_text" translatable="yes">The spell check engine to use.</property>
                                         <property name="label" translatable="yes">Spell-check backend:</property>
                                         <property name="use_underline">True</property>
-                                        <property name="mnemonic_widget">spell_check_backend_combobox</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="spell_check_backend_combobox"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -2664,7 +2658,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkComboBox" id="spell_check_backend_combobox1">
+                                      <object class="GtkComboBox" id="spell_check_backend_combobox">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="model">_spell_check_backend_model</property>
@@ -2675,9 +2669,6 @@
                                             <attribute name="text">0</attribute>
                                           </attributes>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="spell_check_backend_label"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
