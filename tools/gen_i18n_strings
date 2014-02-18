@@ -96,29 +96,44 @@ raise Exception("This module should not be executed.  It should only be"
             msgid = msgid.replace("\n", "\\n")
             if mi.comment:
                 print("    # translators: " + mi.comment, file=file)
-            print('    _("{}"),'.format(msgid), file=file)
+            print('    _("{}"),\n'.format(msgid), file=file)
 
         print(outro, file=file)
 
     def _process_layout(self, filename):
         messages = collections.OrderedDict()
+        base_name = os.path.basename(filename)
 
         try:
             with open(filename, encoding="UTF-8") as f:
                 dom_node = minidom.parse(f).documentElement
 
-                # keyboard tag
-                self._process_attributes(messages, dom_node,
-                                        ["summary", "description"],
-                                        "keyboard definition")
+                # keyboard tags (should be only one)
+                for node in [dom_node] + \
+                            dom_node.getElementsByTagName("keyboard"):
+                    self._process_attributes(messages, node,
+                            ["summary", "description"],
+                            "this is a '{}' of the keyboard layout " + \
+                            "'{}'" \
+                            .format(base_name))
 
                 # key tags
                 for node in dom_node.getElementsByTagName("key"):
                     id = node.attributes["id"].value
                     self._process_attributes(messages, node,
-                                ["tooltip"],
-                                "keyboard-key definition '{}'".format(id))
+                            ["tooltip"],
+                            "this is a '{}' of the key " + \
+                            "'{}' in keyboard layout '{}'" \
+                            .format(id, base_name))
 
+                # key_template tags
+                for node in dom_node.getElementsByTagName("key_template"):
+                    id = node.attributes["id"].value
+                    self._process_attributes(messages, node,
+                            ["tooltip"],
+                            "this is a '{}' of the key_template " + \
+                            "'{}' in keyboard layout '{}'" \
+                            .format(id, base_name))
         except IOError as ex:
             print(str(ex), file=sys.stdout)
             raise ErrorExit()
@@ -130,13 +145,13 @@ raise Exception("This module should not be executed.  It should only be"
         return messages
 
     @staticmethod
-    def _process_attributes(messages, dom_node, attributes, comment_prefix):
+    def _process_attributes(messages, dom_node, attributes, comment_format):
         class MessageInfo: pass
         for a in attributes:
             if a in dom_node.attributes:
                 value = dom_node.attributes[a].value
                 mi = MessageInfo()
-                mi.comment = "{}, attribute '{}'".format(comment_prefix, a)
+                mi.comment = comment_format.format(a)
                 messages[value] = mi
 
 if __name__ == '__main__':
