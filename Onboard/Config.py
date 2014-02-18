@@ -1445,7 +1445,7 @@ class ConfigWordSuggestions(ConfigObject):
     def can_auto_learn(self):
         return self.enabled and \
                self.auto_learn and \
-               not self._pause_learning and \
+               not self.get_pause_learning() and \
                not self.stealth_mode
 
     def get_pause_learning(self):
