@@ -1333,14 +1333,14 @@
                         <property name="spacing">6</property>
                         <property name="layout_style">start</property>
                         <child>
-                          <object class="GtkButton" id="personalise_button">
+                          <object class="GtkButton" id="layout_new_button">
                             <property name="label">gtk-new</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_personalise_button_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_layout_new_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
