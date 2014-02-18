@@ -578,12 +578,15 @@ class Settings(DialogBuilder):
         self.open_user_layout_dir()
 
     def on_personalise_button_clicked(self, widget):
+        name = self.get_selected_layout_value(self.LAYOUT_COL_NAME)
+        filename = self.get_selected_layout_filename()
         new_layout_name = show_ask_string_dialog(
-            _("Enter name for personalised layout"), self.window)
+            _format("Copy layout '{}' to this new name:", name), self.window)
         if new_layout_name:
-            new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
-                           config.LAYOUT_FILE_EXTENSION
-            LayoutLoaderSVG.copy_layout(config.layout_filename, new_filename)
+            new_filename = \
+                os.path.join(self.user_layout_root, new_layout_name) + \
+                config.LAYOUT_FILE_EXTENSION
+            LayoutLoaderSVG.copy_layout(filename, new_filename)
             self.update_layout_view()
             self.open_user_layout_dir()
 
@@ -711,13 +714,16 @@ class Settings(DialogBuilder):
         dialog.destroy()
 
     def on_layout_remove_button_clicked(self, event):
+        name = self.get_selected_layout_value(self.LAYOUT_COL_NAME)
         filename = self.get_selected_layout_filename()
         if filename:
-            LayoutLoaderSVG.remove_layout(filename)
+            question = _format("Delete layout '{}'?", name)
+            if show_confirmation_dialog(question, self.window):
+                LayoutLoaderSVG.remove_layout(filename)
 
-            config.layout_filename = self.layout_view_model[0][1] \
-                                     if len(self.layout_view_model) else ""
-        self.update_layout_view()
+                config.layout_filename = self.layout_view_model[0][1] \
+                                        if len(self.layout_view_model) else ""
+                self.update_layout_view()
 
     def _read_layouts(self, path,  sort_order=()):
         filenames = self._find_layouts(path)
@@ -751,10 +757,7 @@ class Settings(DialogBuilder):
                 li.author = self._get_dom_string(dom_node, "author")
                 li.sort_key = (li.layout_section.lower(), sort_priority, id.lower())
                 li.has_about_info = True
-                if os.access(filename, os.W_OK):
-                    li.id_string = id
-                else:
-                    li.id_string = "<i>{0}</i>".format(id)
+                li.id_string = id
 
             except ExpatError as ex:
                 _logger.error("XML in %s %s" % (filename, unicode_str(ex)))
