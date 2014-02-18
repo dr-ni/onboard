@@ -1007,13 +1007,25 @@ class LayoutLoaderSVG:
 
     @staticmethod
     def _replace_basename(filename, new_basename, fallback_layer_name):
+        """
+        Doctests:
+        # Basename has to be replaced with new_basename.
+        >>> test = LayoutLoaderSVG._replace_basename
+        >>> test("/home/usr/.local/share/onboard/Base-Alpha.svg",
+        ... "NewBase","Fallback")
+        'NewBase-Alpha.svg'
+
+        # Dashes in front are allowed, but the layer name must not have any.
+        >>> test("/home/usr/.local/share/onboard/a-b-c-Alpha.svg",
+        ... "d-e-f","g-h")
+        'd-e-f-Alpha.svg'
+        """
         dir, name_ext = os.path.split(filename)
         name, ext = os.path.splitext(name_ext)
-        components = name.split("-")
-        if components:
-            basename = components[0]
-            if len(components) > 1:
-                layer = components[1]
+        if name:
+            index = name.rfind("-")
+            if index >= 0:
+                layer = name[index+1:]
             else:
                 layer = fallback_layer_name
             return "{}-{}{}".format(new_basename, layer, ext)

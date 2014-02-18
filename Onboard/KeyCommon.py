@@ -263,7 +263,7 @@ class KeyCommon(LayoutItem):
     def split_id(value):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
-        the identifier should be a descripttion of the location of
+        the identifier should be a description of the location of
         the key relative to its surroundings, e.g. 'DELE.next-to-backspace'.
         Don't use layout names or layer ids for the theme id, they lose
         their meaning when layouts are copied or renamed by users.
