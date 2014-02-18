@@ -1,20 +1,23 @@
 <?xml version="1.0" ?>
-<keyboard id="Whiteboard Broad" format="3.1">
+<keyboard
+    id="Whiteboard, wide"
+    format="3.1"
+    section="contributions"
+    summary="Special characters for interactive Whiteboards, wide"
+    description="Keyboard layout with Greek literals, arrows and more, for math and physics education on an interactive Whiteboard.&#xA;This layout places all keys on a single, very wide layer."
+    author="Johannes Almer"
+    license="" >
+
   <include file="key_defs.xml"/>
 
   <!-- box containing all the keys and buttons -->
   <!-- the rows of keys on the Onboard keyboard are counted bottom to top starting with 1 -->
   <box border="1" spacing="2.0" orientation="vertical">
 
-    <!--- word suggestions -->
-    <panel filename="Whiteboard-Broad-Alpha.svg">
-        <include file='word_suggestions.xml'/>
-    </panel>
-
     <panel>
 
       <!-- alpha layers -->
-       <panel filename="Whiteboard-Broad-Alpha.svg" layer="alpha">
+       <panel filename="Whiteboard_wide-Alpha.svg" layer="alpha">
 
             <!-- row 4 -->
           <key char="α" group="alphanumeric" id="AD01" label="α"/>
@@ -49,13 +52,6 @@
           <key char="Φ" group="alphanumeric" id="AB08" label="Φ"/>
           <key char="Ψ" group="alphanumeric" id="AB09" label="Ψ"/>
           <key group="bottomrow" id="BKSP"/>
-		<!-- row 1 -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts;  Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
           <key group="alphanumeric" id="AA03" char="Ω" label="Ω" />
           <key char="𝝅" group="alphanumeric" id="AA04" label="𝝅"/>
           <key char="𝛑" group="alphanumeric" id="AA05" label="𝛑"/>
@@ -92,13 +88,7 @@
           <key char="⁺" group="alphanumeric" id="BB08" label="⁺"/>
           <key char="⁻" group="alphanumeric" id="BB09" label="⁻"/>
            <key group="bottomrow" id="BKSP" unlatch_layer="false"/>
-		<!-- row 1 -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
+            <!-- row 1 -->
           <key group="alphanumeric" id="BA03" char="ₕ" label="ₕ" />
           <key char="ₛ" group="alphanumeric" id="BA04" label="ₛ"/>
           <key char="ᵣ" group="alphanumeric" id="BA05" label="ᵣ"/>
@@ -137,12 +127,6 @@
           <key char="⊅" group="alphanumeric" id="CB09" label="⊅"/>
         <key group="bottomrow" id="BKSP"/>
         <!-- row 1 -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
           <key char="⊈" group="alphanumeric" id="CA03" label="⊈"/>
           <key char="⊉" group="alphanumeric" id="CA04" label="⊉"/>
           <key char="⊆" group="alphanumeric" id="CA05" label="⊆"/>
@@ -181,12 +165,6 @@
         <key group="symbol" id="DB09" char="☐" label="☐"/> 
         <key group="bottomrow" id="BKSP"/>
         <!-- row 1 of the layers -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
           <key char="♦" group="alphanumeric" id="DA03" label="♦"/>
           <key char="♠" group="alphanumeric" id="DA04" label="♠"/>
           <key char="♥" group="alphanumeric" id="DA05" label="♥"/>
@@ -225,12 +203,6 @@
         <key group="symbol" id="EB09" char="↔" label="↔"/> 
         <key group="bottomrow" id="BKSP"/>
         <!-- row 1 of the layers -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
           <key char="⇐" group="alphanumeric" id="EA03" label="⇐"/>
           <key char="⇒" group="alphanumeric" id="EA04" label="⇒"/>
           <key char="⇐" group="alphanumeric" id="EA05" label="⇐"/>
@@ -269,30 +241,14 @@
           <key char="∛" group="alphanumeric" id="FB08" label="∛"/>
           <key char="~" group="alphanumeric" id="FB09" label="~"/>
           <key group="bottomrow" id="BKSP"/>
-		<!-- row 1 -->
-          <key group="bottomrow" id="layer1.like_rtrn" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
-          <key group="bottomrow" id="layer2.like_rtrn" label="∃∩" tooltip="Set and Settings" />
-          <key group="bottomrow" id="layer3.like_rtrn" label="⚀♫" tooltip="Special Characters"/>
-          <key group="bottomrow" id="layer0.like_rtrn" label="αβΩ" tooltip="Greek"/>
-          <key group="bottomrow" id="layer4.like_rtrn" label="⇄" tooltip="Arrows"/>
-          <key group="bottomrow" id="layer5.like_rtrn"  label="" tooltip="individuell"/>
+            <!-- row 1 -->
           <key group="alphanumeric" id="FA03" char="≈" label="≈" />
           <key char="≠" group="alphanumeric" id="FA04" label="≠"/>
           <key char="≥" group="alphanumeric" id="FA05" label="≥"/>
           <key char="≤" group="alphanumeric" id="FA06" label="≤"/>
       </panel>
 
-      
     </panel>
  </box>
-
-  <!-- popup definition -->
-  <layout id="RTRN_popup" filename="Whiteboard-Alpha.svg">
-    <box compact="true">
-        <key id="settings"/>
-        <key id="move"/>
-        <key id="hide" svg_id="hide.popup" image="close.svg" group="nowordlist" />
-    </box>
-  </layout>
 
 </keyboard>
