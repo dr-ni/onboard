@@ -69,7 +69,8 @@ class AutoReleaseTimer(Timer):
         # We then assume Onboard is used in a kiosk setting, and
         # everything has to be reset for the next customer.
         release_all_keys = bool(config.keyboard.sticky_key_release_delay)
-
+        if release_all_keys:
+            config.word_suggestions.set_pause_learning(0)
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys(release_all_keys)
         self._keyboard.active_layer_index = 0
