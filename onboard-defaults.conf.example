@@ -161,11 +161,14 @@ force-to-top=True
 enabled=False
 #widget-clearance=(25.0, 55.0, 25.0, 40.0)
 
-[typing-helpers]
+[typing-assistance]
 #auto-capitalization=False
 
-[word-suggestions]
+[typing-assistance.word-suggestions]
 #enabled=False
+#spelling-suggestions-enabled=True
+#auto-learn=True
+#wordlist-buttons=["pause-learning", "language", "hide"]
 
 [universal-access]
 # Drag threshold
