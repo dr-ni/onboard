@@ -762,8 +762,9 @@ class Settings(DialogBuilder):
                 li.id = id
                 li.filename = filename
                 li.layout_section = self._get_dom_string(dom_node, "section")
-                li.summary = self._get_dom_string(dom_node, "summary")
-                li.description = self._get_dom_string(dom_node, "description")
+                li.summary = _(self._get_dom_string(dom_node, "summary"))
+                li.description = \
+                    _(self._get_dom_string(dom_node, "description"))
                 li.author = self._get_dom_string(dom_node, "author")
                 li.sort_key = (li.layout_section.lower(), sort_priority, id.lower())
                 li.has_about_info = True
