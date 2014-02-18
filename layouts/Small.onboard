@@ -1,5 +1,10 @@
 <?xml version="1.0" ?>
-<keyboard id="Small" format="3.1">
+<keyboard
+    id="Small"
+    format="3.1"
+    section="system"
+    summary="Space efficient desktop keyboard" >
+
   <include file="key_defs.xml"/>
 
   <box border="0.5" orientation="vertical" spacing="1.5">

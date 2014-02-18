@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<keyboard id='Full Keyboard' format='3.1'>
+<keyboard
+    id="Full Keyboard"
+    format="3.1"
+    section="system"
+    summary="Desktop keyboard with edit and function keys" >
 
     <include file='key_defs.xml'/>
 

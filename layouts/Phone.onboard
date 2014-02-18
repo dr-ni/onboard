@@ -1,5 +1,10 @@
 <?xml version="1.0" ?>
-<keyboard id="Phone" format="3.1">
+<keyboard
+    id="Phone"
+    format="3.1"
+    section="system"
+    summary="Mobile keyboard for small screens" >
+
   <include file="key_defs.xml"/>
 
   <!-- box containing all the keys and buttons -->
