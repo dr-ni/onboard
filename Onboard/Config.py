@@ -14,7 +14,8 @@ from optparse import OptionParser
 from gi.repository import Gtk, Gio
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
-                                   unicode_str, XDGDirs, chmodtree
+                                   unicode_str, XDGDirs, chmodtree, \
+                                   Process
 from Onboard.definitions    import *
 from Onboard.WindowUtils    import Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
@@ -96,6 +97,11 @@ class Config(ConfigObject):
     """
     Singleton Class to encapsulate the gsettings stuff and check values.
     """
+
+    # launched by ...
+    (LAUNCHER_NONE,
+     LAUNCHER_GSS,
+     LAUNCHER_UNITY_GREETER) = range(3)
 
     # extension of layout files
     LAYOUT_FILE_EXTENSION = ".onboard"
@@ -241,6 +247,13 @@ class Config(ConfigObject):
         self.gnome_a11y = self.add_optional_child(ConfigGDA)
         self.gnome_a11y.init_from_gsettings()
 
+        # detect who launched us
+        self.launched_by = self.LAUNCHER_NONE
+        if self.xid_mode:
+            if Process.was_launched_by("gnome-screensaver"):
+                self.launched_by = self.LAUNCHER_GSS
+            elif "UNITY_GREETER_DBUS_NAME" in os.environ:
+                self.launched_by = self.LAUNCHER_UNITY_GREETER
 
     def init(self):
         """
@@ -539,7 +552,9 @@ class Config(ConfigObject):
     def _convert_sysdef_key(self, gskey, sysdef, value):
         # key exclusive to system defaults?
         if sysdef in ["superkey-label", \
-                      "superkey-label-independent-size"]:
+                      "superkey-label-independent-size",
+                      "xembed-aspect-change-range",
+                      "xembed-unity-greeter-offset-x"]:
             return value
         else:
             return super(self.__class__, self). \
@@ -828,8 +843,12 @@ class Config(ConfigObject):
     def is_inactive_transparency_enabled(self):
         return self.window.enable_inactive_transparency and \
                not self.scanner.enabled
+
     def is_keep_aspect_ratio_enabled(self):
-        return self.window.keep_aspect_ratio or self.options.keep_aspect_ratio
+        return self.window.keep_aspect_ratio or \
+               self.options.keep_aspect_ratio or \
+               (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and \
+                not self.system_defaults.get("xembed_aspect_change_range") is None)
 
     def is_mousetweaks_active(self):
         return self.mousetweaks and self.mousetweaks.is_active()
@@ -955,6 +974,15 @@ class Config(ConfigObject):
         pass
     modeless_gksu = property(lambda self: False)
 
+
+    def get_desktop_background_filename(self):
+        try:
+            s = Gio.Settings(schema="org.gnome.desktop.background")
+            fn = s.get_string("picture-uri")
+        except:
+            fn = ""
+        fn = fn.replace("file://", "")
+        return fn
 
     def _get_install_dir(self):
         result = None

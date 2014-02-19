@@ -30,7 +30,7 @@ from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.Appearance      import ColorScheme
 from Onboard.IconPalette     import IconPalette
 from Onboard.Exceptions      import LayoutFileError
-from Onboard.utils           import show_confirmation_dialog, CallOnce, Process, \
+from Onboard.utils           import show_confirmation_dialog, CallOnce, \
                                     unicode_str
 import Onboard.osk as osk
 
@@ -89,11 +89,11 @@ class OnboardGtk(object):
             # gss when there is already a non-embedded instance running in
             # the user session (LP: 938302).
             if config.xid_mode and \
+               config.launched_by == config.LAUNCHER_GSS and \
                not (config.gnome_a11y and \
-                    config.gnome_a11y.screen_keyboard_enabled):
-                if Process.was_launched_by("gnome-screensaver") and \
-                   not has_remote_instance:
-                    sys.exit(0)
+                    config.gnome_a11y.screen_keyboard_enabled) and \
+               not has_remote_instance:
+                sys.exit(0)
 
             # Embedded instances can't become primary instances
             if not config.xid_mode:
@@ -172,6 +172,7 @@ class OnboardGtk(object):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
+        #config.xid_mode = True
         self._window.application = self
         config.main_window = self._window # need this to access screen properties
 

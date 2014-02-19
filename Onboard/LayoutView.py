@@ -8,11 +8,13 @@ import time
 from math import pi
 
 import cairo
-from gi.repository         import Gtk
+from gi.repository         import Gtk, Gdk, GdkPixbuf
 
 from Onboard.utils         import Rect, Timer, \
                                   roundrect_arc, roundrect_curve, \
-                                  gradient_line, brighten, timeit
+                                  gradient_line, brighten, timeit, \
+                                  unicode_str
+from Onboard.WindowUtils   import get_monitor_dimensions
 from Onboard.definitions   import InputEventSourceEnum
 from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
@@ -287,17 +289,20 @@ class LayoutView:
         transparent_bg = False
         plain_bg = False
 
-        if config.xid_mode:
+        if config.xid_mode and \
+           config.is_keep_aspect_ratio_enabled():
+            if self.supports_alpha:
+                self._clear_xid_background(context)
+                transparent_bg = True
+            else:
+                plain_bg = True
+
+        elif config.xid_mode:
             # xembed mode
             # Disable transparency in lightdm and g-s-s for now.
             # There are too many issues and there is no real
             # visual improvement.
-            if False and \
-               self.supports_alpha:
-                self._clear_background(context)
-                transparent_bg = True
-            else:
-                plain_bg = True
+            plain_bg = True
 
         elif config.has_window_decoration():
             # decorated window
@@ -333,29 +338,44 @@ class LayoutView:
         context.paint()
         context.restore()
 
-    def _get_layer_fill_rgba(self, layer_index):
-        color_scheme = self.get_color_scheme()
-        if color_scheme:
-            return color_scheme.get_layer_fill_rgba(layer_index)
-        else:
-            return [0.5, 0.5, 0.5, 1.0]
+    def _clear_xid_background(self, context):
+        """ fill with plain layer 0 color; no alpha support required """
+        rect = Rect(0, 0, self.get_allocated_width(),
+                          self.get_allocated_height())
 
-    def get_background_rgba(self):
-        """ layer 0 color * background_transparency """
-        layer0_rgba = self._get_layer_fill_rgba(0)
-        background_alpha = config.window.get_background_opacity()
-        background_alpha *= layer0_rgba[3]
-        return layer0_rgba[:3] + [background_alpha]
+        pixbuf = self._get_xid_background_image()
+        if not pixbuf:
+            return
+        src_size = (pixbuf.get_width(), pixbuf.get_height())
+        x, y = 0, rect.bottom() - src_size[1]
+        Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
+        context.rectangle(*rect)
+        context.fill()
 
-    def get_popup_window_rgba(self, element = "border"):
-        color_scheme = self.get_color_scheme()
-        if color_scheme:
-            rgba = color_scheme.get_window_rgba("key-popup", element)
-        else:
-            rgba = [0.8, 0.8, 0.8, 1.0]
-        background_alpha = config.window.get_background_opacity()
-        background_alpha *= rgba[3]
-        return rgba[:3] + [background_alpha]
+        fill = self.get_background_rgba()
+        fill[3] = 0.5
+        context.set_source_rgba(*fill)
+        context.rectangle(*rect)
+        context.fill()
+
+    def _get_xid_background_image(self):
+        """ load the desktop background image in Unity """
+        try:
+            pixbuf = self._xid_background_image
+        except AttributeError:
+            size, size_mm = get_monitor_dimensions(self)
+            filename = config.get_desktop_background_filename()
+            try:
+                pixbuf = GdkPixbuf.Pixbuf. \
+                            new_from_file_at_size(filename, *size)
+            except Exception as ex: # private exception gi._glib.GError when
+                                    # librsvg2-common wasn't installed
+                _logger.error("_get_xid_background_image(): " + \
+                              unicode_str(ex))
+                pixbuf = None
+            self._xid_background_image = pixbuf
+
+        return pixbuf
 
     def _draw_transparent_background(self, context, lod):
         """ fill with the transparent background color """
@@ -380,7 +400,11 @@ class LayoutView:
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
-        frame = self.can_draw_frame()
+        if config.xid_mode:
+            frame = False
+        else:
+            frame = self.can_draw_frame()
+
         if frame:
             roundrect_arc(context, rect, corner_radius)
         else:
@@ -392,6 +416,7 @@ class LayoutView:
             self.draw_keyboard_frame(context, lod)
 
     def can_draw_frame(self):
+        """ overloaded in popups """
         return True
 
     def draw_window_frame(self, context, lod):
@@ -556,6 +581,30 @@ class LayoutView:
                 self._last_canvas_shadow_rect = r
         else:
             self._last_canvas_shadow_rect = r
+
+    def _get_layer_fill_rgba(self, layer_index):
+        color_scheme = self.get_color_scheme()
+        if color_scheme:
+            return color_scheme.get_layer_fill_rgba(layer_index)
+        else:
+            return [0.5, 0.5, 0.5, 1.0]
+
+    def get_background_rgba(self):
+        """ layer 0 color * background_transparency """
+        layer0_rgba = self._get_layer_fill_rgba(0)
+        background_alpha = config.window.get_background_opacity()
+        background_alpha *= layer0_rgba[3]
+        return layer0_rgba[:3] + [background_alpha]
+
+    def get_popup_window_rgba(self, element = "border"):
+        color_scheme = self.get_color_scheme()
+        if color_scheme:
+            rgba = color_scheme.get_window_rgba("key-popup", element)
+        else:
+            rgba = [0.8, 0.8, 0.8, 1.0]
+        background_alpha = config.window.get_background_opacity()
+        background_alpha *= rgba[3]
+        return rgba[:3] + [background_alpha]
 
     def get_damage_rect(self, context):
         clip_rect = Rect.from_extents(*context.clip_extents())

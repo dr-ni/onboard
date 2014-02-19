@@ -173,9 +173,12 @@ class LayoutRoot:
         self._last_hit_args = None
         self._last_hit_key = None
 
-    def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
-                                x_align = 0.5, y_align = 0.0):
-        self._item.fit_inside_canvas(canvas_border_rect, keep_aspect,
+    def fit_inside_canvas(self, canvas_border_rect,
+                          keep_aspect = False,
+                          aspect_change_range = (0.0, 1.1),
+                          x_align = 0.5, y_align = 0.0):
+        self._item.fit_inside_canvas(canvas_border_rect,
+                                     keep_aspect, aspect_change_range,
                                      x_align, y_align)
 
         # rects likely changed
@@ -466,8 +469,10 @@ class LayoutItem(TreeItem):
         root = self.get_layout_root()
         return root.context.scale_log_to_canvas((2.0, 2.0))
 
-    def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
-                                x_align = 0.5, y_align = 0.0):
+    def fit_inside_canvas(self, canvas_border_rect,
+                          keep_aspect = False,
+                          aspect_change_range = (0.0, 1.1),
+                          x_align = 0.5, y_align = 0.0):
         """
         Scale item and its children to fit inside the given canvas_rect.
         """
@@ -476,9 +481,17 @@ class LayoutItem(TreeItem):
 
         # optionally maintain the aspect ratio and align the result
         if keep_aspect:
-            log_rect = self.context.log_rect
-            canvas_border_rect = log_rect.inscribe_with_aspect( \
-                                        canvas_border_rect, x_align, y_align)
+            r = self.context.log_rect
+            if r.h:
+                a0 = r.w / float(r.h)
+                a0_max = a0 * aspect_change_range[1]
+                a1 = canvas_border_rect.w / float(canvas_border_rect.h)
+                a = min(a1, a0_max)
+
+                r = Rect(0, 0, a, 1.0)
+                r = Rect(0, 0, a, 1.0)
+            canvas_border_rect = r.inscribe_with_aspect( \
+                                      canvas_border_rect, x_align, y_align)
 
         # recursively fit inside canvas
         self._fit_inside_canvas(canvas_border_rect)

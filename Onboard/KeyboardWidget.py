@@ -376,9 +376,31 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.canvas_rect = canvas_rect
 
         rect = self.canvas_rect.deflate(self.get_frame_width())
-        #keep_aspect = config.xid_mode and self.supports_alpha()
-        keep_aspect = False
-        layout.fit_inside_canvas(rect, keep_aspect)
+        keep_aspect = config.is_keep_aspect_ratio_enabled()
+
+        x_align = 0.5
+        aspect_change_range = (0, 100)
+        if keep_aspect:
+            if config.xid_mode:
+                value = config.system_defaults.get("xembed_aspect_change_range")
+                if not value is None:
+                    value = value[1:-1]
+                    begin, end = value.split(",")
+                    aspect_change_range = (float(begin), float(end))
+
+                if config.launched_by == config.LAUNCHER_UNITY_GREETER:
+                    offset = config.system_defaults.get("xembed_unity_greeter_offset_x")
+                    if not offset is None:
+                        try:
+                            offset = float(offset)
+                            rect.x += offset
+                            rect.w -= offset
+                            x_align = 0.0
+                        except ValueError: pass
+
+        layout.fit_inside_canvas(rect, keep_aspect,
+                                 aspect_change_range=aspect_change_range,
+                                 x_align=x_align, y_align=0.5)
 
         # update the aspect ratio of the main window
         self.on_layout_updated()
@@ -1223,14 +1245,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """
         if config.xid_mode:
-            return 1.0
+            return config.UNDECORATED_FRAME_WIDTH
         if config.has_window_decoration():
             return 0.0
         co = self.get_kbd_window().get_orientation_config_object()
         if config.is_dock_expanded(co):
             return 0.5
         if config.window.transparent_background:
-            return 1.0
+            return 3.0
         return config.UNDECORATED_FRAME_WIDTH
 
     def get_hit_frame_width(self):

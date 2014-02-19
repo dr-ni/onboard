@@ -678,10 +678,10 @@ class Rect:
         result = rect.copy()
         if dst_aspect > src_aspect:
             result.w = rect.h * src_aspect
-            result.x = x_align * (rect.w - result.w)
+            result.x += x_align * (rect.w - result.w)
         else:
             result.h = rect.w / src_aspect
-            result.y = y_align * (rect.h - result.h)
+            result.y += y_align * (rect.h - result.h)
         return result
 
     def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
