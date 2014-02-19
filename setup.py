@@ -240,7 +240,7 @@ class TestCommand(Command):
         return True
 
 # scan for translatable layout strings in layouts
-if True: #"build_i18n" in sys.argv:
+if "build_i18n" in sys.argv:
     args = ["./tools/gen_i18n_strings",
             "-o./data/layoutstrings_generated.py"]
     print("Running '{}'".format(" ".join(args)))
@@ -312,3 +312,9 @@ if "build" in sys.argv or \
             except OSError: pass
             os.symlink(file, dstfile)
 
+# scan for translatable layout strings in layouts
+if "clean" in sys.argv:
+    try:
+        os.remove('./data/layoutstrings_generated.py')
+    except OSError:
+        pass

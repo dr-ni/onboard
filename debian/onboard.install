@@ -15,7 +15,6 @@ usr/share/onboard/AUTHORS
 usr/share/onboard/CHANGELOG
 usr/share/onboard/COPYING
 usr/share/onboard/layoutstrings.py
-usr/share/onboard/layoutstrings_generated.py
 usr/share/onboard/NEWS
 usr/share/onboard/onboard-defaults.conf*
 usr/share/onboard/README
