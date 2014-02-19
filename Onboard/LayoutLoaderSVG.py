@@ -737,7 +737,7 @@ class LayoutLoaderSVG:
     def _get_system_keyboard_layout(self, vk):
         """ get names of the currently active layout group and variant """
 
-        if self._vk: # xkb keyboard found?
+        if vk: # xkb keyboard found?
             group = vk.get_current_group()
             names = vk.get_rules_names()
         else:
