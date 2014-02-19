@@ -33,7 +33,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <key_template button="true" id="layer3" label="⚀♫"  tooltip="Special Characters"/>
   <key_template button="true" id="layer0" label="αβΩ" tooltip="Greek"/>
   <key_template button="true" id="layer4" label="⇄"   tooltip="Arrows"/>
-  <key_template button="true" id="layer5" label=""   tooltip="Custom"/>
+  <key_template button="true" id="layer5" label="..." tooltip="Custom"/>
 
   <!-- box containing all the keys and buttons -->
   <!-- the rows of keys on the Onboard keyboard are counted bottom to top starting with 1 -->
