@@ -240,11 +240,14 @@ class TestCommand(Command):
         return True
 
 # scan for translatable layout strings in layouts
-if "build_i18n" in sys.argv:
-    args = ["./tools/gen_i18n_strings",
-            "-o./data/layoutstrings_generated.py"]
-    print("Running '{}'".format(" ".join(args)))
-    subprocess.check_call(args)
+# disabled until know how to make it work.
+# layoutstring.px has those string manually added now.
+if 0:
+    if "build_i18n" in sys.argv:
+        args = ["./tools/gen_i18n_strings",
+                "-o./data/layoutstrings_generated.py"]
+        print("Running '{}'".format(" ".join(args)))
+        subprocess.check_call(args)
 
 ##### setup #####
 
@@ -312,9 +315,3 @@ if "build" in sys.argv or \
             except OSError: pass
             os.symlink(file, dstfile)
 
-# scan for translatable layout strings in layouts
-if "clean" in sys.argv:
-    try:
-        os.remove('./data/layoutstrings_generated.py')
-    except OSError:
-        pass
