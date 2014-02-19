@@ -1,3 +1,75 @@
+Version 1.0.0
+-------------
+
+  * Word suggestions enhancements:
+    - Every language id now has its own user language model
+    - Add a checkbox to the Preferences to show the language switch on layouts
+    - Add a checkbox to the Preferences to show the pause learning button
+    - Add Canadian English system language model
+    - Add Danish system language model
+    - Add various flavors of the Dutch system language model
+    - Add Gaelic system language model
+    - Add Greek system language model
+    - Add Irish system language model
+    - Add Luxembourgian system language model.
+    - Add Polish system language model
+    - Add Romanian system language model
+    - Add Swedish system language model
+    - Add Turkish system language model
+    - Update Brazilian system language model
+    - Improve makemodels script
+    - Add model_info tool
+    - Add checkmodels tool to diagnose language model loading errors
+    - Add tool to randomize sentences in corpora
+    - Add copy function to allow transfer between language models
+    - Add smart support for camel-case words (Thanks Michael Bauer)
+    - Make language switcher more user-friendly (Thanks Michael Bauer)
+    - Stop word correction when spell checker dictionary is not present
+    - Fix learning of text spans larger than 100 characters
+    - Fix word suggestions sometimes being unaware of modifier presses
+    - Fix all upper-case words not being suggested at sentence begin
+    - Fix wrong caret position in rename function of Nautilus
+    - Fix some character deletion on focus change after a word completion
+    - Fix bit rot in split_corpus tool
+    - Improve handling of the / and other non-word tokens
+    - Improve support for URLs and directories
+    - Don't learn passwords from URLs
+    - Show dialog on language model loading error (LP: #1278599)
+  * Layouts:
+    - Add support for polygonal keys instead of only rectangles (LP: #1259371)
+    - Make the Return key of the Compact and Full Keyboard layouts a polygon
+    - Don't write suggestions outside prediction area in Onboard
+    - Grid layout: add settings,move,hide,quit and click buttons (LP: #754391)
+    - Add Whiteboard and Whiteboard wide layouts (contributed by Johannes Almer)
+    - Add short and long description to the layouts
+    - Perform small visual improvements
+  * Change the design of the layout section in the Preferences
+  * Tweak themes lightly
+  * Click buttons:
+    - Add support for new mousetweaks branch (version >= 3.9)
+    - Fix CSClickMapper sometimes erroneously claiming to be active
+  * Add dependencies check to setup.py
+  * Add gsettings key to choose between Appindicator and GtkStatusIcon
+  * Add new D-Bus method ToggleVisible() for (LP: #1232107)
+  * Add input-event-source to the system defaults example file
+  * Add basic doctest for window manager detection
+  * Enhance the system defaults file with entries for the typing assistance
+  * Fix window manager detection
+  * Fix unregistering of events when auto-show is disabled
+  * Fix reading system defaults from XDG_CONFIG paths
+  * Fix quit button in popup layouts
+  * Fix back trace when pressing char keys
+  * Auto-release modifiers when hiding the keyboard (LP: #1277255)
+  * Allow startup without Atspi typelib
+  * Add fallback character for popup indicator in case it is not in the font
+  * Check for absolute paths before loading files (LP: #1249493, LP: #1249825)
+  * Make moving of keyboard more responsive
+  * Correct D-Bus section in README
+  * New layout order in the Preferences of Onboard
+  * Improve some comments and strings in the source code
+  * Remove unused changekbd.sh
+  * Some code cleanup
+
 Version 0.99.0
 --------------
 

@@ -253,7 +253,7 @@ if 0:
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.99.0',
+    version = '1.0.0',
     author = 'Onboard devel team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
