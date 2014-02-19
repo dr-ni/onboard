@@ -76,6 +76,15 @@ superkey-label-independent-size=True
 # Example:
 xembed-onboard=True
 
+# Enable aspect correction and fake transparency in gnome-screensaver
+# and unity-greeter. Remove this key to have Onboard stretch from
+# side to side again.
+xembed-aspect-change-range=[0, 1.15]
+
+# Position of the keyboard in pixels from the left screen edge.
+# Remove this to center the keyboard in unity-greeter.
+xembed-unity-greeter-offset-x=85.0
+
 # Other available keys:
 #
 #current-settings-page=0
