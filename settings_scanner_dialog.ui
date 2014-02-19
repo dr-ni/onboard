@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.0"/>
   <object class="GtkAdjustment" id="backtrack_interval_adjustment">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">5</property>
@@ -48,6 +48,33 @@
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.10000000000000001</property>
   </object>
+  <object class="GtkListStore" id="scan_mode_model">
+    <columns>
+      <!-- column-name Mode -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Automatic scan for 1 switch</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Critical overscan for 1 switch</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Step scan for 2 switches</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Directed scan for 3 or 5 switches</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkAdjustment" id="step_interval_adjustment">
+    <property name="lower">0.10000000000000001</property>
+    <property name="upper">5</property>
+    <property name="value">0.10000000000000001</property>
+    <property name="step_increment">0.050000000000000003</property>
+    <property name="page_increment">0.10000000000000001</property>
+  </object>
   <object class="GtkDialog" id="dialog">
     <property name="height_request">362</property>
     <property name="can_focus">False</property>
@@ -70,7 +97,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -188,7 +214,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The time the scanner rests on a key or group before moving to the next. (in seconds)</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">step_interval_adjustment</property>
                             <property name="climb_rate">0.050000000000000003</property>
                             <property name="digits">2</property>
@@ -209,7 +234,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">cycles_adjustment</property>
                             <property name="snap_to_ticks">True</property>
                             <property name="numeric">True</property>
@@ -230,7 +254,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Progress the highlight only while the switch is held down.</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <property name="xalign">0</property>
                             <property name="draw_indicator">True</property>
@@ -241,15 +264,6 @@
                             <property name="width">2</property>
                             <property name="height">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                     </child>
@@ -302,7 +316,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The time the scanner rests on a key  while progressing forward. (in seconds)</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">forward_interval_adjustment</property>
                             <property name="climb_rate">0.01</property>
                             <property name="digits">2</property>
@@ -323,7 +336,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The time the scanner rests on a key  while moving backwards. (in seconds)</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">backtrack_interval_adjustment</property>
                             <property name="climb_rate">0.050000000000000003</property>
                             <property name="digits">2</property>
@@ -374,7 +386,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The number of keys the scanner steps back before moving forward again.</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">backtrack_steps_adjustment</property>
                             <property name="climb_rate">1</property>
                             <property name="snap_to_ticks">True</property>
@@ -394,7 +405,6 @@
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">cycles_overscan_adjustment</property>
                             <property name="climb_rate">1</property>
                             <property name="snap_to_ticks">True</property>
@@ -407,15 +417,6 @@
                             <property name="width">1</property>
                             <property name="height">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -440,7 +441,6 @@
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Swap the scan actions after every key activation. The Step action will become the Activate action and vice versa.</property>
                             <property name="halign">start</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <property name="xalign">0</property>
                             <property name="draw_indicator">True</property>
@@ -475,7 +475,6 @@
                             <property name="has_tooltip">True</property>
                             <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
                             <property name="adjustment">cycles_overscan_adjustment</property>
                             <property name="climb_rate">1</property>
                             <property name="snap_to_ticks">True</property>
@@ -589,7 +588,6 @@
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">The selected device should not control the system mouse cursor or the keyboard caret.</property>
                     <property name="margin_left">12</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="use_underline">True</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
@@ -611,7 +609,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="model">device_mapping_model</property>
-                        <property name="headers_visible">False</property>
                         <property name="headers_clickable">False</property>
                         <property name="enable_search">False</property>
                         <property name="search_column">0</property>
@@ -622,6 +619,7 @@
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="column_action">
+                            <property name="resizable">True</property>
                             <property name="title">Action</property>
                             <property name="expand">True</property>
                             <child>
@@ -635,8 +633,10 @@
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="column_mapping">
-                            <property name="sizing">autosize</property>
-                            <property name="title">column</property>
+                            <property name="resizable">True</property>
+                            <property name="sizing">fixed</property>
+                            <property name="fixed_width">86</property>
+                            <property name="title">Mapping</property>
                           </object>
                         </child>
                       </object>
@@ -676,32 +676,5 @@
     <action-widgets>
       <action-widget response="0">dialog_close_button</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkListStore" id="scan_mode_model">
-    <columns>
-      <!-- column-name Mode -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Automatic scan for 1 switch</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Critical overscan for 1 switch</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Step scan for 2 switches</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Directed scan for 3 or 5 switches</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkAdjustment" id="step_interval_adjustment">
-    <property name="lower">0.10000000000000001</property>
-    <property name="upper">5</property>
-    <property name="value">0.10000000000000001</property>
-    <property name="step_increment">0.050000000000000003</property>
-    <property name="page_increment">0.10000000000000001</property>
   </object>
 </interface>
