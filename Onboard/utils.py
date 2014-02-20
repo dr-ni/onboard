@@ -308,7 +308,7 @@ def show_confirmation_dialog(question, parent=None):
     Show this dialog to ask confirmation before executing a task.
     """
     dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
-                            message_format=question,
+                            text=question,
                             buttons=Gtk.ButtonsType.YES_NO)
     if parent:
         dlg.set_transient_for(parent)
