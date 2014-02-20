@@ -13,7 +13,7 @@ Build-Depends: debhelper (>=7.0.50~),
                libhunspell-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: https://launchpad.net/~onboard/+contactuser
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
 X-Python3-Version: >= 3.2
