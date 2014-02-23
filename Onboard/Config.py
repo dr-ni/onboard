@@ -992,6 +992,19 @@ class Config(ConfigObject):
         fn = fn.replace("file://", "")
         return fn
 
+    def get_xembed_aspect_change_range(self):
+        aspect_change_range = [0.0, 1000.0]
+        value = self.system_defaults.get("xembed_aspect_change_range")
+        if not value is None:
+            value = value[1:-1]
+            begin, end = value.split(",")
+            aspect_change_range[0] = float(begin)
+            aspect_change_range[1] = float(end)
+        return aspect_change_range
+
+    def get_xembed_unity_greeter_offset_x(self):
+        return self.system_defaults.get("xembed_unity_greeter_offset_x")
+
     def _get_install_dir(self):
         result = None
 

@@ -381,23 +381,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowRectTracker, WindowManipulator, Layo
 
         x_align = 0.5
         aspect_change_range = (0, 100)
-        if keep_aspect:
-            if config.xid_mode:
-                value = config.system_defaults.get("xembed_aspect_change_range")
-                if not value is None:
-                    value = value[1:-1]
-                    begin, end = value.split(",")
-                    aspect_change_range = (float(begin), float(end))
+        if keep_aspect and \
+           config.xid_mode:
+            aspect_change_range = config.get_xembed_aspect_change_range()
 
-                if config.launched_by == config.LAUNCHER_UNITY_GREETER:
-                    offset = config.system_defaults.get("xembed_unity_greeter_offset_x")
-                    if not offset is None:
-                        try:
-                            offset = float(offset)
-                            rect.x += offset
-                            rect.w -= offset
-                            x_align = 0.0
-                        except ValueError: pass
+            if config.launched_by == config.LAUNCHER_UNITY_GREETER:
+                offset = config.get_xembed_unity_greeter_offset_x()
+                if not offset is None:
+                    try:
+                        offset = float(offset)
+                        rect.x += offset
+                        rect.w -= offset
+                        x_align = 0.0
+                    except ValueError: pass
 
         layout.fit_inside_canvas(rect, keep_aspect,
                                  aspect_change_range=aspect_change_range,
