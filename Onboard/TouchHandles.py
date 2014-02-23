@@ -7,7 +7,7 @@ from math import pi, sqrt, sin, log
 import cairo
 
 from Onboard.utils       import Rect, drop_shadow
-from Onboard.WindowUtils import Handle
+from Onboard.definitions import Handle
 
 ### Logging ###
 import logging
@@ -385,7 +385,7 @@ class TouchHandles(object):
         min_monitor_mm = 50
         target_size_mm = (5, 5)
         min_size = TouchHandle._fallback_size
-        
+
         if size_mm[0] < min_monitor_mm or \
            size_mm[1] < min_monitor_mm:
             w = 0

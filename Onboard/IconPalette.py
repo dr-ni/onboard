@@ -22,14 +22,14 @@ from __future__ import division, print_function, unicode_literals
 
 from os.path import join
 from traceback import print_exc
-  
+
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
 from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float, Timer, Fade
-from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
+from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
                                 Orientation, set_unity_property, \
                                 DwellProgress
 from Onboard.TouchInput  import InputSequence, POINTER_SEQUENCE
@@ -46,7 +46,7 @@ config = Config()
 ########################
 
 
-class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
+class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
     """
     Class that creates a movable and resizable floating window without
     decorations. The window shows the icon of onboard scaled to fit to the
@@ -90,7 +90,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
 
-        WindowRectTracker.__init__(self)
+        WindowRectPersist.__init__(self)
         WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
@@ -136,7 +136,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.update_resize_handles()
 
     def cleanup(self):
-        WindowRectTracker.cleanup(self)
+        WindowRectPersist.cleanup(self)
 
     def set_layout_view(self, view):
         self._layout_view = view
@@ -163,7 +163,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """ Gdk window created """
         set_unity_property(self)
         if config.is_force_to_top():
-            self.get_window().set_override_redirect(True)
+            self.set_override_redirect(True)
         self.restore_window_rect(True)
 
     def _on_unrealize_event(self, user_data):
@@ -419,7 +419,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def read_window_rect(self, orientation):
         """
         Read orientation dependent rect.
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         if orientation == Orientation.LANDSCAPE:
             co = config.icp.landscape
@@ -431,7 +431,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def write_window_rect(self, orientation, rect):
         """
         Write orientation dependent rect.
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         # There are separate rects for normal and rotated screen (tablets).
         if orientation == Orientation.LANDSCAPE:

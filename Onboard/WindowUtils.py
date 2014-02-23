@@ -9,6 +9,7 @@ from math import sqrt, pi
 from gi.repository import GLib, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
+from Onboard.definitions import Handle
 
 import Onboard.osk as osk
 
@@ -18,91 +19,8 @@ from functools import reduce
 _logger = logging.getLogger("WindowUtils")
 ###############
 
-# window corners
-class Handle:
-    NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
-    NORTH = Gdk.WindowEdge.NORTH
-    NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
-    WEST = Gdk.WindowEdge.WEST
-    EAST = Gdk.WindowEdge.EAST
-    SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
-    SOUTH = Gdk.WindowEdge.SOUTH
-    SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
-    class MOVE: pass
-
-Handle.EDGES  =   (Handle.EAST,
-                   Handle.SOUTH,
-                   Handle.WEST,
-                   Handle.NORTH)
-
-Handle.CORNERS =  (Handle.SOUTH_EAST,
-                   Handle.SOUTH_WEST,
-                   Handle.NORTH_WEST,
-                   Handle.NORTH_EAST)
-
-Handle.RESIZERS = (Handle.EAST,
-                   Handle.SOUTH_EAST,
-                   Handle.SOUTH,
-                   Handle.SOUTH_WEST,
-                   Handle.WEST,
-                   Handle.NORTH_WEST,
-                   Handle.NORTH,
-                   Handle.NORTH_EAST)
-
-Handle.TOP_RESIZERS = (
-                   Handle.EAST,
-                   Handle.WEST,
-                   Handle.NORTH_WEST,
-                   Handle.NORTH,
-                   Handle.NORTH_EAST)
-
-Handle.BOTTOM_RESIZERS = (
-                   Handle.EAST,
-                   Handle.SOUTH_EAST,
-                   Handle.SOUTH,
-                   Handle.SOUTH_WEST,
-                   Handle.WEST)
-
-Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
-
-Handle.CURSOR_TYPES = {
-    Handle.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
-    Handle.NORTH      : Gdk.CursorType.TOP_SIDE,
-    Handle.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
-    Handle.WEST       : Gdk.CursorType.LEFT_SIDE,
-    Handle.EAST       : Gdk.CursorType.RIGHT_SIDE,
-    Handle.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
-    Handle.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
-    Handle.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER,
-    Handle.MOVE       : Gdk.CursorType.FLEUR}
-
-Handle.IDS = {
-    Handle.EAST       : "E",
-    Handle.SOUTH_WEST : "SW",
-    Handle.SOUTH      : "S",
-    Handle.SOUTH_EAST : "SE",
-    Handle.WEST       : "W",
-    Handle.NORTH_WEST : "NW",
-    Handle.NORTH      : "N",
-    Handle.NORTH_EAST : "NE",
-    Handle.MOVE       : "M"}
-
-Handle.RIDS = {
-    "E"  : Handle.EAST,
-    "SW" : Handle.SOUTH_WEST,
-    "S"  : Handle.SOUTH,
-    "SE" : Handle.SOUTH_EAST,
-    "W"  : Handle.WEST,
-    "NW" : Handle.NORTH_WEST,
-    "N"  : Handle.NORTH,
-    "NE" : Handle.NORTH_EAST,
-    "M"  : Handle.MOVE}
-
-
-class DockingEdge:
-    TOP = 0
-    BOTTOM = 3
-
+from Onboard.Config import Config
+config = Config()
 
 class WindowManipulator(object):
     """
@@ -652,15 +570,30 @@ class WindowRectTracker:
         self._window_rect = None
         self._origin = None
         self._client_offset = (0, 0)
-        self._screen_orientation = None
-        self._save_position_timer = Timer()
-
-        # init detection of screen "rotation"
-        screen = self.get_screen()
-        screen.connect('size-changed', self.on_screen_size_changed)
+        self._override_redirect = False
 
     def cleanup(self):
-        self._save_position_timer.finish()
+        pass
+
+    def update_window_rect(self):
+        """
+        Call this on configure event, the only time when
+        get_position, get_size, etc. can be trusted.
+        """
+        visible = self.is_visible()
+        if visible:
+            pos  = Gtk.Window.get_position(self)
+            size = Gtk.Window.get_size(self)
+            origin = self.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+
+            pos = self._apply_window_scaling_factor(pos)
+
+            self._window_rect = Rect.from_position_size(pos, size)
+            self._origin = origin
+            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1])
+            self._screen_orientation = self.get_screen_orientation()
 
     def move(self, x, y):
         Gtk.Window.move(self, x, y)
@@ -675,9 +608,11 @@ class WindowRectTracker:
 
     def get_position(self):
         if self._window_rect is None:
-            return Gtk.Window.get_position(self)
+            pos = Gtk.Window.get_position(self)
+            pos = self._apply_window_scaling_factor(pos)
         else:
-            return self._window_rect.get_position()
+            pos = self._window_rect.get_position()
+        return pos
 
     def get_size(self):
         if self._window_rect is None:
@@ -702,6 +637,39 @@ class WindowRectTracker:
 
     def get_rect(self):
         return self._window_rect
+
+    def get_override_redirect(self):
+        return self._override_redirect
+
+    def set_override_redirect(self, value):
+        self._override_redirect = value
+        self.get_window().set_override_redirect(True)
+
+    def _apply_window_scaling_factor(self, values):
+        """
+        GNOME doesn't scale override redirect windows (Trusty)
+        """
+        if self._override_redirect:
+            scale = 1.0 / config.window_scaling_factor
+            values = (values[0] * scale, values[1] * scale)
+        return values
+
+
+class WindowRectPersist(WindowRectTracker):
+    """
+    Save and restore window position and size.
+    """
+    def __init__(self):
+        WindowRectTracker.__init__(self)
+        self._screen_orientation = None
+        self._save_position_timer = Timer()
+
+        # init detection of screen "rotation"
+        screen = self.get_screen()
+        screen.connect('size-changed', self.on_screen_size_changed)
+
+    def cleanup(self):
+        self._save_position_timer.finish()
 
     def is_visible(self):
         """ This is overloaded in KbdWindow """
@@ -731,24 +699,6 @@ class WindowRectTracker:
             return Orientation.LANDSCAPE
         else:
             return Orientation.PORTRAIT
-
-    def update_window_rect(self):
-        """
-        Call this on configure event, the only time when
-        get_position, get_size, etc. can be trusted.
-        """
-        visible = self.is_visible()
-        if visible:
-            pos  = Gtk.Window.get_position(self)
-            size = Gtk.Window.get_size(self)
-            origin      = self.get_window().get_origin()
-            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                origin = origin[1:]
-
-            self._window_rect = Rect.from_position_size(pos, size)
-            self._origin = origin
-            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1])
-            self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):
         """

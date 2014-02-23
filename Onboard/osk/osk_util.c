@@ -643,6 +643,34 @@ osk_util_set_input_rect (PyObject *self, PyObject *args)
 }
 
 
+/*
+ * Return the scaling-factor of Gdk windows
+ */
+static PyObject *
+osk_util_get_window_scale (PyObject *self)
+{
+    PyObject* result = NULL;
+
+    GdkScreen* screen = gdk_screen_get_default ();
+    if (screen)
+    {
+        GValue value = G_VALUE_INIT;
+        g_value_init (&value, G_TYPE_DOUBLE);
+        if (gdk_screen_get_setting(screen, "gdk-window-scaling-factor", &value))
+        {
+            if (G_VALUE_HOLDS_DOUBLE(&value))
+            {
+                double d = g_value_get_double(&value);
+                result = PyFloat_FromDouble(d);
+            }
+        }
+    }
+
+    if (result)
+        return result;
+    Py_RETURN_NONE;
+}
+
 typedef struct {
     PyObject *callback;
     PyObject *arglist;
@@ -707,6 +735,9 @@ static PyMethodDef osk_util_methods[] = {
     { "set_input_rect",
        osk_util_set_input_rect,
         METH_VARARGS, NULL },
+    { "get_window_scale",
+        (PyCFunction) osk_util_get_window_scale,
+        METH_NOARGS, NULL },
 
     { NULL, NULL, 0, NULL }
 };

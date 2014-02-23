@@ -11,7 +11,8 @@ from Onboard.utils          import Rect, Timer, roundrect_arc
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
                                    canvas_to_root_window_rect, \
-                                   get_monitor_dimensions
+                                   get_monitor_dimensions, \
+                                   WindowRectTracker
 from Onboard.TouchInput     import TouchInput
 from Onboard                import KeyCommon
 from Onboard.Layout         import LayoutRoot, LayoutPanel
@@ -106,10 +107,11 @@ class TouchFeedback:
         return w, w * (1.0 + LabelPopup.ARROW_HEIGHT)
 
 
-class KeyboardPopup(Gtk.Window):
+class KeyboardPopup(WindowRectTracker, Gtk.Window):
     """ Abstract base class for popups. """
 
     def __init__(self):
+        WindowRectTracker.__init__(self)
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
@@ -175,10 +177,10 @@ class LabelPopup(KeyboardPopup):
         self.connect("draw", self._on_draw)
 
     def _on_realize_event(self, user_data):
-        win = self.get_window()
-        win.set_override_redirect(True)
+        self.set_override_redirect(True)
 
         # set minimal input shape for the popup to become click-through
+        win = self.get_window()
         self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
     def _on_draw(self, widget, context):
@@ -343,7 +345,7 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
         return self._drag_selected
 
     def handle_realize_event(self):
-        self.get_window().set_override_redirect(True)
+        self.set_override_redirect(True)
         super(LayoutPopup, self).handle_realize_event()
 
     def _on_destroy_event(self, user_data):

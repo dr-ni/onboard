@@ -6,7 +6,7 @@ import time
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
 from Onboard.utils       import Rect, CallOnce, Timer
-from Onboard.WindowUtils import Orientation, WindowRectTracker, \
+from Onboard.WindowUtils import Orientation, WindowRectPersist, \
                                 set_unity_property
 import Onboard.osk as osk
 
@@ -55,7 +55,6 @@ class KbdWindowBase:
 
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
-        self._override_redirect = False
         self._type_hint = None
 
         self._known_window_rects = []
@@ -203,9 +202,7 @@ class KbdWindowBase:
         if not config.xid_mode:   # not when embedding
             ord = self.is_override_redirect_mode()
             if ord:
-                self.get_window().set_override_redirect(True)
-
-            self._override_redirect = ord
+                self.set_override_redirect(True)
 
             self.update_taskbar_hint()
             self.restore_window_rect(startup = True)
@@ -240,7 +237,7 @@ class KbdWindowBase:
 
             # Override redirect toggled?
             ord = self.is_override_redirect_mode()
-            if ord != self._override_redirect:
+            if ord != self.get_override_redirect():
                 recreate = True
 
             # Window type hint changed?
@@ -499,7 +496,7 @@ class KbdWindowBase:
            not config.is_docking_enabled()
 
 
-class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
+class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     # Minimum window size (for resizing in system mode, see handle_motion())
     MINIMUM_SIZE = 20
@@ -518,7 +515,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         KbdWindowBase.__init__(self, keyboard_widget, icp)
 
-        WindowRectTracker.__init__(self)
+        WindowRectPersist.__init__(self)
 
         GObject.signal_new("quit-onboard", KbdWindow,
                            GObject.SIGNAL_RUN_LAST,
@@ -549,7 +546,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         config.window.dock_size_notify_add(dock_size_changed)
 
     def cleanup(self):
-        WindowRectTracker.cleanup(self)
+        WindowRectPersist.cleanup(self)
         KbdWindowBase.cleanup(self)
         if self.icp:
             self.icp.cleanup()
@@ -968,7 +965,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_restore_window_rect(self, rect):
         """
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         if not config.is_docking_enabled():
             self.home_rect = rect.copy()
@@ -985,7 +982,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_save_window_rect(self, rect):
         """
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         # Ignore <rect> (self._window_rect), it may just be a temporary one
         # set by auto-show. Save the user selected home_rect instead.
@@ -994,7 +991,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def read_window_rect(self, orientation):
         """
         Read orientation dependent rect.
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         if orientation == Orientation.LANDSCAPE:
             co = config.window.landscape
@@ -1006,7 +1003,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def write_window_rect(self, orientation, rect):
         """
         Write orientation dependent rect.
-        Overload for WindowRectTracker.
+        Overload for WindowRectPersist.
         """
         # There are separate rects for normal and rotated screen (tablets).
         if orientation == Orientation.LANDSCAPE:
@@ -1066,7 +1063,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 keyboard_widget.transition_visible_to(False, 0.0)
                 keyboard_widget.commit_transition()
 
-        WindowRectTracker.on_screen_size_changed(self, screen)
+        WindowRectPersist.on_screen_size_changed(self, screen)
 
     def on_screen_size_changed_delayed(self, screen):
         if config.is_docking_enabled():

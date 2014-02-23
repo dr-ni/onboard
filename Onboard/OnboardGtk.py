@@ -146,6 +146,9 @@ class OnboardGtk(object):
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
+        # initialize window-scaling-factor
+        self.update_window_scaling_factor()
+
         # Create the central keyboard model
         self.keyboard = Keyboard(self)
 
@@ -478,12 +481,14 @@ class OnboardGtk(object):
         return True
 
     def _update_ui(self):
-        self.keyboard.invalidate_ui()
-        self.keyboard.commit_ui_updates()
+        if self.keyboard:
+            self.keyboard.invalidate_ui()
+            self.keyboard.commit_ui_updates()
 
     def _update_ui_no_resize(self):
-        self.keyboard.invalidate_ui_no_resize()
-        self.keyboard.commit_ui_updates()
+        if self.keyboard:
+            self.keyboard.invalidate_ui_no_resize()
+            self.keyboard.commit_ui_updates()
 
     def _on_window_options_changed(self, value = None):
         self._update_window_options()
@@ -508,6 +513,22 @@ class OnboardGtk(object):
         self.keyboard.invalidate_ui()  # show/hide the move button
 #        self.keyboard.commit_ui_updates() # redundant
 
+    def on_gdk_setting_changed(self, name):
+        if name == "gtk-theme-name":
+            self.on_gtk_theme_changed()
+
+        elif name in ["gtk-xft-dpi",
+                      "gtk-xft-antialias"
+                      "gtk-xft-hinting",
+                      "gtk-xft-hintstyle"]:
+            # For some reason the font sizes are still off when running
+            # this immediately. Delay it a little.
+            GLib.idle_add(self.on_gtk_font_dpi_changed)
+
+        elif name in ["gdk-window-scaling-factor",
+                      "gtk-cursor-theme-size"]: # <- only this in Trusty
+            self.update_window_scaling_factor()
+
     def on_gtk_theme_changed(self, gtk_theme = None):
         """
         Switch onboard themes in sync with gtk-theme changes.
@@ -523,6 +544,26 @@ class OnboardGtk(object):
         self._update_ui()
 
         return False
+
+    def update_window_scaling_factor(self):
+        """
+        Retrieve the desktop wide window-scaling-factor and
+        store it as property in Config for fast access.
+        - XIDeviceManager scales event positions
+        - WindowRectTracker scales get_position() for
+          override redirect windows (Gtk Bug?)
+        """
+        scale = self._osk_util.get_window_scale()
+        if scale is None:
+            _logger.warning("Could not retrieve gdk-window-scaling-factor")
+            scale = config.gdi.scaling_factor
+
+        if config.window_scaling_factor != scale:
+            if not scale:
+                scale = 1
+            config.window_scaling_factor = scale
+            self._update_ui() # else blurry labels
+            _logger.info("window-scaling-factor updated to {}".format(scale))
 
     def on_theme_changed(self, theme):
         config.apply_theme()
@@ -792,15 +833,7 @@ def cb_any_event(event, onboard):
     # doesn't get those settings, i.e. label fonts sizes are off
     # when font dpi changes.
     elif type == Gdk.EventType.SETTING:
-        if event.setting.name == "gtk-theme-name":
-            onboard.on_gtk_theme_changed()
-        elif event.setting.name in ["gtk-xft-dpi",
-                                    "gtk-xft-antialias"
-                                    "gtk-xft-hinting",
-                                    "gtk-xft-hintstyle"]:
-            # For some reason the font sizes are still off when running
-            # this immediately. Delay it a little.
-            GLib.idle_add(onboard.on_gtk_font_dpi_changed)
+        onboard.on_gdk_setting_changed(event.setting.name)
 
     Gtk.main_do_event(event)
 

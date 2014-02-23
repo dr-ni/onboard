@@ -32,7 +32,7 @@ import copy
 from gi.repository         import Gdk
 
 from Onboard.utils         import Timer, EventSource
-from Onboard.definitions   import InputEventSourceEnum, TouchInputEnum
+from Onboard.definitions   import TouchInputEnum
 from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
 
 ### Logging ###
@@ -572,7 +572,7 @@ class TouchInput(InputEventSource):
     def can_delay_sequence_begin(self, sequence):
         """ Overloaded in LayoutView to veto delay for move buttons. """
         return True
-        
+
     def on_delayed_sequence_begin(self, sequence, point):
         if not self._gesture_detected: # work around race condition
             sequence.point = point # return to the original begin point
