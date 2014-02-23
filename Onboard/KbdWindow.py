@@ -148,9 +148,10 @@ class KbdWindowBase:
     def check_alpha_support(self):
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
-        self.supports_alpha = visual and \
-                              (screen.is_composited() or \
-                               config.running_under_gdm) # for lightdm
+        self.supports_alpha = \
+            visual and \
+            (screen.is_composited() or \
+             config.launched_by == config.LAUNCHER_UNITY_GREETER)
 
         self.keyboard_widget.supports_alpha = self.supports_alpha
 
