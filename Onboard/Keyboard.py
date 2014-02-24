@@ -1955,11 +1955,14 @@ class BCLanguage(ButtonController):
 
     def __init__(self, keyboard, key):
         ButtonController.__init__(self, keyboard, key)
+        self._menu_close_time = 0
 
     def release(self, view, button, event_type):
-        self.set_active(not self.key.active)
-        if self.key.active:
-            self._show_menu(view, self.key, button)
+        if time.time() - self._menu_close_time > 0.5:
+            self.set_active(not self.key.active)
+            if self.key.active:
+                self._show_menu(view, self.key, button)
+        self._menu_close_time = 0
 
     def _show_menu(self, view, key, button):
         self.keyboard.hide_touch_feedback()
@@ -1967,6 +1970,7 @@ class BCLanguage(ButtonController):
 
     def _on_menu_closed(self):
         self.set_active(False)
+        self._menu_close_time = time.time()
 
     def update(self):
         if config.are_word_suggestions_enabled():
