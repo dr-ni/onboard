@@ -1010,7 +1010,13 @@ class Config(ConfigObject):
         return aspect_change_range
 
     def get_xembed_unity_greeter_offset_x(self):
-        return self.system_defaults.get("xembed_unity_greeter_offset_x")
+        offset = self.system_defaults.get("xembed_unity_greeter_offset_x")
+        if not offset is None:
+            try:
+                offset = float(offset)
+            except ValueError:
+                offset = None
+        return offset
 
     def _get_install_dir(self):
         result = None

@@ -684,6 +684,42 @@ class Rect:
             result.y += y_align * (rect.h - result.h)
         return result
 
+    def resize_to_aspect(self, aspect_rect):
+        """
+        Resize self to get the aspect ratio of aspect_rect.
+        """
+        if self.is_empty() or aspect_rect.is_empty():
+            return Rect()
+
+        src_aspect = aspect_rect.w / float(aspect_rect.h)
+        dst_aspect = self.w / float(self.h)
+
+        result = self.copy()
+        if dst_aspect > src_aspect:
+            result.w = self.h * src_aspect
+        else:
+            result.h = self.w / src_aspect
+        return result
+
+    def resize_to_aspect_range(self, aspect_rect, aspect_change_range):
+        """
+        Resize self to get the aspect ratio of aspect_rect, but limited
+        but the given aspect range.
+        """
+        if self.is_empty() or aspect_rect.is_empty():
+            return Rect()
+
+        r = aspect_rect
+        if r.h:
+            a0 = r.w / float(r.h)
+            a0_max = a0 * aspect_change_range[1]
+            a1 = self.w / float(self.h)
+            a = min(a1, a0_max)
+
+            r = Rect(0, 0, a, 1.0)
+            r = Rect(0, 0, a, 1.0)
+        return self.resize_to_aspect(r)
+
     def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
         """
         Aligns the given rect inside of self.

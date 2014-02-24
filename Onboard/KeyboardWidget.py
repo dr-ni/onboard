@@ -378,30 +378,50 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self.canvas_rect = canvas_rect
 
         rect = self.canvas_rect.deflate(self.get_frame_width())
-        keep_aspect = config.is_keep_aspect_ratio_enabled()
 
-        x_align = 0.5
-        aspect_change_range = (0, 100)
-        if keep_aspect and \
-           config.xid_mode:
-            aspect_change_range = config.get_xembed_aspect_change_range()
-
-            if config.launched_by == config.LAUNCHER_UNITY_GREETER:
-                offset = config.get_xembed_unity_greeter_offset_x()
-                if not offset is None:
-                    try:
-                        offset = float(offset)
-                        rect.x += offset
-                        rect.w -= offset
-                        x_align = 0.0
-                    except ValueError: pass
-
-        layout.fit_inside_canvas(rect, keep_aspect,
-                                 aspect_change_range=aspect_change_range,
-                                 x_align=x_align, y_align=0.5)
+        layout.update_log_rect() # update logical tree to base aspect ratio
+        rect = self._get_aspect_corrected_layout_rect(rect,
+                                                      layout.context.log_rect)
+        layout.do_fit_inside_canvas(rect) # update contexts to final aspect
 
         # update the aspect ratio of the main window
         self.on_layout_updated()
+
+    def _get_aspect_corrected_layout_rect(self, rect, base_aspect_rect):
+        """
+        Aspect correction specifically targets xembedding in unity-greeter
+        and gnome-screen-saver. Else we would potentially disrupt embedding
+        in existing kiosk applications.
+        """
+        keep_aspect = config.is_keep_aspect_ratio_enabled()
+        xembedding = config.xid_mode
+        unity_greeter = config.launched_by == config.LAUNCHER_UNITY_GREETER
+
+        x_align = 0.5
+        aspect_change_range = (0, 100)
+
+        if keep_aspect:
+            if xembedding:
+                aspect_change_range = config.get_xembed_aspect_change_range()
+
+            ra = rect.resize_to_aspect_range(base_aspect_rect,
+                                             aspect_change_range)
+
+            if xembedding and \
+               unity_greeter:
+                padding = rect.w - ra.w
+                offset = config.get_xembed_unity_greeter_offset_x()
+                # Attempt to left align to unity-greeters password box,
+                # but use the whole width on small screens.
+                if not offset is None \
+                   and padding > 2 * offset:
+                    rect.x += offset
+                    rect.w -= offset
+                    x_align = 0.0
+
+            rect = rect.align_rect(ra, x_align)
+
+        return rect
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """

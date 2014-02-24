@@ -173,13 +173,15 @@ class LayoutRoot:
         self._last_hit_args = None
         self._last_hit_key = None
 
-    def fit_inside_canvas(self, canvas_border_rect,
-                          keep_aspect = False,
-                          aspect_change_range = (0.0, 1.1),
-                          x_align = 0.5, y_align = 0.0):
-        self._item.fit_inside_canvas(canvas_border_rect,
-                                     keep_aspect, aspect_change_range,
-                                     x_align, y_align)
+    def fit_inside_canvas(self, canvas_border_rect):
+        self._item.fit_inside_canvas(canvas_border_rect)
+
+        # rects likely changed
+        # -> invalidate geometry related caches
+        self.invalidate_geometry_caches()
+
+    def do_fit_inside_canvas(self, canvas_border_rect):
+        self._item.do_fit_inside_canvas(canvas_border_rect)
 
         # rects likely changed
         # -> invalidate geometry related caches
@@ -469,34 +471,17 @@ class LayoutItem(TreeItem):
         root = self.get_layout_root()
         return root.context.scale_log_to_canvas((2.0, 2.0))
 
-    def fit_inside_canvas(self, canvas_border_rect,
-                          keep_aspect = False,
-                          aspect_change_range = (0.0, 1.1),
-                          x_align = 0.5, y_align = 0.0):
+    def fit_inside_canvas(self, canvas_border_rect):
         """
         Scale item and its children to fit inside the given canvas_rect.
         """
         # recursively update item's bounding boxes
         self.update_log_rect()
 
-        # optionally maintain the aspect ratio and align the result
-        if keep_aspect:
-            r = self.context.log_rect
-            if r.h:
-                a0 = r.w / float(r.h)
-                a0_max = a0 * aspect_change_range[1]
-                a1 = canvas_border_rect.w / float(canvas_border_rect.h)
-                a = min(a1, a0_max)
-
-                r = Rect(0, 0, a, 1.0)
-                r = Rect(0, 0, a, 1.0)
-            canvas_border_rect = r.inscribe_with_aspect( \
-                                      canvas_border_rect, x_align, y_align)
-
         # recursively fit inside canvas
-        self._fit_inside_canvas(canvas_border_rect)
+        self.do_fit_inside_canvas(canvas_border_rect)
 
-    def _fit_inside_canvas(self, canvas_border_rect):
+    def do_fit_inside_canvas(self, canvas_border_rect):
         """
         Scale item and its children to fit inside the given canvas_rect.
         """
@@ -860,10 +845,10 @@ class LayoutBox(LayoutItem):
             return Rect()
         return bounds
 
-    def _fit_inside_canvas(self, canvas_border_rect):
+    def do_fit_inside_canvas(self, canvas_border_rect):
         """ Scale items to fit inside the given canvas_rect """
 
-        LayoutItem._fit_inside_canvas(self, canvas_border_rect)
+        LayoutItem.do_fit_inside_canvas(self, canvas_border_rect)
 
         axis = 0 if self.horizontal else 1
         items = self.items
@@ -935,7 +920,7 @@ class LayoutBox(LayoutItem):
             r = Rect(*canvas_rect)
             r[axis]   = canvas_rect[axis] + position
             r[axis+2] = canvas_length
-            item._fit_inside_canvas(r)
+            item.do_fit_inside_canvas(r)
 
             position += canvas_length + spacing
 
@@ -967,11 +952,11 @@ class LayoutPanel(LayoutItem):
     # Don't extend bounding box into invisibles
     compact = False
 
-    def _fit_inside_canvas(self, canvas_border_rect):
+    def do_fit_inside_canvas(self, canvas_border_rect):
         """
         Scale panel to fit inside the given canvas_rect.
         """
-        LayoutItem._fit_inside_canvas(self, canvas_border_rect)
+        LayoutItem.do_fit_inside_canvas(self, canvas_border_rect)
 
         # Setup children's transformations, take care of the border.
         if self.get_border_rect().is_empty():
@@ -985,7 +970,7 @@ class LayoutPanel(LayoutItem):
 
             for item in self.items:
                 rect = context.log_to_canvas_rect(item.context.log_rect)
-                item._fit_inside_canvas(rect)
+                item.do_fit_inside_canvas(rect)
 
     def _update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
