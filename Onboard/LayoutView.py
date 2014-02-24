@@ -349,8 +349,7 @@ class LayoutView:
         src_size = (pixbuf.get_width(), pixbuf.get_height())
         x, y = 0, rect.bottom() - src_size[1]
         Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
-        context.rectangle(*rect)
-        context.fill()
+        context.paint()
 
         fill = self.get_background_rgba()
         fill[3] = 0.5
@@ -365,14 +364,28 @@ class LayoutView:
         except AttributeError:
             size, size_mm = get_monitor_dimensions(self)
             filename = config.get_desktop_background_filename()
-            try:
-                pixbuf = GdkPixbuf.Pixbuf. \
-                            new_from_file_at_size(filename, *size)
-            except Exception as ex: # private exception gi._glib.GError when
-                                    # librsvg2-common wasn't installed
-                _logger.error("_get_xid_background_image(): " + \
-                              unicode_str(ex))
+            if not filename:
                 pixbuf = None
+            else:
+                try:
+                    # load image
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
+
+                    # Scale image to mimic the behavior of gnome-screen-saver.
+                    # Take the largest, aspect correct, centered rectangle
+                    # that fits on the monitor.
+                    rm = Rect(0, 0, size[0], size[1])
+                    rp = Rect(0, 0, pixbuf.get_width(), pixbuf.get_height())
+                    ra = rm.inscribe_with_aspect(rp)
+                    pixbuf = pixbuf.new_subpixbuf(*ra)
+                    pixbuf = pixbuf.scale_simple(size[0], size[1],
+                                                GdkPixbuf.InterpType.BILINEAR)
+                except Exception as ex: # private exception gi._glib.GError when
+                                        # librsvg2-common wasn't installed
+                    _logger.error("_get_xid_background_image(): " + \
+                                unicode_str(ex))
+                    pixbuf = None
+
             self._xid_background_image = pixbuf
 
         return pixbuf
