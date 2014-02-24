@@ -343,14 +343,16 @@ class LayoutView:
         rect = Rect(0, 0, self.get_allocated_width(),
                           self.get_allocated_height())
 
-        pixbuf = self._get_xid_background_image()
-        if not pixbuf:
-            return
-        src_size = (pixbuf.get_width(), pixbuf.get_height())
-        x, y = 0, rect.bottom() - src_size[1]
-        Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
-        context.paint()
+        # draw background image
+        if config.get_xembed_background_image_enabled():
+            pixbuf = self._get_xid_background_image()
+            if pixbuf:
+                src_size = (pixbuf.get_width(), pixbuf.get_height())
+                x, y = 0, rect.bottom() - src_size[1]
+                Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
+                context.paint()
 
+        # draw solid colored bar on top
         rgba = config.get_xembed_background_rgba()
         if rgba is None:
             rgba = self.get_background_rgba()

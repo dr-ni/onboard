@@ -90,6 +90,10 @@ xembed-unity-greeter-offset-x=85.0
 # If not specified, the color is taken from the keyboard's background color.
 xembed-background-color='#0000007F'
 
+# Enable drawing the current GNOME background image as background in
+# unity-greeter and gnome-screensaver.
+xembed-background-image-enabled=True
+
 # Other available keys:
 #
 #current-settings-page=0

@@ -166,6 +166,7 @@ class Config(ConfigObject):
     allow_iconifying = False
 
     _xembed_background_rgba = None
+    _xembed_background_image_enabled = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -347,7 +348,9 @@ class Config(ConfigObject):
 
         # initialize all property values
         used_system_defaults = self.init_properties(self.options)
+
         self._update_xembed_background_rgba()
+        self._update_xembed_background_image_enabled()
 
         # Make sure there is a 'Default' entry when tracking the system theme.
         # 'Default' is the theme used when encountering a so far unknown
@@ -560,6 +563,7 @@ class Config(ConfigObject):
                       "superkey-label-independent-size",
                       "xembed-aspect-change-range",
                       "xembed-background-color",
+                      "xembed-background-image-enabled",
                       "xembed-unity-greeter-offset-x"]:
             return value
         else:
@@ -1030,6 +1034,13 @@ class Config(ConfigObject):
         self._xembed_background_rgba = hexcolor_to_rgba(value[1:-1]) \
                                        if not value is None else None
 
+    def get_xembed_background_image_enabled(self):
+        return self._xembed_background_image_enabled
+
+    def _update_xembed_background_image_enabled(self):
+        value = self.system_defaults.get("xembed_background_image_enabled")
+        self._xembed_background_image_enabled = value == "True" \
+                                                if not value is None else None
     def _get_install_dir(self):
         result = None
 
