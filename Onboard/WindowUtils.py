@@ -645,13 +645,24 @@ class WindowRectTracker:
         self._override_redirect = value
         self.get_window().set_override_redirect(True)
 
+    def get_scale_factor(self):
+        gdk_win = self.get_window()
+        if gdk_win:
+            try:
+                return gdk_win.get_scale_factor()
+            except AttributeError:  # from Gdk 3.10
+                pass
+        return None
+
     def _apply_window_scaling_factor(self, values):
         """
-        GNOME doesn't scale override redirect windows (Trusty)
+        Gdk doesn't scale position of override redirect windows (Trusty)
         """
         if self._override_redirect:
-            scale = 1.0 / config.window_scaling_factor
-            values = (values[0] * scale, values[1] * scale)
+            scale = self.get_scale_factor()
+            if not scale is None:
+                scale = 1.0 / scale
+                values = (values[0] * scale, values[1] * scale)
         return values
 
 

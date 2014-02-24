@@ -165,12 +165,6 @@ class Config(ConfigObject):
     # itself anymore for auto-show. (Precise)
     allow_iconifying = False
 
-    # Gdk window-scaling-factor for fast access;
-    # controlled by 'org.gnome.desktop.interface scaling-factor'
-    # but may be modified by g-s-d and then reaches us as
-    # Gdk screen setting 'gdk-window-scaling-factor'.
-    window_scaling_factor = 1
-
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -1388,7 +1382,6 @@ class ConfigGDI(ConfigObject):
 
         self.add_key("toolkit-accessibility", False)
         self.add_key("gtk-theme", "", writable=False)  # read-only for safety
-        self.add_key("scaling-factor", 0.0, 'u', writable=False)
 
 
 class ConfigGDA(ConfigObject):

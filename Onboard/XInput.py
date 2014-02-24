@@ -30,8 +30,6 @@ import Onboard.osk as osk
 import logging
 _logger = logging.getLogger(__name__)
 
-# fixme: split up CSMouseTweaks to resolve cicular imports
-config = None
 
 class XIEventType:
     """ enum of XInput events """
@@ -165,10 +163,6 @@ class XIDeviceManager(EventSource):
 
         if self.is_valid():
             self.update_devices()
-
-        from Onboard.Config import Config
-        global config
-        config = Config()
 
     def is_valid(self):
         return not self._osk_devices is None
@@ -347,16 +341,6 @@ class XIDeviceManager(EventSource):
             elif event_type == XIEventType.ButtonPress or \
                  event_type == XIEventType.TouchBegin:
                 self._last_click_device_id = source_id
-
-        # scale coordinates in response to changes to
-        # org.gnome.desktop.interface scaling-factor
-        scale = config.window_scaling_factor
-        if scale and scale != 1.0:
-            scale = 1.0 / scale
-            event.x = event.x * scale
-            event.y = event.y * scale
-            event.x_root = event.x_root * scale
-            event.y_root = event.y_root * scale
 
         # forward the event to all listeners
         self.emit("device-event", event)

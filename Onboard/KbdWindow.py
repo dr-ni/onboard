@@ -508,6 +508,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
         self._was_visible = False
+        self._last_scale_factor = None
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
@@ -664,6 +665,16 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
+
+        # check for changes to the window-scaling-factor
+        scale = self.get_scale_factor()
+        if not scale is None and \
+            self._last_scale_factor != scale:
+            if not self._last_scale_factor is None:
+                _logger.info("new window-scaling-factor '{}'".format(scale))
+                # invalidate all key surfaces
+                self.keyboard_widget.invalidate_for_resize()
+            self._last_scale_factor = scale
 
         if not config.is_docking_enabled():
             # Connect_after seems broken in Quantal, but we still need to

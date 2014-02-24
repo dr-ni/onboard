@@ -21,7 +21,7 @@ from Onboard.LayoutView     import LayoutView
 from Onboard.AutoShow       import AutoShow
 from Onboard.utils          import Rect, Timer, FadeTimer
 from Onboard.definitions    import Handle
-from Onboard.WindowUtils    import WindowManipulator, WindowRectTracker, \
+from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \
                                    canvas_to_root_window_point, \
                                    physical_to_monitor_pixel_size, \
@@ -206,7 +206,8 @@ class TransitionState:
         return max(x.duration for x in self._vars)
 
 
-class KeyboardWidget(Gtk.DrawingArea, WindowRectTracker, WindowManipulator, LayoutView, TouchInput):
+class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
+                     LayoutView, TouchInput):
 
     TRANSITION_DURATION_MOVE = 0.25
     TRANSITION_DURATION_SLIDE = 0.25

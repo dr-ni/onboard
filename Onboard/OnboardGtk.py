@@ -146,9 +146,6 @@ class OnboardGtk(object):
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
-        # initialize window-scaling-factor
-        self.update_window_scaling_factor()
-
         # Create the central keyboard model
         self.keyboard = Keyboard(self)
 
@@ -525,10 +522,6 @@ class OnboardGtk(object):
             # this immediately. Delay it a little.
             GLib.idle_add(self.on_gtk_font_dpi_changed)
 
-        elif name in ["gdk-window-scaling-factor",
-                      "gtk-cursor-theme-size"]: # <- only this in Trusty
-            self.update_window_scaling_factor()
-
     def on_gtk_theme_changed(self, gtk_theme = None):
         """
         Switch onboard themes in sync with gtk-theme changes.
@@ -544,26 +537,6 @@ class OnboardGtk(object):
         self._update_ui()
 
         return False
-
-    def update_window_scaling_factor(self):
-        """
-        Retrieve the desktop wide window-scaling-factor and
-        store it as property in Config for fast access.
-        - XIDeviceManager scales event positions
-        - WindowRectTracker scales get_position() for
-          override redirect windows (Gtk Bug?)
-        """
-        scale = self._osk_util.get_window_scale()
-        if scale is None:
-            _logger.warning("Could not retrieve gdk-window-scaling-factor")
-            scale = config.gdi.scaling_factor
-
-        if config.window_scaling_factor != scale:
-            if not scale:
-                scale = 1
-            config.window_scaling_factor = scale
-            self._update_ui() # else blurry labels
-            _logger.info("window-scaling-factor updated to {}".format(scale))
 
     def on_theme_changed(self, theme):
         config.apply_theme()
