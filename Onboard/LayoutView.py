@@ -351,9 +351,11 @@ class LayoutView:
         Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
         context.paint()
 
-        fill = self.get_background_rgba()
-        fill[3] = 0.5
-        context.set_source_rgba(*fill)
+        rgba = config.get_xembed_background_rgba()
+        if rgba is None:
+            rgba = self.get_background_rgba()
+            rgba[3] = 0.5
+        context.set_source_rgba(*rgba)
         context.rectangle(*rect)
         context.fill()
 

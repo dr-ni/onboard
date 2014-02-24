@@ -81,9 +81,14 @@ xembed-onboard=True
 # side to side again.
 xembed-aspect-change-range=[0, 1.15]
 
-# Position of the keyboard in pixels from the left screen edge.
-# Remove this to center the keyboard in unity-greeter.
+# Position of the keyboard in unity-greeter in pixels from
+# the left screen edge. Remove this to center the keyboard.
 xembed-unity-greeter-offset-x=85.0
+
+# Color of the background bar that is rendered on top of the
+# background image in unity-greeter and gnome-screensaver.
+# If not specified, the color is taken from the keyboard's background color.
+xembed-background-color='#0000007F'
 
 # Other available keys:
 #

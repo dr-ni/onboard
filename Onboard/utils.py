@@ -241,6 +241,60 @@ def matmult(m, v):
 def hexstring_to_float(hexString):
     return float(int(hexString, 16))
 
+def hexcolor_to_rgba(color):
+    """
+    convert '#rrggbb' or '#rrggbbaa' to (r, g, b, a)
+
+    Doctests:
+    >>> def test(color):
+    ...     rgba = hexcolor_to_rgba(color)
+    ...     if rgba is None:
+    ...         print(repr(rgba))
+    ...     else:
+    ...         print(repr([round(c, 2) for c in rgba]))
+
+    >>> test("#1a2b3c")
+    [0.1, 0.17, 0.24, 1.0]
+
+    >>> test("#1a2b3c4d")
+    [0.1, 0.17, 0.24, 0.3]
+
+    >>> test("")
+    None
+
+    >>> test("1a2b3c")
+    None
+
+    >>> test("1a2b3c4d")
+    None
+
+    >>> test("#1a2b3c4dx")
+    None
+
+    >>> test("#1a2b3cx")
+    None
+
+    >>> test("#1a2bx")
+    None
+
+    >>> test("#1aXb3c4d")
+    None
+    """
+    rgba = None
+    n = len(color)
+    if n == 7 or n == 9:
+        try:
+            rgba = [hexstring_to_float(color[1:3])/255,
+                    hexstring_to_float(color[3:5])/255,
+                    hexstring_to_float(color[5:7])/255]
+            if n == 9:
+                rgba.append(hexstring_to_float(color[7:9])/255)
+            else:
+                rgba.append(1.0)
+        except ValueError:
+            rgba = None
+    return rgba
+
 class dictproperty(object):
     """ Property implementation for dictionaries """
 

@@ -15,7 +15,7 @@ from gi.repository import Gtk, Gio, GLib
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree, \
-                                   Process
+                                   Process, hexcolor_to_rgba
 from Onboard.definitions    import StatusIconProviderEnum, \
                                    InputEventSourceEnum, \
                                    TouchInputEnum, \
@@ -164,6 +164,8 @@ class Config(ConfigObject):
     # from launcher once, the WM won't allow to unminimize onboard
     # itself anymore for auto-show. (Precise)
     allow_iconifying = False
+
+    _xembed_background_rgba = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -345,6 +347,7 @@ class Config(ConfigObject):
 
         # initialize all property values
         used_system_defaults = self.init_properties(self.options)
+        self._update_xembed_background_rgba()
 
         # Make sure there is a 'Default' entry when tracking the system theme.
         # 'Default' is the theme used when encountering a so far unknown
@@ -556,6 +559,7 @@ class Config(ConfigObject):
         if sysdef in ["superkey-label", \
                       "superkey-label-independent-size",
                       "xembed-aspect-change-range",
+                      "xembed-background-color",
                       "xembed-unity-greeter-offset-x"]:
             return value
         else:
@@ -1017,6 +1021,14 @@ class Config(ConfigObject):
             except ValueError:
                 offset = None
         return offset
+
+    def get_xembed_background_rgba(self):
+        return self._xembed_background_rgba
+
+    def _update_xembed_background_rgba(self):
+        value = self.system_defaults.get("xembed_background_color")
+        self._xembed_background_rgba = hexcolor_to_rgba(value[1:-1]) \
+                                       if not value is None else None
 
     def _get_install_dir(self):
         result = None
