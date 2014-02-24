@@ -11,7 +11,7 @@ import locale
 from shutil import copytree
 from optparse import OptionParser
 
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, GLib
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree, \
@@ -978,12 +978,25 @@ class Config(ConfigObject):
 
 
     def get_desktop_background_filename(self):
+        schema="org.gnome.desktop.background"
+        key = "picture-uri"
+
         try:
-            s = Gio.Settings(schema="org.gnome.desktop.background")
-            fn = s.get_string("picture-uri")
-        except:
+            s = Gio.Settings(schema=schema)
+            fn = s.get_string(key)
+        except Exception as ex: # private exception gi._glib.GError
             fn = ""
-        fn = fn.replace("file://", "")
+            _logger.error("failed to read desktop background from {} {}: {}" \
+                          .format(schema, key, unicode_str(ex)))
+        if fn:
+            try:
+                fn, error = GLib.filename_from_uri(fn)
+                if error:
+                    fn = ""
+            except Exception as ex: # private exception gi._glib.GError
+                _logger.error("failed to unescape URI for desktop background "
+                              "'{}': {}" \
+                            .format(fn, unicode_str(ex)))
         return fn
 
     def get_xembed_aspect_change_range(self):
