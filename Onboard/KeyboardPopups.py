@@ -93,12 +93,20 @@ class TouchFeedback:
         DEFAULT_POPUP_SIZE_MM = 18.0
         MAX_POPUP_SIZE_PX = 120.0  # fall-back if phys. monitor  size unavail.
 
+        gdk_win = window.get_window()
+
         w = config.keyboard.touch_feedback_size
         if w == 0:
             sz, sz_mm = get_monitor_dimensions(window)
             if sz and sz_mm:
                 if sz[0] and sz_mm[0]:
-                    w = sz[0] * DEFAULT_POPUP_SIZE_MM / sz_mm[0]
+                    default_size_mm = DEFAULT_POPUP_SIZE_MM
+
+                    # scale for hires displays
+                    if gdk_win:
+                        default_size_mm *= gdk_win.get_scale_factor()
+
+                    w = sz[0] * default_size_mm / sz_mm[0]
                 else:
                     w = min(sz[0] / 12.0, MAX_POPUP_SIZE_PX)
             else:
