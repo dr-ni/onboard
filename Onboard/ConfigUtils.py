@@ -264,7 +264,7 @@ class ConfigObject(object):
                          .format(filename))
             try:
                 os.remove(filename)
-            except IOError as ex:
+            except (IOError, OSError) as ex:
                 errno = ex.errno
                 errstr = os.strerror(errno)
                 _logger.error("failed to remove hint file '{}': {} ({})" \
