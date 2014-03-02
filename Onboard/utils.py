@@ -357,7 +357,7 @@ def show_ask_string_dialog(question, parent=None):
     question_dialog.destroy()
     return text
 
-def show_confirmation_dialog(question, parent=None):
+def show_confirmation_dialog(question, parent=None, center=False):
     """
     Show this dialog to ask confirmation before executing a task.
     """
@@ -366,6 +366,10 @@ def show_confirmation_dialog(question, parent=None):
                             buttons=Gtk.ButtonsType.YES_NO)
     if parent:
         dlg.set_transient_for(parent)
+
+    if center:
+        dlg.set_position(Gtk.WindowPosition.CENTER)
+
     response = dlg.run()
     dlg.destroy()
     return response == Gtk.ResponseType.YES

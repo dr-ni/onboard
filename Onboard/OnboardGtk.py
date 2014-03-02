@@ -351,7 +351,10 @@ class OnboardGtk(object):
                              "use something else.\n\n"
                              "Would you like to reconfigure the system to show "
                              "Onboard when unlocking the screen?")
-                reply = show_confirmation_dialog(question)
+                _logger.warning("showing dialog: '{}'".format(question))
+                reply = show_confirmation_dialog(question,
+                                                 self._window,
+                                                 config.is_force_to_top())
                 if reply == True:
                     config.enable_gss_embedding(True)
                 else:
@@ -363,7 +366,10 @@ class OnboardGtk(object):
                                  "the password-protected screensaver.\n\n"
                                  "However this function is disabled in the system.\n\n"
                                  "Would you like to activate it?")
-                    reply = show_confirmation_dialog(question)
+                    _logger.warning("showing dialog: '{}'".format(question))
+                    reply = show_confirmation_dialog(question,
+                                                     self._window,
+                                                     config.is_force_to_top())
                     if reply == True:
                         config.enable_gss_embedding(True)
                     else:
