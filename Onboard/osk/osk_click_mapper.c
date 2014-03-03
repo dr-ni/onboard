@@ -723,7 +723,6 @@ osk_click_mapper_generate_button_event (PyObject *self, PyObject *args)
 {
     OskButtonMapper *instance = (OskButtonMapper*) self;
     unsigned int button;
-    Bool press;
     unsigned long time = CurrentTime;
 
     Display* xdisplay = get_x_display(instance);
@@ -732,9 +731,17 @@ osk_click_mapper_generate_button_event (PyObject *self, PyObject *args)
         PyErr_SetString (OSK_EXCEPTION, "failed to get X display");
         return NULL;
     }
-
+#if PY_VERSION_HEX >= 0x03030000
+    Bool press;
     if (!PyArg_ParseTuple (args, "Ip|k", &button, &press, &time))
         return NULL;
+#else
+    // On Precise with python 3.2 with format char 'p':
+    // 'TypeError: must be impossible<bad format char>, not bool'
+    int press;
+    if (!PyArg_ParseTuple (args, "Ii|k", &button, &press, &time))
+        return NULL;
+#endif
 
     XTestFakeButtonEvent (xdisplay, button, press, time);
 
