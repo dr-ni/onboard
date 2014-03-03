@@ -999,7 +999,11 @@ class Config(ConfigObject):
                           .format(schema, key, unicode_str(ex)))
         if fn:
             try:
-                fn, error = GLib.filename_from_uri(fn)
+                try:
+                    fn, error = GLib.filename_from_uri(fn)
+                except TypeError: # broken introspection on Precise
+                    fn = GLib.filename_from_uri(fn, "")
+                    error = ""
                 if error:
                     fn = ""
             except Exception as ex: # private exception gi._glib.GError
