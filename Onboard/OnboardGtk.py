@@ -376,7 +376,8 @@ class OnboardGtk(object):
                         config.onboard_xembed_enabled = False
 
         # check if gnome accessibility is enabled for auto-show
-        if config.auto_show.enabled and \
+        if (config.is_auto_show_enabled() or \
+            config.are_word_suggestions_enabled()) and \
             not config.check_gnome_accessibility(self._window):
             config.auto_show.enabled = False
 

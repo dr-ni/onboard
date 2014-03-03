@@ -337,7 +337,7 @@ class Settings(DialogBuilder):
                         config.keyboard, "input_event_source")
 
         # word suggestions
-        self._page_word_suggestions = PageWordSuggestions(builder)
+        self._page_word_suggestions = PageWordSuggestions(self.window, builder)
 
         # window, docking
         self.docking_enabled_toggle = \
@@ -1020,13 +1020,23 @@ class Settings(DialogBuilder):
 class PageWordSuggestions(DialogBuilder):
     """ Word Suggestions """
 
-    def __init__(self, builder):
+    def __init__(self, window, builder):
         DialogBuilder.__init__(self, builder)
+        self._window = window
+
+        def _set_word_suggestions_enabled(co, key, value):
+            if value and \
+               not config.check_gnome_accessibility(self._window):
+                value = False
+                self.wid("enable_word_suggestions_toggle") \
+                        .set_active(value)
+            setattr(co, key, value)
 
         self.wid("enable_word_suggestions_toggle") \
                 .connect_after("toggled", lambda x: self._update_ui())
         self.bind_check("enable_word_suggestions_toggle",
-                        config.word_suggestions, "enabled")
+                        config.word_suggestions, "enabled",
+                        config_set_callback = _set_word_suggestions_enabled)
 
         self.wid("auto_learn_toggle") \
                 .connect_after("toggled", lambda x: self._update_ui())
