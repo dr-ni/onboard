@@ -396,9 +396,14 @@ def read_order(filename, encoding=None):
     """
     order = None
 
+    if sys.version_info >= (3, 3):
+        ex_class = FileNotFoundError
+    else:
+        ex_class = IOError
+
     try:
         text = read_corpus(filename, encoding, 20)
-    except FileNotFoundError:
+    except ex_class as ex:
         return None
 
     lines = text.split("\n")

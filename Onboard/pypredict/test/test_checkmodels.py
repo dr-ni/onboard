@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
 import shutil
 import unittest
 import tempfile
@@ -298,11 +299,16 @@ class TestCheckModels(unittest.TestCase):
         p = subprocess.Popen([tool, "--test", fn],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
-        try:
-            out, err = p.communicate(timeout=5)
-        except TimeoutExpired:
-            p.kill()
+
+        if sys.version_info >= (3, 3):
+            try:
+                out, err = p.communicate(timeout=5)
+            except TimeoutExpired:
+                p.kill()
+                out, err = p.communicate()
+        else:
             out, err = p.communicate()
+
         return (p.returncode,
                 out.decode("UTF-8").splitlines(),
                 err.decode("UTF-8").splitlines())
