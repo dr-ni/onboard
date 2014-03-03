@@ -805,7 +805,8 @@ class Config(ConfigObject):
                          "recommended that you log out and back in "
                          "for it to reach its full potential.\n\n"
                          "Enable accessibility now?")
-            reply = show_confirmation_dialog(question, parent)
+            reply = show_confirmation_dialog(question, parent,
+                                             self.is_force_to_top())
             if not reply == True:
                 return False
 
