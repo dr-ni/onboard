@@ -800,7 +800,6 @@ class Settings(DialogBuilder):
         return layouts
 
     def on_layout_view_select_cursor_row(self, treeview, *args):
-        print(args)
         return False
 
     def on_layout_view_row_activated(self, treeview, path, view_column):
