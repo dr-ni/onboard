@@ -22,6 +22,8 @@ import subprocess
 import gettext
 from xml.dom import minidom
 
+from Onboard.utils import open_utf8
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -223,7 +225,7 @@ class ISOCodes:
         self._read_countries()
 
     def _read_languages(self):
-        with open("/usr/share/xml/iso-codes/iso_639.xml") as f:
+        with open_utf8("/usr/share/xml/iso-codes/iso_639.xml") as f:
             dom = minidom.parse(f).documentElement
             for node in dom.getElementsByTagName("iso_639_entry"):
 
@@ -237,7 +239,7 @@ class ISOCodes:
                     self._languages[lang_code] = lang_name
 
     def _read_countries(self):
-        with open("/usr/share/xml/iso-codes/iso_3166.xml") as f:
+        with open_utf8("/usr/share/xml/iso-codes/iso_3166.xml") as f:
             dom = minidom.parse(f).documentElement
             for node in dom.getElementsByTagName("iso_3166_entry"):
 
