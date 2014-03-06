@@ -199,7 +199,10 @@ class WordSuggestions:
         return lang_id
 
     def get_system_default_lang_id(self):
-        return locale.getdefaultlocale()[0]
+        lang_id = locale.getdefaultlocale()[0]
+        if not lang_id: # None e.g. with LANG=C
+            lang_id = "en_US"
+        return lang_id
 
     def get_active_lang_id(self):
         """
