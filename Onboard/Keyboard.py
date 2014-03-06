@@ -1558,17 +1558,11 @@ class Keyboard(WordSuggestions):
             return config.mousetweaks
         return self._click_sim
 
-    def cleanup(self):
-        WordSuggestions.cleanup(self)
-
-        # reset still latched and locked modifier keys on exit
-        self.release_latched_sticky_keys()
-
-        # NumLock is special. Keep its state on exit, except when
-        # sticky_key_release_delay is set, when we assume to be
-        # in kiosk mode and everything has to be cleaned up.
-        release_all = bool(config.keyboard.sticky_key_release_delay)
-        self.release_locked_sticky_keys(release_all)
+    def release_pressed_keys(self, redraw = False):
+        """
+        Release pressed keys on exit, or when recreating the main window.
+        """
+        self.hide_touch_feedback()
 
         # Clear key.pressed for all keys that have already been released
         # but are still waiting for redrawing the unpressed state.
@@ -1584,9 +1578,27 @@ class Keyboard(WordSuggestions):
 
                 # Release still pressed enter key when onboard gets killed
                 # on enter key press.
-                _logger.debug("Releasing still pressed key '{}'" \
+                _logger.warning("Releasing still pressed key '{}'" \
                               .format(key.id))
                 self.send_key_up(key)
+                key.pressed = False
+
+                if redraw:
+                    self.redraw([key])
+
+    def cleanup(self):
+        WordSuggestions.cleanup(self)
+
+        # reset still latched and locked modifier keys on exit
+        self.release_latched_sticky_keys()
+
+        # NumLock is special. Keep its state on exit, except when
+        # sticky_key_release_delay is set, when we assume to be
+        # in kiosk mode and everything has to be cleaned up.
+        release_all = bool(config.keyboard.sticky_key_release_delay)
+        self.release_locked_sticky_keys(release_all)
+
+        self.release_pressed_keys()
 
         if self._text_changer:
             self._text_changer.cleanup()

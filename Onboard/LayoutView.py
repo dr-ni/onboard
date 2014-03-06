@@ -93,6 +93,15 @@ class LayoutView:
             for item in layout.iter_keys():
                 item.invalidate_key()
 
+    def invalidate_images(self):
+        """
+        Clear cached images, e.g. after changing window_scaling_factor.
+        """
+        layout = self.get_layout()
+        if layout:
+            for item in layout.iter_keys():
+                item.invalidate_image()
+
     def invalidate_shadows(self):
         """
         Clear cached shadow surfaces, e.g. after resizing,

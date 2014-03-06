@@ -110,6 +110,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def invalidate_key(self):
         self._key_surfaces = {}
 
+    def invalidate_image(self):
+        """
+        Images only have to be expicitely cleared when the
+        window_scaling_factor changes.
+        """
+        self._image_pixbuf = {}
+        self._requested_image_size = {}
+
     def invalidate_shadow(self):
         self._shadow_surface = None
 
@@ -587,13 +595,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             return
 
         src_size = (pixbuf.get_width(), pixbuf.get_height())
-        log_rect = self.get_label_rect()
-
-        canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xalign, yalign = self.align_label(src_size,
-                                            (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xalign)
-        y = int(canvas_rect.y + yalign)
+        xalign, yalign = self.align_label(src_size, (rect.w, rect.h))
 
         label_rgba = self.get_label_color()
         fill = self.get_fill_color()
@@ -609,14 +611,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             else:
                 rgba = label_rgba
 
-            # Draw the image in the themes label color.
-            # Only the alpha channel of the image is used.
-            Gdk.cairo_set_source_pixbuf(context, pixbuf, x + dx, y + dy)
-            pattern = context.get_source()
-            context.rectangle(*rect)
-            context.set_source_rgba(*rgba)
-            context.mask(pattern)
-            context.new_path()
+            pixbuf.draw(context, rect.offset(xalign + dx, yalign + dy), rgba)
 
     def draw_shadow_cached(self, context):
         entry = self._shadow_surface
@@ -816,9 +811,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             filename = config.get_image_filename(image_filename)
             if filename:
                 _logger.debug("loading image '{}'".format(filename))
+
                 try:
-                    pixbuf = GdkPixbuf.Pixbuf. \
-                             new_from_file_at_size(filename, width, height)
+                    pixbuf = PixBufScaled. \
+                        from_file_and_size(filename, width, height)
                 except Exception as ex: # private exception gi._glib.GError when
                                         # librsvg2-common wasn't installed
                     _logger.error("get_image(): " + unicode_str(ex))
@@ -1178,4 +1174,59 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
                 cursor_index = indexes[-(cursor+1)]
 
         return cursor_index
+
+
+class PixBufScaled:
+    """
+    Workaround for blurry images when window_scaling_factor >1
+    """
+    _pixbuf = None
+    _width = 0
+    _height = 0
+    _real_width = 0
+    _real_height = 0
+
+    @staticmethod
+    def from_file_and_size(filename, width, height):
+        pixbuf = PixBufScaled()
+        pixbuf._load(filename, width, height)
+        return pixbuf
+
+    def get_width(self):
+        return self._width
+
+    def get_height(self):
+        return self._height
+
+    def _load(self, filename, width, height):
+        scale = config.window_scaling_factor
+        load_width = width * scale
+        load_height = height * scale
+
+        self._pixbuf = GdkPixbuf.Pixbuf. \
+                    new_from_file_at_size(filename, load_width, load_height)
+        self._real_width = self._pixbuf.get_width()
+        self._real_height = self._pixbuf.get_height()
+        self._width = self._real_width / scale
+        self._height = self._real_height / scale
+
+    def draw(self, context, rect, rgba):
+        """
+        Draw the image in the theme's label color.
+        Only the alpha channel of the image is used.
+        """
+        context.save()
+
+        context.translate(rect.x, rect.y)
+        scale = config.window_scaling_factor
+        if scale and scale != 1.0:
+            context.scale(1.0 / scale, 1.0 / scale)
+
+        Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+        pattern = context.get_source()
+        context.set_source_rgba(*rgba)
+        context.mask(pattern)
+
+        context.restore()
+
 

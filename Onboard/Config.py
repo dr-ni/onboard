@@ -165,6 +165,9 @@ class Config(ConfigObject):
     # itself anymore for auto-show. (Precise)
     allow_iconifying = False
 
+    # Gdk window scaling factor
+    window_scaling_factor = 1.0
+
     _xembed_background_rgba = None
     _xembed_background_image_enabled = None
 

@@ -177,6 +177,7 @@ class KbdWindowBase:
 
     def _show_first_time(self):
         self.update_window_options()
+        self.update_window_scaling_factor(True)
         self.pre_render_keys(*self.get_size())
         self.show()
 
@@ -248,17 +249,7 @@ class KbdWindowBase:
 
             # (re-)create the gdk window?
             if recreate:
-
-                visible = None
-                if self.get_realized(): # not starting up?
-                    visible = self.is_visible()
-                    self.hide()
-                    self.unrealize()
-
-                self.realize()
-
-                if not visible is None:
-                    Gtk.Window.set_visible(self, visible)
+                self._recreate_window()
 
             # Show the resize gripper?
             if config.has_window_decoration():
@@ -267,6 +258,20 @@ class KbdWindowBase:
                 self.set_has_resize_grip(False)
 
             self.update_sticky_state()
+
+    def _recreate_window(self):
+        _logger.info("recreating window - window options changed")
+
+        visible = None
+        if self.get_realized(): # not starting up?
+            visible = self.is_visible()
+            self.hide()
+            self.unrealize()
+
+        self.realize()
+
+        if not visible is None:
+            Gtk.Window.set_visible(self, visible)
 
     def update_sticky_state(self):
         if not config.xid_mode:
@@ -508,7 +513,6 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
         self._was_visible = False
-        self._last_scale_factor = None
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
@@ -663,18 +667,35 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         if self.keyboard_widget.was_moving():
             config.window.docking_enabled = False
 
-    def _on_configure_event(self, widget, event):
-        self.update_window_rect()
-
-        # check for changes to the window-scaling-factor
+    def update_window_scaling_factor(self, startup = False):
+        """ check for changes to the window-scaling-factor """
         scale = self.get_scale_factor()
         if not scale is None and \
-            self._last_scale_factor != scale:
-            if not self._last_scale_factor is None:
-                _logger.info("new window-scaling-factor '{}'".format(scale))
-                # invalidate all key surfaces
-                self.keyboard_widget.invalidate_for_resize()
-            self._last_scale_factor = scale
+           config.window_scaling_factor != scale:
+            config.window_scaling_factor = scale
+            _logger.info("new window-scaling-factor '{}'".format(scale))
+
+            keyboard = self.keyboard_widget.keyboard
+
+            # In override redirect mode the window gets stuck with
+            # the old scale -> recreate it
+            if self.is_override_redirect_mode() and \
+               not startup and \
+               not config.xid_mode:
+                self._recreate_window()
+
+                # Release pressed keys in case the switch was initiated
+                # by Onboard, e.g. with the Return key in the terminal.
+                keyboard.release_pressed_keys()
+
+            # invalidate all images and key surfaces
+            self.keyboard_widget.invalidate_images()
+            keyboard.invalidate_ui()
+            keyboard.commit_ui_updates()
+
+    def _on_configure_event(self, widget, event):
+        self.update_window_rect()
+        self.update_window_scaling_factor()
 
         if not config.is_docking_enabled():
             # Connect_after seems broken in Quantal, but we still need to

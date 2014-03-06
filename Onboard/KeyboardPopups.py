@@ -228,7 +228,7 @@ class LabelPopup(KeyboardPopup):
         label_color = self._key.get_label_color()
         pixbuf = self._key.get_image(label_rect.w, label_rect.h)
         if pixbuf:
-            self._draw_image(context, pixbuf, label_rect, label_color)
+            pixbuf.draw(context, label_rect, label_color)
         else:
             label = self._key.get_label()
             if label:
@@ -260,14 +260,6 @@ class LabelPopup(KeyboardPopup):
         context.move_to(*offset)
         context.set_source_rgba(*rgba)
         PangoCairo.show_layout(context, layout)
-
-    def _draw_image(self, context, pixbuf, rect, rgba):
-        Gdk.cairo_set_source_pixbuf(context, pixbuf, rect.x, rect.y)
-        pattern = context.get_source()
-        context.rectangle(*rect)
-        context.set_source_rgba(*rgba)
-        context.mask(pattern)
-        context.new_path()
 
     @staticmethod
     def _calc_font_size(rect, base_extents):
