@@ -1227,8 +1227,14 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             top_start_x = rect.left()
             top_end_x   = rect.right() - 1
 
+
         struts = [0, 0, top, bottom, 0, 0, 0, 0,
                   top_start_x, top_end_x, bottom_start_x, bottom_end_x]
+
+        scale = config.window_scaling_factor
+        if scale != 1.0:
+            struts = [val * scale for val in struts]
+
         self._apply_struts(xid, struts)
 
     def _apply_struts(self, xid, struts = None):
