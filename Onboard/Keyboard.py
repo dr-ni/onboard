@@ -1340,7 +1340,7 @@ class Keyboard(WordSuggestions):
                 action = KeyCommon.DELAYED_STROKE_ACTION
                 controller = self.button_controllers.get(key)
                 if controller and \
-                   not controller.is_activated_on_press():
+                   controller.is_activated_on_press():
                     action = KeyCommon.SINGLE_STROKE_ACTION
             else:
                 label = key.get_label()
@@ -1849,7 +1849,7 @@ class BCMove(ButtonController):
                          not config.xid_mode)
 
     def is_activated_on_press(self):
-        return False # dragging is already in progress on press
+        return True # cannot undo on press, dragging is already in progress
 
 
 class BCLayer(ButtonController):
