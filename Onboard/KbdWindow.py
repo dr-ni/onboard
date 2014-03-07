@@ -134,7 +134,7 @@ class KbdWindowBase:
         if wm:
             self._wm_quirks = None
             for cls in [WMQuirksCompiz, WMQuirksMetacity, WMQuirksMutter]:
-                if cls.wm == wm.lower():
+                if  wm.lower() in cls.wms:
                     self._wm_quirks = cls()
                     break
 
@@ -1357,7 +1357,7 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
 
 class WMQuirksDefault:
     """ Miscellaneous window managers, no special quirks """
-    wm = None
+    wms = ()
 
     @staticmethod
     def set_visible(window, visible):
@@ -1392,7 +1392,7 @@ class WMQuirksDefault:
 
 class WMQuirksCompiz(WMQuirksDefault):
     """ Unity with Compiz """
-    wm = "compiz"
+    wms = ("compiz")
 
     @staticmethod
     def get_window_type_hint(window):
@@ -1427,7 +1427,7 @@ class WMQuirksCompiz(WMQuirksDefault):
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
 
-    wm = "mutter"
+    wms = ("mutter", "GNOME Shell".lower())
 
     @staticmethod
     def set_visible(window, visible):
@@ -1445,7 +1445,7 @@ class WMQuirksMutter(WMQuirksDefault):
 class WMQuirksMetacity(WMQuirksDefault):
     """ Unity-2d, Gnome Classic """
 
-    wm = "metacity"
+    wms = ("metacity")
 
     @staticmethod
     def set_visible(window, visible):
