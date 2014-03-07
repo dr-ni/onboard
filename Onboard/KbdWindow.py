@@ -61,6 +61,7 @@ class KbdWindowBase:
         self._written_window_rects = {}
         self._written_dock_sizes = {}
         self._wm_quirks = None
+        self._auto_position_started = False
 
         self._desktop_switch_count = 0
         self._moved_desktop_switch_count = 0
@@ -894,6 +895,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         return rect
 
     def auto_position(self):
+        self._auto_position_started = True
         self.update_position()
 
         # With docking enabled, when focusing the search entry of a
@@ -960,9 +962,30 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         """
         Move the window from a transition, not meant for user positioning.
         """
-        # remember rects to distimguish from user move/resize
+        # remember rects to distinguish from user move/resize
         w, h = self.get_size()
         self.remember_rect(Rect(x, y, w, h))
+
+        # In Trusty, Compiz, floating window with force-to-top enabled,
+        # this window's configure-event lies about the window position
+        # after un-hiding by auto-show, which leads to jumping when
+        # moving or resizing afterwards.
+        #
+        # Test case:
+        # 1) Start onboard with auto-show enabled
+        # 2) Focus text entry to show the keyboard
+        # 3) Move the keyboard
+        # 4) Unfocus all text entries to hide the keyboard
+        # 5) Focus text entry to show the keyboard
+        # 6) Move the keyboard
+        #    -> keyboard jumps to the previous position
+        #
+        # Workaround: force position change to get new, hopefully
+        #             correct configure-events
+        if self._auto_position_started:
+            self._auto_position_started = False
+            if self._wm_quirks.must_fix_configure_event():
+                self.move(x-1, y)
 
         self.move(x, y)
 
@@ -1362,6 +1385,10 @@ class WMQuirksDefault:
         # struts fail for override redirect windows in metacity and mutter
         return not config.is_docking_enabled()
 
+    @staticmethod
+    def must_fix_configure_event():
+        """ does configure-event need fixing? """
+        return False
 
 class WMQuirksCompiz(WMQuirksDefault):
     """ Unity with Compiz """
@@ -1390,6 +1417,12 @@ class WMQuirksCompiz(WMQuirksDefault):
         # override redirect. -> turn it on even when docking. Apparently
         # Compiz can handle struts with OR windows.
         return True
+
+    @staticmethod
+    def must_fix_configure_event():
+        return config.is_force_to_top() and \
+            not config.xid_mode # in Trusty
+
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
