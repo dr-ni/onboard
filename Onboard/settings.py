@@ -1042,7 +1042,7 @@ class PageWordSuggestions(DialogBuilder):
         self.bind_check("auto_learn_toggle",
                             config.wp, "auto_learn")
 
-        self.bind_check("punctuation_assistence_toggle",
+        self.bind_check("punctuation_assistance_toggle",
                             config.wp, "punctuation_assistance")
         self.bind_check("auto_capitalization_toggle",
                             config.typing_assistance, "auto_capitalization")
@@ -1064,6 +1064,9 @@ class PageWordSuggestions(DialogBuilder):
                     config.word_suggestions.can_show_pause_learning_button(),
             config_set_callback = lambda co, key, value: \
                     config.word_suggestions.show_pause_learning_button(value))
+
+        self.bind_combobox_id("learning_behavior_paused_combobox",
+                        config.word_suggestions, "learning_behavior_paused")
 
         #self.bind_check("show_context_line_toggle",
         #                config.word_suggestions, "show_context_line")

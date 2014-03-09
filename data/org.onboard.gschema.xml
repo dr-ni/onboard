@@ -660,6 +660,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
         <child name="word-suggestions" schema="org.onboard.typing-assistance.word-suggestions" />
     </schema>
 
+    <enum id="org.onboard.keyboard.LearningBehaviorPaused">
+        <value nick="nothing" value="0"/>
+        <value nick="known-only" value="1"/>
+    </enum>
+
     <schema id="org.onboard.typing-assistance.word-suggestions" path="/org/onboard/typing-assistance/word-suggestions/">
         <key name="enabled" type="b">
             <default>false</default>
@@ -680,6 +685,13 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <default>false</default>
             <summary>Pause learning</summary>
             <description>Lock the button to pause learning.</description>
+        </key>
+        <key name="learning-behavior-paused" enum="org.onboard.keyboard.LearningBehaviorPaused">
+            <default>"nothing"</default>
+            <summary>Learning behavior when paused</summary>
+            <description>Learning behavior while the "Pause learning" button is active. 
+With 'known-only', new words are rejected, but frequency and recency of already known words is still recorded.
+            </description>
         </key>
         <key name="punctuation-assistance" type="b">
             <default>true</default>

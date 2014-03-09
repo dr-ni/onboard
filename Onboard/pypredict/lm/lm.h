@@ -121,7 +121,7 @@ class StrConv
             {
                 // Not everything went right.  It might only be
                 // an unfinished byte sequence at the end of the
-                // buffer.  Or it is a real problem. 
+                // buffer.  Or it is a real problem.
                 if (errno != EINVAL)
                 {
                     // It is a real problem.  Maybe we ran out of space
@@ -153,7 +153,7 @@ class StrConv
             {
                 // Not everything went right.  It might only be
                 // an unfinished byte sequence at the end of the
-                // buffer.  Or it is a real problem. 
+                // buffer.  Or it is a real problem.
                 if (errno != EINVAL)
                 {
                     // It is a real problem.  Maybe we ran out of space

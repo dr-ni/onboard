@@ -1115,7 +1115,8 @@ class LearnStrategy:
 
             engine = self._wp._wpengine
             for text in texts:
-                engine.learn_text(text, True)
+                engine.learn_text(text,
+                             config.word_suggestions.can_learn_new_words())
 
     def _learn_scratch_spans(self, spans, text_domain = None):
         if config.wp.can_auto_learn():

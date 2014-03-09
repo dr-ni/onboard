@@ -19,6 +19,7 @@ from Onboard.utils          import show_confirmation_dialog, Version, \
 from Onboard.definitions    import StatusIconProviderEnum, \
                                    InputEventSourceEnum, \
                                    TouchInputEnum, \
+                                   LearningBehavior, \
                                    Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
 from Onboard.ClickSimulator import CSMousetweaks0, CSMousetweaks1
@@ -1523,6 +1524,10 @@ class ConfigWordSuggestions(ConfigObject):
         self.add_key("spelling-suggestions-enabled", True)
         self.add_key("wordlist-buttons", ["language", "hide"])
         self.add_key("pause-learning-locked", False)
+        self.add_key("learning-behavior-paused", LearningBehavior.NOTHING,
+                    enum={"nothing" : LearningBehavior.NOTHING,
+                          "known-only" : LearningBehavior.KNOWN_ONLY,
+                        })
 
         self._pause_learning = 0  # 0=off, 1=latched, 2=locked; not in gsettings
 
@@ -1538,8 +1543,13 @@ class ConfigWordSuggestions(ConfigObject):
     def can_auto_learn(self):
         return self.enabled and \
                self.auto_learn and \
-               not self.get_pause_learning() and \
+               (not self.is_learning_paused() or \
+                self.learning_behavior_paused != \
+                    LearningBehavior.NOTHING) and \
                not self.stealth_mode
+
+    def is_learning_paused(self):
+        return self.get_pause_learning() > 0
 
     def get_pause_learning(self):
         if self.pause_learning_locked:
@@ -1602,4 +1612,6 @@ class ConfigWordSuggestions(ConfigObject):
                 buttons.remove(key_id)
                 self.wordlist_buttons = buttons
 
+    def can_learn_new_words(self):
+        return not self.is_learning_paused()
 

@@ -912,9 +912,9 @@ UnigramModel_count_ngram(PyUnigramModel* self, PyObject* args)
 {
     PyObject* ngram = NULL;
     int increment = 1;
-    bool allow_new_words = true;
+    int allow_new_words = true;
 
-    if (! PyArg_ParseTuple(args, "O|IB:count_ngram",
+    if (! PyArg_ParseTuple(args, "O|II:count_ngram",
               &ngram, &increment, &allow_new_words))
         return NULL;
 
@@ -1119,9 +1119,9 @@ DynamicModel_count_ngram(PyDynamicModel* self, PyObject* args)
 {
     PyObject* ngram = NULL;
     int increment = 1;
-    bool allow_new_words = true;
+    int allow_new_words = true;
 
-    if (! PyArg_ParseTuple(args, "O|IB:count_ngram",
+    if (! PyArg_ParseTuple(args, "O|II:count_ngram",
               &ngram, &increment, &allow_new_words))
         return NULL;
 

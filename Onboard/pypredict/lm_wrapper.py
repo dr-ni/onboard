@@ -37,7 +37,7 @@ class _BaseModel:
     def learn_tokens(self, tokens, allow_new_words=True):
         """ Extract n-grams from tokens and count them. """
         for ngram in self._extract_ngrams(tokens):
-            self.count_ngram(ngram, allow_new_words)
+            self.count_ngram(ngram, 1, allow_new_words)
 
         self.modified = True
 

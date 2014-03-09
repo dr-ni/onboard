@@ -45,6 +45,13 @@ class TouchInputEnum:
         MULTI,
     ) = range(3)
 
+class LearningBehavior:
+    (
+        NOTHING,
+        KNOWN_ONLY,
+        ALL,
+    ) = range(3)
+
 # window corners
 class Handle:
     NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
