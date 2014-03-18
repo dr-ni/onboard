@@ -17,7 +17,7 @@ try:
 except ImportError:
     pass
 
-from gi.repository import GObject, Pango, Gdk, Gtk
+from gi.repository import GObject, Pango, Gdk, Gtk, GLib
 
 # install translation function _() for all modules
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
@@ -719,13 +719,14 @@ class Settings(DialogBuilder):
         if li is None:
             return
 
-        markup = "<big>{}</big>\n".format(li.id)
+        markup = "<big>{}</big>\n".format(self.markup_escape(li.id))
         body = li.description or li.summary
         if body:
-            markup += "\n{}\n".format(body)
+            markup += "\n{}\n".format(self.markup_escape(body))
         if li.author:
-            markup += ("\n" + _("Author: {}") + "\n").format(li.author)
-        markup += "\n <tt>{}</tt>\n".format(li.filename)
+            markup += ("\n" + _("Author: {}") + "\n") \
+                .format(self.markup_escape(li.author))
+        markup += "\n <tt>{}</tt>\n".format(self.markup_escape(li.filename))
 
         dialog = Gtk.MessageDialog(title=_("About Layout"),
                                    message_type=Gtk.MessageType.QUESTION,
@@ -734,6 +735,16 @@ class Settings(DialogBuilder):
         dialog.set_transient_for(self.window)
         dialog.run()
         dialog.destroy()
+
+    @staticmethod
+    def markup_escape(text):
+        try:
+            text = GLib.markup_escape_text(text)
+        except Exception as ex: # private exception gi._glib.GError
+            _logger.error("markup_escape_text failed for "
+                            "'{}': {}" \
+                        .format(text, unicode_str(ex)))
+        return text
 
     def _read_layouts(self, path,  sort_order=()):
         filenames = self._find_layouts(path)
