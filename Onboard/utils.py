@@ -1488,6 +1488,8 @@ class Translation:
         builtins.__dict__['_format'] = t.format
 
     def ugettext(self, msgid):
+        if not msgid:
+            return unicode_str("")
         if sys.version_info.major < 3:  # python 2?
             return self.translation.ugettext(msgid)
         return self.translation.gettext(msgid)
