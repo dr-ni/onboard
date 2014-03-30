@@ -117,7 +117,8 @@ class WPLocalEngine(object):
         if self.auto_learn_models:
             tokens, spans = pypredict.tokenize_text(text)
 
-            # Remove trailing single quote, too many false positives.
+            # There are too many false positives with trailing
+            # single quotes, remove them.
             # Do this here, because we still want "it's", etc. to
             # incrementally provide completions.
             for i, token in enumerate(tokens):
@@ -127,16 +128,32 @@ class WPLocalEngine(object):
                         token = "<unk>"
                     tokens[i] = token
 
+            # if requested, drop unknown words
+            if allow_new_words:
+                token_sections = [tokens]
+            else:
+                token_sections = self._drop_new_words(tokens, spans,
+                                                        self.persistent_models)
             models = self._model_cache.get_models(self.auto_learn_models)
             for model in models:
-                model.learn_tokens(tokens, allow_new_words)
-            _logger.info("learn_text: tokens=" + repr(tokens[:10]))
+                for tokens in token_sections:
+                    model.learn_tokens(tokens)
+
+            _logger.info("learn_text: tokens=" + repr(token_sections))
 
             # debug: save all learned text for later parameter optimization
             if config.log_learn:
                 fn = os.path.join(config.user_dir, "learned_text.txt")
                 with open(fn, "a") as f:
                     f.write(text + "\n")
+
+    def _drop_new_words(self, tokens, spans, lmids):
+        """ Remove tokens that don't already exist in any active model.  """
+
+        tokspans, counts = self.lookup_tokens(tokens, spans, lmids)
+        split_indices = [i for i, model_counts in enumerate(counts) \
+                         if all(n != 1 for n in model_counts)]
+        return pypredict.split_tokens_at(tokens, split_indices)
 
     def learn_scratch_text(self, text):
         """ Count n-grams and add words to the scratch models. """
@@ -152,12 +169,19 @@ class WPLocalEngine(object):
         for model in models:
             model.clear()
 
-    def lookup_text(self, text):
+    def lookup_text(self, text, lmids):
         """
         Split <text> into tokens and lookup the individual tokens in each
-        of the given language models. This method is meant to be a basis for
-        highlighting (partially) unknown words in a display for recently
-        typed text.
+        of the given language models. See lookup_tokens() for more information.
+        """
+        tokens, spans = pypredict.tokenize_sentence(text)
+        return self.lookup_tokens(tokens, spans, lmids)
+
+    def lookup_tokens(self, tokens, spans, lmids):
+        """
+        Lookup the individual tokens in each of the given language models.
+        This method is meant to be a basis for highlighting (partially)
+        unknown words in a display for recently typed text.
 
         The return value is a tuple of two arrays. First an array of tuples
         (start, end, token), one per token, with start and end index pointing
@@ -166,14 +190,12 @@ class WPLocalEngine(object):
         result is either 0 for no match, 1 for an exact match or -n for
         count n partial (prefix) matches.
         """
-        lmids = self.models
-        toks, spans = pypredict.tokenize_sentence(text)
-        tokens  = [(spans[i][0], spans[i][1], t) for i,t in enumerate(toks)]
-        counts = [[0 for lmid in lmids] for t in tokens]
+        tokspans  = [(spans[i][0], spans[i][1], t) for i,t in enumerate(tokens)]
+        counts = [[0 for lmid in lmids] for t in tokspans]
         for i,lmid in enumerate(lmids):
             model = self._model_cache.get_model(lmid)
             if model:
-                for j,t in enumerate(tokens):
+                for j,t in enumerate(tokspans):
                     counts[j][i] = model.lookup_word(t[2])
 
         _logger.debug("lookup_words: tokens=%s counts=%s" % \

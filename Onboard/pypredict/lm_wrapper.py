@@ -210,6 +210,54 @@ def split_tokens(tokens, separator, keep_separator = False):
 
     return token_sections
 
+def split_tokens_at(tokens, split_indices):
+    """
+    Patition tokens with splits at the given indices.
+    split_indices must be sorted in ascending order.
+
+    Doctests:
+    >>> test = split_tokens_at
+
+    >>> test(["word0", "word1", "word2"], [])
+    [['word0', 'word1', 'word2']]
+
+    >>> test(["word0", "word1", "word2"], [0])
+    [['word1', 'word2']]
+
+    >>> test(["word0", "word1", "word2"], [1])
+    [['word0'], ['word2']]
+
+    >>> test(["word0", "word1", "word2"], [2])
+    [['word0', 'word1']]
+
+    >>> test(["word0", "word1", "word2"], [0, 2])
+    [['word1']]
+
+    >>> test(["word0", "word1", "word2"], [0, 1, 2])
+    []
+
+    >>> test(["word0", "word1", "word2", "word3", "word4"], [0, 2, 4])
+    [['word1'], ['word3']]
+
+    # out of range indices
+    >>> test(["word0", "word1", "word2"], [100, 1000])
+    [['word0', 'word1', 'word2']]
+    """
+    token_sections = []
+    remaining = 0
+
+    for i in split_indices:
+        section = tokens[remaining:i]
+        if section:
+            token_sections.append(section)
+        remaining = i+1
+
+    section = tokens[remaining:]
+    if section:
+        token_sections.append(section)
+
+    return token_sections
+
 
 SENTENCE_PATTERN = re.compile( \
     """ .*?
