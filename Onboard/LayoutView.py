@@ -59,6 +59,7 @@ class LayoutView:
 
     def handle_realize_event(self):
         self.update_input_event_source()
+        self.update_touch_input_mode()
 
     def on_layout_loaded(self):
         """ Layout has been loaded. """
@@ -178,6 +179,9 @@ class LayoutView:
     def update_input_event_source(self):
         use_gtk = config.keyboard.input_event_source == InputEventSourceEnum.GTK
         self.register_input_events(True, use_gtk)
+
+    def update_touch_input_mode(self):
+        self.set_touch_input_mode(config.keyboard.touch_input)
 
     def can_delay_sequence_begin(self, sequence):
         """

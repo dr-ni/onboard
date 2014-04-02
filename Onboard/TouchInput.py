@@ -40,11 +40,6 @@ import logging
 _logger = logging.getLogger("TouchInput")
 ###############
 
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
-
 BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
@@ -434,10 +429,11 @@ class TouchInput(InputEventSource):
         InputEventSource.__init__(self)
 
         self._input_sequences = {}
-        self._touch_events_enabled = self.is_touch_enabled()
-        self._multi_touch_enabled  = config.keyboard.touch_input == \
-                                     TouchInputEnum.MULTI
-        self._gestures_enabled     = self._touch_events_enabled
+
+        self._touch_events_enabled = False
+        self._multi_touch_enabled  = False
+        self._gestures_enabled     = False
+
         self._last_event_was_touch = False
         self._last_sequence_time = 0
 
@@ -449,8 +445,20 @@ class TouchInput(InputEventSource):
         self._num_tap_sequences = 0
         self._gesture_timer = Timer()
 
-    def is_touch_enabled(self):
-        return config.keyboard.touch_input != TouchInputEnum.NONE
+    def set_touch_input_mode(self, touch_input):
+        """ Call this to enable single/multi-touch """
+        self._touch_events_enabled = touch_input != TouchInputEnum.NONE
+        self._multi_touch_enabled  = touch_input == TouchInputEnum.MULTI
+        self._gestures_enabled     = self._touch_events_enabled
+
+        _logger.debug("setting touch input mode {}: "
+                      "touch_events_enabled={}, "
+                      "multi_touch_enabled={}, "
+                      "gestures_enabled={}" \
+                      .format(touch_input,
+                              self._touch_events_enabled,
+                              self._multi_touch_enabled,
+                              self._gestures_enabled))
 
     def has_input_sequences(self):
         """ Are any clicks/touches still ongoing? """

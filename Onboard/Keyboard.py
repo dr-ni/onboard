@@ -500,9 +500,15 @@ class Keyboard(WordSuggestions):
             view.update_transparency()
 
     def update_input_event_source(self):
+        """ Input event source changed, tell all views. """
         for view in self._layout_views:
             view.update_input_event_source()
         self.update_click_sim()
+
+    def update_touch_input_mode(self):
+        """ Touch input mode has changed, tell all views. """
+        for view in self._layout_views:
+            view.update_touch_input_mode()
 
     def update_click_sim(self):
         event_source = config.keyboard.input_event_source
