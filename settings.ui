@@ -16,11 +16,11 @@
     <data>
       <row>
         <col id="0">0</col>
-        <col id="1" translatable="yes">key-repeat</col>
+        <col id="1" translatable="yes">Key-repeat</col>
       </row>
       <row>
         <col id="0">1</col>
-        <col id="1" translatable="yes">international character selection</col>
+        <col id="1" translatable="yes">International character selection</col>
       </row>
     </data>
   </object>
@@ -234,19 +234,19 @@
     <data>
       <row>
         <col id="0">cycle</col>
-        <col id="1" translatable="yes">latch, then lock</col>
+        <col id="1" translatable="yes">Latch, then lock</col>
       </row>
       <row>
         <col id="0">dblclick</col>
-        <col id="1" translatable="yes">latch, double-click to lock</col>
+        <col id="1" translatable="yes">Latch, double-click to lock</col>
       </row>
       <row>
         <col id="0">latch</col>
-        <col id="1" translatable="yes">latch only</col>
+        <col id="1" translatable="yes">Latch only</col>
       </row>
       <row>
         <col id="0">lock</col>
-        <col id="1" translatable="yes">lock only</col>
+        <col id="1" translatable="yes">Lock only</col>
       </row>
     </data>
   </object>
