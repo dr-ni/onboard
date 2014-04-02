@@ -399,9 +399,10 @@ class InputEventSource(EventSource):
         win = self.get_window()
         if not event.xi_type in [ XIEventType.TouchUpdate,
                                   XIEventType.Motion]:
+            source_device = event.get_source_device()
             _logger.debug("Device event: dev_id={} src_id={} xi_type={} "
                           "xid_event={}({}) x={} y={} x_root={} y_root={} "
-                          "button={} state={} sequence={}"
+                          "button={} state={} sequence={} source={}"
                           "".format(event.device_id,
                                     event.source_id,
                                     event.xi_type,
@@ -411,6 +412,7 @@ class InputEventSource(EventSource):
                                     event.x_root, event.y_root,
                                     event.button, event.state,
                                     event.sequence,
+                                    source_device.get_source().value_name,
                                    )
                          )
 
