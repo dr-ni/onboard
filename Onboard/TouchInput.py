@@ -82,6 +82,9 @@ class InputEventSource(EventSource):
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
 
+        if not _logger.isEnabledFor(logging.DEBUG):
+            self.log_event = self._log_event_stub
+
     def cleanup(self):
         self._register_gtk_events(False)
         self._register_xinput_events(False)
@@ -297,8 +300,12 @@ class InputEventSource(EventSource):
         event_type = event.xi_type
         device_id  = event.device_id
 
-        if _logger.isEnabledFor(logging.DEBUG):
-            self._log_event(event)
+        log = self._log_event_stub
+        if _logger.isEnabledFor(logging.DEBUG) and \
+            event_type != XIEventType.Motion and \
+            event_type != XIEventType.TouchUpdate:
+            self._log_device_event(event)
+            log = self.log_event
 
         # re-select devices on changes to the device hierarchy
         if event_type in XIEventType.HierarchyEvents or \
@@ -306,28 +313,36 @@ class InputEventSource(EventSource):
             self.select_xinput_devices()
             return
 
+        log("_on_device_event1")
+
         # check device_id, discard duplicate and unknown events
         if event_type == XIEventType.Enter or \
            event_type == XIEventType.Leave:
 
+            log("_on_device_event2 {} {}", device_id, self._master_device_id)
             # enter/leave are only expected from the master device
             if not device_id == self._master_device_id:
+                log("_on_device_event3")
                 return
 
         else:
             # all other pointer/touch events have to come from slaves
+            log("_on_device_event4 {} {}", event.device_id, self._slave_device_ids)
             if not event.device_id in self._slave_device_ids:
+                log("_on_device_event5")
                 return
 
         # bail if the window isn't realized yet
         win = self.get_window()
         if not win:
+            log("_on_device_event6")
             return
 
         # scale coordinates in response to changes to
         # org.gnome.desktop.interface scaling-factor
         try:
             scale = win.get_scale_factor()  # from Gdk 3.10
+            log("_on_device_event7 {}", scale)
             if scale and scale != 1.0:
                 scale = 1.0 / scale
                 event.x = event.x * scale
@@ -343,12 +358,14 @@ class InputEventSource(EventSource):
         # -> Simulate pointer grab, select root events we can track even
         #    outside the keyboard window.
         # None of these problems are assumed to exist for touch devices.
+        log("_on_device_event8 {}", self._xi_grab_active)
         if self._xi_grab_active and \
            (event_type == XIEventType.Motion or \
             event_type == XIEventType.ButtonRelease):
             if not self._xi_grab_events_selected:
                 self._select_xi_grab_events(True)
 
+            log("_on_device_event9")
             #print(event_type, event.x_root, event.y_root)
             #print(self._xi_grab_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
 
@@ -365,8 +382,11 @@ class InputEventSource(EventSource):
             # one finger, touching anything in a long press popup must
             # not also affect the keyboard below.
             xid_event = event.xid_event
+            xid_win = win.get_xid()
+            log("_on_device_event10 {} {}", xid_event, xid_win)
             if xid_event != 0 and \
-                xid_event != win.get_xid():
+                xid_event != xid_win:
+                log("_on_device_event11")
                 return
 
         # Dispatch events
@@ -395,14 +415,13 @@ class InputEventSource(EventSource):
         elif event_type == XIEventType.Leave:
             self._on_leave_notify(self, event)
 
-    def _log_event(self, event):
+    def _log_device_event(self, event):
         win = self.get_window()
         if not event.xi_type in [ XIEventType.TouchUpdate,
                                   XIEventType.Motion]:
-            source_device = event.get_source_device()
-            _logger.debug("Device event: dev_id={} src_id={} xi_type={} "
+            self.log_event("Device event: dev_id={} src_id={} xi_type={} "
                           "xid_event={}({}) x={} y={} x_root={} y_root={} "
-                          "button={} state={} sequence={} source={}"
+                          "button={} state={} sequence={}"
                           "".format(event.device_id,
                                     event.source_id,
                                     event.xi_type,
@@ -412,9 +431,19 @@ class InputEventSource(EventSource):
                                     event.x_root, event.y_root,
                                     event.button, event.state,
                                     event.sequence,
-                                    source_device.get_source().value_name,
                                    )
                          )
+
+            device = event.get_source_device()
+            self.log_event("Source device: " + str(device))
+
+    @staticmethod
+    def log_event(msg, *args):
+        _logger.event(msg.format(*args))
+
+    @staticmethod
+    def _log_event_stub(msg, *args):
+        pass
 
 
 class TouchInput(InputEventSource):
@@ -470,20 +499,32 @@ class TouchInput(InputEventSource):
         """ Was there just a touch event? """
         return self._last_event_was_touch
 
-    def has_touch_source(self, event):
-        """ Was source device of event a touch screen? """
+    @staticmethod
+    def get_event_source(event):
         source_device = event.get_source_device()
-        source = source_device.get_source()
-        return source == Gdk.InputSource.TOUCHSCREEN
+        return source_device.get_source()
+
+    @staticmethod
+    def has_touch_source(event):
+        """ Was source device of event a touch screen? """
+        return TouchInput.get_event_source(event) == \
+               Gdk.InputSource.TOUCHSCREEN
 
     def _on_button_press_event(self, widget, event):
+        self.log_event("_on_button_press_event1 {} {} {} ",
+                       self._touch_events_enabled,
+                       self.has_touch_source(event),
+                       self.get_event_source(event))
         if self._touch_events_enabled and \
            self.has_touch_source(event):
-                return
+            self.log_event("_on_button_press_event2 abort")
+            return
 
         # - Ignore double clicks (GDK_2BUTTON_PRESS),
         #   we're handling those ourselves.
         # - Ignore mouse wheel button events
+        self.log_event("_on_button_press_event3 {} {}",
+                       event.type, event.button)
         if event.type == Gdk.EventType.BUTTON_PRESS and \
            1 <= event.button <= 3:
             sequence = InputSequence()
@@ -491,10 +532,12 @@ class TouchInput(InputEventSource):
             sequence.primary = True
             self._last_event_was_touch = False
 
+            self.log_event("_on_button_press_event4")
             self._input_sequence_begin(sequence)
 
     def _on_button_release_event(self, widget, event):
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        self.log_event("_on_button_release_event", sequence)
         if not sequence is None:
             sequence.point      = (event.x, event.y)
             sequence.root_point = (event.x_root, event.y_root)
@@ -526,7 +569,9 @@ class TouchInput(InputEventSource):
         self.on_leave_notify(widget, event)
 
     def _on_touch_event(self, widget, event):
+        self.log_event("_on_touch_event1 {}", self.get_event_source(event))
         if not self.has_touch_source(event):
+            self.log_event("_on_touch_event2 abort")
             return
 
         touch = event.touch
@@ -566,6 +611,7 @@ class TouchInput(InputEventSource):
 
     def _input_sequence_begin(self, sequence):
         """ Button press/touch begin """
+        self.log_event("_input_sequence_begin1 {}", sequence)
         self._gesture_sequence_begin(sequence)
         first_sequence = len(self._input_sequences) == 0
 
@@ -604,6 +650,7 @@ class TouchInput(InputEventSource):
         return False
 
     def deliver_input_sequence_begin(self, sequence):
+        self.log_event("deliver_input_sequence_begin {}", sequence)
         self.on_input_sequence_begin(sequence)
         sequence.delivered = True
 
@@ -617,12 +664,14 @@ class TouchInput(InputEventSource):
 
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
+        self.log_event("_input_sequence_end1 {}", sequence)
         self._gesture_sequence_end(sequence)
         self._gesture_timer.finish()  # run delayed begin before end
         if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
 
             if sequence.delivered:
+                self.log_event("_input_sequence_end2 {}", sequence)
                 self.on_input_sequence_end(sequence)
 
         if self._input_sequences:
@@ -801,4 +850,20 @@ class InputSequence:
     def __repr__(self):
         return "{}({})".format(type(self).__name__,
                                repr(self.id))
+    def __str__(self):
+        return "{}(id={} point=({:.2f}, {:.2f}) root_point=({:.2f}, {:.2f}) " \
+               "button={} state={} event_type={} time={} primary={} delivered={} " \
+               "active_key={})" \
+                .format(type(self).__name__,
+                        self.id,
+                        self.point[0], self.point[1],
+                        self.root_point[0], self.root_point[1],
+                        self.button,
+                        self.state,
+                        self.event_type,
+                        self.time,
+                        self.primary,
+                        self.delivered,
+                        self.active_key,
+                       )
 

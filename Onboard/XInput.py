@@ -224,10 +224,10 @@ class XIDeviceManager(EventSource):
                 device.enabled,
                 device.vendor,
                 device.product,
-                touch_mode,
+                device.touch_mode,
             ) = info
             device.source = XIDevice.classify_source(device.name, device.use,
-                                                      touch_mode)
+                                                     device.touch_mode)
 
             if sys.version_info.major == 2:
                 device.name = unicode_str(device.name)
@@ -358,16 +358,32 @@ class XIDevice(object):
     vendor       = None
     product      = None
     source       = None
+    touch_mode   = None
 
     _device_manager = None
 
-    def __str__(self):
+    def __repr__(self):
         return "{}(id={}, master={}, name={}, source={} )" \
                 .format(type(self).__name__,
                         repr(self.id),
                         repr(self.master),
                         repr(self.name),
                         repr(self.source),
+                       )
+
+    def __str__(self):
+        return "{}(id={} master={} use={} touch_mode={} source={} name={} " \
+               "vendor=0x{:04x} product=0x{:04x} enabled={})" \
+                .format(type(self).__name__,
+                        self.id,
+                        self.master,
+                        self.use,
+                        self.touch_mode,
+                        self.get_source().value_name,
+                        self.name,
+                        self.vendor,
+                        self.product,
+                        self.enabled,
                        )
 
     def get_source(self):
