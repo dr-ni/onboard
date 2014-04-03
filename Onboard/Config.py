@@ -212,7 +212,7 @@ class Config(ConfigObject):
                 dest="keep_aspect_ratio",
                 help=_("Keep aspect ratio when resizing the window"))
         parser.add_option("-d", "--debug", type="str", dest="debug",
-            help="DEBUG={notset|debug|info|warning|error|critical}")
+            help="DEBUG={all|event|debug|info|warning|error|critical}")
         parser.add_option("-m", "--allow-multiple-instances",
                 action="store_true", dest="allow_multiple_instances",
                 help=_("Allow multiple Onboard instances"))
@@ -237,18 +237,7 @@ class Config(ConfigObject):
         self.log_learn = options.log_learn
 
         # setup logging
-        log_params = {
-            "format" : '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
-        }
-        if options.debug:
-             log_params["level"] = getattr(logging, options.debug.upper())
-        if False: # log to file
-            log_params["level"] = "DEBUG"
-            logfile = open("/tmp/onboard.log", "w")
-            sys.stdout = logfile
-            sys.stderr = logfile
-
-        logging.basicConfig(**log_params)
+        self._init_logging(options.debug)
 
         # Add basic config children for usage before the single instance check.
         # All the others are added in self._init_keys().
@@ -409,6 +398,40 @@ class Config(ConfigObject):
             self.mousetweaks.restore_click_type_window_visible(
                 self.universal_access.enable_click_type_window_on_exit and \
                 not self.xid_mode)
+
+    def _init_logging(self, level_name):
+        LEVEL_EVENT = 5   # DEBUG=10, INFO=20, ...
+        LEVEL_ALL = 1
+
+        custom_level_names = {
+            LEVEL_EVENT : "EVENT",
+            LEVEL_ALL : "ALL"
+        }
+
+        for level, name in custom_level_names.items():
+            logging.addLevelName(level, name)
+
+        class CustomLogger(logging.Logger):
+            def event(self, msg, *args, **kwargs):
+                if self.isEnabledFor(LEVEL_EVENT):
+                    self._log(LEVEL_EVENT, msg, args, **kwargs)
+
+        message_format = '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
+
+        logging.setLoggerClass(CustomLogger)
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(message_format))
+        root = logging.getLogger()
+        root.addHandler(handler)
+        if level_name:
+            level_name = level_name.upper()
+            root.setLevel(level_name)
+
+        if 0: # optionally log to file; everything, including stack traces
+            log_params["level"] = "DEBUG"
+            logfile = open("/tmp/onboard.log", "w")
+            sys.stdout = logfile
+            sys.stderr = logfile
 
     def _init_keys(self):
         """ Create key descriptions """
