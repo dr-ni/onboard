@@ -40,7 +40,8 @@ from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine, ModelCache
-from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce
+from Onboard.utils             import CallOnce, unicode_str, \
+                                      Timer, TimerOnce, escape_markup
 import Onboard.utils as utils
 
 ### Config Singleton ###
@@ -649,8 +650,8 @@ class WordSuggestions:
     def get_word_infos(self, text):
         wis = []
         if text.rstrip():  # don't load models on startup
-            tokens, counts = self._wpengine.lookup_text(text)
-            for i,t in enumerate(tokens):
+            tokspans, counts = self._wpengine.lookup_text(text)
+            for i,t in enumerate(tokspans):
                 start, end, token = t
                 word = text[start:end]
                 wi = WordInfo(start, end, word)
@@ -2058,6 +2059,7 @@ class ModelErrorRecovery:
                 "The error was:\n<tt>{}</tt>\n\n"
                 "Revert word suggestions to the last backup (recommended)?",
                 msg)
+            markup = escape_markup(markup, preserve_tags=True)
             reply = self._show_dialog(markup, parent, buttons="yes_no") \
                    if not _test_mode else True
 
@@ -2077,6 +2079,7 @@ class ModelErrorRecovery:
                 "The suggestions have to be reset, but "
                 "the erroneous file will remain at \n'{}'",
                 msg, broken_filename)
+            markup = escape_markup(markup, preserve_tags=True)
             if not _test_mode:
                 self._show_dialog(markup, parent)
             try:

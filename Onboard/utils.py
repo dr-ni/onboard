@@ -1768,3 +1768,91 @@ class XDGDirs:
         return exists
 
 
+_tag_pattern = re.compile(
+    """(?:
+            <[\w\-_]+                         # tag
+            (?:\s+[\w\-_]+=["'][^"']*["'])*  # attributes
+            /?>
+        ) |
+        (?:
+            </?[\w\-_]+>
+        )
+    """, re.UNICODE|re.DOTALL|re.VERBOSE)
+
+def _iter_markup(markup):
+    """
+    Iterate over tag and non-tag sections of a markup string.
+
+    Doctests:
+    # Never yield for empty string
+    >>> list(_iter_markup(""))
+    []
+
+    # must return tag- as well as non-tag sections
+    >>> list(_iter_markup("<tt>test</tt>test2"))
+    [('<tt>', True), ('test', False), ('</tt>', True), ('test2', False)]
+
+    # should recognize tags with attributes
+    >>> list(_iter_markup('<tag attr="value">'))
+    [('<tag attr="value">', True)]
+    >>> list(_iter_markup('<tag attr="v alue" attr2="234">'))
+    [('<tag attr="v alue" attr2="234">', True)]
+
+    # should recognize tags with end shortcut
+    >>> list(_iter_markup('<tag/> <tag2 attr="value"/>'))
+    [('<tag/>', True), (' ', False), ('<tag2 attr="value"/>', True)]
+
+    # must not modify input, i.e. concatenated result must equal input text
+    >>> markup = "asd <tt>t est\\n ds</tt> te st2 "
+    >>> "".join([text for text, tag in _iter_markup(markup)]) == markup
+    True
+    """
+    pos = 0
+    matches = _tag_pattern.finditer(markup)
+    for m in matches:
+        text = markup[pos:m.start()]
+        if text:
+            yield text, False
+        yield m.group(), True
+        pos = m.end()
+
+    text = markup[pos:]
+    if text:
+        yield text, False
+
+
+def escape_markup(markup, preserve_tags = False):
+    """
+    Escape strings of uncertain content for use in Gtk markup.
+    If requested, markup tags are skipped and won't be escaped.
+
+    Doctests:
+    >>> escape_markup("&<>")
+    '&amp;&lt;&gt;'
+
+    # tags must be escaped when preserve_tags is False
+    >>> escape_markup("<big>&<></big>")
+    '&lt;big&gt;&amp;&lt;&gt;&lt;/big&gt;'
+
+    # tags must not be escaped when preserve_tags is True
+    >>> escape_markup('<big>&</big>><tag attr="value"><</tag>1<3', True)
+    '<big>&amp;</big>&gt;<tag attr="value">&lt;</tag>1&lt;3'
+
+    # whitespace must be preserved
+    >>> escape_markup("test <big> test2& </big> test3", True)
+    'test <big> test2&amp; </big> test3'
+    """
+    result = ""
+    for text, is_tag in _iter_markup(markup):
+        if is_tag and preserve_tags:
+            result += text
+        else:
+            try:
+                result += GLib.markup_escape_text(text)
+            except Exception as ex: # private exception gi._glib.GError
+                _logger.error("markup_escape_text failed for "
+                                "'{}': {}" \
+                            .format(text, unicode_str(ex)))
+    return result
+
+

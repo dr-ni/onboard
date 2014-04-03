@@ -27,7 +27,7 @@ from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.XInput          import XIDeviceManager, XIEventType
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
-                                    unicode_str, open_utf8
+                                    unicode_str, open_utf8, escape_markup
 
 app = "onboard"
 
@@ -703,7 +703,8 @@ class Settings(DialogBuilder):
         if lis:
             parent_iter = model.append(None)
             model.set(parent_iter,
-                    self.LAYOUT_COL_NAME, "<b>{}</b>".format(section_name))
+                    self.LAYOUT_COL_NAME, "<b>{}</b>" \
+                      .format(escape_markup(section_name)))
             for li in lis:
                 child_iter = model.append(parent_iter)
                 model.set(child_iter,
@@ -719,14 +720,14 @@ class Settings(DialogBuilder):
         if li is None:
             return
 
-        markup = "<big>{}</big>\n".format(self.markup_escape(li.id))
+        markup = "<big>{}</big>\n".format(escape_markup(li.id))
         body = li.description or li.summary
         if body:
-            markup += "\n{}\n".format(self.markup_escape(body))
+            markup += "\n{}\n".format(escape_markup(body))
         if li.author:
             markup += ("\n" + _("Author: {}") + "\n") \
-                .format(self.markup_escape(li.author))
-        markup += "\n <tt>{}</tt>\n".format(self.markup_escape(li.filename))
+                .format(escape_markup(li.author))
+        markup += "\n <tt>{}</tt>\n".format(escape_markup(li.filename))
 
         dialog = Gtk.MessageDialog(title=_("About Layout"),
                                    message_type=Gtk.MessageType.QUESTION,
@@ -735,16 +736,6 @@ class Settings(DialogBuilder):
         dialog.set_transient_for(self.window)
         dialog.run()
         dialog.destroy()
-
-    @staticmethod
-    def markup_escape(text):
-        try:
-            text = GLib.markup_escape_text(text)
-        except Exception as ex: # private exception gi._glib.GError
-            _logger.error("markup_escape_text failed for "
-                            "'{}': {}" \
-                        .format(text, unicode_str(ex)))
-        return text
 
     def _read_layouts(self, path,  sort_order=()):
         filenames = self._find_layouts(path)
