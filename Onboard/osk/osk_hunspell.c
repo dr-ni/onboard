@@ -61,6 +61,7 @@ osk_hunspell_spell (PyObject *self, PyObject *args)
 {
     OskHunspell *oh = (OskHunspell*) self;
     char* word; // in dictionary encoding
+    int res;
 
     char* encoding = Hunspell_get_dic_encoding(oh->hh);
     if (!encoding)
@@ -72,7 +73,7 @@ osk_hunspell_spell (PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "es:spell", encoding, &word))
         return NULL;
 
-    int res = Hunspell_spell(oh->hh, word);
+    res = Hunspell_spell(oh->hh, word);
 
     return PyLong_FromLong(res);
 }
@@ -84,6 +85,9 @@ osk_hunspell_suggest (PyObject *self, PyObject *args)
     PyObject* result = NULL;
     char* word; // in dictionary encoding
 
+    char** slst;
+    int i, n;
+
     char* encoding = Hunspell_get_dic_encoding(oh->hh);
     if (!encoding)
     {
@@ -94,8 +98,7 @@ osk_hunspell_suggest (PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "es:suggest", encoding, &word))
         return NULL;
 
-    char** slst;
-    int n = Hunspell_suggest(oh->hh, &slst, word);
+    n = Hunspell_suggest(oh->hh, &slst, word);
 
     result = PyTuple_New(n);
     if (!result)
@@ -104,7 +107,6 @@ osk_hunspell_suggest (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    int i;
     for (i = 0; i < n; i++)
     {
         PyObject* suggestion = PyUnicode_Decode(slst[i], strlen(slst[i]),

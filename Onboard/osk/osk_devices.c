@@ -340,11 +340,12 @@ static gboolean idle_process_event_queue (OskDevices* dev)
 
     for (;;)
     {
+        PyObject* arglist;
         OskDeviceEvent* event = g_queue_pop_tail (queue);
         if (!event)
             break;
 
-        PyObject* arglist = Py_BuildValue("(O)", event);
+	arglist = Py_BuildValue("(O)", event);
         if (arglist)
         {
             Py_INCREF(dev->event_handler);
@@ -684,20 +685,21 @@ handle_pointing_event (int evtype, XIEvent* xievent, OskDevices* dev)
         case XI_TouchEnd:
         {
             XIDeviceEvent *event = (XIDeviceEvent*) xievent;
-
             unsigned int button = 0;
+            unsigned int sequence = 0;
+            unsigned int state;
+
             if (evtype == XI_ButtonPress ||
                 evtype == XI_ButtonRelease)
                 button = event->detail;
 
-            unsigned int sequence = 0;
             if (evtype == XI_TouchBegin ||
                 evtype == XI_TouchUpdate ||
                 evtype == XI_TouchEnd)
                 sequence = event->detail;
 
             update_state(evtype, event, dev);
-            unsigned int state = get_current_state (dev);
+            state = get_current_state (dev);
 
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
@@ -1145,16 +1147,18 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
     OskDevices       *dev = (OskDevices *) self;
     int               id;
     int               _win;
+    Window win;
+
+    unsigned char mask[1] = {0};
+    XIEventMask events;
 
     if (!PyArg_ParseTuple (args, "ii", &id, &_win))
         return NULL;
 
-    Window win = (Window)_win;
+    win = (Window)_win;
     if (!win)
         win = DefaultRootWindow (dev->dpy);
 
-    unsigned char mask[1] = {0};
-    XIEventMask events;
     events.deviceid = id;
     events.mask = mask;
     events.mask_len = sizeof(mask);
@@ -1219,11 +1223,12 @@ osk_devices_select_events (PyObject *self, PyObject *args)
     int           device_id;
     unsigned long event_mask;
     int           _win;
+    Window        win;
 
     if (!PyArg_ParseTuple (args, "iil", &_win, &device_id, &event_mask))
         return NULL;
 
-    Window win = (Window) _win;
+    win = (Window) _win;
 
     if (dev->event_handler)
     {
@@ -1260,11 +1265,12 @@ osk_devices_unselect_events (PyObject *self, PyObject *args)
     unsigned char mask[1] = { 0 };
     int           device_id;
     int           _win;
+    Window        win;
 
     if (!PyArg_ParseTuple (args, "ii", &_win, &device_id))
         return NULL;
 
-    Window win = (Window) _win;
+    win = (Window) _win;
 
     if (dev->event_handler)
     {

@@ -198,10 +198,12 @@ osk_dconf_read_key (PyObject *self, PyObject *args)
     PyObject* result = NULL;
     char* key;
 
+    GVariant* value;
+
     if (!PyArg_ParseTuple (args, "s:read_key", &key))
         return NULL;
 
-    GVariant* value = dconf_client_read(odc->client, key);
+    value = dconf_client_read(odc->client, key);
 
     if (value)
     {

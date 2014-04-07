@@ -93,17 +93,21 @@ OSK_REGISTER_TYPE_WITH_MEMBERS (OskButtonMapper, osk_click_mapper,
 static int
 osk_click_mapper_init (OskButtonMapper *instance, PyObject *args, PyObject *kwds)
 {
-    OskBMGrabInfo* info = &instance->info;
+    OskBMGrabInfo* info;
+    OskBMMapInfo* map_info;
+    Display* xdisplay;
+
+    info = &instance->info;
     memset(info, 0, sizeof(*info));
     info->button = PRIMARY_BUTTON;
     info->click_type = CLICK_TYPE_SINGLE;
     info->enable_conversion = True;
     instance->display = gdk_display_get_default ();
 
-    OskBMMapInfo* map_info = &instance->map_info;
+    map_info = &instance->map_info;
     memset(map_info, 0, sizeof(*map_info));
 
-    Display* xdisplay = get_x_display(instance);
+    xdisplay = get_x_display(instance);
     if (xdisplay) // not on wayland?
     {
         int nop;
@@ -146,6 +150,9 @@ typedef Bool (*EnumerateDeviceFunc)(OskBMMapInfo* info, XDevice* device);
 static Bool
 map_button_func(OskBMMapInfo* info, XDevice* device)
 {
+    unsigned char buttons[MAX_BUTTONS];
+    int num_buttons;
+
     if (info->saved_pointer_states == NULL)
     {
         // allocate space for saving the old button mappings
@@ -156,21 +163,23 @@ map_button_func(OskBMMapInfo* info, XDevice* device)
     }
 
     // remap the buttons of all devices
-    unsigned char buttons[MAX_BUTTONS];
-    int num_buttons = XGetDeviceButtonMapping(info->xdisplay, device,
+    num_buttons = XGetDeviceButtonMapping(info->xdisplay, device,
                                               buttons, sizeof(buttons));
     if (num_buttons >= 3)
     {
         //printf("mapping device %d\n", (int)device->device_id);
+        PointerState* saved_state;
+        int button;
+        unsigned char tmp;
 
-        PointerState* saved_state = info->saved_pointer_states +
+        saved_state = info->saved_pointer_states +
                                     info->num_saved_pointer_states;
         saved_state->device_id = device->device_id;
         saved_state->num_buttons = num_buttons;
         memcpy(saved_state->buttons, buttons, sizeof(buttons));
 
-        int button = info->button;
-        unsigned char tmp = buttons[0];
+        button = info->button;
+        tmp = buttons[0];
         buttons[0] = buttons[button - 1];
         buttons[button - 1] = tmp;
         XSetDeviceButtonMapping(info->xdisplay, device,
@@ -248,6 +257,10 @@ osk_click_mapper_map_pointer_button (PyObject *self, PyObject *args)
     OskBMMapInfo *info = &instance->map_info;
     int button;
 
+    Display* xdisplay;
+    int event, error;
+    int major_opcode;
+
     if (!PyArg_ParseTuple (args, "I", &button))
         return NULL;
 
@@ -259,15 +272,13 @@ osk_click_mapper_map_pointer_button (PyObject *self, PyObject *args)
 
     restore_pointer_buttons(info);
 
-    Display* xdisplay = get_x_display(instance);
+    xdisplay = get_x_display(instance);
     if (xdisplay == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "Not an X display");
         return NULL;
     }
 
-    int event, error;
-    int major_opcode;
     if (!XQueryExtension (xdisplay, "XInputExtension",
                           &major_opcode, &event, &error))
     {
@@ -327,33 +338,38 @@ can_convert_click(OskBMGrabInfo* info, int x_root, int y_root)
     // within any of the exclusion rectangles.
     if (info->exclusion_rects)
     {
-        int i;
-        int n = PySequence_Length(info->exclusion_rects);
+        int i, n;
+
+        n = PySequence_Length(info->exclusion_rects);
         for (i = 0; i < n; i++)
         {
-            PyObject* rect = PySequence_GetItem(info->exclusion_rects, i);
+            PyObject* item;
+            PyObject* rect;
+            int m;
+            int x, y, w, h;
+
+            rect = PySequence_GetItem(info->exclusion_rects, i);
             if (rect == NULL)
                 break;
-            int m = PySequence_Length(rect);
+            m = PySequence_Length(rect);
             if (m != 4)
                 break;
 
-            PyObject* item;
 
             item = PySequence_GetItem(rect, 0);
-            int x = PyInt_AsLong(item);
+            x = PyInt_AsLong(item);
             Py_DECREF(item);
 
             item = PySequence_GetItem(rect, 1);
-            int y = PyInt_AsLong(item);
+            y = PyInt_AsLong(item);
             Py_DECREF(item);
 
             item = PySequence_GetItem(rect, 2);
-            int w = PyInt_AsLong(item);
+            w = PyInt_AsLong(item);
             Py_DECREF(item);
 
             item = PySequence_GetItem(rect, 3);
-            int h = PyInt_AsLong(item);
+            h = PyInt_AsLong(item);
             Py_DECREF(item);
 
             Py_DECREF(rect);
@@ -403,23 +419,33 @@ on_drag_polling (DragPollingData *data)
     const double MIN_DRAG_VELOCITY = 60.0; // min velocity to initiate drag end
     const int    DRAG_END_DELAY    = 1000; // ms below min velocity to end drag
 
-    OskBMGrabInfo* info = data->info;
-    if (!info->drag_started)
-        return FALSE;  // stop on grab_release_timer
-
-    Display* dpy = info->xdisplay;
+    Display* dpy;
+    OskBMGrabInfo* info;
     Window root, child;
     int x, y, x_root, y_root;
     unsigned int mask = 0;
+
+    int dx;
+    int dy;
+    double d;
+    gint64 now;
+    gint64 elapsed;
+    double velocity;
+
+    info = data->info;
+    if (!info->drag_started)
+        return FALSE;  // stop on grab_release_timer
+
+    dpy = info->xdisplay;
     XQueryPointer (dpy, DefaultRootWindow (dpy),
                    &root, &child, &x_root, &y_root, &x, &y, &mask);
 
-    int dx = x - info->drag_last_x;
-    int dy = y - info->drag_last_y;
-    double d = sqrt(dx * dx + dy * dy);
-    gint64 now = g_get_monotonic_time();
-    gint64 elapsed = now - info->drag_last_time;
-    double velocity = d / elapsed * 1e6; // [s]
+    dx = x - info->drag_last_x;
+    dy = y - info->drag_last_y;
+    d = sqrt(dx * dx + dy * dy);
+    now = g_get_monotonic_time();
+    elapsed = now - info->drag_last_time;
+    velocity = d / elapsed * 1e6; // [s]
     if (velocity > MIN_DRAG_VELOCITY)
         info->drag_slowdown_time = now;
 
@@ -430,9 +456,11 @@ on_drag_polling (DragPollingData *data)
     elapsed = (now - info->drag_slowdown_time) / 1000; // [ms]
     if (elapsed > DRAG_END_DELAY)
     {
+        PyObject* callback;
+
         XTestFakeButtonEvent (dpy, info->drag_button, False, CurrentTime);
 
-        PyObject* callback = info->click_done_callback;
+        callback = info->click_done_callback;
         Py_XINCREF(callback);
 
         stop_convert_click(info);
@@ -497,6 +525,9 @@ osk_click_mapper_event_filter (GdkXEvent       *gdk_xevent,
 
                 if (event->type == ButtonRelease)
                 {
+                    unsigned long delay = 40;
+                    gint64 now;
+
                     /* Stop the grab before sending any fake events.
                      */
                     stop_grab(info);
@@ -508,7 +539,6 @@ osk_click_mapper_event_filter (GdkXEvent       *gdk_xevent,
                     XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
 
                     /* Synthesize button click */
-                    unsigned long delay = 40;
                     switch (click_type)
                     {
                         case CLICK_TYPE_SINGLE:
@@ -526,7 +556,7 @@ osk_click_mapper_event_filter (GdkXEvent       *gdk_xevent,
                         case CLICK_TYPE_DRAG:
                             XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
 
-                            gint64 now = g_get_monotonic_time();
+                            now = g_get_monotonic_time();
                             info->drag_started = True;
                             info->drag_button = button;
                             info->drag_last_time = now;
@@ -600,12 +630,13 @@ gboolean grab_release_timer_callback(gpointer user_data)
     OskBMGrabInfo* info = &instance->info;
     Display* xdisplay     = get_x_display(instance);
     PyObject* callback = info->click_done_callback;
+    int button;
 
     notify_click_done(callback);
 
     // Always release the XTest button.
     // -> recover from having the button stuck
-    int button = Button1;
+    button = Button1;
     if (info->drag_button)
         button = info->drag_button;
     XTestFakeButtonEvent (xdisplay, button, False, CurrentTime);

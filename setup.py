@@ -134,10 +134,11 @@ class Extension_osk(Extension):
                            sources = sources,
                            depends = depends,
                            define_macros = defines,
+                           extra_compile_args = ["-Wdeclaration-after-statement"],
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'xkbfile',
                                        'dconf', 'libcanberra', 'hunspell')
-                          )
+                           )
 
 extension_osk = Extension_osk()
 

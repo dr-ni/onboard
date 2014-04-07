@@ -50,8 +50,9 @@ OSK_REGISTER_TYPE(OskUtil, osk_util, "Util")
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
+    Display* xdisplay;
     util->display = gdk_display_get_default ();
-    Display* xdisplay = get_x_display(util);
+    xdisplay = get_x_display(util);
     if (xdisplay) // not on wayland?
     {
         util->atom_net_active_window = \
@@ -98,6 +99,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
     int wid;
     char* property_name;
     PyObject* property_value;
+    Atom value_name;
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay == NULL)
@@ -110,7 +112,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
                            &wid, &property_name, &property_value))
         return NULL;
 
-    Atom value_name  = XInternAtom(xdisplay, property_name, False);
+    value_name  = XInternAtom(xdisplay, property_name, False);
 
     if (PyInt_Check(property_value))
     {
@@ -121,14 +123,15 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
     }
     else if (PyUnicode_Check(property_value))
     {
+        Atom atom_value;
         PyObject* string_value = PyUnicode_AsUTF8String(property_value);
         if (!string_value)
         {
             PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
             return NULL;
         }
-        Atom atom_value = XInternAtom(xdisplay,
-                               PyString_AsString(string_value), False);
+        atom_value = XInternAtom(xdisplay,
+                                 PyString_AsString(string_value), False);
         XChangeProperty (xdisplay, wid,
                          value_name, XA_ATOM, 32, PropModeReplace,
                          (guchar*) &atom_value, 1);
@@ -250,17 +253,20 @@ osk_util_get_active_window (OskUtil* util)
 static void
 raise_windows_to_top (OskUtil *util)
 {
+    int i, n;
     Display* xdisplay = get_x_display(util);
+    XTextProperty text_prop = {NULL};
 
     // find xid of the active window (_NET_ACTIVE_WINDOW)
     Window parent_xid = None;
     Window active_xid = osk_util_get_active_window(util);
     if (active_xid != None)
     {
+        int ret;
+
         // Is the active window unity dash or unity-2d dash?
         gdk_error_trap_push ();
-        XTextProperty text_prop = {NULL};
-        int ret = XGetWMName(xdisplay, active_xid, &text_prop);
+        ret = XGetWMName(xdisplay, active_xid, &text_prop);
         if (!gdk_error_trap_pop () && ret)
         {
             if (// Precise
@@ -279,15 +285,15 @@ raise_windows_to_top (OskUtil *util)
     }
 
     // Loop through onboard's toplevel windows.
-    int i;
-    int n = PySequence_Length(util->onboard_toplevels);
+    n = PySequence_Length(util->onboard_toplevels);
     for (i = 0; i < n; i++)
     {
+        Window xid;
         PyObject* window = PySequence_GetItem(util->onboard_toplevels, i);
         if (window == NULL)
             break;
 
-        Window xid = get_xid_of_gtkwidget(window);
+        xid = get_xid_of_gtkwidget(window);
         if (xid)
         {
             // Raise onboard.
@@ -328,6 +334,7 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
 {
     OskUtil *util = (OskUtil*) self;
     PyObject* windows = NULL;
+    GdkWindow* root;
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay == NULL)
@@ -342,7 +349,7 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    GdkWindow* root = gdk_get_default_root_window();
+   root = gdk_get_default_root_window();
 
     XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
 
@@ -402,6 +409,8 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
     OskUtil *util = (OskUtil*) self;
     PyObject* properties = NULL;
     PyObject* callback = NULL;
+    GdkWindow* root;
+    int i, n;
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay == NULL)
@@ -416,15 +425,19 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    int n = PySequence_Length(properties);
+    n = PySequence_Length(properties);
     util->watched_root_properties = (Atom*) PyMem_Realloc(
                           util->watched_root_properties, sizeof(Atom) * n);
     util->num_watched_root_properties = 0;
 
-    int i;
     for (i = 0; i < n; i++)
     {
-        PyObject* property = PySequence_GetItem(properties, i);
+        PyObject* str_prop;
+        PyObject* property;
+        char* str;
+        Atom atom;
+
+        property  = PySequence_GetItem(properties, i);
         if (property == NULL)
             break;
         if (!PyUnicode_Check(property))
@@ -433,7 +446,7 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
             PyErr_SetString(PyExc_ValueError, "elements must be unicode strings");
             return NULL;
         }
-        PyObject* str_prop = PyUnicode_AsUTF8String(property);
+        str_prop = PyUnicode_AsUTF8String(property);
         if (!str_prop)
         {
             Py_DECREF(property);
@@ -441,8 +454,8 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
             return NULL;
         }
 
-        char* str = PyString_AsString(str_prop);
-        Atom atom = XInternAtom(xdisplay, str, True);
+        str = PyString_AsString(str_prop);
+        atom = XInternAtom(xdisplay, str, True);
         util->watched_root_properties[i] = atom;   // may be None
 
         Py_DECREF(str_prop);
@@ -454,7 +467,7 @@ osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
     Py_XDECREF(util->root_property_callback); /* Dispose of previous callback */
     util->root_property_callback = callback;    /* Remember new callback */
 
-    GdkWindow* root = gdk_get_default_root_window();
+    root = gdk_get_default_root_window();
 
     XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
 
@@ -509,12 +522,13 @@ osk_util_get_current_wm_name (PyObject *self)
 {
     OskUtil *util = (OskUtil*) self;
     PyObject* result = NULL;
-
     Display* xdisplay = get_x_display(util);
+    Atom _NET_SUPPORTING_WM_CHECK;
+
     if (xdisplay == NULL)
         Py_RETURN_NONE;
 
-    Atom _NET_SUPPORTING_WM_CHECK =
+    _NET_SUPPORTING_WM_CHECK =
                         XInternAtom(xdisplay, "_NET_SUPPORTING_WM_CHECK", True);
     if (_NET_SUPPORTING_WM_CHECK != None)
     {
@@ -548,6 +562,10 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     char* property_name = NULL;
     char* value_name = NULL;
 
+    Atom property_atom;
+    Atom value_atom;
+    Window xwindow;
+
     Display* xdisplay = get_x_display(util);
     if (xdisplay == NULL)
     {
@@ -558,9 +576,9 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "Oss", &window, &property_name, &value_name))
         return NULL;
 
-    Atom property_atom = XInternAtom(xdisplay, property_name, True);
-    Atom value_atom    = XInternAtom(xdisplay, value_name, True);
-    Window xwindow = get_xid_of_gtkwidget(window);
+    property_atom = XInternAtom(xdisplay, property_name, True);
+    value_atom    = XInternAtom(xdisplay, value_name, True);
+    xwindow = get_xid_of_gtkwidget(window);
     if (property_atom != None &&
         value_atom != None &&
         xwindow)
@@ -623,22 +641,22 @@ osk_util_set_input_rect (PyObject *self, PyObject *args)
         PyErr_SetString(PyExc_ValueError, "parameter 1 must be Gdk.Window\n");
         return NULL;
     }
-    GdkWindow* win = ((PyGdkWindow*) owin)->window;  // risky, just a guess
 
-    cairo_region_t* region = NULL;
-    const cairo_rectangle_int_t rect = {x, y, w, h};
-
-    if (win)
-    {
-        region = cairo_region_create_rectangle (&rect);
-        if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
+    {  // appease -Wdeclaration-after-statement on Arch
+        cairo_region_t* region = NULL;
+        const cairo_rectangle_int_t rect = {x, y, w, h};
+        GdkWindow* win = ((PyGdkWindow*) owin)->window;  // risky, just a guess
+        if (win)
         {
-            gdk_window_input_shape_combine_region (win, NULL, 0, 0);
-            gdk_window_input_shape_combine_region (win, region, 0, 0);
+            region = cairo_region_create_rectangle (&rect);
+            if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
+            {
+                gdk_window_input_shape_combine_region (win, NULL, 0, 0);
+                gdk_window_input_shape_combine_region (win, region, 0, 0);
+            }
+            cairo_region_destroy (region);
         }
-        cairo_region_destroy (region);
     }
-
     Py_RETURN_NONE;
 }
 
