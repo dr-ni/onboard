@@ -334,6 +334,12 @@ class XIDeviceManager(EventSource):
             source_device = None
         event.set_source_device(source_device)
 
+        ## debug, simulate touch-screen
+        #if device_id == 13:
+        #    #if not self._disguise_as_touch_event(event, True):
+        #    if not self._disguise_as_touch_event(event, False):
+        #        return
+
         # remember recently used device ids for CSFloatingSlave
         if not source_id in self._last_device_blacklist_ids:
             if event_type == XIEventType.Motion:
@@ -344,6 +350,44 @@ class XIDeviceManager(EventSource):
 
         # forward the event to all listeners
         self.emit("device-event", event)
+
+    def _disguise_as_touch_event(self, event, wacom_mode=False):
+        """
+        Disguise a pointer event as touch event.
+        For debugging purposes only.
+
+        Set wacom_mode=True to simulate pointer events coming
+        from a "touch screen" device that only sends pointer events.
+        This is the default case for wacom touch screens due
+        gestures being enabled, see LP #1297692.
+        """
+        device = self.lookup_device_id(event.source_id)
+        device.name         = "Touch-Screen"
+        device.source       = Gdk.InputSource.TOUCHSCREEN
+        device.touch_mode   = XITouchMode.DirectTouch
+
+        if event.xi_type == XIEventType.Motion and \
+           not event.state & (Gdk.ModifierType.BUTTON1_MASK | \
+                                Gdk.ModifierType.BUTTON2_MASK | \
+                                Gdk.ModifierType.BUTTON3_MASK):
+            return False  # discard event
+
+        if not wacom_mode:
+            if event.xi_type == XIEventType.ButtonPress:
+                event.xi_type = XIEventType.TouchBegin
+                event.type = Gdk.EventType.TOUCH_BEGIN
+            if event.xi_type == XIEventType.ButtonRelease:
+                event.xi_type = XIEventType.TouchEnd
+                event.type = Gdk.EventType.TOUCH_END
+            if event.xi_type == XIEventType.Motion:
+                event.xi_type = XIEventType.TouchUpdate
+                event.type = Gdk.EventType.TOUCH_UPDATE
+
+            event.sequence = 10  # single touch only
+
+        event.button = 1
+
+        return True  # allow event
 
 
 class XIDevice(object):

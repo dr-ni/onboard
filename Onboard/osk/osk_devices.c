@@ -139,18 +139,18 @@ static PyMethodDef osk_device_event_methods[] = {
 
 static PyMemberDef osk_device_event_members[] = {
     {"xid_event", T_UINT, offsetof(OskDeviceEvent, xid_event), READONLY, NULL },
-    {"xi_type", T_UINT, offsetof(OskDeviceEvent, xi_type), READONLY, NULL },
-    {"type", T_UINT, offsetof(OskDeviceEvent, type), READONLY, NULL },
+    {"xi_type", T_UINT, offsetof(OskDeviceEvent, xi_type), RESTRICTED, NULL },
+    {"type", T_UINT, offsetof(OskDeviceEvent, type), RESTRICTED, NULL },
     {"device_id", T_UINT, offsetof(OskDeviceEvent, device_id), READONLY, NULL },
     {"source_id", T_UINT, offsetof(OskDeviceEvent, source_id), READONLY, NULL },
     {"x", T_DOUBLE, offsetof(OskDeviceEvent, x), RESTRICTED, NULL },
     {"y", T_DOUBLE, offsetof(OskDeviceEvent, y), RESTRICTED, NULL },
     {"x_root", T_DOUBLE, offsetof(OskDeviceEvent, x_root), RESTRICTED, NULL },
     {"y_root", T_DOUBLE, offsetof(OskDeviceEvent, y_root), RESTRICTED, NULL },
-    {"button", T_UINT, offsetof(OskDeviceEvent, button), READONLY, NULL },
+    {"button", T_UINT, offsetof(OskDeviceEvent, button), RESTRICTED, NULL },
     {"state", T_UINT, offsetof(OskDeviceEvent, state), RESTRICTED, NULL },
     {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
-    {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), READONLY, NULL },
+    {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), RESTRICTED, NULL },
     {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },
     {"touch", T_OBJECT, offsetof(OskDeviceEvent, touch), READONLY, NULL },
     {NULL}
