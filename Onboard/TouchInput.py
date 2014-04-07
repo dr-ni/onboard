@@ -366,8 +366,6 @@ class InputEventSource(EventSource):
                 self._select_xi_grab_events(True)
 
             log("_on_device_event9")
-            #print(event_type, event.x_root, event.y_root)
-            #print(self._xi_grab_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
 
             # We only get root window coordinates for root window events,
             # so convert them to our target window's coordinates.
@@ -481,6 +479,8 @@ class TouchInput(InputEventSource):
         self._touch_events_enabled = touch_input != TouchInputEnum.NONE
         self._multi_touch_enabled  = touch_input == TouchInputEnum.MULTI
         self._gestures_enabled     = self._touch_events_enabled
+        if self._device_manager:
+            self._device_manager.update_devices() # reset touch_active
 
         _logger.debug("setting touch input mode {}: "
                       "touch_events_enabled={}, "
@@ -500,23 +500,42 @@ class TouchInput(InputEventSource):
         return self._last_event_was_touch
 
     @staticmethod
-    def get_event_source(event):
-        source_device = event.get_source_device()
-        return source_device.get_source()
+    def _get_event_source(event):
+        device = event.get_source_device()
+        return device.get_source()
 
     @staticmethod
-    def has_touch_source(event):
-        """ Was source device of event a touch screen? """
-        return TouchInput.get_event_source(event) == \
-               Gdk.InputSource.TOUCHSCREEN
+    def _set_touch_active(event, active):
+        """ Mark source device as actively receiving touch events """
+        device = event.get_source_device()
+        device.touch_active = active
+
+    def _can_handle_pointer_event(self, event):
+        """
+        Rely on pointer events? True for non-touch devices
+        and wacom touch-screens with gestures enabled.
+        """
+        device = event.get_source_device()
+        source = device.get_source()
+
+        return not self._touch_events_enabled or \
+               source != Gdk.InputSource.TOUCHSCREEN or \
+               not device.touch_active
+
+    def _can_handle_touch_event(self, event):
+        """
+        Rely on touch events? True for touch devices
+        and wacom touch-screens with gestures disabled.
+        """
+        return not self._can_handle_pointer_event(event)
 
     def _on_button_press_event(self, widget, event):
         self.log_event("_on_button_press_event1 {} {} {} ",
                        self._touch_events_enabled,
-                       self.has_touch_source(event),
-                       self.get_event_source(event))
-        if self._touch_events_enabled and \
-           self.has_touch_source(event):
+                       self._can_handle_pointer_event(event),
+                       self._get_event_source(event))
+
+        if not self._can_handle_pointer_event(event):
             self.log_event("_on_button_press_event2 abort")
             return
 
@@ -546,9 +565,8 @@ class TouchInput(InputEventSource):
             self._input_sequence_end(sequence)
 
     def _on_motion_event(self, widget, event):
-        if self._touch_events_enabled and \
-           self.has_touch_source(event):
-                return
+        if not self._can_handle_pointer_event(event):
+            return
 
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
         if sequence is None and \
@@ -569,8 +587,21 @@ class TouchInput(InputEventSource):
         self.on_leave_notify(widget, event)
 
     def _on_touch_event(self, widget, event):
-        self.log_event("_on_touch_event1 {}", self.get_event_source(event))
-        if not self.has_touch_source(event):
+        self.log_event("_on_touch_event1 {}", self._get_event_source(event))
+
+        event_type = event.type
+
+        # Set source_device touch-active to block processing of pointer events.
+        # "touch-screens" that don't send touch events will keep having pointer
+        # events handled (Wacom devices with gestures enabled).
+        # This assumes that for devices that emit both touch and pointer
+        # events, the touch event comes first. Else there will be a dangling
+        # touch sequence. _discard_stuck_input_sequences would clean that up,
+        # but a key might get still get stuck in pressed state.
+        if event_type == Gdk.EventType.TOUCH_BEGIN:
+            self._set_touch_active(event, True)
+
+        if not self._can_handle_touch_event(event):
             self.log_event("_on_touch_event2 abort")
             return
 
@@ -578,7 +609,6 @@ class TouchInput(InputEventSource):
         id = str(touch.sequence)
         self._last_event_was_touch = True
 
-        event_type = event.type
         if event_type == Gdk.EventType.TOUCH_BEGIN:
             sequence = InputSequence()
             sequence.init_from_touch_event(touch, id)

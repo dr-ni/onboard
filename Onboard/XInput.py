@@ -360,6 +360,11 @@ class XIDevice(object):
     source       = None
     touch_mode   = None
 
+    touch_active = False  # If False, only pointer events are considered.
+                          # Wacom devices with enabled gestures never
+                          # become touch-active, i.e. they don't generate
+                          # touch events.
+
     _device_manager = None
 
     def __repr__(self):
