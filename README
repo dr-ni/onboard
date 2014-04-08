@@ -1,5 +1,5 @@
-Onboard 0.99.0
---------------
+Onboard 1.0.1
+-------------
 
 Description:
 
@@ -70,6 +70,56 @@ D-Bus Service:
         dbus-send --print-reply --type=method_call --dest=org.onboard.Onboard 
         /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get 
         string:"org.onboard.Onboard.Keyboard" string:"Visible"
+
+
+Getting Onboard:
+
+    A PPA with downloads for various old and new Ubuntu-releases
+    can be found here:
+
+    https://launchpad.net/~onboard/+archive/stable
+
+    Tar-balls of the latest releases are available on our Launchpad homepage.
+
+    https://launchpad.net/onboard
+
+    Source code is maintained in a bazaar repository at the same site.
+
+    bzr branch lp:onboard
+
+
+Building from Source:
+
+    Find below short instructions on how to build Onboard straight from the
+    bazaar repository. If you have improvements to share, get errors or run
+    into other problems, please let us know. Build instructions for
+    new distributions are always welcome too.
+
+    Ubuntu:
+            sudo apt-get build-dep onboard
+            sudo apt-get install devscripts
+            bzr branch lp:onboard
+            cd onboard
+
+            # build packages
+            debuild binary
+
+            # install packages
+            sudo dpkg -i ../onboard*.deb
+
+
+    Arch Linux:
+
+        Onboard 1.0.1:
+
+            pacman -S base-devel bzr python-distutils-extra dconf gtk3 \
+            libcanberra hunspell python-gobject gsettings-desktop-schemas \
+            iso-codes python-cairo librsvg python-dbus dbus-glib
+
+            bzr branch lp:onboard
+            cd onboard
+            ./setup.py build
+            sudo ./setup.py install
 
 
 Homepage:
