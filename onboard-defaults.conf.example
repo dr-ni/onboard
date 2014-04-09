@@ -79,7 +79,7 @@ xembed-onboard=True
 # Enable aspect correction and fake transparency in gnome-screensaver
 # and unity-greeter. Remove this key to have Onboard stretch from
 # side to side again.
-xembed-aspect-change-range=[0, 1.15]
+xembed-aspect-change-range=[0, 1.6]
 
 # Position of the keyboard in unity-greeter in pixels from
 # the left screen edge. Remove this to center the keyboard.
