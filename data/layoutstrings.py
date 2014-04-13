@@ -323,7 +323,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Special Characters"),
 
     # translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-    _("Special characters for interactive Whiteboards, wide"),
+    _("Special characters for interactive whiteboards, wide"),
 
     # translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
     _("Special characters for interactive whiteboards"),

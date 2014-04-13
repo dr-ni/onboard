@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     id="Whiteboard, wide"
     format="3.1"
     section="contributions"
-    summary="Special characters for interactive Whiteboards, wide"
+    summary="Special characters for interactive whiteboards, wide"
     description="Keyboard layout with Greek literals, arrows and more, for math and physics education on an interactive Whiteboard.&#xA;This layout places all keys on a single, very wide layer."
     author="Johannes Almer">
 
