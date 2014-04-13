@@ -53,10 +53,10 @@ StrConv::StrConv()
 
 StrConv::~StrConv()
 {
-    if (cd_mb_wc == (iconv_t) -1)
+    if (cd_mb_wc != (iconv_t) -1)
         if (iconv_close (cd_mb_wc) != 0)
             perror ("iconv_close mb2wc");
-    if (cd_wc_mb == (iconv_t) -1)
+    if (cd_wc_mb != (iconv_t) -1)
         if (iconv_close (cd_wc_mb) != 0)
             perror ("iconv_close wc2mb");
 }
