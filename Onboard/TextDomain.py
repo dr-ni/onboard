@@ -89,6 +89,10 @@ class TextDomain:
         ' '
         >>> d.get_auto_separator("word http://www")
         '.'
+        >>> d.get_auto_separator("word http://www.domain.org/path")
+        '/'
+        >>> d.get_auto_separator("word http://www.domain.org/path/document.ext")
+        ''
 
         # filename
         >>> d.get_auto_separator("/etc")
@@ -601,6 +605,8 @@ class PartialURLParser:
         >>> p.get_auto_separator("http://www.domain.co.uk")
         '/'
         >>> p.get_auto_separator("http://www.domain.org/home")
+        '/'
+        >>> p.get_auto_separator("http://www.domain.org/home/index.html")
         ''
         >>> p.get_auto_separator("mailto")
         ':'
@@ -686,6 +692,9 @@ class PartialURLParser:
             if context.startswith(file_scheme):
                 filename = context[len(file_scheme):]
                 separator = self._get_filename_separator(filename)
+            else:
+                if not last_septok == ".":
+                    separator = "/"
 
         if separator is None:
              separator = " " # may be entering search terms, keep space as default
