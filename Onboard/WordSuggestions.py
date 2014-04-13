@@ -832,16 +832,15 @@ class WordSuggestions:
         added_separator = ""
         caret_span = self.text_context.get_span_at_caret()
         if auto_separator:
-            next_char = caret_span.get_text(caret_span.end(),
-                                             caret_span.end() + 1)
+            caret_text = caret_span.get_text_from_span()
             remaining_line = self.text_context.get_line_past_caret()
 
-            # Insert space if the caret was on a non-space character or
-            # the caret was at the end of the line. The end of the line
-            # in the terminal (e.g. in vim) may mean lot's of spaces until
-            # the final new line.
-            if auto_separator != next_char or \
-               remaining_line.isspace():
+            # Insert separator if the separator does not exist at the caret
+            # yet. For space characters also check if the caret is at the
+            # end of the line. The end of the line in the terminal
+            # (e.g. in vim) may mean lot's of spaces until the final new line.
+            if not caret_text.startswith(auto_separator) or \
+               auto_separator.isspace() and remaining_line.isspace():
                 added_separator = auto_separator
 
         with self.suppress_modifiers():
@@ -854,8 +853,9 @@ class WordSuggestions:
                 if added_separator:
                     self._text_changer.insert_string_at_caret(auto_separator)
                 else:
-                     # just skip over the existing space
-                    self._text_changer.press_keysyms("right")
+                     # just skip over the existing separator
+                    self._text_changer.press_keysyms("right",
+                                                     len(auto_separator))
 
         return added_separator
 
