@@ -281,7 +281,7 @@ class WindowManipulator(object):
         if not window:
             return
 
-        if not self._drag_handle is None:    # not dragging a handle?
+        if self._drag_handle is None:    # not dragging a handle?
             window.set_cursor(None)
 
     def get_drag_cursor_at(self, point):
