@@ -15,7 +15,6 @@ import Onboard.osk as osk
 
 ### Logging ###
 import logging
-from functools import reduce
 _logger = logging.getLogger("WindowUtils")
 ###############
 

@@ -20,12 +20,10 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
-import Onboard.osk as osk
 import logging
 from functools import cmp_to_key
 
 from Onboard.Config    import Config
-from Onboard.KeyCommon import KeyCommon
 from Onboard.XInput    import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils     import Timer, show_new_device_dialog
 

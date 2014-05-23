@@ -2,8 +2,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import os
-
 from gi.repository import GObject, Gtk
 
 from Onboard.definitions import StatusIconProviderEnum
@@ -61,7 +59,7 @@ class Indicator(GObject.GObject):
 
         self._menu = Gtk.Menu()
 
-        # This updates the menu in gnome-shell and gnome-classic, 
+        # This updates the menu in gnome-shell and gnome-classic,
         # but not in unity or unity2D.
         self._menu.connect_object("show", Indicator.update_menu_items, self)
 

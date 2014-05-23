@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from math import pi, sqrt, sin, log
+from math import pi, sqrt
 import cairo
 
 from Onboard.utils       import Rect, drop_shadow
@@ -11,7 +11,6 @@ from Onboard.definitions import Handle
 
 ### Logging ###
 import logging
-from functools import reduce
 _logger = logging.getLogger("TouchHandles")
 ###############
 

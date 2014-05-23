@@ -3,16 +3,15 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import os
 import time
 from math import pi
 
 import cairo
 from gi.repository         import Gtk, Gdk, GdkPixbuf
 
-from Onboard.utils         import Rect, Timer, \
+from Onboard.utils         import Rect, \
                                   roundrect_arc, roundrect_curve, \
-                                  gradient_line, brighten, timeit, \
+                                  gradient_line, brighten, \
                                   unicode_str
 from Onboard.WindowUtils   import get_monitor_dimensions
 from Onboard.definitions   import InputEventSourceEnum

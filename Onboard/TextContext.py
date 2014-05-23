@@ -18,7 +18,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import time
 import unicodedata
 
 import logging
@@ -32,7 +31,7 @@ except ImportError as e:
 from Onboard.AtspiStateTracker import AtspiStateTracker, AtspiStateType
 from Onboard.TextDomain        import TextDomains
 from Onboard.TextChanges       import TextChanges, TextSpan
-from Onboard.utils             import Timer, KeyCode, Modifiers
+from Onboard.utils             import Timer, KeyCode
 from Onboard                   import KeyCommon
 
 ### Config Singleton ###

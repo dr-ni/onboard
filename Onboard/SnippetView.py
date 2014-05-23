@@ -2,8 +2,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from gi.repository import GObject, Gtk
-
+from gi.repository import Gtk
 
 from Onboard.utils import show_error_dialog
 

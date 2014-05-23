@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.utils             import Rect, Timer, unicode_str
+from Onboard.utils             import Rect, Timer
 
 ### Logging ###
 import logging

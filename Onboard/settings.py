@@ -7,17 +7,15 @@ from __future__ import division, print_function, unicode_literals
 import os
 import sys
 import copy
-import shutil
 from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
-import gettext
 try:
     import dbus.mainloop.glib
 except ImportError:
     pass
 
-from gi.repository import GObject, Pango, Gdk, Gtk, GLib
+from gi.repository import GObject, Pango, Gdk, Gtk
 
 # install translation function _() for all modules
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG

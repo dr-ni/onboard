@@ -20,19 +20,16 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from os.path import join
-from traceback import print_exc
-
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
-                                hexstring_to_float, Timer, Fade
+from Onboard.utils       import CallOnce, Rect, roundrect_arc, \
+                                Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
                                 Orientation, set_unity_property, \
                                 DwellProgress
-from Onboard.TouchInput  import InputSequence, POINTER_SEQUENCE
+from Onboard.TouchInput  import InputSequence
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###

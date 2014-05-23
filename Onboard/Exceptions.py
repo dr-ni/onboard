@@ -2,7 +2,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from traceback import format_tb
 import sys
 from Onboard.utils import unicode_str
 

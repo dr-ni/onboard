@@ -8,7 +8,7 @@ import weakref
 import gc
 from contextlib import contextmanager
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gdk
 
 import logging
 _logger = logging.getLogger(__name__)
