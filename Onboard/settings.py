@@ -593,12 +593,12 @@ class Settings(DialogBuilder):
                 self.update_layout_view()
 
     def open_user_layout_dir(self):
-        if os.path.exists('/usr/bin/nautilus'):
-            os.system(("nautilus --no-desktop %s" %self.user_layout_root))
-        elif os.path.exists('/usr/bin/thunar'):
-            os.system(("thunar %s" %self.user_layout_root))
-        else:
-            _logger.warning(_("No file manager to open layout folder"))
+        cmd = ["xdg-open", self.user_layout_root]
+        try:
+            Popen(cmd)
+        except OSError as e:
+            _logger.warning("Failed to run '{}': {}" \
+                            .format(" ".join(cmd), unicode_str(e)))
 
     def on_layout_folder_button_clicked(self, widget):
         self.open_user_layout_dir()

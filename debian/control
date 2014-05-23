@@ -41,7 +41,8 @@ Depends: ${python3:Depends},
          iso-codes
 Recommends: gir1.2-appindicator3-0.1,
             gir1.2-atspi-2.0,
-            onboard-data (>= 0.99.0~alpha1~tr1531)
+            onboard-data (>= 0.99.0~alpha1~tr1531),
+            xdg-utils
 Suggests: mousetweaks (>= 3.3.90)
 Description: Simple On-screen Keyboard
  On-screen Keyboard with macros, easy layout creation and word suggestion.
