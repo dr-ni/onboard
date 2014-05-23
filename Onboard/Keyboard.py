@@ -1555,6 +1555,18 @@ class Keyboard(WordSuggestions):
             return config.mousetweaks
         return self._click_sim
 
+    def ignore_capslock(self):
+        """ Keep capslock from causing another send_key_up call on exit """
+        for key in self.iter_keys():
+            if key.modifier == Modifiers.CAPS:
+                key.pressed = False
+                key.active = False
+                key.locked = False
+                if key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.remove(key)
+                if key in self._locked_sticky_keys:
+                    self._locked_sticky_keys.remove(key)
+
     def release_pressed_keys(self, redraw = False):
         """
         Release pressed keys on exit, or when recreating the main window.
@@ -1585,6 +1597,14 @@ class Keyboard(WordSuggestions):
 
     def cleanup(self):
         WordSuggestions.cleanup(self)
+
+        # Keep caps-lock state on layout change to prevent LP #1313176.
+        # Otherwise, a caps press causes a layout change, cleanup
+        # triggers another caps press that again causes a layout change,
+        # and so on...
+        # See OnboardGtk.reload_layout_delayed for the other part of the
+        # puzzle for this bug report.
+        self.ignore_capslock()
 
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()

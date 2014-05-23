@@ -31,7 +31,7 @@ from Onboard.Appearance      import ColorScheme
 from Onboard.IconPalette     import IconPalette
 from Onboard.Exceptions      import LayoutFileError
 from Onboard.utils           import show_confirmation_dialog, CallOnce, \
-                                    unicode_str
+                                    unicode_str, Timer
 import Onboard.osk as osk
 
 ### Config Singleton ###
@@ -134,6 +134,7 @@ class OnboardGtk(object):
         self._window = None
         self.status_icon = None
         self.service_keyboard = None
+        self._reload_layout_timer = Timer()
 
         # finish config initialization
         config.init()
@@ -464,12 +465,16 @@ class OnboardGtk(object):
         self.keyboard_widget.toggle_visible()
 
 
-    # keyboard layout changes
-    def cb_keys_changed(self, keymap):
-        self.reload_layout()
+    def cb_group_changed(self):
+        """ keyboard group change """
+        self.reload_layout_delayed()
 
-    # modifier changes
+    def cb_keys_changed(self, keymap):
+        """ keyboard map change """
+        self.reload_layout_delayed()
+
     def cb_state_changed(self, keymap):
+        """ keyboard modifier state change """
         _logger.debug("keyboard state changed to 0x{:x}" \
                       .format(keymap.get_modifier_state()))
         mod_mask = keymap.get_modifier_state()
@@ -559,6 +564,18 @@ class OnboardGtk(object):
         self.reload_layout(force_update = True)
         self.keyboard_widget.update_transparency()
 
+    def reload_layout_delayed(self):
+        """
+        Delay reloading the layout on keyboard map or group changes
+        This is mainly for LP #1313176 when Caps-lock is set up as
+        an accelerator to switch between keyboard "input sources" (layouts)
+        in unity-control-center->Text Entry (aka region panel).
+        Without waiting until after the shortcut turns off numlock,
+        the next "input source" (layout) is skipped and a second one
+        is selected.
+        """
+        self._reload_layout_timer.start(.5, self.reload_layout)
+
     def reload_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
@@ -647,6 +664,8 @@ class OnboardGtk(object):
         self.cleanup()
 
     def cleanup(self):
+        self._reload_layout_timer.stop()
+
         config.cleanup()
 
         # Make an effort to disconnect all handlers.
@@ -809,7 +828,7 @@ def cb_any_event(event, onboard):
     # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if type == Gdk.EventType.NOTHING:
-        onboard.reload_layout()
+        onboard.cb_group_changed()
 
     # Update the cached pango layout object here or Onboard
     # doesn't get those settings, i.e. label fonts sizes are off
