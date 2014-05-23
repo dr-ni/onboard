@@ -640,15 +640,6 @@ class Keyboard(WordSuggestions):
         else:
             return []
 
-    def cb_macroEntry_activate(self,widget,macroNo,dialog):
-        self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
-
-    def set_new_macro(self,macroNo,response,macroEntry,dialog):
-        if response == gtk.RESPONSE_OK:
-            config.set_snippet(macroNo, macroEntry.get_text())
-
-        dialog.destroy()
-
     def _on_mods_changed(self):
         self.invalidate_context_ui()
         self.commit_ui_updates()
