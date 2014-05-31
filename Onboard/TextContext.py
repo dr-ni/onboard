@@ -259,7 +259,7 @@ class AtspiTextContext(TextContext):
             st.disconnect("text-caret-moved", self._on_text_caret_moved)
             #st.disconnect("key-pressed", self._on_atspi_key_pressed)
 
-    def get_accessible_capabilities(accessible, **kwargs):
+    def get_accessible_capabilities(self, accessible, **kwargs):
         can_insert_text = False
         attributes = kwargs.get("attributes", {})
         interfaces = kwargs.get("interfaces", [])
@@ -274,9 +274,8 @@ class AtspiTextContext(TextContext):
                 # Firefox, LibreOffice Writer, gnome-terminal don't support it,
                 # even if they claim to implement the EditableText interface.
 
-                # Allow direct text insertion by gtk widgets
-                if attributes and \
-                   "toolkit" in attributes and attributes["toolkit"] == "gtk":
+                # Allow direct text insertion for gtk widgets
+                if self._state_tracker.is_toolkit_gtk3(attributes):
                    can_insert_text = True
 
         return can_insert_text
@@ -298,7 +297,8 @@ class AtspiTextContext(TextContext):
         self._text_domain.init_domain()
 
         # determine capabilities of this accessible
-        self._can_insert_text = self.get_accessible_capabilities(**state)
+        self._can_insert_text = \
+            self.get_accessible_capabilities(accessible, **state)
 
         # log accessible info
         if _logger.isEnabledFor(logging.DEBUG):

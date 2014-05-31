@@ -13,6 +13,9 @@ except ImportError as e:
 
 from Onboard.utils        import Rect, EventSource, Process, unicode_str
 
+# Config Singleton
+from Onboard.Config import Config
+config = Config()
 
 class AsyncEvent:
     """
@@ -381,17 +384,37 @@ class AtspiStateTracker(EventSource):
         return self._state.get("extents", Rect())
 
     @staticmethod
+    def _get_accessible_extents(accessible):
+        """
+        Screen rect of the given accessible, no caching,
+        no exception handling.
+        """
+        scale = config.window_scaling_factor
+        if scale != 1.0:
+            attributes = accessible.get_attributes()
+            # Only Gtk-3 widgets return scaled coordinates, all others,
+            # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
+            # apparently don't.
+            if AtspiStateTracker.is_toolkit_gtk3(attributes):
+                scale = 1.0
+            else:
+                scale = 1.0 / config.window_scaling_factor
+
+        ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+        return Rect(ext.x * scale, ext.y * scale,
+                    ext.width * scale, ext.height * scale)
+
+    @staticmethod
     def get_accessible_extents(accessible):
         """ Screen rect of the given accessible, no caching """
         try:
-            ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+            rect = AtspiStateTracker._get_accessible_extents(accessible)
         except Exception as ex: # private exception gi._glib.GError when
                 # right clicking onboards unity2d launcher (Precise)
             _logger.info("Invalid accessible,"
                          " failed to get extents: " + unicode_str(ex))
-            return Rect()
-
-        return Rect(ext.x, ext.y, ext.width, ext.height)
+            rect = Rect()
+        return rect
 
     @staticmethod
     def get_accessible_text(accessible, begin, end):
@@ -453,9 +476,7 @@ class AtspiStateTracker(EventSource):
 
         state["attributes"] = accessible.get_attributes()
         state["interfaces"] = accessible.get_interfaces()
-
-        ext = accessible.get_extents(Atspi.CoordType.SCREEN)
-        state["extents"] = Rect(ext.x, ext.y, ext.width, ext.height)
+        state["extents"] = self._get_accessible_extents(accessible)
 
         # These are currently used only in debug output
         if _logger.isEnabledFor(logging.DEBUG):
@@ -472,6 +493,12 @@ class AtspiStateTracker(EventSource):
                 state["app-description"] = app.get_description()
 
         return state
+
+    @staticmethod
+    def is_toolkit_gtk3(attributes):
+        """ Are the accessible attributes from a gtk3 widget? """
+        return attributes and \
+               "toolkit" in attributes and attributes["toolkit"] == "gtk"
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(logging.DEBUG):
@@ -494,8 +521,7 @@ class AtspiStateTracker(EventSource):
                     states = state_set.states
                     editable = state_set.contains(Atspi.StateType.EDITABLE) \
                                if state_set else None
-                    ext = accessible.get_extents(Atspi.CoordType.SCREEN)
-                    extents   = Rect(ext.x, ext.y, ext.width, ext.height)
+                    extents = self._get_accessible_extents(accessible)
                 except: # private exception gi._glib.GError when gedit became unresponsive
                     pass
 
