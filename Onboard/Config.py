@@ -15,7 +15,7 @@ from gi.repository import Gtk, Gio, GLib
 
 from Onboard.utils          import show_confirmation_dialog, Version, \
                                    unicode_str, XDGDirs, chmodtree, \
-                                   Process, hexcolor_to_rgba
+                                   Process, hexcolor_to_rgba, TermColors
 from Onboard.definitions    import StatusIconProviderEnum, \
                                    InputEventSourceEnum, \
                                    TouchInputEnum, \
@@ -423,29 +423,30 @@ class Config(ConfigObject):
     def _init_logging(self, min_level_name, max_level_name):
         LEVEL_ATSPI = 6
         LEVEL_EVENT = 5
-        LEVEL_ALL = 1
 
-        buildin_levels = {
-            "CRITICAL" : 50,
-            "ERROR"    : 40,
-            "WARNING"  : 30,
-            "INFO"     : 20,
-            "DEBUG"    : 10,
-            "NOTSET"   :  0,
-        }
-        custom_levels = {
-            "ATSPI"    : LEVEL_ATSPI,
-            "EVENT"    : LEVEL_EVENT,
-            "ALL"      : LEVEL_ALL,
-        }
-        all_levels = {}
-        all_levels.update(buildin_levels)
-        all_levels.update(custom_levels)
+        levels = {
+            # builtin levels
+            "CRITICAL" : (50,          TermColors.RED),
+            "ERROR"    : (40,          TermColors.RED),
+            "WARNING"  : (30,          TermColors.YELLOW),
+            "INFO"     : (20,          TermColors.GREEN),
+            "DEBUG"    : (10,          TermColors.BLUE),
 
-        for name, level in custom_levels.items():
-            logging.addLevelName(level, name)
+            # custom levels
+            "ATSPI"    : (LEVEL_ATSPI, TermColors.CYAN),
+            "EVENT"    : (LEVEL_EVENT, TermColors.MAGENTA),
+            "ALL"      : ( 1,          None),
+            "NOTSET"   : ( 0,          None),
+        }
+        for name, (level, color) in levels.items():
+            if logging.getLevelName(level) != name:
+                logging.addLevelName(level, name)
 
         class CustomLogger(logging.Logger):
+            def __init__(self, *args):
+                self.LEVEL_ATSPI = LEVEL_ATSPI
+                self.LEVEL_EVENT = LEVEL_EVENT
+                logging.Logger.__init__(self, *args)
 
             def atspi(self, msg, *args, **kwargs):
                 if self.isEnabledFor(LEVEL_ATSPI):
@@ -462,18 +463,59 @@ class Config(ConfigObject):
             def filter(self, logRecord):
                 return logRecord.levelno <= self._max_level
 
-        message_format = '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
+        class ColorFormatter(logging.Formatter):
+            def __init__(self, msgfmt, log_levels, use_colors):
+                self._log_levels = log_levels
+                self._use_colors = use_colors
+                self._tcs = TermColors() if use_colors else None
 
-        logging.setLoggerClass(CustomLogger)
+                msg = self._substitute_variables(msgfmt, use_colors)
+                logging.Formatter.__init__(self, msg,
+                                           datefmt="%H:%M:%S",
+                                           style="{")
+
+            def _substitute_variables(self, msg, use_colors):
+                if use_colors:
+                    msg = msg.replace("{RESET}",
+                                      self._tcs.get(TermColors.RESET))
+                    msg = msg.replace("{BOLD}",
+                                      self._tcs.get(TermColors.BOLD))
+                else:
+                    msg = msg.replace("{RESET}", "")
+                    msg = msg.replace("{BOLD}", "")
+                return msg
+
+            def format(self, record):
+                level_name = record.levelname
+                if self._use_colors and \
+                   level_name in self._log_levels:
+                    level, color = self._log_levels[level_name]
+                    record.levelname = self._tcs.get(color) + level_name + \
+                                       self._tcs.get(TermColors.RESET)
+                return logging.Formatter.format(self, record)
+
+        msgfmt = ("{asctime}.{msecs:03.0f} "
+                  "{BOLD}{name:20s}{RESET} "
+                  "{levelname:18s} "
+                  " {message}")
+
         handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(message_format))
+        try:
+            is_tty = handler.stream.isatty() # color only in interact. terminal
+        except:
+            is_tty = False
+        handler.setFormatter(ColorFormatter(msgfmt, levels, is_tty))
         root = logging.getLogger()
         root.addHandler(handler)
+        logging.setLoggerClass(CustomLogger)
+
         if min_level_name:
             root.setLevel(min_level_name.upper())
+
         if max_level_name:
-            max_level = all_levels.get(max_level_name.upper())
-            if not max_level is None:
+            max_level_name = max_level_name.upper()
+            if max_level_name in levels:
+                max_level, color = levels[max_level_name]
                 handler.addFilter(CustomFilter(max_level))
 
         if 0: # optionally log to file; everything, including stack traces

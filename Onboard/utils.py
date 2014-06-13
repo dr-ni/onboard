@@ -9,7 +9,7 @@ import re
 import traceback
 import colorsys
 import gettext
-from subprocess import Popen
+import subprocess
 from math import pi, sin, cos, sqrt, log
 from contextlib import contextmanager
 
@@ -1161,7 +1161,7 @@ class DelayedLauncher(Timer):
     def on_timer(self):
         _logger.debug("launching '{}'".format(" ".join(self.args)))
         try:
-            Popen(self.args)
+            subprocess.Popen(self.args)
         except OSError as e:
             _logger.warning(_format("Failed to execute '{}', {}", \
                             " ".join(self.args), e))
@@ -1854,5 +1854,56 @@ def escape_markup(markup, preserve_tags = False):
                                 "'{}': {}" \
                             .format(text, unicode_str(ex)))
     return result
+
+
+class TermColors(object):
+    """ Singleton class providing ANSI terminal color codes """
+
+    # sequence ids
+    BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, \
+    BOLD, RESET = range(10)
+
+    # sequence cache
+    sequences = {}
+
+    def __new__(cls, *args, **kwargs):
+        """ Singleton magic.  """
+        if not hasattr(cls, "self"):
+            cls.self = object.__new__(cls, *args, **kwargs)
+            cls.self.construct()
+        return cls.self
+
+    def __init__(self):
+        """ Called multiple times, do not use.  """
+        pass
+
+    def construct(self):
+        """ Singleton constructor, runs only once.  """
+
+    def get(self, seq_id):
+        """
+        Return ANSI character sequence for the given sequence id,
+        e.g. color index.
+        """
+        seq = self.sequences.get(seq_id)
+        if seq is None:
+            seq = ""
+            if not seq_id is None:
+                if seq_id >= self.BLACK and seq_id <= self.WHITE:
+                    seq = self._tput("setaf " + str(seq_id))
+                elif seq_id == self.BOLD:
+                    seq = self._tput("bold")
+                elif seq_id == self.RESET:
+                    seq = self._tput("sgr0")
+            self.sequences[seq_id] = seq
+        return seq
+
+    @staticmethod
+    def _tput(params):
+        try:
+            s = subprocess.check_output(("tput " + params).split())
+            return s.decode("ASCII")
+        except subprocess.CalledProcessError:
+            return ""
 
 
