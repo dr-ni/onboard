@@ -301,25 +301,29 @@ class AtspiTextContext(TextContext):
             self.get_accessible_capabilities(accessible, **state)
 
         # log accessible info
-        if _logger.isEnabledFor(logging.DEBUG):
-            log = _logger.debug
+        if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
+            log = _logger.atspi
             log("-"*70)
             log("Accessible focused: ")
+            indent = " "*4
             if self._accessible:
                 state = self._state_tracker.get_state()
                 for key, value in sorted(state.items()):
                     msg = str(key) + "="
                     if key == "state-set":
                         msg += repr(AtspiStateType.to_strings(value))
+                    elif hasattr(value, "value_name"):  # e.g. role
+                        msg += value.value_name
                     else:
-                        msg += str(value)
-                    log(msg)
-                log("text_domain: {}".format(self._text_domain))
-                log("can_insert_text: {}".format(self._can_insert_text))
-                log("")
+                        msg += repr(value)
+                    log(indent + msg)
+                log(indent + "text_domain: {}" \
+                    .format(self._text_domain and \
+                            type(self._text_domain).__name__))
+                log(indent + "can_insert_text: {}" \
+                    .format(self._can_insert_text))
             else:
-                log("None")
-                log("")
+                log(indent + "None")
 
         self._update_context()
 

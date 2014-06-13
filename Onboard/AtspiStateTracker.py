@@ -272,7 +272,7 @@ class AtspiStateTracker(EventSource):
 
     def _on_atspi_keystroke(self, event, user_data):
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
-            _logger.debug("key-stroke {} {} {} {}" \
+            _logger.atspi("key-stroke {} {} {} {}" \
                           .format(event.modifiers,
                                   event.hw_code, event.id, event.is_text))
             #keysym = event.id # What is this? Not XK_ keysyms apparently.
@@ -300,7 +300,7 @@ class AtspiStateTracker(EventSource):
                             self._read_initial_accessible_state(accessible)
                 except Exception as ex: # Private exception gi._glib.GError when
                                         # gedit became unresponsive.
-                    _logger.info("_on_focus_changed(): "
+                    _logger.atspi("_on_focus_changed(): "
                                  "invalid accessible, failed to read state: " \
                                  + unicode_str(ex))
 
@@ -334,7 +334,7 @@ class AtspiStateTracker(EventSource):
                                 self._read_remaining_accessible_state(accessible))
                 except Exception as ex: # Private exception gi._glib.GError when
                                         # gedit became unresponsive.
-                    _logger.info("_set_active_accessible(): "
+                    _logger.atspi("_set_active_accessible(): "
                             "invalid accessible, failed to read remaining state: " \
                             + unicode_str(ex))
 
@@ -411,7 +411,7 @@ class AtspiStateTracker(EventSource):
             rect = AtspiStateTracker._get_accessible_extents(accessible)
         except Exception as ex: # private exception gi._glib.GError when
                 # right clicking onboards unity2d launcher (Precise)
-            _logger.info("Invalid accessible,"
+            _logger.atspi("Invalid accessible,"
                          " failed to get extents: " + unicode_str(ex))
             rect = Rect()
         return rect
@@ -424,7 +424,7 @@ class AtspiStateTracker(EventSource):
         except Exception as ex: # private exception
                                 # gi._glib.GError: timeout from dbind
                                 # with web search in firefox.
-            _logger.info("Invalid accessible,"
+            _logger.atspi("Invalid accessible,"
                          " failed to get text: " + unicode_str(ex))
             return None
 
@@ -479,7 +479,7 @@ class AtspiStateTracker(EventSource):
         state["extents"] = self._get_accessible_extents(accessible)
 
         # These are currently used only in debug output
-        if _logger.isEnabledFor(logging.DEBUG):
+        if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             state["id"] = accessible.get_id()
             state["name"] = accessible.get_name()
             pid = accessible.get_process_id()
@@ -501,7 +501,7 @@ class AtspiStateTracker(EventSource):
                "toolkit" in attributes and attributes["toolkit"] == "gtk"
 
     def _log_accessible(self, accessible, focused):
-        if _logger.isEnabledFor(logging.DEBUG):
+        if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             msg = "AT-SPI focus event: focused={}, ".format(focused)
             if not accessible:
                 msg += "accessible={}".format(accessible)
@@ -529,13 +529,13 @@ class AtspiStateTracker(EventSource):
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
                         .format(name=name,
-                                role = role,
+                                role = role.value_name if role else role,
                                 role_name = role_name,
                                 editable = editable,
                                 states = states,
                                 extents = extents \
                                )
-            _logger.debug(msg)
+            _logger.atspi(msg)
 
 
 class AtspiStateType:
