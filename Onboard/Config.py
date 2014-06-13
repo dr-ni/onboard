@@ -9,7 +9,7 @@ import os
 import sys
 import locale
 from shutil import copytree
-from optparse import OptionParser
+from optparse import OptionParser, OptionGroup
 
 from gi.repository import Gtk, Gio, GLib
 
@@ -197,37 +197,50 @@ class Config(ConfigObject):
         """
         # parse command line
         parser = OptionParser()
-        parser.add_option("-l", "--layout", dest="layout",
+        group = OptionGroup(parser, "General Options")
+        group.add_option("-l", "--layout", dest="layout",
                 help=_format("Layout file ({}) or name",
                              self.LAYOUT_FILE_EXTENSION))
-        parser.add_option("-t", "--theme", dest="theme",
+        group.add_option("-t", "--theme", dest="theme",
                 help=_("Theme file (.theme) or name"))
-        parser.add_option("-x", type="int", dest="x", help=_("Window x position"))
-        parser.add_option("-y", type="int", dest="y", help=_("Window y position"))
-        parser.add_option("-s", "--size", dest="size",
+        group.add_option("-s", "--size", dest="size",
                 help=_("Window size, widthxheight"))
-        parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
+        group.add_option("-x", type="int", dest="x", help=_("Window x position"))
+        group.add_option("-y", type="int", dest="y", help=_("Window y position"))
+        parser.add_option_group(group)
+
+        group = OptionGroup(parser, "Advanced Options")
+        group.add_option("-e", "--xid", action="store_true", dest="xid_mode",
                 help=_("Start in XEmbed mode, e.g. for gnome-screensaver"))
-        parser.add_option("-a", "--keep-aspect", action="store_true",
-                dest="keep_aspect_ratio",
-                help=_("Keep aspect ratio when resizing the window"))
-        parser.add_option("-d", "--debug", type="str", dest="debug",
-            help="DEBUG={all|event|debug|info|warning|error|critical}")
-        parser.add_option("-m", "--allow-multiple-instances",
+        group.add_option("-m", "--allow-multiple-instances",
                 action="store_true", dest="allow_multiple_instances",
                 help=_("Allow multiple Onboard instances"))
-        parser.add_option("-q", "--quirks", dest="quirks",
-                help=_("Override auto-detection and manually select quirks\n"
-                       "QUIRKS={metacity|compiz|mutter}"))
-        parser.add_option("--not-show-in", dest="not_show_in",
+        group.add_option("--not-show-in", dest="not_show_in",
                 metavar="DESKTOPS",
                 help=_("Silently fail to start in the given desktop "
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
-        parser.add_option("-g", "--log-learning",
+        group.add_option("-a", "--keep-aspect", action="store_true",
+                dest="keep_aspect_ratio",
+                help=_("Keep aspect ratio when resizing the window"))
+        group.add_option("-q", "--quirks", dest="quirks",
+                help=_("Override auto-detection and manually select quirks\n"
+                       "QUIRKS={metacity|compiz|mutter}"))
+        parser.add_option_group(group)
+
+        group = OptionGroup(parser, "Debug Options")
+        group.add_option("-d", "--debug", type="str", dest="debug",
+                         metavar="ARG",
+            help="Set logging level or range of levels \n"
+                 "ARG=MIN_LEVEL[-MAX_LEVEL]\n"
+                 "LEVEL={all|event|atspi|debug|info|warning|error|\n"
+                 "critical}\n")
+        group.add_option("-g", "--log-learning",
                   action="store_true", dest="log_learn", default=False,
                   help="log all learned text; off by default")
+        parser.add_option_group(group)
+
 
         options = parser.parse_args()[0]
         self.options = options
