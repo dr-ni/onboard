@@ -237,7 +237,15 @@ class Config(ConfigObject):
         self.log_learn = options.log_learn
 
         # setup logging
-        self._init_logging(options.debug)
+        min_level_name = None
+        max_level_name = None
+        if options.debug:
+            level_range = options.debug.split("-")
+            if len(level_range) >= 2:
+                min_level_name, max_level_name = level_range[:2]
+            else:
+                min_level_name = level_range[0]
+        self._init_logging(min_level_name, max_level_name)
 
         # Add basic config children for usage before the single instance check.
         # All the others are added in self._init_keys().
@@ -399,22 +407,47 @@ class Config(ConfigObject):
                 self.universal_access.enable_click_type_window_on_exit and \
                 not self.xid_mode)
 
-    def _init_logging(self, level_name):
-        LEVEL_EVENT = 5   # DEBUG=10, INFO=20, ...
+    def _init_logging(self, min_level_name, max_level_name):
+        LEVEL_ATSPI = 6
+        LEVEL_EVENT = 5
         LEVEL_ALL = 1
 
-        custom_level_names = {
-            LEVEL_EVENT : "EVENT",
-            LEVEL_ALL : "ALL"
+        buildin_levels = {
+            "CRITICAL" : 50,
+            "ERROR"    : 40,
+            "WARNING"  : 30,
+            "INFO"     : 20,
+            "DEBUG"    : 10,
+            "NOTSET"   :  0,
         }
+        custom_levels = {
+            "ATSPI"    : LEVEL_ATSPI,
+            "EVENT"    : LEVEL_EVENT,
+            "ALL"      : LEVEL_ALL,
+        }
+        all_levels = {}
+        all_levels.update(buildin_levels)
+        all_levels.update(custom_levels)
 
-        for level, name in custom_level_names.items():
+        for name, level in custom_levels.items():
             logging.addLevelName(level, name)
 
         class CustomLogger(logging.Logger):
+
+            def atspi(self, msg, *args, **kwargs):
+                if self.isEnabledFor(LEVEL_ATSPI):
+                    self._log(LEVEL_ATSPI, msg, args, **kwargs)
+
             def event(self, msg, *args, **kwargs):
                 if self.isEnabledFor(LEVEL_EVENT):
                     self._log(LEVEL_EVENT, msg, args, **kwargs)
+
+        class CustomFilter(object):
+            def __init__(self, max_level):
+                self._max_level = max_level
+
+            def filter(self, logRecord):
+                return logRecord.levelno <= self._max_level
 
         message_format = '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
 
@@ -423,9 +456,12 @@ class Config(ConfigObject):
         handler.setFormatter(logging.Formatter(message_format))
         root = logging.getLogger()
         root.addHandler(handler)
-        if level_name:
-            level_name = level_name.upper()
-            root.setLevel(level_name)
+        if min_level_name:
+            root.setLevel(min_level_name.upper())
+        if max_level_name:
+            max_level = all_levels.get(max_level_name.upper())
+            if not max_level is None:
+                handler.addFilter(CustomFilter(max_level))
 
         if 0: # optionally log to file; everything, including stack traces
             log_params["level"] = "DEBUG"
