@@ -485,19 +485,26 @@ class Config(ConfigObject):
                     msg = msg.replace("{BOLD}", "")
                 return msg
 
-            def format(self, record):
+            def formatMessage(self, record):
                 level_name = record.levelname
                 if self._use_colors and \
                    level_name in self._log_levels:
                     level, color = self._log_levels[level_name]
-                    record.levelname = self._tcs.get(color) + level_name + \
-                                       self._tcs.get(TermColors.RESET)
-                return logging.Formatter.format(self, record)
+                    color_seq = self._tcs.get(color)
+                else:
+                    color_seq = ""
+                record.__dict__["levelcolor"] = color_seq
+                debug = bool(min_level_name)
+                record.__dict__["name_width"] = 21 if debug else 1
+                record.__dict__["level_width"] = 7 if debug else 1
+                record.__dict__["name_"] = record.name + \
+                                           ("" if debug else ":")
+                return logging.Formatter.formatMessage(self, record)
 
         msgfmt = ("{asctime}.{msecs:03.0f} "
-                  "{BOLD}{name:20s}{RESET} "
-                  "{levelname:18s} "
-                  " {message}")
+                  "{levelcolor}{levelname:{level_width}}{RESET} "
+                  "{BOLD}{name_:{name_width}}{RESET} "
+                  "{message}")
 
         handler = logging.StreamHandler()
         try:
