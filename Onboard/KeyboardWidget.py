@@ -18,7 +18,6 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.AutoShow       import AutoShow
 from Onboard.utils          import Rect, Timer, FadeTimer
 from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
@@ -238,9 +237,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         self.inactivity_timer = InactivityTimer(self)
 
-        self.auto_show = AutoShow(self)
-        self.auto_show.enable(config.is_auto_show_enabled())
-
         self.touch_handles = TouchHandles()
         self.touch_handles_hide_timer = Timer()
         self.touch_handles_fade = FadeTimer()
@@ -291,7 +287,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         self.inactivity_timer.stop()
         self._long_press_timer.stop()
         self._auto_release_timer.stop()
-        self.auto_show.cleanup()
         self.stop_click_polling()
         self._configure_timer.stop()
         self.close_key_popup()
@@ -435,15 +430,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         self.touch_handles.set_active_handles(self._get_active_drag_handles(True))
         self.touch_handles.lock_x_axis(docking)
 
-    def update_auto_show(self):
-        """
-        Turn on/off auto-show in response to user action (preferences)
-        and show/hide the window accordingly.
-        """
-        enable = config.is_auto_show_enabled()
-        self.auto_show.enable(enable)
-        self.auto_show.show_keyboard(not enable)
-
     def update_transparency(self):
         """
         Updates transparencies in response to user action.
@@ -490,7 +476,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         # stop reposition updates when we're hiding anyway
         if win and not visible:
-            win.stop_auto_position()
+            win.stop_auto_positioning()
 
         if config.is_docking_enabled():
             if slide_duration is None:
@@ -662,7 +648,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
     def set_visible(self, visible):
         """ main method to show/hide onboard manually """
-        self.lock_auto_show_visible(visible)  # pause auto show
+        self.keyboard.lock_auto_show_visible(visible)  # pause auto show
         self.transition_visible_to(visible, 0.0)
 
         # briefly present the window
@@ -673,27 +659,17 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         self.commit_transition()
         win = self.get_kbd_window()
 
-    def lock_auto_show_visible(self, visible):
-        """
-        If the user unhides onboard, don't auto-hide it until
-        he manually hides it again.
-        """
-        if config.is_auto_show_enabled():
-            self.auto_show.lock_visible(visible)
+    def auto_position(self):
+        """ auto-show, start repositioning """
+        window = self.get_kbd_window()
+        if window:
+            window.auto_position()
 
-    def freeze_auto_show(self, thaw_time = None):
-        """
-        Stop both, hiding and showing.
-        """
-        if config.is_auto_show_enabled():
-            self.auto_show.freeze(thaw_time)
-
-    def thaw_auto_show(self, thaw_time = None):
-        """
-        Reenable both, hiding and showing.
-        """
-        if config.is_auto_show_enabled():
-            self.auto_show.thaw(thaw_time)
+    def stop_auto_positioning(self):
+        """ auto-show, stop all further repositioning attempts """
+        window = self.get_kbd_window()
+        if window:
+            window.stop_auto_positioning()
 
     def start_click_polling(self):
         if self.keyboard.has_latched_sticky_keys() or \

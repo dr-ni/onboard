@@ -30,11 +30,11 @@ class AutoShow(object):
 
     _lock_visible = False
     _frozen = False
-    _keyboard_widget = None
+    _keyboard = None
     _state_tracker = AtspiStateTracker()
 
-    def __init__(self, keyboard_widget):
-        self._keyboard_widget = keyboard_widget
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
         self._auto_show_timer = Timer()
         self._thaw_timer = Timer()
         self._active_accessible = None
@@ -109,9 +109,7 @@ class AutoShow(object):
 
         # Stop pending auto-repositioning
         if lock:
-            window = self._keyboard_widget.get_kbd_window()
-            if window:
-                window.stop_auto_position()
+            self._keyboard.stop_auto_positioning()
 
     def _on_text_caret_moved(self, event):
         """
@@ -120,7 +118,7 @@ class AutoShow(object):
         still allow clicking longer documents without having onboard show up.
         """
         if config.auto_show.enabled and \
-           not self._keyboard_widget.is_visible():
+           not self._keyboard.is_visible():
 
             accessible = self._active_accessible
             if accessible:
@@ -128,7 +126,6 @@ class AutoShow(object):
                     self._on_text_entry_activated(accessible)
 
     def _on_text_entry_activated(self, accessible):
-        window = self._keyboard_widget.get_kbd_window()
         self._active_accessible = accessible
         active = bool(accessible)
 
@@ -146,16 +143,14 @@ class AutoShow(object):
             # The active accessible changed, stop trying to
             # track the position of the previous one.
             # -> less erratic movement during quick focus changes
-            if window:
-                window.stop_auto_position()
+            self._keyboard.stop_auto_positioning()
 
         # reposition the keyboard window
         if active and \
            not accessible is None and \
            not self._lock_visible and \
            not self.is_frozen():
-            if window:
-                window.auto_position()
+           self._keyboard.auto_position()
 
     def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
@@ -167,11 +162,11 @@ class AutoShow(object):
         self._auto_show_timer.start(delay, self._begin_transition, show)
 
     def _begin_transition(self, show):
-        self._keyboard_widget.transition_visible_to(show)
-        self._keyboard_widget.commit_transition()
+        self._keyboard.transition_visible_to(show)
+        self._keyboard.commit_transition()
         return False
 
-    def get_repositioned_window_rect(self, home, limit_rects,
+    def get_repositioned_window_rect(self, view, home, limit_rects,
                                      test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
         """
@@ -184,12 +179,14 @@ class AutoShow(object):
             if not rect.is_empty() and \
                not self._lock_visible:
                 return self._get_window_rect_for_accessible_rect( \
-                                            home, rect, limit_rects,
+                                            view, home,
+                                            rect, limit_rects,
                                             test_clearance, move_clearance,
                                             horizontal, vertical)
         return None
 
-    def _get_window_rect_for_accessible_rect(self, home, rect, limit_rects,
+    def _get_window_rect_for_accessible_rect(self, view, home,
+                                             rect, limit_rects,
                                              test_clearance, move_clearance,
                                              horizontal = True, vertical = True):
         """
@@ -201,22 +198,24 @@ class AutoShow(object):
         if mode == "closest":
             x, y = rect.left(), rect.bottom()
         if mode == "nooverlap":
-            x, y = self._find_non_occluding_position(home, rect, limit_rects,
-                                                 test_clearance, move_clearance,
-                                                 horizontal, vertical)
+            x, y = self._find_non_occluding_position(view, home,
+                                                rect, limit_rects,
+                                                test_clearance, move_clearance,
+                                                horizontal, vertical)
         if not x is None:
             return Rect(x, y, home.w, home.h)
         else:
             return None
 
-    def _find_non_occluding_position(self, home, acc_rect, limit_rects,
+    def _find_non_occluding_position(self, view, home,
+                                     acc_rect, limit_rects,
                                      test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
 
         # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
         rh = home.copy()
-        window = self._keyboard_widget.get_kbd_window()
+        window = view.get_kbd_window()
         if window:
             offset = window.get_client_offset()
             rh.w += offset[0]
@@ -244,9 +243,9 @@ class AutoShow(object):
             # limited, non-intersecting candidate rectangles
             vr = []
             for p in vp:
-                pl = self._keyboard_widget.limit_position( p[0], p[1],
-                                                  self._keyboard_widget.canvas_rect,
-                                                  limit_rects)
+                pl = view.limit_position(p[0], p[1],
+                                         view.canvas_rect,
+                                         limit_rects)
                 r = Rect(pl[0], pl[1], rh.w, rh.h)
                 if not r.intersects(ra):
                     vr.append(r)

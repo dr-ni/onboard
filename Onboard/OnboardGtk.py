@@ -234,7 +234,7 @@ class OnboardGtk(object):
 
         # general
         config.auto_show.enabled_notify_add(lambda x: \
-                                    self.keyboard_widget.update_auto_show())
+                                    self.keyboard.update_auto_show())
 
         # keyboard
         config.keyboard.key_synth_notify_add(reload_layout)

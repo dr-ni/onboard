@@ -30,8 +30,9 @@ from Onboard.utils           import Timer, Modifiers, LABEL_MODIFIERS, \
                                     parse_key_combination, \
                                     unicode_str
 from Onboard.definitions     import InputEventSourceEnum
+from Onboard.AutoShow        import AutoShow
 from Onboard.WordSuggestions import WordSuggestions
-from Onboard.canonical_equivalents import *
+from Onboard.canonical_equivalents import canonical_equivalents
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -441,6 +442,9 @@ class Keyboard(WordSuggestions):
 
         self._unpress_timers = UnpressTimers(self)
         self._touch_feedback = TouchFeedback()
+
+        self.auto_show = AutoShow(self)
+        self.auto_show.enable(config.is_auto_show_enabled())
 
         self._text_changer = None
         self._key_synth_virtkey = None
@@ -1595,8 +1599,68 @@ class Keyboard(WordSuggestions):
                 if redraw:
                     self.redraw([key])
 
+    def update_auto_show(self):
+        """
+        Turn on/off auto-show in response to user action (preferences)
+        and show/hide the views accordingly.
+        """
+        enable = config.is_auto_show_enabled()
+        self.auto_show.enable(enable)
+        self.auto_show.show_keyboard(not enable)
+
+    def lock_auto_show_visible(self, visible):
+        """
+        If the user unhides onboard, don't auto-hide it until
+        he manually hides it again.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.lock_visible(visible)
+
+    def freeze_auto_show(self, thaw_time = None):
+        """
+        Stop both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.freeze(thaw_time)
+
+    def thaw_auto_show(self, thaw_time = None):
+        """
+        Reenable both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.thaw(thaw_time)
+
+    def auto_position(self):
+        self._broadcast_to_views("auto_position")
+
+    def stop_auto_positioning(self):
+        self._broadcast_to_views("stop_auto_positioning")
+
+    def is_visible(self):
+        return self._broadcast_to_first_view("is_visible", default=False)
+
+    def transition_visible_to(self, show):
+        return self._broadcast_to_views("transition_visible_to", show)
+
+    def commit_transition(self):
+        return self._broadcast_to_views("commit_transition")
+
+    def _broadcast_to_views(self, func_name, *params):
+        for view in self._layout_views:
+            if hasattr(view, func_name):
+                getattr(view, func_name)(*params)
+
+    def _broadcast_to_first_view(self, func_name, default, *params):
+        for view in self._layout_views:
+            if hasattr(view, func_name):
+                return getattr(view, func_name, *params)
+        return default
+
+
     def cleanup(self):
         WordSuggestions.cleanup(self)
+
+        self.auto_show.cleanup()
 
         # Keep caps-lock state on layout change to prevent LP #1313176.
         # Otherwise, a caps press causes a layout change, cleanup
