@@ -710,11 +710,12 @@ class OnboardGtk(object):
             current = os.environ.get("XDG_CURRENT_DESKTOP", "")
             names = config.options.not_show_in.split(",")
             for name in names:
-                if name == "GNOME":
-                    if bus.name_has_owner("org.gnome.Shell"):
-                        result = False
-                elif name == current:
-                    result = False
+                if name == current:
+                    if name == "GNOME":
+                        if bus.name_has_owner("org.gnome.Shell"):
+                            result = False
+                    else:
+                        result  = False
 
             if not result:
                 _logger.info("Command line option not-show-in={} forbids running in "
