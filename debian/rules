@@ -3,7 +3,7 @@
 DH_VERBOSE=1
 
 %:
-	dh $@ --with python3 --without python-suppor
+	dh $@ --with python3 --without python-support
 	rm -f po/*.pot
 
 override_dh_python3:
