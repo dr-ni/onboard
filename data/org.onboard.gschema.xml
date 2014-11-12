@@ -197,6 +197,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Show secondary labels</summary>
             <description>Show additional key labels of different modifier levels.</description>
         </key>
+        <key name="inter-key-stroke-delay" type="d">
+            <default>0.0</default>
+            <summary>Delay between key-strokes</summary>
+            <description>Delay in seconds between generated key-strokes when inserting word suggestions or snippets. Mainly meant to work around key-stroke losses in Firefox and other Gtk-2 applications. Has no effect on Gtk-3 applications.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">

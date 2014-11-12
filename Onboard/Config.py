@@ -1199,6 +1199,7 @@ class Config(ConfigObject):
     def get_user_layout_dir(self):
         return os.path.join(self.user_dir, "layouts/")
 
+
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
@@ -1236,6 +1237,8 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("touch-feedback-size", 0)
         self.add_key("audio-feedback-enabled", False)
         self.add_key("show-secondary-labels", False)
+
+        self.add_key("inter-key-stroke-delay", 0.0)
 
 
 class ConfigWindow(ConfigObject):

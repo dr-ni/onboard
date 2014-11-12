@@ -122,18 +122,35 @@ class UnpressTimers:
 
 class KeySynth(object):
 
-    _inter_key_stroke_delay = 0.0  # delay between key-strokes in seconds
+    _last_press_time = 0
+    _suppress_keypress_delay = False
 
-    def set_inter_key_stroke_delay(self, delay):
+    @staticmethod
+    @contextmanager
+    def no_delay():
         """
-        Set delay between multiple key-strokes.
-        Firefox and Thunderbird may need this to not lose key-strokes.
+        Temporarily disable the keypress delay. Do not nest.
+        Mainly used for single key-strokes as there are far fewer calls
+        for these than the bulk text insertion calls.
         """
-        self._inter_key_stroke_delay = delay
+        KeySynth._suppress_keypress_delay = True
+        yield None
+        KeySynth._suppress_keypress_delay = False
 
-    def _pause(self):
-        if self._inter_key_stroke_delay:
-            time.sleep(self._inter_key_stroke_delay)
+    def _delay_keypress(self):
+        """
+        Pause between multiple key-strokes.
+        Firefox and Thunderbird may need this to not miss key-strokes.
+        """
+        delay = config.keyboard.inter_key_stroke_delay
+        if delay:
+            if not KeySynth._suppress_keypress_delay: # not just single presses?
+                elapsed = time.time() - KeySynth._last_press_time
+                remaining = delay - elapsed
+                if remaining > 0.0:
+                    time.sleep(remaining)
+
+            KeySynth._last_press_time = time.time()
 
 
 class KeySynthVirtkey(KeySynth):
@@ -150,6 +167,7 @@ class KeySynthVirtkey(KeySynth):
             if sys.version_info.major == 2:
                 char = unicode_str(char)[0]
             code_point = ord(char)
+            self._delay_keypress()
             self._vk.press_unicode(code_point)
 
     def release_unicode(self, char):
@@ -158,25 +176,24 @@ class KeySynthVirtkey(KeySynth):
                 char = unicode_str(char)[0]
             code_point = ord(char)
             self._vk.release_unicode(code_point)
-            self._pause()
 
     def press_keysym(self, keysym):
         if self._vk:
+            self._delay_keypress()
             self._vk.press_keysym(keysym)
 
     def release_keysym(self, keysym):
         if self._vk:
             self._vk.release_keysym(keysym)
-        self._pause()
 
     def press_keycode(self, keycode):
         if self._vk:
+            self._delay_keypress()
             self._vk.press_keycode(keycode)
 
     def release_keycode(self, keycode):
         if self._vk:
             self._vk.release_keycode(keycode)
-        self._pause()
 
     def lock_mod(self, mod):
         if self._vk:
@@ -232,13 +249,13 @@ class KeySynthAtspi(KeySynthVirtkey):
     def press_keycode(self, keycode):
         if not "Atspi" in globals():
             return
+        self._delay_keypress()
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
 
     def release_keycode(self, keycode):
         if not "Atspi" in globals():
             return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
-        self._pause()
 
 
 class TextChanger():
@@ -255,9 +272,9 @@ class TextChanger():
         self._key_synth_atspi = KeySynthAtspi(vk)
 
         if config.keyboard.key_synth: # == KeySynth.ATSPI:
-            self._text_changer = self._key_synth_atspi
+            self._key_synth = self._key_synth_atspi
         else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
-            self._text_changer = self._key_synth_virtkey
+            self._key_synth = self._key_synth_virtkey
 
     def cleanup(self):
         # Somehow keyboard objects don't get released
@@ -278,31 +295,31 @@ class TextChanger():
 
     # KeySynth interface
     def press_unicode(self, char):
-        self._text_changer.press_unicode(char)
+        self._key_synth.press_unicode(char)
 
     def release_unicode(self, char):
-        self._text_changer.release_unicode(char)
+        self._key_synth.release_unicode(char)
 
     def press_key_string(self, string):
-        self._text_changer.press_key_string(string)
+        self._key_synth.press_key_string(string)
 
     def press_keycode(self, keycode):
-        self._text_changer.press_keycode(keycode)
+        self._key_synth.press_keycode(keycode)
 
     def release_keycode(self, keycode):
-        self._text_changer.release_keycode(keycode)
+        self._key_synth.release_keycode(keycode)
 
     def press_keysym(self, keysym):
-        self._text_changer.press_keysym(keysym)
+        self._key_synth.press_keysym(keysym)
 
     def release_keysym(self, keysym):
-        self._text_changer.release_keysym(keysym)
+        self._key_synth.release_keysym(keysym)
 
     def lock_mod(self, mod):
-        self._text_changer.lock_mod(mod)
+        self._key_synth.lock_mod(mod)
 
     def unlock_mod(self, mod):
-        self._text_changer.unlock_mod(mod)
+        self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
     def press_keysyms(self, key_name, count = 1):
@@ -324,7 +341,7 @@ class TextChanger():
             text = text.replace("\\n", "\n")
             text_context.insert_text_at_caret(text)
         else:
-            self._text_changer.press_key_string(text)
+            self._key_synth.press_key_string(text)
 
     def delete_at_caret(self):
         keyboard = self.get_keyboard()
@@ -991,17 +1008,21 @@ class Keyboard(WordSuggestions):
         key_type = key.type
 
         if key_type == KeyCommon.KEYCODE_TYPE:
-            self._text_changer.press_keycode(key.code)
+            with KeySynth.no_delay():
+                self._text_changer.press_keycode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self._text_changer.press_keysym(key.code)
+            with KeySynth.no_delay():
+                self._text_changer.press_keysym(key.code)
 
         elif key_type == KeyCommon.CHAR_TYPE:
             if len(key.code) == 1:
-                self._text_changer.press_unicode(key.code)
+                with KeySynth.no_delay():
+                    self._text_changer.press_unicode(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self._text_changer.press_keysym(get_keysym_from_name(key.code))
+            with KeySynth.no_delay():
+                self._text_changer.press_keysym(get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             activated = False

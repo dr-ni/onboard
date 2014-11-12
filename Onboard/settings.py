@@ -74,14 +74,34 @@ class DialogBuilder(object):
         w.connect("clicked", callback)
 
     # spin button
-    def bind_spin(self, name, config_object, key):
+    def bind_spin(self, name, config_object, key,
+                  config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
-        w.set_value(getattr(config_object, key))
-        w.connect("value-changed", self.bind_spin_callback, config_object, key)
-        getattr(config_object, key + '_notify_add')(w.set_value)
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        w.set_value(value)
+        w.connect("value-changed", self._bind_spin_callback,
+                  config_object, key, config_set_callback)
+        getattr(config_object, key + '_notify_add')( \
+             lambda x: self._notify_spin_callback(w, config_object, key,
+                                                     config_get_callback))
 
-    def bind_spin_callback(self, widget, config_object, key):
-        setattr(config_object, key, widget.get_value())
+    def _notify_spin_callback(self, widget, config_object,
+                              key, config_get_callback):
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        widget.set_value(value)
+
+    def _bind_spin_callback(self, widget, config_object,
+                            key, config_set_callback):
+        if config_set_callback:
+            config_set_callback(config_object, key, widget.get_value())
+        else:
+            setattr(config_object, key, widget.get_value())
 
     # scale
     def bind_scale(self, name, config_object, key, widget_callback = None):
@@ -327,12 +347,22 @@ class Settings(DialogBuilder):
         self.bind_combobox_id("sticky_key_behavior_combobox",
                         config.keyboard, "sticky_key_behavior",
                         get_sticky_key_behavior, set_sticky_key_behavior)
+
         self.bind_spin("sticky_key_release_delay_spinbutton",
                             config.keyboard, "sticky_key_release_delay")
+
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")
         self.bind_combobox_id("input_event_source_combobox",
                         config.keyboard, "input_event_source")
+
+        def get_inter_key_stroke_delay(config_object, key):
+            return getattr(config_object, key) * 1000.0
+        def set_inter_key_stroke_delay(config_object, key, value):
+            setattr(config_object, key, value / 1000.0)
+        self.bind_spin("inter_key_stroke_delay_spinbutton",
+                            config.keyboard, "inter_key_stroke_delay",
+                       get_inter_key_stroke_delay, set_inter_key_stroke_delay)
 
         # word suggestions
         self._page_word_suggestions = PageWordSuggestions(self.window, builder)
