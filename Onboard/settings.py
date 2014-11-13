@@ -433,11 +433,11 @@ class Settings(DialogBuilder):
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
-        self.num_resize_handles_combobox = \
-                         builder.get_object("num_resize_handles_combobox")
-        self.update_num_resize_handles_combobox()
-        config.resize_handles_notify_add( \
-                            lambda x: self.select_num_resize_handles())
+        self.num_window_handles_combobox = \
+                         builder.get_object("num_window_handles_combobox")
+        self.update_num_window_handles_combobox()
+        config.window_handles_notify_add( \
+                            lambda x: self.select_num_window_handles())
 
         if config.mousetweaks:
             self.bind_spin("hover_click_delay_spinbutton",
@@ -661,40 +661,42 @@ class Settings(DialogBuilder):
             _logger.warning(_format("System settings not found ({}): {}",
                                     filename, unicode_str(e)))
 
-    def update_num_resize_handles_combobox(self):
-        self.num_resize_handles_list = Gtk.ListStore(str, int)
-        self.num_resize_handles_combobox.set_model(self.num_resize_handles_list)
+    def update_num_window_handles_combobox(self):
+        self.num_window_handles_list = Gtk.ListStore(str, int)
+        self.num_window_handles_combobox.set_model(self.num_window_handles_list)
         cell = Gtk.CellRendererText()
-        self.num_resize_handles_combobox.clear()
-        self.num_resize_handles_combobox.pack_start(cell, True)
-        self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
+        self.num_window_handles_combobox.clear()
+        self.num_window_handles_combobox.pack_start(cell, True)
+        self.num_window_handles_combobox.add_attribute(cell, 'markup', 0)
 
-        self.num_resize_handles_choices = [
-                           # Frame resize handles: None
+        self.num_window_handles_choices = [
+                           # Window handles: None
                            [_("None"), NumResizeHandles.NONE],
+                           # Window handles: None
+                           [_("Movement only"), NumResizeHandles.NORESIZE],
                            # Frame resize handles: Corners only
-                           [_("Corners only"), NumResizeHandles.SOME],
+                           [_("Corners"), NumResizeHandles.SOME],
                            # Frame resize handles: All
                            [_("All corners and edges"),  NumResizeHandles.ALL]
                            ]
 
-        for name, id in self.num_resize_handles_choices:
-            it = self.num_resize_handles_list.append((name, id))
+        for name, id in self.num_window_handles_choices:
+            self.num_window_handles_list.append((name, id))
 
-        self.select_num_resize_handles()
+        self.select_num_window_handles()
 
-    def select_num_resize_handles(self):
-        num = config.get_num_resize_handles()
-        for row in self.num_resize_handles_list:
+    def select_num_window_handles(self):
+        num = config.get_num_window_handles()
+        for row in self.num_window_handles_list:
             if row[1] == num:
                 it = row.model.get_iter(row.path)
-                self.num_resize_handles_combobox.set_active_iter(it)
+                self.num_window_handles_combobox.set_active_iter(it)
                 break
 
-    def on_num_resize_handles_combobox_changed(self, widget):
-        value = self.num_resize_handles_list.get_value( \
-                        self.num_resize_handles_combobox.get_active_iter(),1)
-        config.set_num_resize_handles(value)
+    def on_num_window_handles_combobox_changed(self, widget):
+        value = self.num_window_handles_list.get_value( \
+                        self.num_window_handles_combobox.get_active_iter(),1)
+        config.set_num_window_handles(value)
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()

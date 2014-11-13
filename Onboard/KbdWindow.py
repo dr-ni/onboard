@@ -1159,7 +1159,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def on_docking_notify(self):
         self.update_docking()
-        self.keyboard_widget.update_resize_handles()
+        self.keyboard_widget.update_window_handles()
 
     def update_docking(self, force_update = False):
         enable = config.is_docking_enabled()

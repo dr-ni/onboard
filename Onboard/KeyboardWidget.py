@@ -306,7 +306,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         win = self.get_kbd_window()
         if win:
             self.touch_handles.set_window(win)
-            self.update_resize_handles()
+            self.update_window_handles()
 
     def set_startup_visibility(self):
         win = self.get_kbd_window()
@@ -418,7 +418,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         return rect
 
-    def update_resize_handles(self):
+    def update_window_handles(self):
         """ Tell WindowManipulator about the active resize handles """
         docking = config.is_docking_enabled()
 
@@ -1032,7 +1032,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
     def on_drag_gesture_begin(self, num_touches):
         self.stop_long_press()
 
-        if num_touches and \
+        if Handle.MOVE in self.get_drag_handles() and \
+           num_touches and \
            not self.is_drag_initiated():
             self.show_touch_handles()
             self.start_move_window()
@@ -1267,7 +1268,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
             if not all_handles:
                 # filter through handles enabled in config
-                config_handles = config.window.resize_handles
+                config_handles = config.window.window_handles
                 handles = tuple(set(handles).intersection(set(config_handles)))
 
         return handles

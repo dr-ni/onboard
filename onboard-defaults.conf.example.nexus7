@@ -46,7 +46,7 @@ inactive-transparency-delay=5.0
 docking-enabled=True
 docking-edge=bottom
 docking-shrink-workarea=True
-resize-handles=SE SW NW NE
+window-handles=SE SW NW NE M
 
 [window.landscape]
 x=65
@@ -69,7 +69,7 @@ dock-width=700
 [icon-palette]
 # floating icon
 #in-use = True
-resize-handles=SE
+window-handles=SE M
 
 [icon-palette.landscape]
 # Position and size of the floating icon on landscape screens.

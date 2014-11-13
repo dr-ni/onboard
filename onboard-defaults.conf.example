@@ -115,7 +115,7 @@ xembed-background-image-enabled=True
 force-to-top=True
 #inactive-transparency=50.0
 #inactive-transparency-delay=1.0
-#resize-handles=E SE S SW W NW N NE
+#window-handles=E SE S SW W NW N NE M
 #transparency=0.0
 #transparent-background=False
 #window-decoration=False
@@ -140,7 +140,7 @@ force-to-top=True
 
 [icon-palette]
 #in-use = False
-#resize-handles=E SE S SW W NW N NE
+#window-handles=E SE S SW W NW N NE M
 
 [icon-palette.landscape]
 # Position and size of the floating icon on landscape screens.

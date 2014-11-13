@@ -80,21 +80,23 @@ USER_DIR                   = "onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
-DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
+DEFAULT_WINDOW_HANDLES     = list(Handle.ALL)
 
 DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
 SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
 SCHEMA_VERSION_0_99         = Version(2, 1)   # Onboard 0.99.0
-SCHEMA_VERSION              = SCHEMA_VERSION_0_99
+SCHEMA_VERSION_1_10         = Version(2, 2)   # Onboard 0.99.0
+SCHEMA_VERSION              = SCHEMA_VERSION_1_10
 
 
-# enum for simplified number of resize_handles
+# enum for simplified number of window_handles
 class NumResizeHandles:
-    NONE = 0
-    SOME = 1
-    ALL  = 2
+    NONE     = 0
+    NORESIZE = 1
+    SOME     = 2
+    ALL      = 3
 
 class Config(ConfigObject):
     """
@@ -601,20 +603,51 @@ class Config(ConfigObject):
         """
         ConfigObject.init_from_gsettings(self)
 
-        # --- onboard 0.97 -> 0.98 ---------------------------------------------
+        # --- onboard 0.97 -> 0.98 --------------------------------------------
         format = Version.from_string(self.schema_version)
         if format < SCHEMA_VERSION_0_98:
             _logger.info("Migrating dconf values from before v0.98: "
                          "/apps/onboard -> /org/onboard")
             self.migrate_dconf_tree("apps.", "org.")
 
-            # --- onboard 0.96 -> 0.97 ---------------------------------------------
+            # --- onboard 0.96 -> 0.97 ----------------------------------------
             format = Version.from_string(self.schema_version)
             if format < SCHEMA_VERSION_0_97:
                 _logger.info("Migrating dconfs values from before v0.97")
                 self._migrate_to_0_97()
 
-            self.schema_version = SCHEMA_VERSION.to_string()
+
+        # --- onboard 1.0.0 -> 1.1.0-------------------------------------------
+        format = Version.from_string(self.schema_version)
+        if format < SCHEMA_VERSION_1_10:
+            _logger.info("Migrating dconf values from before v1.1.0 ")
+            self._migrate_to_1_10()
+
+        self.schema_version = SCHEMA_VERSION.to_string()
+
+    def _migrate_to_1_10(self):
+        """ resize_handles renamed to window_handles and movement added """
+
+        def migrate_resize_handles(co, dconf_path, key):
+            gskey = co.find_key(key)
+
+            co.delay()
+            co.migrate_dconf_value(dconf_path, gskey)
+
+            # add new "MOVE" entry
+            handles = getattr(co, gskey.prop)[:]
+            if not Handle.MOVE in handles:
+                handles += (Handle.MOVE,)
+            setattr(co, gskey.prop, handles)
+
+            co.apply()
+
+        migrate_resize_handles(self.window,
+                               "/org/onboard/window/resize-handles",
+                               "window-handles")
+        migrate_resize_handles(self.icp,
+                               "/org/onboard/icon-palette/resize-handles",
+                               "window-handles")
 
     def _migrate_to_0_97(self):
         # window rect moves from org.onboard to
@@ -989,33 +1022,38 @@ class Config(ConfigObject):
     def is_mousetweaks_active(self):
         return self.mousetweaks and self.mousetweaks.is_active()
 
-    ####### resize handles #######
-    def resize_handles_notify_add(self, callback):
-        self.window.resize_handles_notify_add(callback)
-        self.icp.resize_handles_notify_add(callback)
+    ####### window handles (resize & move handles) #######
+    def window_handles_notify_add(self, callback):
+        self.window.window_handles_notify_add(callback)
+        self.icp.window_handles_notify_add(callback)
 
-    def get_num_resize_handles(self):
+    def get_num_window_handles(self):
         """ Translate array of handles to simplified NumResizeHandles enum """
-        handles = self.window.resize_handles
+        handles = self.window.window_handles
         if len(handles) == 0:
             return NumResizeHandles.NONE
-        if len(handles) == 8:
+        if len(handles) == 1 and handles[0] == Handle.MOVE:
+            return NumResizeHandles.NORESIZE
+        if len(handles) == 8+1:
             return NumResizeHandles.ALL
         return NumResizeHandles.SOME
 
-    def set_num_resize_handles(self, num):
+    def set_num_window_handles(self, num):
         if num == NumResizeHandles.ALL:
-            window_handles = list(Handle.RESIZERS)
-            icp_handles    = list(Handle.RESIZERS)
+            window_handles = list(Handle.ALL)
+            icp_handles    = list(Handle.ALL)
+        elif num == NumResizeHandles.NORESIZE:
+            window_handles = [Handle.MOVE]
+            icp_handles    = [Handle.MOVE]
         elif num == NumResizeHandles.NONE:
             window_handles = []
             icp_handles    = []
-        else:
-            window_handles = list(Handle.CORNERS)
-            icp_handles    = [Handle.SOUTH_EAST]
+        else:  # NumResizeHandles.SOME
+            window_handles = list(Handle.CORNERS + (Handle.MOVE, ))
+            icp_handles    = [Handle.SOUTH_EAST, Handle.MOVE]
 
-        self.window.resize_handles = window_handles
-        self.icp.resize_handles = icp_handles
+        self.window.window_handles = window_handles
+        self.icp.window_handles = icp_handles
 
     @staticmethod
     def _string_to_handles(string):
@@ -1036,7 +1074,6 @@ class Config(ConfigObject):
             ids.append(Handle.IDS[handle])
         return " ".join(ids)
 
-                #self.set_drag_handles(config.window.resize_handles)
     ####### Snippets editing #######
     def set_snippet(self, index, value):
         """
@@ -1259,7 +1296,7 @@ class ConfigWindow(ConfigObject):
         self.add_key("enable-inactive-transparency", False)
         self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
-        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
+        self.add_key("window-handles", DEFAULT_WINDOW_HANDLES)
         self.add_key("docking-enabled", False)
         self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE,
                                      enum={"top"    : DockingEdge.TOP,
@@ -1274,15 +1311,16 @@ class ConfigWindow(ConfigObject):
 
     ##### property helpers #####
     def _convert_sysdef_key(self, gskey, sysdef, value):
-        if sysdef == "resize-handles":
+        if sysdef == "resize-handles" or \
+           sysdef == "window-handles":
             return Config._string_to_handles(value)
         else:
             return ConfigObject._convert_sysdef_key(self, gskey, sysdef, value)
 
-    def _unpack_resize_handles(self, value):
+    def _unpack_window_handles(self, value):
         return Config._string_to_handles(value)
 
-    def _pack_resize_handles(self, value):
+    def _pack_window_handles(self, value):
         return Config._handles_to_string(value)
 
     def position_notify_add(self, callback):
@@ -1359,7 +1397,7 @@ class ConfigICP(ConfigObject):
         self.sysdef_section = "icon-palette"
 
         self.add_key("in-use", False)
-        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
+        self.add_key("window-handles", DEFAULT_WINDOW_HANDLES)
 
         self.landscape = ConfigICP.Landscape(self)
         self.portrait = ConfigICP.Portrait(self)
@@ -1368,15 +1406,16 @@ class ConfigICP(ConfigObject):
 
     ##### property helpers #####
     def _convert_sysdef_key(self, gskey, sysdef, value):
-        if sysdef == "resize-handles":
+        if sysdef == "resize-handles" or \
+           sysdef == "window-handles":
             return Config._string_to_handles(value)
         else:
             return ConfigObject._convert_sysdef_key(self, gskey, sysdef, value)
 
-    def _unpack_resize_handles(self, value):
+    def _unpack_window_handles(self, value):
         return Config._string_to_handles(value)
 
-    def _pack_resize_handles(self, value):
+    def _pack_window_handles(self, value):
         return Config._handles_to_string(value)
 
     def position_notify_add(self, callback):

@@ -29,7 +29,7 @@ from Onboard.Scanner         import Scanner
 from Onboard.utils           import Timer, Modifiers, LABEL_MODIFIERS, \
                                     parse_key_combination, \
                                     unicode_str
-from Onboard.definitions     import InputEventSourceEnum
+from Onboard.definitions     import InputEventSourceEnum, Handle
 from Onboard.AutoShow        import AutoShow
 from Onboard.WordSuggestions import WordSuggestions
 from Onboard.canonical_equivalents import canonical_equivalents
@@ -1948,7 +1948,8 @@ class BCMove(ButtonController):
 
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
-                         not config.xid_mode)
+                         not config.xid_mode and \
+                         Handle.MOVE in config.window.window_handles)
 
     def is_activated_on_press(self):
         return True # cannot undo on press, dragging is already in progress

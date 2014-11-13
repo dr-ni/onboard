@@ -1205,9 +1205,9 @@
                                               <object class="GtkLabel" id="label15">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">_Frame resize handles:</property>
+                                                <property name="label" translatable="yes">_Window handles:</property>
                                                 <property name="use_underline">True</property>
-                                                <property name="mnemonic_widget">num_resize_handles_combobox</property>
+                                                <property name="mnemonic_widget">num_window_handles_combobox</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -1216,10 +1216,10 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkComboBox" id="num_resize_handles_combobox">
+                                              <object class="GtkComboBox" id="num_window_handles_combobox">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <signal name="changed" handler="on_num_resize_handles_combobox_changed" swapped="no"/>
+                                                <signal name="changed" handler="on_num_window_handles_combobox_changed" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>

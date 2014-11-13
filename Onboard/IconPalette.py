@@ -127,10 +127,10 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         config.icp.position_notify_add(rect_changed)
         config.icp.size_notify_add(rect_changed)
 
-        config.icp.resize_handles_notify_add(lambda x: self.update_resize_handles())
+        config.icp.window_handles_notify_add(lambda x: self.update_window_handles())
 
         self.update_sticky_state()
-        self.update_resize_handles()
+        self.update_window_handles()
 
     def cleanup(self):
         WindowRectPersist.cleanup(self)
@@ -200,9 +200,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             else:
                 self.unstick()
 
-    def update_resize_handles(self):
-        """ Tell WindowManipulator about the active resize handles """
-        self.set_drag_handles(config.icp.resize_handles)
+    def update_window_handles(self):
+        """ Tell WindowManipulator about the active resize/move handles """
+        self.set_drag_handles(config.icp.window_handles)
 
     def get_drag_threshold(self):
         """ Overload for WindowManipulator """

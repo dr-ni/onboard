@@ -294,9 +294,7 @@ class OnboardGtk(object):
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
-
-        config.window.resize_handles_notify_add(lambda x: \
-                                 self.keyboard_widget.update_resize_handles())
+        config.window.window_handles_notify_add(self._on_window_handles_changed)
 
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)
@@ -500,6 +498,10 @@ class OnboardGtk(object):
         if self.keyboard:
             self.keyboard.invalidate_ui_no_resize()
             self.keyboard.commit_ui_updates()
+
+    def _on_window_handles_changed(self, value = None):
+        self.keyboard_widget.update_window_handles()
+        self._update_ui()
 
     def _on_window_options_changed(self, value = None):
         self._update_window_options()

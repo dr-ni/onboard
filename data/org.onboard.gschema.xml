@@ -260,10 +260,10 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Inactive transparency delay</summary>
             <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
         </key>
-        <key name="resize-handles" type="s">
-            <default>"E SE S SW W NW N NE"</default>
-            <summary>Resize handles</summary>
-            <description>Active resize handles, space separated.</description>
+        <key name="window-handles" type="s">
+            <default>"E SE S SW W NW N NE M"</default>
+            <summary>Window resize and move handles</summary>
+            <description>Active resize and move handles, space separated.</description>
         </key>
         <key name="docking-enabled" type="b">
             <default>false</default>
@@ -367,10 +367,10 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Show icon palette when onboard is minimized.</summary>
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
         </key>
-        <key name="resize-handles" type="s">
-            <default>"E SE S SW W NW N NE"</default>
-            <summary>Resize handles</summary>
-            <description>Active resize handles, space separated.</description>
+        <key name="window-handles" type="s">
+            <default>"E SE S SW W NW N NE M"</default>
+            <summary>Window resize and move handles</summary>
+            <description>Active resize and move handles, space separated.</description>
         </key>
         <child name="landscape" schema="org.onboard.icon-palette.landscape"/>
         <child name="portrait" schema="org.onboard.icon-palette.portrait"/>

@@ -55,7 +55,7 @@ class WindowManipulator(object):
         self._drag_start_offset  = None
         self._drag_start_rect    = None
         self._drag_handle        = None
-        self._drag_handles = Handle.RESIZERS
+        self._drag_handles = Handle.ALL
         self._drag_active        = False  # has window move/resize actually started yet?
         self._drag_threshold     = 8
         self._drag_snap_threshold = 16
@@ -122,7 +122,8 @@ class WindowManipulator(object):
                 self.start_resize_window(hit, sequence.root_point)
             return True
 
-        if move_on_background:
+        if move_on_background and \
+            Handle.MOVE in self.get_drag_handles():
             self.start_move_window(sequence.root_point)
             return True
 
