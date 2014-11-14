@@ -1674,7 +1674,7 @@ class Keyboard(WordSuggestions):
     def _broadcast_to_first_view(self, func_name, default, *params):
         for view in self._layout_views:
             if hasattr(view, func_name):
-                return getattr(view, func_name, *params)
+                return getattr(view, func_name)(*params)
         return default
 
 
