@@ -256,32 +256,52 @@ class DomainGenericText(TextDomain):
 
     def read_context(self, accessible):
         """ Extract prediction context from the accessible """
+
+        # get caret position from selection
+        selection = None
         try:
-            offset = accessible.get_caret_offset()
-            r = accessible.get_text_at_offset(offset,
+            sel = accessible.get_selection(0)
+            # Gtk-2 applications return 0,0 when there is no selection.
+            # Gtk-3 applications return caret positions in that case.
+            if sel.start_offset != 0 or \
+               sel.end_offset != 0:
+                selection = (sel.start_offset, sel.end_offset)
+        except Exception as ex: # Private exception gi._glib.GErro
+            _logger.info("DomainGenericText.read_context(), selection: " \
+                         + unicode_str(ex))
+
+        # get text around the caret position
+        try:
+            if selection is None:
+                offset = accessible.get_caret_offset()
+                selection = (offset, offset)
+            r = accessible.get_text_at_offset(selection[0],
                                 Atspi.TextBoundaryType.LINE_START)
             count = accessible.get_character_count()
         except Exception as ex: # Private exception gi._glib.GError when
                                 # gedit became unresponsive.
-            _logger.info("DomainGenericText.read_context(): " \
+            _logger.info("DomainGenericText.read_context(), text: " \
                          + unicode_str(ex))
             return None
 
         line = unicode_str(r.content).replace("\n","")
-        line_caret = max(offset - r.start_offset, 0)
+        line_caret = max(selection[0] - r.start_offset, 0)
 
-        begin = max(offset - 256, 0)
-        end   = min(offset + 100, count)
+        begin = max(selection[0] - 256, 0)
+        end   = min(selection[0] + 100, count)
         text = Atspi.Text.get_text(accessible, begin, end)
 
         text = unicode_str(text)
 
-        caret_span = TextSpan(offset, 0, text, begin)
-        context = text[:offset - begin]
+        # Not all text may be available for large selections. We only need the
+        # part before the begin of the selection/caret.
+        selection_span = TextSpan(selection[0], selection[1]-selection[0],
+                              text, begin)
+        context = text[:selection[0] - begin]
         begin_of_text = begin == 0
         begin_of_text_offset = 0
 
-        return (context, line, line_caret, caret_span,
+        return (context, line, line_caret, selection_span,
                 begin_of_text, begin_of_text_offset)
 
     def can_spell_check(self):
