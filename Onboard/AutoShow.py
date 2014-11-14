@@ -40,6 +40,7 @@ class AutoShow(object):
         self._active_accessible = None
 
     def cleanup(self):
+        self.enable(False)  # disconnect atspi events
         self._auto_show_timer.stop()
         self._thaw_timer.stop()
 

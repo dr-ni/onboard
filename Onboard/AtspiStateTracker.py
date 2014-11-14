@@ -94,8 +94,14 @@ class AtspiStateTracker(EventSource):
         self._update_listeners()
 
     def disconnect(self, event_name, callback):
+        had_listeners = self.has_listeners(self._event_names)
+
         EventSource.disconnect(self, event_name, callback)
         self._update_listeners()
+
+        # help debugging disconnecting events on exit
+        if had_listeners and not self.has_listeners(self._event_names):
+            _logger.info("all listeners disconnected")
 
     def _update_listeners(self):
         register = self.has_listeners(self._focus_event_names)
