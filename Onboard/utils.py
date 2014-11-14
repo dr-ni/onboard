@@ -1517,7 +1517,7 @@ class EventSource(object):
     def __init__(self, event_names):
         self._callbacks = dict((e,[]) for e in event_names)
 
-    def cleanup():
+    def cleanup(self):
         self.flush_events()
 
     def connect(self, event_name, callback):
