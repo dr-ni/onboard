@@ -627,7 +627,7 @@ class OnboardGtk(object):
                        if color_scheme_filename else None
         layout = LayoutLoaderSVG().load(vk, layout_filename, color_scheme)
 
-        self.keyboard.cleanup()
+        self.keyboard.reset()
         self.keyboard.set_virtkey(vk)
         self.keyboard.layout = layout
         self.keyboard.color_scheme = color_scheme

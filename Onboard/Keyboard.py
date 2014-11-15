@@ -469,16 +469,56 @@ class Keyboard(WordSuggestions):
 
         self._invalidated_ui = 0
 
-        self.reset()
-
-    def reset(self):
-        #List of keys which have been latched.
-        #ie. pressed until next non sticky button is pressed.
         self._pressed_keys = []
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
         self._non_modifier_released = False
         self._disabled_keys = None
+
+        self.reset()
+
+    def reset(self):
+        """ init/reset on layout change """
+        WordSuggestions.reset(self)
+        self.auto_show.reset()
+
+        # Keep caps-lock state on layout change to prevent LP #1313176.
+        # Otherwise, a caps press causes a layout change, cleanup
+        # triggers another caps press that again causes a layout change,
+        # and so on...
+        # See OnboardGtk.reload_layout_delayed for the other part of the
+        # puzzle for this bug report.
+        self.ignore_capslock()
+
+        # reset still latched and locked modifier keys on exit
+        self.release_latched_sticky_keys()
+
+        # NumLock is special. Keep its state on exit, except when
+        # sticky_key_release_delay is set, when we assume to be
+        # in kiosk mode and everything has to be cleaned up.
+        release_all = bool(config.keyboard.sticky_key_release_delay)
+        self.release_locked_sticky_keys(release_all)
+
+        self.release_pressed_keys()
+
+        self._pressed_keys = []
+        self._latched_sticky_keys = []
+        self._locked_sticky_keys = []
+        self._non_modifier_released = False
+        self._disabled_keys = None
+
+    def cleanup(self):
+        """ final cleanup on exit """
+        self.reset()
+        WordSuggestions.cleanup(self)
+        self.auto_show.cleanup()
+
+        if self._text_changer:
+            self._text_changer.cleanup()
+        self.layout = None
+
+        if self._click_sim:
+            self._click_sim.cleanup()
 
     def get_application(self):
         return self._application()
@@ -1676,38 +1716,6 @@ class Keyboard(WordSuggestions):
             if hasattr(view, func_name):
                 return getattr(view, func_name)(*params)
         return default
-
-
-    def cleanup(self):
-        WordSuggestions.cleanup(self)
-
-        self.auto_show.cleanup()
-
-        # Keep caps-lock state on layout change to prevent LP #1313176.
-        # Otherwise, a caps press causes a layout change, cleanup
-        # triggers another caps press that again causes a layout change,
-        # and so on...
-        # See OnboardGtk.reload_layout_delayed for the other part of the
-        # puzzle for this bug report.
-        self.ignore_capslock()
-
-        # reset still latched and locked modifier keys on exit
-        self.release_latched_sticky_keys()
-
-        # NumLock is special. Keep its state on exit, except when
-        # sticky_key_release_delay is set, when we assume to be
-        # in kiosk mode and everything has to be cleaned up.
-        release_all = bool(config.keyboard.sticky_key_release_delay)
-        self.release_locked_sticky_keys(release_all)
-
-        self.release_pressed_keys()
-
-        if self._text_changer:
-            self._text_changer.cleanup()
-        self.layout = None
-
-        if self._click_sim:
-            self._click_sim.cleanup()
 
     def find_items_from_ids(self, ids):
         if self.layout is None:

@@ -39,10 +39,13 @@ class AutoShow(object):
         self._thaw_timer = Timer()
         self._active_accessible = None
 
-    def cleanup(self):
-        self.enable(False)  # disconnect atspi events
+    def reset(self):
         self._auto_show_timer.stop()
         self._thaw_timer.stop()
+
+    def cleanup(self):
+        self.reset()
+        self.enable(False)  # disconnect atspi events
 
     def enable(self, enable):
         if enable:

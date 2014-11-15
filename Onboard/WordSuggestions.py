@@ -77,8 +77,11 @@ class WordSuggestions:
 
         self._focusable_count = 0
 
-    def cleanup(self):
+    def reset(self):
         self.commit_changes()
+
+    def cleanup(self):
+        self.reset()
         if self.text_context:
             self.text_context.cleanup()
         if self._wpengine:
