@@ -14,7 +14,6 @@ from Onboard.utils         import Rect, \
                                   gradient_line, brighten, \
                                   unicode_str
 from Onboard.WindowUtils   import get_monitor_dimensions
-from Onboard.definitions   import InputEventSourceEnum
 from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
 
@@ -134,10 +133,13 @@ class LayoutView:
             self.keyboard.invalidate_canvas()
             self.keyboard.commit_ui_updates()
 
-    def toggle_visible(self):
-        pass
+    def is_visible(self):
+        return None
 
     def set_visible(self, visible):
+        pass
+
+    def toggle_visible(self):
         pass
 
     def redraw(self, items = None, invalidate = True):
@@ -176,8 +178,7 @@ class LayoutView:
         pass
 
     def update_input_event_source(self):
-        use_gtk = config.keyboard.input_event_source == InputEventSourceEnum.GTK
-        self.register_input_events(True, use_gtk)
+        self.register_input_events(True, config.is_event_source_gtk())
 
     def update_touch_input_mode(self):
         self.set_touch_input_mode(config.keyboard.touch_input)

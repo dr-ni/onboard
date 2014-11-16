@@ -18,20 +18,21 @@ try:
 except ImportError as e:
     _logger.warning("Atspi typelib missing, at-spi key-synth unavailable")
 
-from Onboard.KeyGtk          import *
-from Onboard                 import KeyCommon
-from Onboard.KeyCommon       import StickyBehavior
-from Onboard.KeyboardPopups  import TouchFeedback
-from Onboard.Sound           import Sound
-from Onboard.ClickSimulator  import ClickSimulator, \
-                                    CSButtonMapper, CSFloatingSlave
-from Onboard.Scanner         import Scanner
-from Onboard.utils           import Timer, Modifiers, LABEL_MODIFIERS, \
-                                    parse_key_combination, \
-                                    unicode_str
-from Onboard.definitions     import InputEventSourceEnum, Handle
-from Onboard.AutoShow        import AutoShow
-from Onboard.WordSuggestions import WordSuggestions
+from Onboard.KeyGtk                import *
+from Onboard                       import KeyCommon
+from Onboard.KeyCommon             import StickyBehavior
+from Onboard.KeyboardPopups        import TouchFeedback
+from Onboard.Sound                 import Sound
+from Onboard.ClickSimulator        import ClickSimulator, \
+                                          CSButtonMapper, CSFloatingSlave
+from Onboard.Scanner               import Scanner
+from Onboard.utils                 import Timer, Modifiers, LABEL_MODIFIERS, \
+                                          parse_key_combination, \
+                                          unicode_str
+from Onboard.definitions           import Handle
+from Onboard.AutoShow              import AutoShow
+from Onboard.AutoHide              import AutoHide
+from Onboard.WordSuggestions       import WordSuggestions
 from Onboard.canonical_equivalents import canonical_equivalents
 
 try:
@@ -460,8 +461,10 @@ class Keyboard(WordSuggestions):
         self._unpress_timers = UnpressTimers(self)
         self._touch_feedback = TouchFeedback()
 
-        self.auto_show = AutoShow(self)
-        self.auto_show.enable(config.is_auto_show_enabled())
+        self._auto_show = AutoShow(self)
+        self._auto_show.enable(config.is_auto_show_enabled())
+        self._auto_hide = AutoHide(self)
+        self.update_auto_hide()
 
         self._text_changer = None
         self._key_synth_virtkey = None
@@ -480,7 +483,7 @@ class Keyboard(WordSuggestions):
     def reset(self):
         """ init/reset on layout change """
         WordSuggestions.reset(self)
-        self.auto_show.reset()
+        self._auto_show.reset()
 
         # Keep caps-lock state on layout change to prevent LP #1313176.
         # Otherwise, a caps press causes a layout change, cleanup
@@ -494,7 +497,7 @@ class Keyboard(WordSuggestions):
         self.release_latched_sticky_keys()
 
         # NumLock is special. Keep its state on exit, except when
-        # sticky_key_release_delay is set, when we assume to be
+        # sticky_key_release_delay is set, then we assume to be
         # in kiosk mode and everything has to be cleaned up.
         release_all = bool(config.keyboard.sticky_key_release_delay)
         self.release_locked_sticky_keys(release_all)
@@ -507,18 +510,29 @@ class Keyboard(WordSuggestions):
         self._non_modifier_released = False
         self._disabled_keys = None
 
+        self.layout = None
+
     def cleanup(self):
         """ final cleanup on exit """
         self.reset()
+
         WordSuggestions.cleanup(self)
-        self.auto_show.cleanup()
+
+        if self._auto_show:
+            self._auto_show.cleanup()
+            self._auto_show = None
+
+        if self._auto_hide:
+            self._auto_hide.cleanup()
+            self._auto_hide = None
 
         if self._text_changer:
             self._text_changer.cleanup()
-        self.layout = None
+            self._text_changer = None
 
         if self._click_sim:
             self._click_sim.cleanup()
+            self._click_sim = None
 
     def get_application(self):
         return self._application()
@@ -530,11 +544,17 @@ class Keyboard(WordSuggestions):
         if layout_view in self._layout_views:
             self._layout_views.remove(layout_view)
 
-    def set_views_visible(self, visible):
+    def is_visible(self):
+        for view in self._layout_views:
+            visible = view.is_visible()
+            if not visible is None:
+                return visible
+
+    def set_visible(self, visible):
         for view in self._layout_views:
             view.set_visible(visible)
 
-    def toggle_views_visible(self):
+    def toggle_visible(self):
         for view in self._layout_views:
             view.toggle_visible()
 
@@ -565,15 +585,18 @@ class Keyboard(WordSuggestions):
         for view in self._layout_views:
             view.update_input_event_source()
         self.update_click_sim()
+        self.update_auto_hide()
 
     def update_touch_input_mode(self):
         """ Touch input mode has changed, tell all views. """
         for view in self._layout_views:
             view.update_touch_input_mode()
 
+    def update_auto_hide(self):
+        self._auto_hide.enable(config.is_auto_hide_enabled())
+
     def update_click_sim(self):
-        event_source = config.keyboard.input_event_source
-        if event_source == InputEventSourceEnum.XINPUT:
+        if config.is_event_source_xinput():
             # XInput click simulator
             # Recommended, but requires the XInput event source.
             clicksim = CSFloatingSlave(self)
@@ -606,9 +629,16 @@ class Keyboard(WordSuggestions):
         for view in self._layout_views:
             view.show_touch_handles(show, auto_hide)
 
+    def set_layout(self, layout, color_scheme, vk):
+        """ set or replace the current keyboard layout """
+        self.reset()
+        self.set_virtkey(vk)
+        self.layout = layout
+        self.color_scheme = color_scheme
+        self.on_layout_loaded()
+
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
-        self.reset()
 
         # hide all still visible feedback popups; keys have changed.
         self._touch_feedback.hide()
@@ -626,6 +656,11 @@ class Keyboard(WordSuggestions):
 
         self.update_scanner_enabled()
 
+        # notify views
+        for view in self._layout_views:
+            view.on_layout_loaded()
+
+        # redraw everything
         self.invalidate_ui()
         self.commit_ui_updates()
 
@@ -1666,8 +1701,8 @@ class Keyboard(WordSuggestions):
         and show/hide the views accordingly.
         """
         enable = config.is_auto_show_enabled()
-        self.auto_show.enable(enable)
-        self.auto_show.show_keyboard(not enable)
+        self._auto_show.enable(enable)
+        self._auto_show.show_keyboard(not enable)
 
     def lock_auto_show_visible(self, visible):
         """
@@ -1675,27 +1710,35 @@ class Keyboard(WordSuggestions):
         he manually hides it again.
         """
         if config.is_auto_show_enabled():
-            self.auto_show.lock_visible(visible)
+            self._auto_show.lock_visible(visible)
 
     def freeze_auto_show(self, thaw_time = None):
         """
         Stop both, hiding and showing.
         """
         if config.is_auto_show_enabled():
-            self.auto_show.freeze(thaw_time)
+            self._auto_show.freeze(thaw_time)
 
     def thaw_auto_show(self, thaw_time = None):
         """
         Reenable both, hiding and showing.
         """
         if config.is_auto_show_enabled():
-            self.auto_show.thaw(thaw_time)
+            self._auto_show.thaw(thaw_time)
 
     def auto_position(self):
         self._broadcast_to_views("auto_position")
 
     def stop_auto_positioning(self):
         self._broadcast_to_views("stop_auto_positioning")
+
+    def get_auto_show_repositioned_window_rect(self, view, home, limit_rects,
+                                           test_clearance, move_clearance,
+                                           horizontal = True, vertical = True):
+        return self._auto_show.get_repositioned_window_rect(
+                                           view, home, limit_rects,
+                                           test_clearance, move_clearance,
+                                           horizontal, vertical)
 
     def is_visible(self):
         return self._broadcast_to_first_view("is_visible", default=False)

@@ -956,7 +956,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
         horizontal, vertical = self.get_repositioning_constraints()
         keyboard = self.keyboard_widget.keyboard
-        return keyboard.auto_show.get_repositioned_window_rect( \
+        return keyboard.get_auto_show_repositioned_window_rect( \
                                         self.keyboard_widget,
                                         home_rect, limit_rects,
                                         test_clearance, move_clearance,

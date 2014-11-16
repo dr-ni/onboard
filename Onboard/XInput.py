@@ -121,7 +121,7 @@ class XIDeviceManager(EventSource):
     XInput device manager singleton.
     """
 
-    blacklist = ("Power Button")
+    blacklist = ("Virtual core XTEST keyboard", "Power Button")
     last_device_blacklist = ("Virtual core XTEST pointer")
 
     def __new__(cls, *args, **kwargs):
@@ -180,6 +180,12 @@ class XIDeviceManager(EventSource):
         device_id = self._osk_devices.get_client_pointer()
         return self.lookup_device_id(device_id)
 
+    def get_client_keyboard(self):
+        """ Return client pointer device """
+        client_pointer = self.get_client_pointer()
+        device_id = client_pointer.attachment
+        return self.lookup_device_id(device_id)
+
     def get_devices(self):
         return self._devices.values()
 
@@ -194,13 +200,37 @@ class XIDeviceManager(EventSource):
         client_pointer = self.get_client_pointer()
         return [device for device in self.get_pointer_devices() \
                 if not device.is_master() and \
-                   device.master == client_pointer.id]
+                   device.attachment == client_pointer.id]
 
     def get_client_pointer_attached_slaves(self):
         """
         Slaves that are currently attached to the client pointer.
         """
         devices = self.get_client_pointer_slaves()
+        devices = [d for d in devices if not d.is_floating() and \
+                                         not self.is_grabbed(d)]
+        return devices
+
+    def get_keyboard_devices(self):
+        return [device for device in self._devices.values() \
+                if device.is_keyboard()]
+
+    def get_client_keyboard_slaves(self):
+        """
+        All slaves of the keyboard paired with the client pointer,
+        with and without device grabs.
+        """
+        client_keyboard = self.get_client_keyboard()
+        return [device for device in self.get_keyboard_devices() \
+                if not device.is_master() and \
+                   device.attachment == client_keyboard.id]
+
+    def get_client_keyboard_attached_slaves(self):
+        """
+        Slaves that are currently attached to the keyboard paired
+        with the client pointer.
+        """
+        devices = self.get_client_keyboard_slaves()
         devices = [d for d in devices if not d.is_floating() and \
                                          not self.is_grabbed(d)]
         return devices
@@ -220,7 +250,7 @@ class XIDeviceManager(EventSource):
                 device.name,
                 device.id,
                 device.use,
-                device.master,
+                device.attachment,
                 device.enabled,
                 device.vendor,
                 device.product,
@@ -358,7 +388,7 @@ class XIDeviceManager(EventSource):
 
         Set wacom_mode=True to simulate pointer events coming
         from a "touch screen" device that only sends pointer events.
-        This is the default case for wacom touch screens due
+        This is the default case for wacom touch screens due to
         gestures being enabled, see LP #1297692.
         """
         device = self.lookup_device_id(event.source_id)
@@ -397,7 +427,7 @@ class XIDevice(object):
     name         = None
     id           = None
     use          = None
-    master       = None
+    attachment   = None  # master for slaves, paired master for masters
     enabled      = None
     vendor       = None
     product      = None
@@ -412,20 +442,20 @@ class XIDevice(object):
     _device_manager = None
 
     def __repr__(self):
-        return "{}(id={}, master={}, name={}, source={} )" \
+        return "{}(id={}, attachment={}, name={}, source={} )" \
                 .format(type(self).__name__,
                         repr(self.id),
-                        repr(self.master),
+                        repr(self.attachment),
                         repr(self.name),
                         repr(self.source),
                        )
 
     def __str__(self):
-        return "{}(id={} master={} use={} touch_mode={} source={} name={} " \
+        return "{}(id={} attachment={} use={} touch_mode={} source={} name={} " \
                "vendor=0x{:04x} product=0x{:04x} enabled={})" \
                 .format(type(self).__name__,
                         self.id,
-                        self.master,
+                        self.attachment,
                         self.use,
                         self.touch_mode,
                         self.get_source().value_name,
@@ -490,6 +520,13 @@ class XIDevice(object):
         return self.use == XIDeviceType.MasterPointer or \
                self.use == XIDeviceType.SlavePointer
 
+    def is_keyboard(self):
+        """
+        Is this device a keyboard?
+        """
+        return self.use == XIDeviceType.MasterKeyboard or \
+               self.use == XIDeviceType.SlaveKeyboard
+
     def is_floating(self):
         """
         Is this device detached?
@@ -505,4 +542,48 @@ class XIDevice(object):
         return "{:04X}:{:04X}:{!s}".format(self.vendor,
                                            self.product,
                                            self.use)
+
+class XIDeviceEventLogger:
+    """
+    Facilities for logging device events.
+    Has little overhead when logging is disabled.
+    """
+
+    def __init__(self):
+        if not _logger.isEnabledFor(logging.DEBUG):
+            self.log_event = self._log_event_stub
+
+    def get_window(self):
+        return None
+
+    def _log_device_event(self, event):
+        win = self.get_window()
+        if not event.xi_type in [ XIEventType.TouchUpdate,
+                                  XIEventType.Motion]:
+            self.log_event("Device event: dev_id={} src_id={} xi_type={} "
+                          "xid_event={}({}) x={} y={} x_root={} y_root={} "
+                          "button={} state={} sequence={}"
+                          "".format(event.device_id,
+                                    event.source_id,
+                                    event.xi_type,
+                                    event.xid_event,
+                                    win.get_xid() if win else 0,
+                                    event.x, event.y,
+                                    event.x_root, event.y_root,
+                                    event.button, event.state,
+                                    event.sequence,
+                                   )
+                         )
+
+            device = event.get_source_device()
+            self.log_event("Source device: " + str(device))
+
+    @staticmethod
+    def log_event(msg, *args):
+        _logger.event(msg.format(*args))
+
+    @staticmethod
+    def _log_event_stub(msg, *args):
+        pass
+
 

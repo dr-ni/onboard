@@ -235,6 +235,8 @@ class OnboardGtk(object):
         # general
         config.auto_show.enabled_notify_add(lambda x: \
                                     self.keyboard.update_auto_show())
+        config.auto_hide.hide_on_key_press_notify_add(lambda x: \
+                                    self.keyboard.update_auto_hide())
 
         # keyboard
         config.keyboard.key_synth_notify_add(reload_layout)
@@ -413,7 +415,7 @@ class OnboardGtk(object):
 
     # Method concerning the icon palette
     def _on_icon_palette_acticated(self, widget):
-        self.keyboard_widget.toggle_visible()
+        self.keyboard.toggle_visible()
 
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
@@ -460,8 +462,7 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        self.keyboard_widget.toggle_visible()
-
+        self.keyboard.toggle_visible()
 
     def cb_group_changed(self):
         """ keyboard group change """
@@ -627,12 +628,7 @@ class OnboardGtk(object):
                        if color_scheme_filename else None
         layout = LayoutLoaderSVG().load(vk, layout_filename, color_scheme)
 
-        self.keyboard.reset()
-        self.keyboard.set_virtkey(vk)
-        self.keyboard.layout = layout
-        self.keyboard.color_scheme = color_scheme
-        self.keyboard.on_layout_loaded()
-        self.keyboard_widget.on_layout_loaded()
+        self.keyboard.set_layout(layout, color_scheme, vk)
 
         if self._window and self._window.icp:
             self._window.icp.queue_draw()

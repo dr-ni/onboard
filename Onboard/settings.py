@@ -151,14 +151,18 @@ class DialogBuilder(object):
     def bind_combobox_id(self, name, config_object, key,
                          config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
+
         if config_get_callback:
             id = config_get_callback(config_object, key)
         else:
             id = str(getattr(config_object, key))
+
+        if not config_set_callback:
+            config_set_callback = self.bind_combobox_config_set
+
         w.set_active_id(id)
         w.connect("changed", self.bind_combobox_callback,
                   config_object, key, config_set_callback)
-        notify_callback = lambda x : w.set_active_id(str(x))
         getattr(config_object, key + '_notify_add')( \
              lambda x: self.notify_combobox_callback(w, config_object, key,
                                                      config_get_callback))
@@ -172,13 +176,13 @@ class DialogBuilder(object):
 
     def bind_combobox_callback(self, widget,
                                config_object, key, config_set_callback):
-        if config_set_callback:
-            config_set_callback(config_object, key, widget.get_active_id())
-        else:
-            id = widget.get_active_id()
-            assert(not id is None)  # make sure ID-Column is 0
-            if not id is None:
-                setattr(config_object, key, int(widget.get_active_id()))
+        id = widget.get_active_id()
+        config_set_callback(config_object, key, id)
+
+    def bind_combobox_config_set(self, config_object, key, id):
+        assert(not id is None)  # make sure ID-Column is 0
+        if not id is None:
+            setattr(config_object, key, int(id))
 
     def select_tree_view_row(self, view, column, value, _it = None):
         model = view.get_model()
@@ -229,6 +233,9 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
+        self.bind_check("hide_on_key_press_toggle",
+                        config.auto_hide, "hide_on_key_press")
+
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -353,8 +360,13 @@ class Settings(DialogBuilder):
 
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")
+
+        def on_input_event_source_set(config_object, key, value):
+            self.bind_combobox_config_set(config_object, key, value)
+            self.update_window_widgets()
         self.bind_combobox_id("input_event_source_combobox",
-                        config.keyboard, "input_event_source")
+                        config.keyboard, "input_event_source",
+                        config_set_callback = on_input_event_source_set)
 
         def get_inter_key_stroke_delay(config_object, key):
             return getattr(config_object, key) * 1000.0
@@ -570,6 +582,9 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
+
+        w = self.wid("hide_on_key_press_toggle")
+        w.set_sensitive(config.is_auto_hide_enabled())
 
     def update_all_widgets(self):
         pass

@@ -33,7 +33,8 @@ from gi.repository         import Gdk
 
 from Onboard.utils         import Timer, EventSource
 from Onboard.definitions   import TouchInputEnum
-from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
+from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask, \
+                                  XIDeviceEventLogger
 
 ### Logging ###
 import logging
@@ -57,7 +58,7 @@ DRAG_GESTURE_THRESHOLD2 = 40**2  # square of the distance in pixels until
 # sequence id of core pointer events (single-touch/click events)
 POINTER_SEQUENCE = 0
 
-class InputEventSource(EventSource):
+class InputEventSource(EventSource, XIDeviceEventLogger):
     """
     Setup and handle GTK or XInput device events.
     """
@@ -66,6 +67,7 @@ class InputEventSource(EventSource):
         # There is only button-release to subscribe to currently,
         # as this is all CSButtonRemapper needs to detect the end of a click.
         EventSource.__init__(self, ["button-release"])
+        XIDeviceEventLogger.__init__(self)
 
         self._gtk_handler_ids = None
         self._device_manager = None
@@ -81,9 +83,6 @@ class InputEventSource(EventSource):
 
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
-
-        if not _logger.isEnabledFor(logging.DEBUG):
-            self.log_event = self._log_event_stub
 
     def cleanup(self):
         self._register_gtk_events(False)
@@ -264,8 +263,8 @@ class InputEventSource(EventSource):
 
     def _select_xi_grab_events(self, select):
         """
-        Select events for the root window to simulate a pointer grab.
-        Only relevant when a drag was initiated, e.g. moving/resizing
+        Select root window events for simulating a pointer grab.
+        Only called when a drag was initiated, e.g. when moving/resizing
         the keyboard.
         """
         if select:
@@ -314,6 +313,10 @@ class InputEventSource(EventSource):
             return
 
         log("_on_device_event1")
+
+        if event_type == XIEventType.KeyPress or \
+           event_type == XIEventType.KeyRelease:
+            return
 
         # check device_id, discard duplicate and unknown events
         if event_type == XIEventType.Enter or \

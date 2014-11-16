@@ -83,6 +83,7 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <description>Current tab page of onboard-settings.</description>
         </key>
         <child name="auto-show" schema="org.onboard.auto-show" />
+        <child name="auto-hide" schema="org.onboard.auto-hide" />
         <child name="keyboard" schema="org.onboard.keyboard" />
         <child name="window" schema="org.onboard.window" />
         <child name="icon-palette" schema="org.onboard.icon-palette" />
@@ -103,6 +104,14 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <default>(25.0, 55.0, 25.0, 40.0)</default>
             <summary>Widget clearance</summary>
             <description>Border to leave unoccluded around a focused text widget (left, top, right, bottom).</description>
+        </key>
+    </schema>
+
+    <schema id="org.onboard.auto-hide" path="/org/onboard/auto-hide/">
+        <key name="hide-on-key-press" type="b">
+            <default>true</default>
+            <summary>Hide on key-press.</summary>
+            <description>Hide Onboard when pressing any key on a physical keyboard.</description>
         </key>
     </schema>
 

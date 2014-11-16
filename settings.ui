@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.6"/>
   <object class="GtkAdjustment" id="_background_gradient_adjustment">
@@ -425,6 +426,23 @@
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkCheckButton" id="hide_on_key_press_toggle">
+                                    <property name="label" translatable="yes">_Hide when using a physical keyboard</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Hide Onboard when any key is pressed on a physical keyboard. Requires input event source "XInput".</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkCheckButton" id="start_minimized_toggle">
                                     <property name="label" translatable="yes">Start Onboard _hidden</property>
                                     <property name="visible">True</property>
@@ -441,7 +459,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                               </object>

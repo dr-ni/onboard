@@ -1007,7 +1007,7 @@ class ScanDevice(object):
                          XIEventMask.KeyReleaseMask
         try:
             self._device_manager.select_events(None, device, event_mask)
-            self._active_device_ids = (device.id, device.master)
+            self._active_device_ids = (device.id, device.attachment)
         except Exception as ex:
             logger.warning("Failed to open device {id}: {ex}"
                            .format(id = device.id, ex = ex))
