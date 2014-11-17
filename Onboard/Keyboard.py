@@ -483,7 +483,8 @@ class Keyboard(WordSuggestions):
     def reset(self):
         """ init/reset on layout change """
         WordSuggestions.reset(self)
-        self._auto_show.reset()
+        if self._auto_show:
+            self._auto_show.reset()
 
         # Keep caps-lock state on layout change to prevent LP #1313176.
         # Otherwise, a caps press causes a layout change, cleanup
@@ -1931,7 +1932,7 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self, view, button, event_type):
-        self.keyboard.set_views_visible(False)
+        self.keyboard.set_visible(False)
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode

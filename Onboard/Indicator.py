@@ -25,7 +25,7 @@ class Indicator(GObject.GObject):
     }
 
     "Keyboard window managed by this indicator"
-    _keyboard_window = None
+    _keyboard = None
 
     "Encapsulated appindicator instance"
     _indicator = None
@@ -96,12 +96,12 @@ class Indicator(GObject.GObject):
                 self._init_status_icon()
         self.set_visible(False)
 
-    def set_keyboard_window(self, keyboard_window):
-        self._keyboard_window = keyboard_window
+    def set_keyboard(self, keyboard):
+        self._keyboard = keyboard
 
     def update_menu_items(self):
-        if self._keyboard_window:
-            if self._keyboard_window.is_visible():
+        if self._keyboard:
+            if self._keyboard.is_visible():
                 self._menu.get_children()[0].set_label(self._hide_label)
             else:
                 self._menu.get_children()[0].set_label(self._show_label)
@@ -153,8 +153,7 @@ class Indicator(GObject.GObject):
                          button, activate_time)
 
     def _toggle_keyboard_window_state(self):
-        keyboard = self._keyboard_window.keyboard
-        keyboard.toggle_visible()
+        self._keyboard.toggle_visible()
 
     def _set_indicator_active(self, active):
         try:

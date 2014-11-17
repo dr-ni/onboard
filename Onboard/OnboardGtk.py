@@ -306,7 +306,7 @@ class OnboardGtk(object):
 
         # create status icon
         self.status_icon = Indicator()
-        self.status_icon.set_keyboard_window(self._window)
+        self.status_icon.set_keyboard(self.keyboard)
         self.do_connect(self.status_icon, "quit-onboard",
                         lambda x: self.do_quit_onboard())
 
@@ -677,7 +677,7 @@ class OnboardGtk(object):
                 self.keyboard.scanner = None
             self.keyboard.cleanup()
 
-        self.status_icon.set_keyboard_window(None)
+        self.status_icon.set_keyboard(None)
         self._window.cleanup()
         self._window.destroy()
         self._window = None
