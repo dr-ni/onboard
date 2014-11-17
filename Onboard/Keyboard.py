@@ -362,7 +362,7 @@ class Keyboard(WordSuggestions):
     _layer_locked = False
     _last_alt_key = None
     _alt_locked   = False
-    _text_changer    = None
+    _text_changer = None
     _click_sim    = None
 
 ### Properties ###
@@ -1831,10 +1831,12 @@ class ButtonController(object):
 class BCClick(ButtonController):
     """ Controller for click buttons """
     def release(self, view, button, event_type):
-        mc = self.keyboard.get_click_simulator()
+        cs = self.keyboard.get_click_simulator()
+        if not cs:
+            return
         if self.is_active():
             # stop click mapping, reset to primary button and single click
-            mc.map_primary_click(view, ClickSimulator.PRIMARY_BUTTON,
+            cs.map_primary_click(view, ClickSimulator.PRIMARY_BUTTON,
                                        ClickSimulator.CLICK_TYPE_SINGLE)
         else:
             # Exclude click type buttons from the click mapping
@@ -1844,21 +1846,23 @@ class BCClick(ButtonController):
             self.keyboard._click_sim.set_exclusion_rects(rects)
 
             # start click mapping
-            mc.map_primary_click(view, self.button, self.click_type)
+            cs.map_primary_click(view, self.button, self.click_type)
 
         # Mark current event handled to stop ClickMapper from receiving it.
         view.set_xi_event_handled(True)
 
     def update(self):
-        mc = self.keyboard.get_click_simulator()
-        self.set_active(self.is_active())
-        self.set_sensitive(
-            mc.supports_click_params(self.button, self.click_type))
+        cs = self.keyboard.get_click_simulator()
+        if cs:  # gone on exit
+            self.set_active(self.is_active())
+            self.set_sensitive(
+                cs.supports_click_params(self.button, self.click_type))
 
     def is_active(self):
-        mc = self.keyboard.get_click_simulator()
-        return mc.get_click_button() == self.button and \
-               mc.get_click_type() == self.click_type
+        cs = self.keyboard.get_click_simulator()
+        return cs and \
+               cs.get_click_button() == self.button and \
+               cs.get_click_type() == self.click_type
 
 class BCSingleClick(BCClick):
     id = "singleclick"
