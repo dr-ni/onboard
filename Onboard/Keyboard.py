@@ -368,7 +368,13 @@ class Keyboard(WordSuggestions):
 ### Properties ###
 
     # The number of pressed keys per modifier
-    _mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+    _mods                 = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+
+    # Same to keep track of modifier changes triggerd from the outside.
+    # Doesn't include modifier changes caused by Onboard itself, so this is
+    # not a complete representation of the modifier state.
+    _external_mod_changes = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+
     def _get_mod(self, key):
         return self._mods[key]
     def _set_mod(self, key, value):
@@ -478,11 +484,15 @@ class Keyboard(WordSuggestions):
         self._non_modifier_released = False
         self._disabled_keys = None
 
+        self._pending_modifier_redraws = {}
+        self._pending_modifier_redraws_timer = Timer()
+
         self.reset()
 
     def reset(self):
         """ init/reset on layout change """
         WordSuggestions.reset(self)
+
         if self._auto_show:
             self._auto_show.reset()
 
@@ -512,6 +522,9 @@ class Keyboard(WordSuggestions):
         self._disabled_keys = None
 
         self.layout = None
+
+        self._pending_modifier_redraws_timer.stop()
+        self._pending_modifier_redraws = {}
 
     def cleanup(self):
         """ final cleanup on exit """
@@ -649,11 +662,7 @@ class Keyboard(WordSuggestions):
 
         WordSuggestions.on_layout_loaded(self)
 
-        # show the currently active modifiers
-        keymap = Gdk.Keymap.get_default()
-        if keymap:
-            mod_mask = keymap.get_modifier_state()
-            self.set_modifiers(mod_mask)
+        self.update_modifiers()
 
         self.update_scanner_enabled()
 
@@ -1215,19 +1224,29 @@ class Keyboard(WordSuggestions):
 
             return unlatch
 
+    def update_modifiers(self):
+        """
+        Synchronize our keys with externally activated modifiers,
+        e.g. by physical keyboards or tools like xte.
+        """
+        keymap = Gdk.Keymap.get_default()
+        if keymap:
+            mod_mask = keymap.get_modifier_state()
+            self.set_modifiers(mod_mask)
+
     def set_modifiers(self, mod_mask):
         """
         Sync Onboard with modifiers of the given modifier mask.
         Used to sync changes to system modifier state with Onboard.
         """
         for mod_bit in (1<<bit for bit in range(8)):
-            # Limit to the locking modifiers only. Updating for all modifiers would
-            # be desirable, but Onboard busily flashing keys and using CPU becomes
-            # annoying while typing on a hardware keyboard.
-            if mod_bit & (Modifiers.CAPS | Modifiers.NUMLK):
-                self.set_modifier(mod_bit, bool(mod_mask & mod_bit))
-
-    def set_modifier(self, mod_bit, active):
+            # Directly redraw locking modifiers only. All other modifiers
+            # redraw after a short delay. This prevent Onboard from busily
+            # flashing keys and using CPU while typing on a hardware keyboard.
+            draw_delayed = not (mod_bit & (Modifiers.CAPS | Modifiers.NUMLK))
+            self.set_modifier(mod_bit, bool(mod_mask & mod_bit), draw_delayed)
+    _
+    def set_modifier(self, mod_bit, active, draw_delayed):
         """
         Update Onboard to reflect the state of the given modifier in the ui.
         """
@@ -1237,18 +1256,20 @@ class Keyboard(WordSuggestions):
             if key.modifier == mod_bit:
                 keys.append(key)
 
-        active_onboard = bool(self._mods[mod_bit])
+        active_before = bool(self._mods[mod_bit])
 
         # Was modifier turned on?
-        if active and not active_onboard:
+        if not active_before and active:
             self._mods[mod_bit] += 1
+            self._external_mod_changes[mod_bit] = 1
             for key in keys:
                 if key.sticky:
                     self.step_sticky_key(key, 1, EventType.CLICK)
 
         # Was modifier turned off?
-        elif not active and active_onboard:
+        elif active_before and not active:
             self._mods[mod_bit] = 0
+            self._external_mod_changes[mod_bit] = 0
             for key in keys:
                 if key in self._latched_sticky_keys:
                     self._latched_sticky_keys.remove(key)
@@ -1257,9 +1278,50 @@ class Keyboard(WordSuggestions):
                 key.active = False
                 key.locked = False
 
-        if active != active_onboard:
-            self.redraw(keys)
-            self.redraw_labels(False)
+        # Was it a change from the outside, i.e. not us?
+        # For this to work, we always have to update self._mods _before_
+        # lock_mod calls when our modifier keys are clicked.
+        if active != active_before:
+
+            # re-draw delayed?
+            delay = config.keyboard.modifier_update_delay
+            if active and \
+               draw_delayed and \
+               delay > 0.0:
+                self._queue_pending_redraw(mod_bit, active, keys, delay)
+            else:
+                self._redraw_modifier_keys(keys)
+
+    def _queue_pending_redraw(self, mod_bit, active, keys, delay):
+        item = self._pending_modifier_redraws.get(mod_bit)
+        if item is None:
+            # draw affected keys delayed
+            self._pending_modifier_redraws[mod_bit] = (active, keys)
+        else:
+            pending_active, keys = item
+
+            # discard redraw if the modifier change didn't have
+            # any lasting effects
+            if active != pending_active:
+                del self._pending_modifier_redraws[mod_bit]
+
+        # start/restart/stop timer
+        if self._pending_modifier_redraws:
+            self._pending_modifier_redraws_timer.start(
+                delay, self._redraw_pending_modifier_keys)
+        else:
+            self._pending_modifier_redraws_timer.stop()
+
+    def _redraw_pending_modifier_keys(self):
+        for pending_active, keys in self._pending_modifier_redraws.values():
+             self._redraw_modifier_keys(keys)
+        self._pending_modifier_redraws = {}
+
+    def _redraw_modifier_keys(self, keys):
+        # redraw modifier keys
+        self.redraw(keys)
+        # redraw keys where labels are affected by the modifier change
+        self.redraw_labels(False)
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -1462,18 +1524,30 @@ class Keyboard(WordSuggestions):
         return len(self._latched_sticky_keys) > 0
 
     def release_latched_sticky_keys(self, except_keys = None,
-                                    only_unpressed = False):
+                                    only_unpressed = False,
+                                    skip_externally_set_modifiers = True):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
             for key in self._latched_sticky_keys[:]:
                 if not except_keys or not key in except_keys:
+
                     # Don't release still pressed modifiers, they may be
                     # part of a multi-touch key combination.
                     if not only_unpressed or not key.pressed:
-                        self.send_key_up(key)
-                        self._latched_sticky_keys.remove(key)
-                        key.active = False
-                        self.redraw([key])
+
+                        # Don't release modifiers that where latched by
+                        # set_modifiers due to external (physical keyboard)
+                        # action.
+                        # Else the latched modifiers go out of sync in
+                        # on_outside_click() while an external tool like
+                        # xte holds them down (LP: #1331549).
+                        if not skip_externally_set_modifiers or \
+                           not key.is_modifier() or \
+                           not self._external_mod_changes[key.modifier]:
+                            self.send_key_up(key)
+                            self._latched_sticky_keys.remove(key)
+                            key.active = False
+                            self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)

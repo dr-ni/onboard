@@ -474,9 +474,9 @@ class OnboardGtk(object):
 
     def cb_state_changed(self, keymap):
         """ keyboard modifier state change """
-        _logger.debug("keyboard state changed to 0x{:x}" \
-                      .format(keymap.get_modifier_state()))
         mod_mask = keymap.get_modifier_state()
+        _logger.debug("keyboard state changed to 0x{:x}" \
+                      .format(mod_mask))
         self.keyboard.set_modifiers(mod_mask)
 
     def cb_vk_timer(self):
