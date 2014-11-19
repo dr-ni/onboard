@@ -214,7 +214,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
         <key name="modifier-update-delay" type="d">
             <default>1.0</default>
             <summary>Delay until external modifier changes become visible</summary>
-            <description>Delay in seconds until most modifier changes from the outside become visible in Onboard. 0.0 for no delay.</description>
+            <description>Delay in seconds until most modifier changes from the outside become visible in Onboard. 0.0 for no delay. -1.0 to never show modifier changes.</description>
         </key>
     </schema>
 

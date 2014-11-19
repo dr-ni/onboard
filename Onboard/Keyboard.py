@@ -1241,12 +1241,19 @@ class Keyboard(WordSuggestions):
         """
         for mod_bit in (1<<bit for bit in range(8)):
             # Directly redraw locking modifiers only. All other modifiers
-            # redraw after a short delay. This prevent Onboard from busily
-            # flashing keys and using CPU while typing on a hardware keyboard.
-            draw_delayed = not (mod_bit & (Modifiers.CAPS | Modifiers.NUMLK))
-            self.set_modifier(mod_bit, bool(mod_mask & mod_bit), draw_delayed)
+            # redraw after a short delay. This is meant to prevents
+            # Onboard from busily flashing keys and using CPU while
+            # typing with a hardware keyboard.
+            if (mod_bit & (Modifiers.CAPS | Modifiers.NUMLK)):
+                delay = 0
+            else:
+                delay = config.keyboard.modifier_update_delay
+
+            # -1.0 restores the onboard 1.0.0 behavior, no updates
+            if delay >= 0:
+                self.set_modifier(mod_bit, bool(mod_mask & mod_bit), delay)
     _
-    def set_modifier(self, mod_bit, active, draw_delayed):
+    def set_modifier(self, mod_bit, active, draw_delay=0.0):
         """
         Update Onboard to reflect the state of the given modifier in the ui.
         """
@@ -1284,11 +1291,9 @@ class Keyboard(WordSuggestions):
         if active != active_before:
 
             # re-draw delayed?
-            delay = config.keyboard.modifier_update_delay
             if active and \
-               draw_delayed and \
-               delay > 0.0:
-                self._queue_pending_redraw(mod_bit, active, keys, delay)
+               draw_delay > 0.0:
+                self._queue_pending_redraw(mod_bit, active, keys, draw_delay)
             else:
                 self._redraw_modifier_keys(keys)
 
