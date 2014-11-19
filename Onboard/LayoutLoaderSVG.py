@@ -354,7 +354,7 @@ class LayoutLoaderSVG:
         # find template attributes
         attributes = {}
         if node.hasAttribute("id"):
-            theme_id, id = RectKey.split_id(node.attributes["id"].value)
+            theme_id, id = RectKey.parse_id(node.attributes["id"].value)
             attributes.update(self.find_template(parent, RectKey, [id]))
 
         # let current node override any preceding templates

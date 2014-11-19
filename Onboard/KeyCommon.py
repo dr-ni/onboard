@@ -254,13 +254,13 @@ class KeyCommon(LayoutItem):
         return ""
 
     def set_id(self, id, theme_id = None, svg_id = None):
-        self.theme_id, self.id = self.split_id(id)
+        self.theme_id, self.id = self.parse_id(id)
         if theme_id:
             self.theme_id = theme_id
         self.svg_id = self.id if not svg_id else svg_id
 
     @staticmethod
-    def split_id(value):
+    def parse_id(value):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
         the identifier should be a description of the location of
@@ -272,7 +272,23 @@ class KeyCommon(LayoutItem):
         id = value.split(".")[0]
         return theme_id, id
 
-    def build_theme_id(self, prefix = None):
+    @staticmethod
+    def split_theme_id(theme_id):
+        """
+        Simple split in prefix (id) before the dot and suffix after the dot.
+        """
+        components = theme_id.split(".")
+        if len(components) == 1:
+            return components[0], ""
+        return components[0], components[1]
+
+    @staticmethod
+    def build_theme_id(prefix, postfix):
+        if postfix:
+            return prefix + "." + postfix
+        return prefix
+
+    def get_similar_theme_id(self, prefix = None):
         if prefix is None:
             prefix = self.id
         theme_id = prefix

@@ -485,7 +485,7 @@ class ColorScheme(object):
         elif key.is_correction_key():
             ids.append("correction")
         elif key.is_layer_button():
-            ids.append(key.build_theme_id("layer"))
+            ids.append(key.get_similar_theme_id("layer"))
             ids.append("layer")
 
         # look for a matching key_group and color in the color scheme
@@ -1208,7 +1208,7 @@ class Root(ColorSchemeItem):
 
 class Window(ColorSchemeItem):
     """ Container for a window's colors """
-    
+
     type = ""   # keyboard, key-popup
 
     def is_window(self):

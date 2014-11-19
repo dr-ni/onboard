@@ -11,6 +11,7 @@ import sys
 import time
 import signal
 import os.path
+import re
 
 try:
     import dbus
@@ -39,7 +40,7 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-import Onboard.KeyCommon
+from Onboard.KeyCommon import KeyCommon
 
 app = "onboard"
 DEFAULT_FONTSIZE = 10
@@ -206,7 +207,7 @@ class OnboardGtk(object):
         # export dbus service
         if not config.xid_mode and \
            "dbus" in globals():
-            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard_widget)
+            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
 
         # show/hide the window
         self.keyboard_widget.set_startup_visibility()
@@ -750,6 +751,46 @@ if "dbus" in globals():
         @dbus.service.method(dbus_interface=IFACE)
         def ToggleVisible(self):
             self._keyboard.toggle_visible()
+
+        @dbus.service.method(dbus_interface=IFACE,
+                             in_signature='s')
+        def ActivateKey(self, key_id):
+            id = self._translate_alternative_key_ids(key_id)
+            key = self._keyboard.find_key_from_id(id)
+            if not key:
+                raise self.ServiceOnboardException(\
+                    ('Unknown key id \'{0}\'').format(key_id))
+
+            self._keyboard.key_down(key)
+            self._keyboard.key_up(key)
+
+        @staticmethod
+        def _translate_alternative_key_ids(key_id):
+            """
+            Attempt to hide some of the cryptic key ids of our layouts
+            and have more readable alternative ids for certain keys.
+
+            Doctests:
+
+            # snippet0..n replaces m0..n from the layouts
+            >>> func = ServiceOnboardKeyboard._translate_alternative_key_ids
+            >>> for i in range(32):
+            ...     expect = "m" + str(i)
+            ...     result = func("snippet"+ str(i))
+            ...     if expect != result:
+            ...         "expected '{}' but got '{}'".format(expect, result)
+
+            """
+            prefix, suffix = KeyCommon.split_theme_id(key_id)
+
+            match = re.fullmatch("snippet([0-9]+)", prefix)
+            if match:
+                prefix = "m" + match.groups()[0]
+
+            full_id = KeyCommon.build_theme_id(prefix, suffix)
+            return full_id
+
+
 
         @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                              in_signature='ss', out_signature='v')

@@ -1845,6 +1845,19 @@ class Keyboard(WordSuggestions):
             return []
         return list(self.layout.find_classes(item_classes))
 
+    def find_key_from_id(self, id):
+        """
+        Find the first key matching the given id. Id may be a complete
+        theme_id (key.theme_id) or just the regular item id (key.id).
+        """
+        for key in self.iter_keys():
+            if key.theme_id:
+                if key.theme_id == id:
+                    return key
+                elif key.id == id:
+                    return key
+        return None
+
 
 class ButtonController(object):
     """
