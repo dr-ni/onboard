@@ -151,10 +151,12 @@ class LayoutLoaderSVG:
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
 
-                # Skip over items with non-matching layout string.
+                # Skip over items with non-matching keyboard layout string.
                 # Items with the same id are processed from top to bottom,
                 # the first match wins. If no item matches we fall back to
                 # the item without layout string.
+                # This is used to select between alternative key definitions
+                # depending on the current system layout.
                 can_load = False
                 if not child.hasAttribute("id"):
                     can_load = True
@@ -164,12 +166,13 @@ class LayoutLoaderSVG:
                         if child.hasAttribute("layout"):
                             layout = child.attributes["layout"].value
                             can_load = self._has_matching_layout(layout)
+
+                            # don't look at items with this id again
+                            if can_load:
+                                loaded_ids.add(id)
                         else:
                             can_load = True
 
-                    if can_load:
-                        # don't look at items with this id again
-                        loaded_ids.add(id)
 
                 if can_load:
                     tag = child.tagName
@@ -769,7 +772,7 @@ class LayoutLoaderSVG:
     def _has_matching_layout(self, layout_str):
         """
         Check if one ot the given layout strings matches
-        system layout and variant.
+        system keyboard layout and variant.
 
         Doctests:
         >>> l = LayoutLoaderSVG()
