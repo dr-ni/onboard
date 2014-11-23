@@ -293,6 +293,7 @@ class Config(ConfigObject):
         # init paths
         self.install_dir = self._get_install_dir()
         self.user_dir = self._get_user_dir()
+        self._image_search_paths = []
 
         # migrate old user dir ".sok" or ".onboard" to XDG data home
         if not os.path.exists(self.user_dir):
@@ -745,6 +746,9 @@ class Config(ConfigObject):
     def _pack_snippets(self, value):
         return self.pack_string_list(value)
 
+    def _post_notify_layout(self):
+        self._invalidate_layout_resource_search_paths()
+
     # Property layout_filename, linked to gsettings key "layout".
     # layout_filename may only get/set a valid filename,
     # whereas layout also allows to get/set only the basename of a layout.
@@ -768,15 +772,14 @@ class Config(ConfigObject):
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
-
     def get_fallback_layout_filename(self):
-        """ Layout file to fallback to, when the initial layout won't load """
+        """ Layout file to fallback to when the initial layout won't load """
         return self.find_layout_filename(DEFAULT_LAYOUT, "layout",
                                          self.LAYOUT_FILE_EXTENSION)
 
     def find_layout_filename(self, filename, description,
                                     extension = "", final_fallback = ""):
-        """ Find layout file, either the final layout or an import file. """
+        """ Find layout file, either the root layout or an include file. """
         return self._get_user_sys_filename(
              filename    = filename,
              description = description,
@@ -893,15 +896,52 @@ class Config(ConfigObject):
     def get_image_filename(self, image_filename):
         """
         Returns an absolute path for a label image.
-        This function isn't linked to any gsettings key.'
+        This function isn't linked to any gsettings key.
         """
-        return self._get_user_sys_filename(
-             filename             = image_filename,
-             description          = "image",
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", "images", x),
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", "images", x))
+        if not self._image_search_paths:
+            self._image_search_paths = \
+                self._get_layout_resource_search_paths("images")
+        return self._get_resource_filename(image_filename, "image",
+                                           self._image_search_paths)
+
+    def _invalidate_layout_resource_search_paths(self):
+        """ Force re-generation of search paths at next opportunity. """
+        self._image_search_paths = []
+
+    def _get_layout_resource_search_paths(self, subdir):
+        """
+        Look for files in directory of current layout, user- and
+        system directory, in that order.
+        """
+        user_dir = os.path.join(self.user_dir, "layouts")
+        sys_dir = os.path.join(self.install_dir, "layouts")
+        if subdir:
+            user_dir = os.path.join(user_dir, subdir)
+            sys_dir = os.path.join(sys_dir, subdir)
+
+        paths = [user_dir, sys_dir]
+
+        # In case a full path was given for the layout file on command line,
+        # look relative to there first.
+        if self._is_valid_filename(self.layout):
+            dir_ = os.path.dirname(self.layout)
+            if subdir:
+                dir_ = os.path.join(dir_, "images")
+            try:
+                # make sure it isn't one of those we already know
+                same = os.path.isdir(user_dir) and \
+                       os.path.samefile(dir_, sys_dir) or \
+                       os.path.isdir(user_dir) and \
+                       os.path.samefile(dir_, user_dir)
+            except Exception as ex:
+                _logger.error("samefile failed with '{}': {}" \
+                              .format(dir_, unicode_str(ex)))
+                same = True
+
+            if not same:
+                paths = [dir_] + paths
+
+        return paths
 
     def get_user_model_dir(self):
         return os.path.join(self.user_dir, "models")

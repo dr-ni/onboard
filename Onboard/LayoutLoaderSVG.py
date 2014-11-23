@@ -88,8 +88,10 @@ class LayoutLoaderSVG:
         if layout:
             # purge attributes only used during loading
             for item in layout.iter_items():
-                item.templates = None
-                item.keysym_rules = None
+                if not item.templates is None:
+                    item.templates = None
+                if not item.keysym_rules is None:
+                    item.keysym_rules = None
 
             # enable caching
             layout = LayoutRoot(layout)

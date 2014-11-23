@@ -461,6 +461,43 @@ class ConfigObject(object):
         return result
 
     @staticmethod
+    def _get_resource_filename(filename, description,
+                               paths, final_fallback = None):
+        """
+        Find the full path of a valid resource file, e.g. an image file.
+        If the filename is already valid, it is returned unchanged. Else
+        all given paths are searched for the filename.
+        """
+        result = ""
+
+        if filename and not ConfigObject._is_valid_filename(filename):
+            # assume filename is just a basename instead of a full file path
+            _logger.debug(_format("{description} '{filename}' not found yet, "
+                                  "searching in paths {paths}",
+                                  description=description,
+                                  filename=filename,
+                                  paths=paths))
+
+            for folder in paths:
+                if folder:
+                    fn = os.path.join(folder, filename)
+                    if os.path.isfile(fn):
+                        result = fn
+                        break
+
+        if not result and not final_fallback is None:
+            result = final_fallback
+
+        if not os.path.isfile(result):
+            _logger.error(_format("failed to find {description} '{filename}'",
+                                  description=description, filename=filename))
+            result = ""
+        else:
+            _logger.debug(_format("{description} '{filepath}' found.",
+                                  description=description, filepath=result))
+        return result
+
+    @staticmethod
     def _is_valid_filename(filename):
         return bool(filename) and \
                os.path.isabs(filename) and \

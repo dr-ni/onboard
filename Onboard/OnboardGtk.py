@@ -619,9 +619,9 @@ class OnboardGtk(object):
             self.vk_timer = GLib.timeout_add_seconds(1, self.cb_vk_timer)
 
     def load_layout(self, layout_filename, color_scheme_filename):
-        _logger.info("Loading keyboard layout from " + layout_filename)
+        _logger.info("Loading keyboard layout " + layout_filename)
         if (color_scheme_filename):
-            _logger.info("Loading color scheme from " + color_scheme_filename)
+            _logger.info("Loading color scheme " + color_scheme_filename)
 
         vk = self.get_vk()
 
