@@ -515,6 +515,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         return result
 
     def transition_active_to(self, active, duration = None):
+        """
+        Transition active state for inactivity timer.
+        This ramps up/down the window opacity.
+        """
         # not in xembed mode
         if config.xid_mode:
             return False
@@ -637,10 +641,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         return not done
 
-    def toggle_visible(self):
-        """ main method to show/hide onboard manually """
-        self.set_visible(not self.is_visible())
-
     def is_visible(self):
         """ is the keyboard window currently visible? """
         window = self.get_kbd_window()
@@ -648,7 +648,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
     def set_visible(self, visible):
         """ main method to show/hide onboard manually """
-        self.keyboard.lock_auto_show_visible(visible)  # pause auto show
         self.transition_visible_to(visible, 0.0)
 
         # briefly present the window
@@ -657,7 +656,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self.inactivity_timer.begin_transition(False)
 
         self.commit_transition()
-        win = self.get_kbd_window()
 
     def auto_position(self):
         """ auto-show, start repositioning """

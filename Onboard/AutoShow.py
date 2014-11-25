@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.utils             import Rect, Timer
+from Onboard.utils             import Rect, TimerOnce
 
 ### Logging ###
 import logging
@@ -30,18 +30,23 @@ class AutoShow(object):
 
     _lock_visible = False
     _frozen = False
+    _paused = False
     _keyboard = None
     _state_tracker = AtspiStateTracker()
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._auto_show_timer = Timer()
-        self._thaw_timer = Timer()
+        self._auto_show_timer = TimerOnce()
+        self._pause_timer = TimerOnce()
+        self._thaw_timer = TimerOnce()
         self._active_accessible = None
 
     def reset(self):
         self._auto_show_timer.stop()
+        self._pause_timer.stop()
         self._thaw_timer.stop()
+        self._frozen = False
+        self._paused = False
 
     def cleanup(self):
         self.reset()
@@ -63,12 +68,38 @@ class AutoShow(object):
             self._lock_visible = False
             self._frozen = False
 
+    def is_paused(self):
+        return self._paused
+
+    def pause(self, duration = None):
+        """
+        Stop showing and hiding the keyboard window for longer time periods,
+        e.g. after pressing a key on a physical keyboard.
+
+        duration in seconds, None to pause forever.
+        """
+        self._paused = True
+        self._pause_timer.stop()
+        if not duration is None:
+            self._pause_timer.start(self.resume)
+
+        # Discard pending hide/show actions.
+        self._auto_show_timer.stop()
+
+    def resume(self):
+        """
+        Allow hiding and showing the keyboard window again.
+        """
+        self._pause_timer.stop()
+        self._paused = False
+
     def is_frozen(self):
         return self._frozen
 
     def freeze(self, thaw_time = None):
         """
-        Stop showing and hiding the keyboard window.
+        Disable showing and hiding the keyboard window for short periods,
+        e.g. to skip unexpected focus events.
         thaw_time in seconds, None to freeze forever.
         """
         self._frozen = True
@@ -86,7 +117,7 @@ class AutoShow(object):
         """
         self._thaw_timer.stop()
         if thaw_time is None:
-            self._thaw()
+            self._on_thaw()
         else:
             self._thaw_timer.start(thaw_time, self._on_thaw)
 
@@ -141,7 +172,8 @@ class AutoShow(object):
             if self._lock_visible:
                 active = True
 
-            if not self.is_frozen():
+            if not self.is_paused() and \
+               not self.is_frozen():
                 self.show_keyboard(active)
 
             # The active accessible changed, stop trying to
@@ -153,6 +185,7 @@ class AutoShow(object):
         if active and \
            not accessible is None and \
            not self._lock_visible and \
+           not self.is_paused() and \
            not self.is_frozen():
            self._keyboard.auto_position()
 

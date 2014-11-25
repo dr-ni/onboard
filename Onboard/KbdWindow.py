@@ -423,7 +423,8 @@ class KbdWindowBase:
                 # - Unminimizing from unity-2d launcher is a user
                 #   triggered unhide -> lock auto-show visible.
                 # - Minimizing while locked visible -> unlock
-                self.keyboard_widget.lock_auto_show_visible(visible)
+                keyboard = self.keyboard_widget.keyboard
+                keyboard.update_auto_show_on_visibility_change(visible)
 
             return
 

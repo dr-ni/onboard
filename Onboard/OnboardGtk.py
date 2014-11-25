@@ -236,7 +236,7 @@ class OnboardGtk(object):
         # general
         config.auto_show.enabled_notify_add(lambda x: \
                                     self.keyboard.update_auto_show())
-        config.auto_hide.hide_on_key_press_notify_add(lambda x: \
+        config.auto_show.hide_on_key_press_notify_add(lambda x: \
                                     self.keyboard.update_auto_hide())
 
         # keyboard

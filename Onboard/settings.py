@@ -65,7 +65,9 @@ class DialogBuilder(object):
 
     def wid(self, name):
         widget = self._builder.get_object(name)
-        assert(widget)
+        if not widget:
+            _logger.error("widget '{}' not found, aborting".format(name))
+            assert(widget)
         return widget
 
     # push button
@@ -234,7 +236,7 @@ class Settings(DialogBuilder):
 
         # General tab
         self.bind_check("hide_on_key_press_toggle",
-                        config.auto_hide, "hide_on_key_press")
+                        config.auto_show, "hide_on_key_press")
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
@@ -584,7 +586,7 @@ class Settings(DialogBuilder):
             self.enable_inactive_transparency_toggle.set_active(active)
 
         w = self.wid("hide_on_key_press_toggle")
-        w.set_sensitive(config.is_auto_hide_enabled())
+        w.set_sensitive(config.can_set_auto_hide())
 
     def update_all_widgets(self):
         pass

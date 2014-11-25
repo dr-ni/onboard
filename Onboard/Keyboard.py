@@ -470,7 +470,7 @@ class Keyboard(WordSuggestions):
         self._auto_show = AutoShow(self)
         self._auto_show.enable(config.is_auto_show_enabled())
         self._auto_hide = AutoHide(self)
-        self.update_auto_hide()
+        self._auto_hide.enable(config.is_auto_hide_enabled())
 
         self._text_changer = None
         self._key_synth_virtkey = None
@@ -565,12 +565,13 @@ class Keyboard(WordSuggestions):
                 return visible
 
     def set_visible(self, visible):
+        self.update_auto_show_on_visibility_change(visible)
         for view in self._layout_views:
             view.set_visible(visible)
 
     def toggle_visible(self):
-        for view in self._layout_views:
-            view.toggle_visible()
+        """ main method to show/hide onboard manually """
+        self.set_visible(not self.is_visible())
 
     def redraw(self, keys = None, invalidate = True):
         for view in self._layout_views:
@@ -605,9 +606,6 @@ class Keyboard(WordSuggestions):
         """ Touch input mode has changed, tell all views. """
         for view in self._layout_views:
             view.update_touch_input_mode()
-
-    def update_auto_hide(self):
-        self._auto_hide.enable(config.is_auto_hide_enabled())
 
     def update_click_sim(self):
         if config.is_event_source_xinput():
@@ -1783,6 +1781,24 @@ class Keyboard(WordSuggestions):
         enable = config.is_auto_show_enabled()
         self._auto_show.enable(enable)
         self._auto_show.show_keyboard(not enable)
+        self.update_auto_hide()
+
+    def update_auto_hide(self):
+        enabled_before = self._auto_hide.is_enabled()
+        enabled_after = config.is_auto_hide_enabled()
+
+        self._auto_hide.enable(enabled_after)
+
+        if enabled_before and not enabled_after:
+            self.resume_auto_show()
+
+    def update_auto_show_on_visibility_change(self, visible):
+        if config.is_auto_show_enabled():
+            if visible and self._auto_show.is_paused():
+                self.lock_auto_show_visible(False)
+                self.resume_auto_show()
+            else:
+                self.lock_auto_show_visible(visible)
 
     def lock_auto_show_visible(self, visible):
         """
@@ -1792,9 +1808,26 @@ class Keyboard(WordSuggestions):
         if config.is_auto_show_enabled():
             self._auto_show.lock_visible(visible)
 
+    def is_auto_show_paused(self):
+        return self._auto_show.is_paused()
+
+    def pause_auto_show(self, duration = None):
+        """
+        Stop both, hiding and showing long term.
+        """
+        if config.is_auto_show_enabled():
+            self._auto_show.pause(duration)
+
+    def resume_auto_show(self):
+        """
+        Reenable both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            self._auto_show.resume()
+
     def freeze_auto_show(self, thaw_time = None):
         """
-        Stop both, hiding and showing.
+        Stop both, hiding and showing short term.
         """
         if config.is_auto_show_enabled():
             self._auto_show.freeze(thaw_time)

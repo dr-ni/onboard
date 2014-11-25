@@ -53,6 +53,9 @@ class AutoHide(EventSource):
     def cleanup(self):
         self._register_xinput_events(False)
 
+    def is_enabled(self):
+        return not self._device_manager is None
+
     def enable(self, enable, use_gtk=False):
         self.register_input_events(enable, use_gtk)
 
@@ -142,12 +145,28 @@ class AutoHide(EventSource):
 
         if event_type == XIEventType.KeyPress or \
            event_type == XIEventType.KeyRelease:
-            if self._keyboard.is_visible():
 
-                self._keyboard.set_visible(False)
+            if not self._keyboard.is_auto_show_paused():
+                if _logger.isEnabledFor(logging.INFO):
+                    device = event.get_source_device()
+                    device_name = device.name if device else "None"
+                    _logger.info("Hiding keyboard and pausing "
+                                "auto-show due to physical key-{} "
+                                "{} from device '{}' ({})"
+                                .format("press" \
+                                        if event_type == XIEventType.KeyPress \
+                                        else "release",
+                                        event.keyval,
+                                        device_name,
+                                        event.source_id))
 
-                if config.are_word_suggestions_enabled():
-                    self._keyboard.discard_changes()
+                self._keyboard.pause_auto_show()
+
+                if self._keyboard.is_visible():
+                    if config.are_word_suggestions_enabled():
+                        self._keyboard.discard_changes()
+
+                    self._keyboard.set_visible(False)
 
             return
 

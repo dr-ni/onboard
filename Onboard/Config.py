@@ -40,7 +40,6 @@ SCHEMA_ICP               = "org.onboard.icon-palette"
 SCHEMA_ICP_LANDSCAPE     = "org.onboard.icon-palette.landscape"
 SCHEMA_ICP_PORTRAIT      = "org.onboard.icon-palette.portrait"
 SCHEMA_AUTO_SHOW         = "org.onboard.auto-show"
-SCHEMA_AUTO_HIDE         = "org.onboard.auto-hide"
 SCHEMA_UNIVERSAL_ACCESS  = "org.onboard.universal-access"
 SCHEMA_THEME             = "org.onboard.theme-settings"
 SCHEMA_LOCKDOWN          = "org.onboard.lockdown"
@@ -566,7 +565,6 @@ class Config(ConfigObject):
         self.window            = ConfigWindow()
         self.icp               = ConfigICP(self)
         self.auto_show         = ConfigAutoShow()
-        self.auto_hide         = ConfigAutoHide()
         self.universal_access  = ConfigUniversalAccess(self)
         self.theme_settings    = ConfigTheme(self)
         self.lockdown          = ConfigLockdown(self)
@@ -579,7 +577,6 @@ class Config(ConfigObject):
                           self.window,
                           self.icp,
                           self.auto_show,
-                          self.auto_hide,
                           self.universal_access,
                           self.theme_settings,
                           self.lockdown,
@@ -971,9 +968,12 @@ class Config(ConfigObject):
                self.auto_show.enabled
 
     def is_auto_hide_enabled(self):
-        return not self.xid_mode and \
-               self.is_event_source_xinput() and \
-               self.auto_hide.hide_on_key_press
+        return self.can_set_auto_hide() and \
+               self.auto_show.hide_on_key_press
+
+    def can_set_auto_hide(self):
+        return self.is_auto_show_enabled() and \
+               self.is_event_source_xinput()
 
     def is_force_to_top(self):
         return self.window.force_to_top or self.is_docking_enabled()
@@ -1516,14 +1516,8 @@ class ConfigAutoShow(ConfigObject):
         self.add_key("enabled", False)
         self.add_key("widget-clearance", (25.0, 55.0, 25.0, 40.0), '(dddd)')
 
-class ConfigAutoHide(ConfigObject):
-    """ auto_show configuration """
-
-    def _init_keys(self):
-        self.schema = SCHEMA_AUTO_HIDE
-        self.sysdef_section = "auto-hide"
-
         self.add_key("hide-on-key-press", True)
+
 
 class ConfigUniversalAccess(ConfigObject):
     """ universal_access configuration """
