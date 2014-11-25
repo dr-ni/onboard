@@ -448,6 +448,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
                                     int         type,
                                     Display*    display,
                                     int         device_id,
+                                    int         source_id,
                                     int         keyval
 )
 {
@@ -458,6 +459,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
         ev->xi_type = type;
         ev->type = translate_event_type(type);
         ev->device_id = device_id;
+        ev->source_id = source_id;
         ev->keyval = keyval;
 
         queue_event (dev, ev, False);
@@ -864,6 +866,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                             evtype,
                                                             event->display,
                                                             event->deviceid,
+                                                            event->sourceid,
                                                             keyval);
                 }
                 break;
@@ -882,6 +885,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                         evtype,
                                                         event->display,
                                                         event->deviceid,
+                                                        event->sourceid,
                                                         keyval);
                 break;
             }
