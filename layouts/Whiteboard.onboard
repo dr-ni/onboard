@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 <keyboard
     id="Whiteboard"
-    format="3.1"
+    format="3.2"
     section="contributions"
     summary="Special characters for interactive whiteboards"
     description="Keyboard layout with Greek literals, arrows and more, for math and physics education on an interactive Whiteboard."
@@ -31,7 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <key_template button="true" id="layer1" label="⅙⁺₉" tooltip="Sub-, Superscripts; Fractions"/>
   <key_template button="true" id="layer2" label="∃∩"  image="" tooltip="Set and Settings" />
   <key_template button="true" id="layer3" label="⚀♫"  tooltip="Special Characters"/>
-  <key_template button="true" id="layer0" label="αβΩ" tooltip="Greek"/>
+  <key_template button="true" id="layer0" label="αβΩ" tooltip="Greek" show_active="false"/>
   <key_template button="true" id="layer4" label="⇄"   tooltip="Arrows"/>
   <key_template button="true" id="layer5" label="..." tooltip="Custom"/>
 

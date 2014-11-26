@@ -1331,8 +1331,6 @@ class Keyboard(WordSuggestions):
         One cycle step when pressing a sticky (latchabe/lockable)
         modifier key (all sticky keys except layer buttons).
         """
-        needs_update = False
-
         active, locked = self.step_sticky_key_state(key,
                                                     key.active, key.locked,
                                                     button, event_type)
@@ -1358,16 +1356,25 @@ class Keyboard(WordSuggestions):
             if key in self._locked_sticky_keys:
                 self._locked_sticky_keys.remove(key)
 
-            deactivated = was_active
+            deactivated = was_active or \
+                          not self.can_activate_key(key) # push-button
 
         return deactivated
 
+    def can_activate_key(self, key):
+        """ Can key be latched or locked? """
+        behavior = self._get_sticky_key_behavior(key)
+        return StickyBehavior.can_latch(behavior) or \
+               StickyBehavior.can_lock(behavior)
+
     def step_sticky_key_state(self, key, active, locked, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
+        behavior = self._get_sticky_key_behavior(key)
+        double_click = event_type == EventType.DOUBLE_CLICK
 
         # double click usable?
-        if event_type == EventType.DOUBLE_CLICK and \
-           self._can_lock_on_double_click(key, event_type):
+        if double_click and \
+           StickyBehavior.can_lock_on_double_click(behavior):
 
             # any state -> locked
             active = True
@@ -1378,55 +1385,24 @@ class Keyboard(WordSuggestions):
             # off -> latched or locked
             if not active:
 
-                if self._can_latch(key):
+                if StickyBehavior.can_latch(behavior):
                     active = True
 
-                elif self._can_lock(key, event_type):
+                elif StickyBehavior.can_lock_on_single_click(behavior):
                     active = True
                     locked = True
 
             # latched -> locked
             elif not key.locked and \
-                 self._can_lock(key, event_type):
+                 StickyBehavior.can_lock_on_single_click(behavior):
                 locked = True
 
             # latched or locked -> off
-            else:
+            elif StickyBehavior.can_cycle(behavior):
                 active = False
                 locked = False
 
         return active, locked
-
-    def _can_latch(self, key):
-        """
-        Can sticky key enter latched state?
-        Latched keys are automatically released when a
-        non-sticky key is pressed.
-        """
-        behavior = self._get_sticky_key_behavior(key)
-        return behavior in [StickyBehavior.CYCLE,
-                            StickyBehavior.DOUBLE_CLICK,
-                            StickyBehavior.LATCH_ONLY]
-
-    def _can_lock(self, key, event_type):
-        """
-        Can sticky key enter locked state?
-        Locked keys stay active until they are pressed again.
-        """
-        behavior = self._get_sticky_key_behavior(key)
-        return behavior == StickyBehavior.CYCLE or \
-               behavior == StickyBehavior.LOCK_ONLY or \
-               behavior == StickyBehavior.DOUBLE_CLICK and \
-               event_type == EventType.DOUBLE_CLICK
-
-    def _can_lock_on_double_click(self, key, event_type):
-        """
-        Can sticky key enter locked state on double click?
-        Locked keys stay active until they are pressed again.
-        """
-        behavior = self._get_sticky_key_behavior(key)
-        return behavior == StickyBehavior.DOUBLE_CLICK and \
-               event_type == EventType.DOUBLE_CLICK
 
     def _get_sticky_key_behavior(self, key):
         """ Return sticky behavior for the given key """
@@ -2156,6 +2132,10 @@ class BCLayer(ButtonController):
                                        active_before, locked_before,
                                        button, event_type)
 
+        # push buttons switch layers even though they don't activate the key
+        if not keyboard.can_activate_key(self.key):
+            active = True
+
         keyboard.active_layer_index = self.layer_index \
                                       if active else 0
 
@@ -2168,8 +2148,11 @@ class BCLayer(ButtonController):
 
     def update(self):
         # don't show active state for layer 0, it'd be visible all the time
-        active = self.key.get_layer_index() != 0 and \
+        active = self.key.show_active and \
                  self.key.get_layer_index() == self.keyboard.active_layer_index
+        if active:
+            active = self.keyboard.can_activate_key(self.key)
+
         self.set_active(active)
         self.set_locked(active and self.keyboard._layer_locked)
 

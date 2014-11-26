@@ -56,12 +56,22 @@ class StickyBehavior:
         DOUBLE_CLICK,
         LATCH_ONLY,
         LOCK_ONLY,
-    ) = tuple(range(4))
+        LATCH_LOCK_NOCYCLE,
+        DOUBLE_CLICK_NOCYCLE,
+        LATCH_NOCYCLE,
+        LOCK_NOCYCLE,
+        PUSH_BUTTON,
+    ) = tuple(range(9))
 
-    values = {"cycle"    : CYCLE,
-              "dblclick" : DOUBLE_CLICK,
-              "latch"    : LATCH_ONLY,
-              "lock"     : LOCK_ONLY,
+    values = {"cycle"              : CYCLE,
+              "dblclick"           : DOUBLE_CLICK,
+              "latch"              : LATCH_ONLY,
+              "lock"               : LOCK_ONLY,
+              "latch-lock-nocycle" : LATCH_LOCK_NOCYCLE,
+              "dblclick-nocycle"   : DOUBLE_CLICK_NOCYCLE,
+              "latch-nocycle"      : LATCH_NOCYCLE,
+              "lock-nocycle"       : LOCK_NOCYCLE,
+              "push"               : PUSH_BUTTON,
              }
 
     @staticmethod
@@ -70,8 +80,59 @@ class StickyBehavior:
         return StickyBehavior.values[str_value]
 
     @staticmethod
-    def is_valid(value):
-        return value in StickyBehavior.values.values()
+    def is_valid(behavior):
+        return behavior in StickyBehavior.values.values()
+
+    @staticmethod
+    def can_latch(behavior):
+        """
+        Can sticky key enter latched state?
+        Latched keys are automatically released when a
+        non-sticky key is pressed.
+        """
+        return behavior in (StickyBehavior.CYCLE,
+                            StickyBehavior.DOUBLE_CLICK,
+                            StickyBehavior.LATCH_ONLY,
+                            StickyBehavior.LATCH_LOCK_NOCYCLE,
+                            StickyBehavior.DOUBLE_CLICK_NOCYCLE,
+                            StickyBehavior.LATCH_NOCYCLE)
+
+    @staticmethod
+    def can_lock(behavior):
+        return StickyBehavior.can_lock_on_single_click(behavior) or \
+               StickyBehavior.can_lock_on_double_click(behavior)
+
+    @staticmethod
+    def can_lock_on_single_click(behavior):
+        """
+        Can sticky key enter locked state?
+        Locked keys stay active until they are pressed again.
+        """
+        return behavior in (StickyBehavior.CYCLE,
+                            StickyBehavior.LOCK_ONLY,
+                            StickyBehavior.LATCH_LOCK_NOCYCLE,
+                            StickyBehavior.LOCK_NOCYCLE)
+
+    @staticmethod
+    def can_lock_on_double_click(behavior):
+        """
+        Can sticky key enter locked state on double click?
+        Locked keys stay active until they are pressed again.
+        """
+        return behavior == StickyBehavior.DOUBLE_CLICK or \
+               behavior == StickyBehavior.DOUBLE_CLICK_NOCYCLE
+
+    @staticmethod
+    def can_cycle(behavior):
+        """
+        Can sticky key return to normal state?
+        Latched keys are still automatically released when a
+        non-sticky key is pressed.
+        """
+        return behavior in (StickyBehavior.CYCLE,
+                            StickyBehavior.DOUBLE_CLICK,
+                            StickyBehavior.LATCH_ONLY,
+                            StickyBehavior.LOCK_ONLY)
 
 
 class LOD:
@@ -388,6 +449,12 @@ class RectKeyCommon(KeyCommon):
     show_border = True
     show_label = True
     show_image = True
+
+    # Allow to display active state, i.e. either latched or locked state.
+    # Depending on sticky_behavior the button will still become logically
+    # active, it just isn't shown. Used for layer0 buttons, mainly. They don't
+    # need to stick out, it's usually obvious when the first layer is active.
+    show_active = True
 
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)

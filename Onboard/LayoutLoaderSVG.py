@@ -60,8 +60,11 @@ class LayoutLoaderSVG:
     # label_margin, theme_id, popup_id
     LAYOUT_FORMAT_3_1         = Version(3, 1)
 
+    # new key attributes show_active
+    LAYOUT_FORMAT_3_2         = Version(3, 2)
+
     # current format
-    LAYOUT_FORMAT             = LAYOUT_FORMAT_3_1
+    LAYOUT_FORMAT             = LAYOUT_FORMAT_3_2
 
     # precalc mask permutations
     _label_modifier_masks = permute_mask(LABEL_MODIFIERS)
@@ -312,10 +315,6 @@ class LayoutLoaderSVG:
         if value and value.lower() == 'false':
             item.scannable = False
 
-        value = attributes.get("unlatch_layer")
-        if not value is None:
-            item.unlatch_layer = value == "true"
-
         value = attributes.get("scan_priority")
         if not value is None:
             item.scan_priority = int(value)
@@ -512,6 +511,15 @@ class LayoutLoaderSVG:
         if "show_border" in attributes:
             if attributes["show_border"].lower() == 'false':
                 key.show_border = False
+
+        # show_active: allow to display key in latched or locked state
+        # legacy show_active behavior was hard-coded for layer0
+        if self._format < LayoutLoaderSVG.LAYOUT_FORMAT_3_2:
+            if key.id == "layer0":
+                key.show_active = False
+        if "show_active" in attributes:
+            if attributes["show_active"].lower() == 'false':
+                key.show_active = False
 
         if "label_x_align" in attributes:
             key.label_x_align = float(attributes["label_x_align"])

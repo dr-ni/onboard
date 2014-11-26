@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <keyboard
     id="Compact"
-    format="3.1"
+    format="3.2"
     section="system"
     summary="Medium size desktop keyboard" >
 
@@ -175,7 +175,7 @@
                                 <key group="bottomrow" id="showclick"/>
                                 <key group="bottomrow" id="move"/>
                             </box>
-                            <key group="bottomrow" id="layer0" scan_priority="3"/>
+                            <key group="bottomrow" id="layer0" show_active="false" scan_priority="3"/>
                             <key group="bottomrow" id="layer1" scan_priority="3"/>
                             <key group="bottomrow" id="layer2" scan_priority="3"/>
                         </box>
@@ -184,7 +184,7 @@
                         <box orientation='vertical'>
                             <key group='sidebar' id='move' svg_id='move.wordlist' expand='false' label_margin='2.5'/>
                             <key group='sidebar' id='showclick' svg_id='showclick.wordlist' label_margin='2' expand='false'/>
-                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='3'/>
+                            <key group='bottomrow' id='layer0' show_active="false" svg_id='layer0.wordlist' scan_priority='3'/>
                             <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
                             <key group="bottomrow" id="layer2" svg_id='layer2.wordlist' scan_priority="3"/>
                         </box>

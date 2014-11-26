@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <keyboard
     id="Phone"
-    format="3.1"
+    format="3.2"
     section="system"
     summary="Mobile keyboard for small screens" >
 
@@ -16,6 +16,8 @@
         <include file='word_suggestions.xml'/>
     </panel>
 
+    <key_template button="true" id="layer0" show_active="false"/>
+    
     <panel>
       <box orientation="vertical">
       <!-- alpha and numbers layers -->

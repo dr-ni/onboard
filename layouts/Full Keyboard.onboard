@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard
     id="Full Keyboard"
-    format="3.1"
+    format="3.2"
     section="system"
     summary="Desktop keyboard with edit and function keys" >
 
@@ -189,7 +189,7 @@
                         <box orientation='vertical'>
                             <key group='bottonrow' id='move' expand='false'/>
                             <key group='bottomrow' id='showclick' expand='false'/>
-                            <key group='bottomrow' id='layer0' scan_priority='4'/>
+                            <key group='bottomrow' id='layer0' show_active='false' scan_priority='4'/>
                             <key group='bottomrow' id='layer1' scan_priority='4'/>
                         </box>
                     </panel>
@@ -197,7 +197,7 @@
                         <key group='bottonrow' id='move' svg_id='move.wordlist' expand='false'/>
                         <box orientation='vertical'>
                             <key group='bottomrow' id='showclick' svg_id='showclick.wordlist' expand='false'/>
-                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' scan_priority='4'/>
+                            <key group='bottomrow' id='layer0' show_active='false' svg_id='layer0.wordlist' scan_priority='4'/>
                             <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='4'/>
                         </box>
                     </panel>

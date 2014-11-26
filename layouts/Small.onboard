@@ -1,19 +1,20 @@
 <?xml version="1.0" ?>
 <keyboard
     id="Small"
-    format="3.1"
+    format="3.2"
     section="system"
     summary="Space efficient desktop keyboard" >
 
-  <include file="key_defs.xml"/>
-
-  <box border="0.5" orientation="vertical" spacing="1.5">
+    <include file="key_defs.xml"/>
+ 
+    <box border="0.5" orientation="vertical" spacing="1.5">
 
     <!--- word suggestions -->
     <panel filename="Small-Alpha.svg">
       <include file="word_suggestions.xml"/>
     </panel>
 
+    <key_template button="true" id="layer0" show_active="false"/>
     <key_template button="true" id="layer1" label="12?"/>
     <key_template button="true" id="layer2" label="Sym"/>
     <key_template button="true" id="layer3" label="Fn" image="" />

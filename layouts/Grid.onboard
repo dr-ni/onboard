@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <keyboard 
     id='Grid'
-    format='3.1'
+    format='3.2'
     section="system"
     summary="Grid of keys, suitable for keyboard scanning" >
 
