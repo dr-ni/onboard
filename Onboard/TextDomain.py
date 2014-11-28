@@ -83,6 +83,9 @@ class TextDomain:
         Get word separator to add after inserting a prediction choice.
 
         Doctests:
+
+        >>> from os.path import join
+
         # URL
         >>> d = DomainGenericText()
         >>> d.get_auto_separator("word http")
@@ -99,28 +102,99 @@ class TextDomain:
         '/'
         >>> from os.path import abspath, dirname
         >>> path = dirname(abspath("./onboard-defaults.conf.example"))
-        >>> d.get_auto_separator(path + "/onboard-defaults")
+        >>> d.get_auto_separator(join(path, "onboard-defaults"))
         '.'
-        >>> d.get_auto_separator(path + "/onboard-defaults.conf")
+        >>> d.get_auto_separator(join(path, "onboard-defaults.conf"))
         '.'
-        >>> d.get_auto_separator(path + "/onboard-defaults.conf.example")
+        >>> d.get_auto_separator(join(path, "onboard-defaults.conf.example"))
         ''
-        >>> d.get_auto_separator(path + "/onboard-defaults.conf.example.nexus7")
+        >>> d.get_auto_separator(join(path, "onboard-defaults.conf.example.nexus7"))
+        ' '
+
+        # filename in directory with spaces
+        >>> import tempfile
+        >>> td = tempfile.TemporaryDirectory(prefix="test onboard _")
+        >>> dir = td.name
+        >>> fn = os.path.join(dir, "onboard-defaults.conf.example")
+        >>> with open(fn, mode="w") as f: n = f.write("")
+        >>> d.get_auto_separator(join(dir, "onboard-defaults"))
+        '.'
+
+        # no false positives for valid filenames before the current token
+        >>> d.get_auto_separator(path + "/onboard-defaults no-file")
         ' '
         """
         separator = " "
 
-        # split at whitespace to catch whole URLs/file names
-        strings = context.split()
+        # Split at whitespace to catch whole URLs/file names and
+        # keep separators.
+        strings = re.split('(\s+)', context)
         if strings:
             string = strings[-1]
             if self._url_parser.is_maybe_url(string):
                 separator = self._url_parser.get_auto_separator(string)
-            elif self._url_parser._is_maybe_filename(string):
-                url = "file://" + string
-                separator = self._url_parser.get_auto_separator(url)
+            else:
+                fn = self._search_valid_file_name(strings)
+                if fn:
+                    string = fn
+                if self._url_parser._is_maybe_filename(string):
+                    url = "file://" + string
+                    separator = self._url_parser.get_auto_separator(url)
 
         return separator
+
+
+    def _search_valid_file_name(self, strings):
+        """
+        Search for a valid filename backwards across separators.
+
+        Doctests:
+        >>> import tempfile, re, os.path
+        >>>
+        >>> d = DomainGenericText()
+        >>>
+        >>> td = tempfile.TemporaryDirectory(prefix="test onboard _")
+        >>> dir = td.name
+        >>> fn1 = os.path.join(dir, "file")
+        >>> fn2 = os.path.join(dir, "file with many spaces")
+        >>> with open(fn1, mode="w") as f: n = f.write("")
+        >>> with open(fn2, mode="w") as f: n = f.write("")
+
+        # simple file in dir with spaces must return as filename
+        >>> strings = re.split('(\s+)', fn1)
+        >>> "/test onboard" in d._search_valid_file_name(strings)
+        True
+
+        # file with spaces in dir with spaces must return as filename
+        >>> strings = re.split('(\s+)', fn2)
+        >>> "/test onboard" in d._search_valid_file_name(strings)
+        True
+
+        # random string after a valid file must not be confused with a filename
+        >>> strings = re.split('(\s+)', fn2 + " no-file")
+        >>> d._search_valid_file_name(strings) is None
+        True
+        """
+        # Search backwards across spaces for an absolute filename.
+        max_sections = 16  # allow this many path sections (separators+tokens)
+        for i in range(min(max_sections, len(strings))):
+            fn = "".join(strings[-1-i:])
+            # Is it (part of) a valid absolute filename?
+            # Do least impact checks first.
+            if self._url_parser._is_maybe_filename(fn) and \
+               os.path.isabs(fn):
+
+                # Does a file or directory of this name exist?
+                if os.path.exists(fn):
+                    return fn
+
+                # Check if it is at least an incomplete filename of
+                # an existing file
+                files  = glob.glob(fn + "*")
+                if files:
+                    return fn
+
+        return None
 
     def grow_learning_span(self, text_span):
         """
