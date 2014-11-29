@@ -1497,9 +1497,6 @@ class LanguageMenu:
             if name:
                 other_langs.append((name, lang_id))
 
-        def add_system_indicator(name):
-            return name + _(" - System Language")
-
         # language sub menu
         lang_menu = Gtk.Menu()
         for name, lang_id in sorted(other_langs):

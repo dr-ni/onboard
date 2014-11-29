@@ -766,7 +766,6 @@ class WordSuggestions:
         if span and self._wpengine:
             tokens, spans = self._wpengine.tokenize_text(span.get_text())
 
-            caret = span.begin()
             text_begin = span.text_begin()
             local_caret = span.begin() - text_begin
 
@@ -848,7 +847,7 @@ class WordSuggestions:
 
         with self.suppress_modifiers():
             if insertion:
-                caret = self._replace_text(caret_span.begin() - len(deletion),
+                self._replace_text(caret_span.begin() - len(deletion),
                                    caret_span.begin(),
                                    caret_span.begin(),
                                    insertion)
@@ -896,7 +895,7 @@ class WordSuggestions:
         self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
-        """ Are there any changes to learn? """
+        """ Are there any text changes to learn? """
         return self.text_context and \
                self.text_context.has_changes()
 
@@ -908,7 +907,7 @@ class WordSuggestions:
 
     def discard_changes(self):
         """
-        Discard all changes that have accumulated for learning.
+        Discard all changes that have accumulated, don't learn them.
         """
         _logger.info("discarding changes")
         self._learn_strategy.discard_changes()
@@ -1223,6 +1222,7 @@ class LearnStrategy:
         ...                          None, None, d)
         [['usr', 'bin', 'onboard']]
 
+        # Passwords in URLs must not be learned
         >>> p._get_learn_tokens([TextSpan(0, 11, "user:pass@www.domain.org")],
         ...                          None, None, d)
         [['user', '<unk>', 'www', 'domain', 'org']]
@@ -1275,7 +1275,7 @@ class LearnStrategy:
     def _tokenize_span(self, text_span, prepend_tokens = 0):
         """
         Expand spans to word boundaries and return as tokens.
-        Include <prepend_tokens> before the span.
+        Include <prepend_tokens> tokens before the span.
 
         Doctests:
         >>> import Onboard.TextContext as tc
@@ -1356,8 +1356,6 @@ class LearnStrategy:
         """
         Returns indices of tokens the given text_span touches.
         """
-        text = text_span.get_text()
-
         itokens = []
         offset = text_span.text_begin()
         begin  = text_span.begin() - offset
@@ -1498,7 +1496,7 @@ class LearnStrategyLRU(LearnStrategy):
 
     def _update_scratch_memory(self, update_ui):
         """
-        Update short term memory from changes that haven't been learned yet.
+        Update short term memory with changes that haven't been learned yet.
         """
         changes = self._wp.text_context.get_changes()
         spans = changes.get_spans() # by reference
