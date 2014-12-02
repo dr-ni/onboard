@@ -399,7 +399,6 @@ class WordSuggestions:
             caret_span = self.text_context.get_span_at_caret()
             after_insert_span = self._simulate_insertion(caret_span,
                                                          deletion, insertion)
-
             # Should we add an auto-separator after the inserted word?
             domain = self.text_context.get_text_domain()
             separator = domain.get_auto_separator(after_insert_span.get_text())
@@ -457,7 +456,8 @@ class WordSuggestions:
         if self._spell_checker and \
            config.are_spelling_suggestions_enabled() and \
            self.can_spell_check():
-            word_span = self._get_word_to_spell_check()
+            word_span = self._get_word_to_spell_check(
+                self.text_context.get_span_at_caret(), self.is_typing())
             if word_span:
                 (self._correction_choices,
                 self._correction_span,
@@ -735,30 +735,42 @@ class WordSuggestions:
 
         return deletion, insertion
 
-    def _get_word_to_spell_check(self):
+    def _get_word_to_spell_check(self, caret_span, is_typing):
         """
         Get the word to be spell checked.
 
         Doctests:
         >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
-        >>> tc = wp.text_context
 
-        # caret at word end - suppress spelling suggestions while still typing
-        >>> tc._span_at_caret = TextSpan(8, 0, "binomial proportion")
-        >>> wp.is_typing = lambda : True  # simulate typing
-        >>> print(wp._get_word_to_spell_check())
+        # not typing and caret at word begin: return the word
+        >>> span = TextSpan(9, 0, "binomial proportion")
+        >>> print(wp._get_word_to_spell_check(span, False))
+        TextSpan(9, 10, 'proportion', 9, None)
+
+        # not typing and caret before word end: return the word
+        >>> span = TextSpan(7, 0, "binomial proportion")
+        >>> print(wp._get_word_to_spell_check(span, False))
+        TextSpan(0, 8, 'binomial', 0, None)
+
+        # not typing and caret at word end: return the word
+        >>> span = TextSpan(8, 0, "binomial proportion")
+        >>> print(wp._get_word_to_spell_check(span, False))
+        TextSpan(0, 8, 'binomial', 0, None)
+
+        # typing and caret at word end: suppress spelling suggestions
+        >>> span = TextSpan(8, 0, "binomial proportion")
+        >>> print(wp._get_word_to_spell_check(span, True))
         None
         """
-        caret_span  = self.text_context.get_span_at_caret()
         word_span = self._get_word_before_span(caret_span)
 
         # Don't pop up spelling corrections if we're
         # currently typing the word.
-        caret = self.text_context.get_caret()
-        if word_span and \
-           word_span.end() == caret and \
-           self.is_typing():
+        caret = caret_span.begin()
+        if is_typing and \
+           word_span and \
+           word_span.end() == caret:
             word_span = None
 
         return word_span
