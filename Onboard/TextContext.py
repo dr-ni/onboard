@@ -103,7 +103,7 @@ class AtspiTextContext(TextContext):
         self._context = ""
         self._line = ""
         self._line_caret = 0
-        self._span_at_caret = TextSpan()
+        self._selection_span = TextSpan()
         self._begin_of_text = False        # context starts at begin of text?
         self._begin_of_text_offset = None  # offset of text begin
 
@@ -166,12 +166,20 @@ class AtspiTextContext(TextContext):
         return self._line[self._line_caret:] \
                if self._accessible else ""
 
-    def get_span_at_caret(self):
-        return self._span_at_caret \
+    def get_selection_span(self):
+        return self._selection_span \
                if self._accessible else None
 
+    def get_span_at_caret(self):
+        if not self._accessible:
+            return None
+
+        span = self._selection_span.copy()
+        span.length = 0
+        return span
+
     def get_caret(self):
-        return self._span_at_caret.begin() \
+        return self._selection_span.begin() \
                if self._accessible else 0
 
     def get_text_begin_marker(self):
@@ -452,7 +460,7 @@ class AtspiTextContext(TextContext):
             (self._context,
              self._line,
              self._line_caret,
-             self._span_at_caret,
+             self._selection_span,
              self._begin_of_text,
              self._begin_of_text_offset) = result
 
