@@ -99,8 +99,11 @@ BaseNode* NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>::
                 static_cast<TNODE*>(parent)->add_child(node);
             }
 
-            num_ngrams[i]++; // keep track of the counts to avoid
-                             // traversing the tree for these numbers
+            // Create only a single node per call. For a valid model we
+            // expect count_ngram() to be called extra for each node in every
+            // path, in particular for all unigrams. Use learn_tokens() to
+            // enforce this. Only then is the model ready for use with
+            // predict().
             break;
         }
     }

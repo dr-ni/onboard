@@ -113,7 +113,7 @@ int NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
                          int increment)
 {
     // only the first time for each ngram
-    if (increment && node->count == 0)
+    if (node->count == 0 && increment > 0)
     {
         // get/add node for ngram (wids) excluding predecessor
         // ex: ngram = ["We", "saw"] -> wxr = ["saw"] with predecessor "We"
@@ -142,7 +142,28 @@ int NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
         }
     }
 
-    return Base::increment_node_count(node, wids, n, increment);
+    Base::increment_node_count(node, wids, n, increment);
+
+    // Decrement kneser parameters after removal of the node
+    if (node->count == 0 && increment < 0)
+    {
+        std::vector<WordId> wxr(wids+1, wids+n);
+        BaseNode *nd = this->add_node(wxr);
+        if (!nd)
+            return -1;
+        ((TBEFORELASTNODE*)nd)->N1pxr--;
+
+        if (n >= 2)
+        {
+            std::vector<WordId> wxrx(wids+1, wids+n-1);
+            BaseNode* nd = this->add_node(wxrx);
+            if (!nd)
+                return -1;
+            ((TNODE*)nd)->N1pxrx--;
+        }
+    }
+
+    return node->count;
 }
 
 template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
@@ -218,8 +239,11 @@ void NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
                     TBEFORELASTNODE* child = static_cast<TBEFORELASTNODE*>
                                     (this->get_child_at(hnode, j, i));
 
-                    if (child->get_N1pxr() == 0)  // no predecessors?
+                    if (child->get_N1pxr() == 0 &&  // no predecessors?
+                        child->get_count())         // not removed?
+                    {
                         N1prx--;  // exclude it from the count of successors
+                    }
                 }
 
                 // number of permutations around history h
@@ -232,7 +256,7 @@ void NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
                         // We're at the root and there are many children, all
                         // unigrams to be accurate. So the number of child nodes
                         // is >= the number of candidate words.
-                        // Luckily a childs word_id can be directly looked up
+                        // Luckily a child's word_id can be directly looked up
                         // in the unigrams because they are always sorted by word_id
                         // as well. -> take that shortcut for root.
                         for(i=0; i<size; i++)
@@ -244,8 +268,8 @@ void NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
                     }
                     else
                     {
-                        // We're at some level > 0 and very likely there are much
-                        // less child nodes than candidate words. E.g. everything
+                        // We're at some level > 0 and very likely there are a lot
+                        // fewer child nodes than candidate words. E.g. everything
                         // from bigrams up has in all likelihood only few children.
                         // -> Turn the algorithm around and search the child nodes
                         // in the candidate words.

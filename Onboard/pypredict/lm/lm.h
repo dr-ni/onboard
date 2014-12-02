@@ -404,6 +404,8 @@ class LanguageModel
 
         virtual int get_num_word_types() {return dictionary.get_num_word_types();}
 
+        virtual bool is_model_valid() = 0;
+
         virtual LMError load(const char* filename) = 0;
         virtual LMError save(const char* filename) = 0;
 
@@ -418,6 +420,11 @@ class LanguageModel
                                     const wchar_t* prefix,
                                     std::vector<WordId>& wids,
                                     uint32_t options);
+        virtual void filter_candidates(const std::vector<WordId>& in,
+                                             std::vector<WordId>& out)
+        {
+            copy(in.begin(), in.end(), std::back_inserter(out));
+        }
         virtual void get_probs(const std::vector<WordId>& history,
                                const std::vector<WordId>& words,
                                std::vector<double>& probabilities)

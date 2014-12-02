@@ -22,11 +22,9 @@ import sys
 import re
 import codecs
 from math import log
-import unicodedata
 
 import pypredict.lm as lm
-from pypredict.lm import overlay, linint, loglinint
-
+from pypredict.lm import overlay, linint, loglinint  # exported symbols
 
 class _BaseModel:
 
@@ -51,6 +49,8 @@ class _BaseModel:
         [['word1'], ['word1', 'word2'], ['word2'], ['word3']]
         >>> list(m._extract_ngrams(["word1", "word2", "<s>", "word3"]))
         [['word1'], ['word1', 'word2'], ['word2'], ['<s>'], ['<s>', 'word3'], ['word3']]
+        >>> list(m._extract_ngrams(["a", "b", "c", "d"]))
+        [['a'], ['a', 'b'], ['a', 'b', 'c'], ['b'], ['b', 'c'], ['b', 'c', 'd'], ['c'], ['c', 'd'], ['d']]
         """
         token_sections = []
 
@@ -143,6 +143,60 @@ class _BaseModel:
         except IOError as e:
             self.load_error = True
             raise e
+
+    def remove_context(self, context):
+        changes = self.get_remove_context_changes(context)
+        if changes:
+            for ngram, count in changes.items():
+                self.count_ngram(ngram, count)
+
+            self.modified = True
+
+        return changes
+
+    def get_remove_context_changes(self, context):
+        changes = {}
+
+        for it in self.iter_ngrams():
+            ngram = it[0]
+            count = it[1]
+
+            # find intersection with context
+            intersect_len = 0
+            intersection_point = 0
+            for i in range(len(ngram)):
+                for j in range(min(len(context), i+1)):
+                    if ngram[i-j] != context[-j-1]:
+                        break
+                    intersect_len += 1
+                else:
+                    intersection_point = i
+                    break
+
+            # context fully contained?
+            if intersect_len == len(context):
+                # remove full matches completely
+                changes[ngram] = -count
+
+                # Lower count of the n-gram after the intersection_point.
+                # This is analogous to breaking up learning text into
+                # separate sections at the word to remove (the last word of
+                # the context).
+                # Does ngram begin with context and is there a remainder?
+                if intersection_point == len(context)-1: #and intersection_point < len(ngram)-1
+                    # For every remainder n-gram up to the last word of context
+                    for i in range(len(context)-1):
+                        ng = ngram[intersection_point-i:]
+                        changes[ng] = changes.get(ng, 0) - count
+
+                # Lower count of n-grams contained in the
+                # context by the count of the exact match.
+                if len(ngram) == len(context): # g-gram == context?
+                    for i in range(1, len(ngram)):
+                        ng = ngram[i:]
+                        changes[ng] = -count
+
+        return changes
 
 
 class LanguageModel(_BaseModel, lm.LanguageModel):
@@ -439,7 +493,7 @@ def tokenize_context(text):
 
 def read_order(filename, encoding=None):
     """
-    Detect the order from the header of the given file.
+    Read the order from the header of the given file.
     Encoding may be 'utf-8', 'latin-1'.
     """
     order = None

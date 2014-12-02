@@ -210,7 +210,19 @@ class BeforeLastNode : public TBASE
             return lo;
         }
 
-        int get_N1prx() {return children.size();}  // assumes all have counts>=1
+        int get_N1prx()
+        {
+            //return children.size();  // assumes all have counts>=1
+            // Take removed nodes into account (count==0)
+            int n = 0;
+            if (1)  // any removed nodes in the model?
+            {
+                for (int i=0; i<children.size(); i++)
+                    if (children[i].get_count() > 0)
+                        n++;
+            }
+            return n;
+        }
 
         int sum_child_counts()
         {
@@ -285,13 +297,23 @@ class TrieNode : public TBASE
 
         int get_N1prx()
         {
-            int n = children.size();  // assumes all children have counts > 0
+            int n = 0;
+            if (1)  // any removed nodes in the model?
+            {
+                for (int i=0; i<(int)children.size(); i++)
+                    if (children[i]->get_count() > 0)
+                        n++;
+            }
+            else
+            {
+                n = children.size();  // assumes all children have counts > 0
 
-            // Unigrams <unk>, <s>,... may be empty initially. Don't count them
-            // or predictions for small models won't sum close to 1.0
-            for (int i=0; i<n && i<NUM_CONTROL_WORDS; i++)
-                if (children[0]->get_count() == 0)
-                    n--;
+                // Unigrams <unk>, <s>,... may be empty initially. Don't count them
+                // or predictions for small models won't sum close to 1.0
+                for (int i=0; i<n && i<NUM_CONTROL_WORDS; i++)
+                    if (children[0]->get_count() == 0)
+                        n--;
+            }
             return n;
         }
 
@@ -339,6 +361,19 @@ class NGramTrie : public TNODE
 
                 void operator++(int unused) // postfix operator
                 {
+                    BaseNode* node;
+                    for(;;)
+                    {
+                        node = next();
+                        // skip removed nodes, i.e. nodes with count==0
+                        if (node == NULL || node->count != 0)
+                            break;
+                    }
+                }
+
+                // next for all nodes, including deleted ones with count==0
+                BaseNode* next()
+                {
                     // preorder traversal with shallow stack
                     // nodes stack: path to node
                     // indexes stack: index of _next_ child
@@ -351,7 +386,7 @@ class NGramTrie : public TNODE
                         nodes.pop_back();
                         indexes.pop_back();
                         if (nodes.empty())
-                            return;
+                            return NULL;
 
                         node = nodes.back();
                         index = ++indexes.back();
@@ -362,6 +397,7 @@ class NGramTrie : public TNODE
                     nodes.push_back(node);
                     indexes.push_back(0);
                     //printf ("pushed %d %d %d\n", nodes.back()->word_id, index, indexes.back());
+                    return node;
                 }
 
                 void get_ngram(std::vector<WordId>& ngram)
@@ -419,7 +455,24 @@ class NGramTrie : public TNODE
                                  int increment)
         {
             total_ngrams[n-1] += increment;
+
+            // Adding n-gram?
+            if (node->count == 0 && increment > 0)
+                num_ngrams[n-1]++;
+
             node->count += increment;
+
+            // Removing n-gram?
+            if (node->count <= 0 && increment < 0)
+            {
+                num_ngrams[n-1]--;
+
+                // Control words must not be removed.
+                if (n == 1 && wids[0] < NUM_CONTROL_WORDS)
+                {
+                    node->count = 1;
+                }
+            }
             return node->count;
         }
 
@@ -438,13 +491,17 @@ class NGramTrie : public TNODE
                                   int num_word_types,
                                   const std::vector<double>& Ds);
 
-        // get number of unique ngrams
+        // Get number of unique ngrams per level, excluding removed ones
+        // with count==0.
         int get_num_ngrams(int level) { return num_ngrams[level]; }
 
-        // get total number of all ngram occurences
+        // Get total number of all ngram occurences per level.
         int get_total_ngrams(int level) { return total_ngrams[level]; }
 
-        // get number of occurences of a specific ngram
+        // Number of distinct words excluding removed ones with count=0.
+        virtual int get_num_word_types() {return get_num_ngrams(0);}
+
+        // Get number of occurences of a specific ngram.
         int get_ngram_count(const std::vector<WordId>& wids)
         {
             BaseNode* node = get_node(wids);
@@ -597,7 +654,14 @@ class NGramTrie : public TNODE
 
     public:
         int order;
+
+        // Keep track of these counts to avoid
+        // traversing the tree for these numbers.
+        //
+        // Number of unique ngrams with count > 0, per level.
         std::vector<int> num_ngrams;
+
+        // Number of total occurences of all n-grams, per level.
         std::vector<int> total_ngrams;
 };
 
@@ -661,7 +725,7 @@ class DynamicModelBase : public NGramModel
 
     protected:
         // temporary unigram, only used during loading
-        typedef struct 
+        typedef struct
         {
             std::wstring word;
             uint32_t count;
@@ -693,6 +757,9 @@ class DynamicModelBase : public NGramModel
         {}
         virtual int get_num_ngrams(int level) = 0;
         virtual void reserve_unigrams(int count) = 0;
+
+        // Number of distinct words excluding removed ones with count=0.
+        virtual int get_num_word_types() {return get_num_ngrams(0);}
 
 };
 
@@ -765,6 +832,38 @@ class _DynamicModel : public DynamicModelBase
             return smoothings;
         }
 
+        virtual void filter_candidates(const std::vector<WordId>& in,
+                                             std::vector<WordId>& out)
+        {
+            // filter out removed unigrams
+            int num_candidates = in.size();
+            out.reserve(num_candidates);
+            for (int i=0; i<num_candidates; i++)
+            {
+                WordId wid = in[i];
+                // can crash if is_model_valid() == false
+                BaseNode* node = ngrams.get_child_at(&ngrams, 0, wid);
+                if (node->get_count())
+                    out.push_back(wid);
+            }
+        }
+
+        // Plausibilty check befor predict() calls can be performed.
+        //
+        // When count_ngram() is called manually, it isn't guaranteed
+        // that all nodes are created that are required for a valid model.
+        // Unigrams in particular may be missing. This can lead to crashes
+        // in filter_candidates or probability calculations.
+        //
+        // For filling models it's best to avoid count_ngram() and
+        // use the safer learn_tokens() instead.
+        virtual bool is_model_valid()
+        {
+            // including removed unigrams with count==0
+            int num_unigrams = ngrams.get_num_children(&ngrams, 0);
+            return num_unigrams == dictionary.get_num_word_types();
+        }
+
         virtual BaseNode* count_ngram(const wchar_t* const* ngram, int n,
                                 int increment=1, bool allow_new_words=true);
         virtual BaseNode* count_ngram(const WordId* wids, int n, int increment);
@@ -803,9 +902,10 @@ class _DynamicModel : public DynamicModelBase
             return ngrams.increment_node_count(node, wids, n, increment);
         }
 
+        // Number of n-grams per level, excluding removed ones with count==0.
         virtual int get_num_ngrams(int level)
-        { 
-            return ngrams.get_num_ngrams(level); 
+        {
+            return ngrams.get_num_ngrams(level);
         }
 
         virtual void reserve_unigrams(int count)
@@ -823,10 +923,19 @@ class _DynamicModel : public DynamicModelBase
         }
 
     protected:
+        // n-gram trie
         TNGRAMS ngrams;
+
+        // smoothing
         Smoothing smoothing;
+
+        // total number of n-grams with exactly one count, per level
         std::vector<int> n1s;
+
+        // total number of n-grams with exactly two counts, per level
         std::vector<int> n2s;
+
+        // discounting parameters for abs. discounting, kneser-ney, per level
         std::vector<double> Ds;
 };
 

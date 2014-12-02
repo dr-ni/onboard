@@ -355,6 +355,28 @@ class WordSuggestions:
                 item.expand_corrections(expand)
                 self.redraw([item])
 
+    def get_prediction_choice(self, choice_index):
+        if choice_index >= 0 and choice_index < len(self._prediction_choices):
+            return self._prediction_choices[choice_index]
+        return ""
+
+    def get_prediction_choice_and_history(self, choice_index):
+        word = self.get_prediction_choice(choice_index)
+        context = self.text_context.get_bot_context()
+        tokens, spans = self._wpengine.tokenize_context(context)
+
+        if tokens:
+            assert(word.startswith(tokens[-1]))
+            history = tokens[-2:-1]
+        else:
+            history = []
+
+        return word, history
+
+    def remove_prediction_context(self, context):
+        if self._wpengine:
+            self._wpengine.remove_context(context)
+
     def _insert_correction_choice(self, key, choice_index):
         """ spelling correction clicked """
         span = self._correction_span # span to correct

@@ -508,9 +508,10 @@ uint64_t Dictionary::get_memory_size()
 // return a list of word ids to be considered during the prediction
 void LanguageModel::get_candidates(const std::vector<WordId>& history,
                                    const wchar_t* prefix,
-                                   std::vector<WordId>& wids,
+                                   std::vector<WordId>& candidates,
                                    uint32_t options)
 {
+    std::vector<WordId> wids;
     bool has_prefix = (prefix && wcslen(prefix));
     int history_size = history.size();
     bool only_predictions =
@@ -550,6 +551,9 @@ void LanguageModel::get_candidates(const std::vector<WordId>& history,
             wids.push_back(i);
         }
     }
+
+    // filter to remove words with removed unigrams
+    filter_candidates(wids, candidates);
 }
 
 void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
@@ -559,6 +563,12 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     int i;
 
     if (!context.size())
+        return;
+
+    // Must not crash in get_candidates().
+    // When filling a model use learn_tokens() instead of count_ngram() to
+    // ensure the model is valid.
+    if (!is_model_valid())
         return;
 
     // split context into history and completion-prefix

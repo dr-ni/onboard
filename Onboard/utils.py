@@ -357,12 +357,16 @@ def show_ask_string_dialog(question, parent=None):
     question_dialog.destroy()
     return text
 
-def show_confirmation_dialog(question, parent=None, center=False):
+def show_confirmation_dialog(question, parent=None, center=False, title=None):
     """
     Show this dialog to ask confirmation before executing a task.
     """
+    if title is None:
+        # Default dialog title: name of the application """
+        title = _("Onboard")
     dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
                             text=question,
+                            title = title,
                             buttons=Gtk.ButtonsType.YES_NO)
     if parent:
         dlg.set_transient_for(parent)

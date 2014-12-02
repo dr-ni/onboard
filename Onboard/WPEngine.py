@@ -295,6 +295,25 @@ class WPLocalEngine(object):
 
         return choices
 
+    def remove_context(self, context):
+        """
+        Remove the last word of context in the given context.
+        If len(context) == 1 then all occurences of the word will be removed.
+        """
+        lmids, weights = self._model_cache.parse_lmdesc(self.auto_learn_models)
+        models = self._model_cache.get_models(lmids)
+        for i, m in enumerate(models):
+            changes = m.remove_context(context)
+
+            # debug output
+            _logger.debug("removing {} from '{}': {} n-grams affected" \
+                          .format(context, lmids[i], len(changes)))
+            if _logger.isEnabledFor(logging.DEBUG):
+                changes = sorted(sorted(changes.items()),
+                                 key=lambda x: -len(x[0]))
+                for ng in changes:
+                    _logger.debug("    remove: {}, count {}".format(ng[0], ng[1]))
+
 
 class ModelCache:
     """ Loads and caches language models """

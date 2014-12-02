@@ -38,6 +38,14 @@ class MergedModel : public LanguageModel
 {
     public:
         // language model overloads
+        virtual bool is_model_valid()
+        {
+            for (unsigned i=0; i<components.size(); i++)
+                if (!components[i]->is_model_valid())
+                    return false;
+            return true;
+        };
+
         virtual void predict(std::vector<LanguageModel::Result>& results,
                              const std::vector<wchar_t*>& context,
                              int limit=-1,

@@ -62,7 +62,6 @@ class _TestTokenization(unittest.TestCase):
 
 
 class _TestMultiOrder(unittest.TestCase):
-
     def __init__(self, test, order):
         unittest.TestCase.__init__(self, test)
         self.order = order
@@ -99,6 +98,49 @@ class _TestMultiOrder(unittest.TestCase):
         #self.training_text = self.testing_text = u"a b c"
         self.training_tokens, _spans = tokenize_text(self.training_text)
         self.testing_tokens, _spans = tokenize_text(self.testing_text)
+
+    def probability_sum(self, model):
+        def print(s=""):
+            sys.stderr.write(s + '\n')
+        # test sum of probabilities for multiple predictions
+        num_tests = 0
+        num_bad = 0
+        num_with_zero = 0
+
+       # import traceback
+       # traceback.print_stack()
+        for i,t in enumerate(self.testing_tokens):
+            context = self.testing_tokens[:i] + [""]
+            choices = model.predictp(context,
+                                     options = model.NORMALIZE |
+                                               model.INCLUDE_CONTROL_WORDS)
+            psum = sum(x[1] for x in choices)
+
+            num_tests += 1
+            eps = 1e-6
+
+            if abs(1.0 - psum) > eps:
+                num_bad += 1
+                if num_bad == 1:
+                    print()
+                print("order %d, pos %d: probabilities don't sum to 1.0; psum=%10f, #results=%6d, context='%s'" % \
+                      (self.order, num_tests, psum, len(choices), repr(context[-4:])))
+
+            zerocount = sum(1 for word,p in choices if p == 0)
+            if zerocount:
+                num_with_zero += 1
+                print("order %d, pos %d: %d words with zero probability; psum=%10f, #results=%6d, context='%s'" % \
+                      (self.order, num_tests, zerocount, psum, len(choices), repr(context[-4:])))
+
+        self.assertEqual(num_tests, num_tests-num_bad,
+                      "order %d, probabilities don't sum to 1.0 for %d of %d predictions" % \
+                      (self.order, num_bad, num_tests))
+
+        self.assertEqual(num_tests, num_tests-num_with_zero,
+                      "order %d, zero probabilities in %d of %d predictions" % \
+                      (self.order, num_with_zero, num_tests))
+
+class _TestMultiOrderMisc(_TestMultiOrder):
 
     def test_psum_unigram_model(self):
         model = UnigramModel(self.order)
@@ -160,7 +202,7 @@ class _TestMultiOrder(unittest.TestCase):
             m.smoothing = "abs-disc"
             self.probability_sum(m)
 
-    def _test_prune_kneser_ney(self):
+    def test_prune_kneser_ney(self):
         model = DynamicModelKN(self.order)
         model.learn_tokens(self.training_tokens)
         for prune_count in range(5):
@@ -168,43 +210,333 @@ class _TestMultiOrder(unittest.TestCase):
             m.smoothing = "kneser-ney"
             self.probability_sum(m)
 
-    def probability_sum(self, model):
-        def print(s=""): sys.stderr.write(s + '\n')
-        # test sum of probabilities for multiple predictions
-        num_tests = 0
-        num_bad = 0
-        num_with_zero = 0
 
-        for i,t in enumerate(self.testing_tokens):
-            context = self.testing_tokens[:i] + [""]
-            choices = model.predictp(context,
-                                     options = model.NORMALIZE |
-                                               model.INCLUDE_CONTROL_WORDS)
-            psum = sum(x[1] for x in choices)
+class _TestMultiOrderRemove(_TestMultiOrder):
+    tests = \
+    [
+        # test #0: edge case empty model
+        [
+            [""],                      # training texts
+            [
+                [ [["a"]], [""], ],    # removals, testing texts
+            ]
+        ],
+        # test #1-2: edge case single n-gram
+        [
+            ["a"],
+            [
+                [ [["a"]], [""], ],
+                [ [["f"]], ["a"], ],
+            ]
+        ],
+        # test #3-4: edge case single word type
+        [
+            ["a", "a a", "a a a"],
+            [
+                [ [["a"]], [""], ],
+                [ [["f"]], ["a", "a a", "a a a"], ],
+            ]
+        ],
+        # test #5-10: remove any single token
+        [
+            ["a b c d e"],
+            [
+                [ [["a"]], ["b c d e"], ],
+                [ [["b"]], ["a", "c d e"], ],
+                [ [["c"]], ["a b", "d e"], ],
+                [ [["d"]], ["a b c", "e"], ],
+                [ [["e"]], ["a b c d"], ],
+                [ [["f"]], ["a b c d e"], ],
+            ]
+        ],
+        # test #11-16: remove any single word of more complex text
+        [
+            ["a b c d e a b c d e e d c b a", "a b c d e"],
+            [
+                [ [["a"]], ["b c d e", "b c d e e d c b", "b c d e"], ],
+                [ [["b"]], ["a", "c d e a", "c d e e d c", "a", "a", "c d e"], ],
+                [ [["c"]], ["a b", "d e a b", "d e e d", "b a", "a b", "d e"], ],
+                [ [["d"]], ["a b c", "e a b c", "e e", "c b a", "a b c", "e"], ],
+                [ [["e"]], ["a b c d", "a b c d", "d c b a", "a b c d"], ],
+                [ [["f"]], ["a b c d e a b c d e e d c b a", "a b c d e"], ],
+                [ [["a"], ["b"]], ["c d e", "c d e e d c", "c d e"], ],
+                [ [["a"], ["b"], ["c"], ["d"], ["e"]], [""], ],
+            ]
+        ],
+    ]
 
-            num_tests += 1
-            eps = 1e-6
+    def test_remove_context_control_words(self):
+        """ Control words must not be removed """
+        control_words = ["<unk>", "<s>", "</s>", "<num>"]
+        model = DynamicModel()
+        for w in control_words:
+            model.count_ngram([w], 1) # Use count_ngram because learn_tokens
+                                      # removes some control words.
 
-            if abs(1.0 - psum) > eps:
-                num_bad += 1
-                if num_bad == 1:
-                    print()
-                print("order %d, pos %d: probabilities don't sum to 1.0; psum=%10f, #results=%6d, context='%s'" % \
-                      (self.order, num_tests, psum, len(choices), repr(context[-4:])))
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents,
+                         [(('<unk>',), 2, 0),
+                          (('<s>',), 2, 0),
+                          (('</s>',), 2, 0),
+                          (('<num>',), 2, 0)])
 
-            zerocount = sum(1 for word,p in choices if p == 0)
-            if zerocount:
-                num_with_zero += 1
-                print("order %d, pos %d: %d words with zero probability; psum=%10f, #results=%6d, context='%s'" % \
-                      (self.order, num_tests, zerocount, psum, len(choices), repr(context[-4:])))
+        for w in control_words:
+            model.remove_context([w])
 
-        self.assertEqual(num_tests, num_tests-num_bad,
-                      "order %d, probabilities don't sum to 1.0 for %d of %d predictions" % \
-                      (self.order, num_bad, num_tests))
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents,
+                         [(('<unk>',), 1, 0),
+                          (('<s>',), 1, 0),
+                          (('</s>',), 1, 0),
+                          (('<num>',), 1, 0)])
 
-        self.assertEqual(num_tests, num_tests-num_with_zero,
-                      "order %d, zero probabilities in %d of %d predictions" % \
-                      (self.order, num_with_zero, num_tests))
+    def test_remove_context_save(self):
+        """ Removed n-grams must not appear in saved model files """
+        tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        fn = os.path.join(tmp_dir.name, "remove_context.lm")
+
+        tests = \
+        [
+            [
+                ["a b c <s> d e f"],        # training texts
+                [
+                    # removals, saved n-gram counts per level (up to order 5)
+                    [ [["a"], ["c"], ["f"]], [7, 2, 1, 0, 0] ],
+                ]
+            ],
+            [
+                ["a b c d e a b c d e e d c b a", "a b c d e"],
+                [
+                    [ [["a"]], [8, 7, 6, 5, 4] ],
+                    [ [["b"]], [8, 6, 5, 4, 2] ],
+                    [ [["c"]], [8, 6, 4, 2, 0] ],
+                    [ [["d"]], [8, 6, 3, 1, 0] ],
+                    [ [["e"]], [8, 6, 4, 2, 0] ],
+                    [ [["f"]], [9, 10, 10, 10, 10] ],
+                    [ [["a"], ["b"], ["c"], ["d"], ["e"]], [4, 0, 0, 0, 0] ],
+                ]
+            ],
+        ]
+
+        itest = 0
+        for training_texts, test_set in tests:
+            for remove_contexts, ngram_counts in test_set:
+                model = DynamicModel(self.order)
+                for text in training_texts:
+                    tokens, spans = tokenize_text(text)
+                    model.learn_tokens(tokens)
+                for context in remove_contexts:
+                    model.remove_context(context)
+
+                model.save(fn)
+
+                # check if it loads, throws exception if it detects anything funny
+                model.load(fn)
+
+                # check n-gram counts directly in the saved file
+                with open(fn) as f:
+                    contents = f.read()
+                #print(contents, file=sys.stderr)
+
+                for level in range(self.order):
+                    pattern = "ngram {}={}".format(level+1, ngram_counts[level])
+                    matches = re.findall(pattern, contents, re.MULTILINE)
+                    self.assertEqual(1, len(matches),
+                        "order {}, test {}: saved model doesn't contain '{}'" \
+                        .format(self.order, itest, pattern))
+
+                itest += 1
+
+    def test_remove_context(self):
+        """
+        remove_context() must fully perform the removal and leave models in
+        a state that can be reached by learning.
+        """
+        itest = 0
+        for training_texts, test_set in self.tests:
+            for remove_contexts, testing_texts in test_set:
+                self._test_remove_context(
+                    training_texts, testing_texts, remove_contexts,
+                    self.order, "test #{}".format(itest))
+                itest += 1
+
+    def test_get_remove_context_changes(self):
+        """
+        get_remove_context_changes() must return valid and complete changes.
+        """
+        itest = 0
+        for training_texts, test_set in self.tests:
+            for remove_contexts, testing_texts in test_set:
+                self._test_get_remove_context_changes(
+                    training_texts, testing_texts, remove_contexts,
+                    self.order, "test #{}".format(itest))
+                itest += 1
+
+    def test_remove_context_witten_bell(self):
+        """
+        Witten-bell predictions must sum to zero after removal.
+        """
+        for training_texts, test_set in self.tests:
+            for remove_contexts, testing_texts in test_set:
+
+                model = DynamicModel(self.order)
+                model.smoothing = "witten-bell"
+
+                for text in training_texts:
+                    tokens, _spans = tokenize_text(text)
+                    model.learn_tokens(tokens)
+
+                # remove
+                for context in remove_contexts:
+                    model.remove_context(context)
+                self.probability_sum(model)
+
+                # re-add
+                for context in remove_contexts:
+                    model.learn_tokens(context)
+                self.probability_sum(model)
+
+    def test_remove_context_absolute_discounting(self):
+        """
+        Absolute-discounting predictions must sum to zero after removal.
+        """
+        for training_texts, test_set in self.tests:
+            for remove_contexts, testing_texts in test_set:
+
+                model = DynamicModel(self.order)
+                model.smoothing = "abs-disc"
+                for text in training_texts:
+                    tokens, _spans = tokenize_text(text)
+                    model.learn_tokens(tokens)
+
+                # remove
+                for context in remove_contexts:
+                    model.remove_context(context)
+                self.probability_sum(model)
+
+                # re-add
+                for context in remove_contexts:
+                    model.learn_tokens(context)
+                self.probability_sum(model)
+
+    def test_remove_context_kneser_ney(self):
+        """
+        Kneser-ney predictions must sum to zero after removal.
+        """
+        for training_texts, test_set in self.tests:
+            for remove_contexts, testing_texts in test_set:
+
+                model = DynamicModelKN(self.order)
+                model.smoothing = "kneser-ney"
+                for text in training_texts:
+                    tokens, _spans = tokenize_text(text)
+                    model.learn_tokens(tokens)
+
+                for context in remove_contexts:
+                    model.remove_context(context)
+
+                # remove
+                for context in remove_contexts:
+                    model.remove_context(context)
+                self.probability_sum(model)
+
+                # re-add
+                for context in remove_contexts:
+                    model.learn_tokens(context)
+                self.probability_sum(model)
+
+    def _test_remove_context(self, training_texts, testing_texts,
+                                   remove_contexts, order, description):
+        model0 = DynamicModel(order)
+        for text in training_texts:
+            tokens, _spans = tokenize_text(text)
+            model0.learn_tokens(tokens)
+
+        model1 = DynamicModel(order)
+        for text in testing_texts:
+            tokens, _spans = tokenize_text(text)
+            model1.learn_tokens(tokens)
+
+        for context in remove_contexts:
+            model0.remove_context(context)
+        ngrams0 = sorted(sorted(model0.iter_ngrams()), key=lambda x: -len(x[0]))
+        ngrams1 = sorted(sorted(model1.iter_ngrams()), key=lambda x: -len(x[0]))
+
+        # compare testing model with results of simulated removal
+        for i, ng in enumerate(ngrams0):
+            ng0 = [ngrams0[i][0], ngrams0[i][1]]
+            if i < len(ngrams1):
+                ng1 = [ngrams1[i][0], ngrams1[i][1]]
+            else:
+                ng1 = None
+
+            self.assertEqual(ng0, ng1,
+                             "{}, order {}: n-gram mismatch:  {} != {}" \
+                             .format(description, order, ng0, ng1))
+
+    def _test_get_remove_context_changes(self, training_texts, testing_texts,
+                                         remove_contexts, order, description):
+        model0 = DynamicModel(order)
+        for text in training_texts:
+            tokens, _spans = tokenize_text(text)
+            model0.learn_tokens(tokens)
+
+        model1 = DynamicModel(order)
+        for text in testing_texts:
+            tokens, _spans = tokenize_text(text)
+            model1.learn_tokens(tokens)
+
+        ngrams0 = list(model0.iter_ngrams())
+        ngrams1 = list(model1.iter_ngrams())
+
+        # simulate removal by applying the required changes to ngrams0
+        changes = {}
+        for context in remove_contexts:
+            cs = model0.get_remove_context_changes(context)
+            for ngram, count in cs.items():
+                changes[ngram] = changes.get(ngram, 0) + count
+
+        ngrams0_mod = []
+        for i, it in enumerate(ngrams0):
+            ngram = it[0]
+            count = it[1]
+            diff = changes.get(ngram, 0)
+            count += diff
+
+            # Test results in negative counts for more than one
+            # removal. This is not a fault of get_remove_context_changes()
+            # and doesn't happen with remove_context() either.
+            if len(remove_contexts) == 1 and count != 0 or \
+               len(remove_contexts) >= 2 and count > 0:
+                ngrams0_mod.append([ngram, count])
+
+        ngrams0 = sorted(sorted(ngrams0), key=lambda x: -len(x[0]))
+        ngrams0_mod = sorted(sorted(ngrams0_mod), key=lambda x: -len(x[0]))
+        ngrams1 = sorted(sorted(ngrams1), key=lambda x: -len(x[0]))
+
+        if 0:
+            if order == 2:
+                for ng in ngrams0:
+                    print("0:", ng[0], ng[1], file=sys.stderr)
+                print(file=sys.stderr)
+                for ng in ngrams0_mod:
+                    print("m:", ng[0], ng[1], file=sys.stderr)
+                print(file=sys.stderr)
+                for ng in ngrams1:
+                    print("1:", ng[0], ng[1], file=sys.stderr)
+                print(file=sys.stderr)
+
+        # compare testing model with results of simulated removal
+        for i, ng in enumerate(ngrams0_mod):
+            ng0 = [ngrams0_mod[i][0], ngrams0_mod[i][1]]
+            if i < len(ngrams1):
+                ng1 = [ngrams1[i][0], ngrams1[i][1]]
+            else:
+                ng1 = None
+
+            self.assertEqual(ng0, ng1,
+                             "{}, order {}: n-gram mismatch:  {} != {}" \
+                             .format(description, order, ng0, ng1))
 
 
 class _TestModel(unittest.TestCase):
@@ -215,7 +547,7 @@ class _TestModel(unittest.TestCase):
 
     def test_case_insensitive(self):
         model = DynamicModel()
-        model.count_ngram(['ABCDE'], 1)
+        model.learn_tokens(['ABCDE'], 1)
 
         choices = model.predict(['a'])
         self.assertEqual(choices, [])
@@ -225,8 +557,8 @@ class _TestModel(unittest.TestCase):
 
     def test_accent_insensitive(self):
         model = DynamicModel()
-        model.count_ngram(['ÉéÈèñ'], 1)
-        model.count_ngram(['früh', 'fruchtig'], 1)
+        model.learn_tokens(['ÉéÈèñ'], 1)
+        model.learn_tokens(['früh', 'fruchtig'], 1)
 
         choices = model.predict(['EeEen'])
         self.assertEqual(choices, [])
@@ -236,7 +568,7 @@ class _TestModel(unittest.TestCase):
 
     def test_accent_insensitive_smart(self):
         model = DynamicModel()
-        model.count_ngram(['früh', 'fruchtig'], 1)
+        model.learn_tokens(['früh', 'fruchtig'], 1)
 
         choices = model.predict(['fru'])
         self.assertEqual(choices, ['fruchtig'])
@@ -249,8 +581,8 @@ class _TestModel(unittest.TestCase):
 
     def test_ignore_capitalized(self):
         model = DynamicModel()
-        model.count_ngram(['ABCDE'], 1)
-        model.count_ngram(['abcde'], 1)
+        model.learn_tokens(['ABCDE'], 1)
+        model.learn_tokens(['abcde'], 1)
 
         choices = model.predict([''])
         self.assertEqual(choices, ['ABCDE', 'abcde'])
@@ -260,8 +592,8 @@ class _TestModel(unittest.TestCase):
 
     def test_ignore_non_capitalized(self):
         model = DynamicModel()
-        model.count_ngram(['ABCDE'], 1)
-        model.count_ngram(['abcde'], 1)
+        model.learn_tokens(['ABCDE'], 1)
+        model.learn_tokens(['abcde'], 1)
 
         choices = model.predict([''])
         self.assertEqual(choices, ['ABCDE', 'abcde'])
@@ -367,6 +699,7 @@ class _TestModel(unittest.TestCase):
         )
 
     def test_read_order(self):
+        """ Test reading the order of a language model """
         fn = os.path.join(self._dir, "model.lm")
 
         self.assertEqual(read_order(fn), None) # file not found
@@ -567,10 +900,11 @@ def suite():
     suites.append(suite)
 
     suite = unittest.TestSuite()
-    test_methods = unittest.TestLoader().getTestCaseNames(_TestMultiOrder)
-    for order in range(2, 5+1):
-        for method in test_methods:
-            suite.addTest(_TestMultiOrder(method, order))
+    for _class in [_TestMultiOrderMisc, _TestMultiOrderRemove]:
+        test_methods = unittest.TestLoader().getTestCaseNames(_class)
+        for order in range(2, 5+1):
+            for method in test_methods:
+                suite.addTest(_class(method, order))
     suites.append(suite)
 
     suite = unittest.TestLoader().loadTestsFromTestCase(_TestModel)
@@ -581,11 +915,12 @@ def suite():
 
 
 def test():
-    unittest.TextTestRunner(verbosity=1).run(suite())
+    runner = unittest.TextTestRunner(verbosity=1)
+    runner.run(suite())
 
-class TestSuiteAllTests(unittest.TestSuite):
-    def __init__(self):
-        self.add(suite())
+#class _TestSuiteAllTests(unittest.TestSuite):
+#    def __init__(self):
+#        self.add(suite())
 
 if __name__ == '__main__':
     unittest.main()

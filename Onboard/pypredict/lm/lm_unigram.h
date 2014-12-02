@@ -139,6 +139,12 @@ class UnigramModel : public DynamicModelBase
             values.push_back(node->count);
         }
 
+        virtual bool is_model_valid()
+        {
+            int num_unigrams = get_num_ngrams(0);
+            return num_unigrams == dictionary.get_num_word_types();
+        }
+
         virtual void get_memory_sizes(std::vector<long>& values)
         {
             values.push_back(dictionary.get_memory_size());

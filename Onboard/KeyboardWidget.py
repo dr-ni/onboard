@@ -18,7 +18,8 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.utils          import Rect, Timer, FadeTimer
+from Onboard.utils          import Rect, Timer, FadeTimer, \
+                                   show_confirmation_dialog
 from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \
@@ -256,6 +257,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         self._configure_timer = Timer()
 
         self._language_menu = LanguageMenu(self)
+        self._suggestion_menu = SuggestionMenu(self)
 
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -1459,15 +1461,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
     def is_language_menu_showing(self):
         return self._language_menu.is_showing()
 
+    def show_prediction_menu(self, key, button, closure = None):
+        self._suggestion_menu.popup(key, button, closure)
 
-class LanguageMenu:
-    """ Popup menu for the language button """
+
+class KeyMenu:
+    """ Popup menu for keys """
 
     def __init__(self, keyboard_widget):
         self._keyboard_widget = keyboard_widget
         self._keyboard = self._keyboard_widget.keyboard
         self._menu = None
         self._closure = None
+        self._x_align = 0.0  # horizontal alignment of the menu position
 
     def is_showing(self):
         return not self._menu is None
@@ -1476,6 +1482,40 @@ class LanguageMenu:
         self._closure = closure
         self._keyboard.on_focusable_gui_opening()
 
+        menu = self.create_menu(key, button)
+        self._menu = menu
+
+        menu.connect("unmap", self._on_menu_unmap)
+        menu.show_all()
+        menu.popup(None, None, self._menu_positioning_func,
+                   key, button, Gtk.get_current_event_time())
+
+    def create_menu(self, key, button):
+        """ Overload this in derived class """
+        raise NotImplementedError()
+
+    def _on_menu_unmap(self, menu):
+        Timer(0.5, self._keyboard.on_focusable_gui_closed)
+        self._menu = None
+        if self._closure:
+            self._closure()
+
+    def _menu_positioning_func(self, menu, key):
+        r = self._keyboard_widget.get_key_screen_rect(key)
+        menu_size  = (menu.get_allocated_width(),
+                      menu.get_allocated_width())
+        x, y = self.get_menu_position(r, menu_size)
+        return x, y, True
+
+    def get_menu_position(self, rkey, menu_size):
+        return rkey.left() + (rkey.w - menu_size[0]) * self._x_align, \
+               rkey.bottom()
+
+
+class LanguageMenu(KeyMenu):
+    """ Popup menu for the language button """
+
+    def create_menu(self, key, button):
         keyboard = self._keyboard
         languagedb = keyboard._languagedb
 
@@ -1539,25 +1579,7 @@ class LanguageMenu:
             item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
 
-        menu.connect("unmap", self._language_menu_unmap)
-        self._menu = menu
-
-        menu.show_all()
-
-        menu.popup(None, None, self._language_menu_positioning_func,
-                   key, button, Gtk.get_current_event_time())
-
-
-    def _language_menu_unmap(self, menu):
-        Timer(0.5, self._keyboard.on_focusable_gui_closed)
-        self._menu = None
-        if self._closure:
-            self._closure()
-
-    def _language_menu_positioning_func(self, menu, key):
-        r = self._keyboard_widget.get_key_screen_rect(key)
-        x = r.left()
-        return x, r.bottom(), True
+        return menu
 
     def _on_language_activated(self, menu, lang_id):
         system_lang_id = self._keyboard.get_system_default_lang_id()
@@ -1581,4 +1603,53 @@ class LanguageMenu:
         recent_languages.insert(0, lang_id)
         recent_languages = recent_languages[:max_recent_languages]
         config.typing_assistance.recent_languages = recent_languages
+
+
+class SuggestionMenu(KeyMenu):
+    """ Popup menu for word suggestion buttons """
+
+    def __init__(self, keyboard_widget):
+        KeyMenu.__init__(self, keyboard_widget)
+        self._x_align = 0.5
+
+    def create_menu(self, key, button):
+
+        self._choice_index = key.code
+
+        # popup menu
+        menu = Gtk.Menu()
+
+        item = Gtk.MenuItem.new_with_mnemonic(_("_Remove suggestion..."))
+        item.connect("activate", self._on_remove_suggestion)
+        menu.append(item)
+
+        return menu
+
+    def _on_remove_suggestion(self, menu_item):
+        word, history = self._keyboard.get_prediction_choice_and_history(
+                             self._choice_index)
+        if False:  # removal with history can't be trusted yet
+            question = _format("Remove suggestion '{}' "
+                               "wherever it occurs after '{}'?\n"
+                               "This will only affect learned suggestions.\n\n"
+                               "Really remove '{}'?",
+                               word, "  ".join(history), word)
+        else:
+            history = []
+            question = _format("Remove all occurences of '{}'?\n"
+                               "This will only affect learned suggestions.\n\n"
+                               "Really remove '{}'?", word, word)
+
+        if show_confirmation_dialog(question,
+                                    self._keyboard_widget.get_kbd_window(),
+                                    title = _("Remove suggestion")):
+            context = history + [word]
+            self._keyboard.remove_prediction_context(context)
+
+    def get_menu_position(self, rkey, menu_size):
+        if menu_size[0] > rkey.w:
+            return rkey.left(), rkey.bottom()
+        else:
+            return super(SuggestionMenu, self).get_menu_position(
+                                                          rkey, menu_size)
 
