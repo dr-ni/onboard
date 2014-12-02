@@ -38,7 +38,7 @@ class TestCheckModels(unittest.TestCase):
         self._tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
         self._dir = self._tmp_dir.name
 
-        text = "word1 word2 word3 word4 word5"
+        text = "word1 word2 word3 word4 word5 word6"
         tokens, _spans = pypredict.tokenize_text(text)
 
         # prepare contents of error-free models
@@ -212,6 +212,55 @@ class TestCheckModels(unittest.TestCase):
                     expected.append(e)
                 self.assertEqual(expected, err,
                     "field_change '{}' at order {}".format(field_change, order))
+
+    def test_invalid_count_field(self):
+        for field_change in ["-1", "0", "1", "2", "abc"]:
+            for i, (fn, lines) in enumerate(self._model_contents):
+                order = i+1
+
+                nlines = []
+                changes = []
+                count = None
+                lineno = 0
+                for line in lines:
+                    lineno += 1
+                    if "-grams:" in line:
+                        count = 0
+                    if count == 2:
+                        count = None
+                        fields = line.split()
+                        fields[0] = field_change
+                        line = " ".join(fields) + "\n"
+                        changes.append([fields[0], 0, lineno, line.strip()])
+                    if not count is None:
+                        count += 1
+                    nlines.append(line)
+
+                self._write_contents(fn, nlines)
+                ret, out, err = self._run_tool(fn)
+                expected = []
+                try:
+                    count = int(field_change)
+                except ValueError:
+                    count = None
+
+                if count is None:
+                    for change in changes:
+                        e = "INVALID_FIELD, ['{}', {}, {}, '{}']" \
+                            .format(*change)
+                        expected.append(e)
+                    self.assertEqual(expected, err,
+                        "test invalid field '{}' at order {}".format(field_change, order))
+                elif count <= 0:
+                    for change in changes:
+                        e = "FIELD_BELOW_EQUAL_ZERO, ['{}', {}, {}, '{}']" \
+                            .format(*change)
+                        expected.append(e)
+                    self.assertEqual(expected, err,
+                        "test field <= 0 '{}' at order {}".format(field_change, order))
+                else:
+                    self.assertEqual(expected, err,
+                        "test field count ok '{}' at order {}".format(field_change, order))
 
     def test_unexpected_ngram_section(self):
         for i, (fn, lines) in enumerate(self._model_contents):

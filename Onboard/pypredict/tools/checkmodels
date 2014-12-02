@@ -186,6 +186,22 @@ def check_model(filename):
                     else:
                         ld.encountered_count += 1
 
+                        try:
+                            count = int(fields[0])
+                        except ValueError as ex:
+                            errors.append(Error(
+                                "INVALID_FIELD",
+                                "invalid field '{}' at position {} line {}: '{}'",
+                                fields[0], 0, lineno, line))
+                            count = None
+
+                        if not count is None and \
+                            count <= 0:
+                            errors.append(Error(
+                                "FIELD_BELOW_EQUAL_ZERO",
+                                "count field '{}' is below or equal zero at line {}: '{}'",
+                                fields[0], 0, lineno, line))
+
             if not "data" in sections:
                 errors.append(Error(
                     "NO_DATA_SECTION",
