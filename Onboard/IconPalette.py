@@ -31,6 +31,7 @@ from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
                                 DwellProgress
 from Onboard.TouchInput  import InputSequence
 from Onboard.KeyGtk      import RectKey
+from Onboard.Indicator   import ContextMenu
 
 ### Logging ###
 import logging
@@ -64,7 +65,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
 
     _layout_view = None
 
-    def __init__(self):
+    def __init__(self, keyboard):
 
         self._visible = False
         self._force_to_top = False
@@ -74,6 +75,8 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         self._dwell_begin_timer = None
         self._dwell_timer = None
         self._no_more_dwelling = False
+
+        self._menu = ContextMenu(keyboard)
 
         Gtk.Window.__init__(self,
                             type_hint=self._get_window_type_hint(),
@@ -144,6 +147,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             return self._layout_view.get_color_scheme()
         return None
 
+    def get_menu(self):
+        return self._menu
+
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
@@ -212,13 +218,18 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         """
         Save the pointer position.
         """
-        if event.button == 1 and event.window == self.get_window():
-            self.enable_drag_protection(True)
-            sequence = InputSequence()
-            sequence.init_from_button_event(event)
-            self.handle_press(sequence, move_on_background = True)
-            if self.is_moving():
-                self.reset_drag_protection() # force threshold
+        if event.window == self.get_window():
+            if Gdk.Event.triggers_context_menu(event):
+                self._menu.popup(event.button, event.get_time())
+
+            elif event.button == Gdk.BUTTON_PRIMARY:
+                self.enable_drag_protection(True)
+                sequence = InputSequence()
+                sequence.init_from_button_event(event)
+                self.handle_press(sequence, move_on_background = True)
+                if self.is_moving():
+                    self.reset_drag_protection() # force threshold
+
         return False
 
     def _on_motion_notify_event(self, widget, event):

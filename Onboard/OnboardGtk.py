@@ -166,9 +166,11 @@ class OnboardGtk(object):
             sys.stdout.write('%d\n' % self._window.get_id())
             sys.stdout.flush()
         else:
-            icp = IconPalette()
+            icp = IconPalette(self.keyboard)
             icp.set_layout_view(self.keyboard_widget)
             icp.connect("activated", self._on_icon_palette_acticated)
+            self.do_connect(icp.get_menu(), "quit-onboard",
+                        lambda x: self.do_quit_onboard())
 
             self._window = KbdWindow(self.keyboard_widget, icp)
             self.do_connect(self._window, "quit-onboard",
@@ -308,7 +310,7 @@ class OnboardGtk(object):
         # create status icon
         self.status_icon = Indicator()
         self.status_icon.set_keyboard(self.keyboard)
-        self.do_connect(self.status_icon, "quit-onboard",
+        self.do_connect(self.status_icon.get_menu(), "quit-onboard",
                         lambda x: self.do_quit_onboard())
 
         # Callbacks to use when icp or status icon is toggled
