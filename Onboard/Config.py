@@ -1517,6 +1517,7 @@ class ConfigAutoShow(ConfigObject):
         self.add_key("widget-clearance", (25.0, 55.0, 25.0, 40.0), '(dddd)')
 
         self.add_key("hide-on-key-press", True)
+        self.add_key("hide-on-key-press-pause", 1800.0)
 
 
 class ConfigUniversalAccess(ConfigObject):

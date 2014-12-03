@@ -160,7 +160,11 @@ class AutoHide(EventSource):
                                         device_name,
                                         event.source_id))
 
-                self._keyboard.pause_auto_show()
+                duration = config.auto_show.hide_on_key_press_pause
+                if duration:
+                    if duration < 0.0: # negative means off
+                        duration = None
+                    self._keyboard.pause_auto_show(duration)
 
                 if self._keyboard.is_visible():
                     if config.are_word_suggestions_enabled():

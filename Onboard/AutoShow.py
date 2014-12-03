@@ -81,7 +81,7 @@ class AutoShow(object):
         self._paused = True
         self._pause_timer.stop()
         if not duration is None:
-            self._pause_timer.start(self.resume)
+            self._pause_timer.start(duration, self.resume)
 
         # Discard pending hide/show actions.
         self._auto_show_timer.stop()

@@ -350,40 +350,58 @@
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">2</property>
                                 <child>
-                                  <object class="GtkCheckButton" id="auto_show_toggle">
-                                    <property name="label" translatable="yes">_Auto-show when editing text</property>
+                                  <object class="GtkBox" id="auto_show_box">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
-                                    <property name="tooltip_text" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_auto_show_toggled" swapped="no"/>
+                                    <property name="can_focus">False</property>
+                                    <property name="spacing">20</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="auto_show_toggle">
+                                        <property name="label" translatable="yes">_Auto-show when editing text</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="has_tooltip">True</property>
+                                        <property name="tooltip_markup" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
+                                        <property name="tooltip_text" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="auto_show_settings_button">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <property name="use_underline">True</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label60">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="xpad">6</property>
+                                            <property name="label" translatable="yes">_Settings</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="mnemonic_widget">scanner_settings</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="hide_on_key_press_toggle">
-                                    <property name="label" translatable="yes">_Hide when using a physical keyboard</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Hide Onboard when any key is pressed on a physical keyboard. Requires input event source "XInput".</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -403,7 +421,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">2</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>

@@ -235,8 +235,8 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
-        self.bind_check("hide_on_key_press_toggle",
-                        config.auto_show, "hide_on_key_press")
+        self.bind_button("auto_show_settings_button",
+                         lambda widget: AutoShowDialog().run(self.window))
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
@@ -584,9 +584,6 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
-
-        w = self.wid("hide_on_key_press_toggle")
-        w.set_sensitive(config.can_set_auto_hide())
 
     def update_all_widgets(self):
         pass
@@ -1140,6 +1137,47 @@ class PageWordSuggestions(DialogBuilder):
                 .set_sensitive(config.are_word_suggestions_enabled())
         self.wid("pause_learning_button_toggle") \
                 .set_sensitive(config.word_suggestions.auto_learn)
+
+
+class AutoShowDialog(DialogBuilder):
+    """ Dialog "Auto-show Settings" """
+
+    def __init__(self):
+
+        builder = LoadUI("settings_auto_show_dialog")
+
+        DialogBuilder.__init__(self, builder)
+
+        def set_config(config_object, key, value):
+            setattr(config_object, key, value)
+            self._update_ui()
+        self.bind_check("hide_on_key_press_toggle",
+                        config.auto_show, "hide_on_key_press",
+                        config_set_callback = set_config)
+
+        def get_config(config_object, key):
+            duration = getattr(config_object, key)
+            return str(int(round(duration)))
+        def set_config(config_object, key, value):
+            duration = float(value)
+            setattr(config_object, key, duration)
+        self.bind_combobox_id("hide_on_key_press_pause_combobox",
+                        config.auto_show, "hide_on_key_press_pause",
+                        get_config, set_config)
+
+        self._update_ui()
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
+
+    def _update_ui(self):
+        w = self.wid("hide_on_key_press_toggle")
+        w.set_sensitive(config.can_set_auto_hide())
+        w = self.wid("hide_on_key_press_box")
+        w.set_sensitive(config.is_auto_hide_enabled())
 
 
 class DockingDialog(DialogBuilder):

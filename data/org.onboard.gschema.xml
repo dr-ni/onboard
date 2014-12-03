@@ -109,6 +109,11 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <summary>Hide on key-press.</summary>
             <description>Hide Onboard when pressing any key on a physical keyboard.</description>
         </key>
+        <key name="hide-on-key-press-pause" type="d">
+            <default>1800.0</default>
+            <summary>Auto-show pause after key-press.</summary>
+            <description>Number of seconds auto-show remains paused after a physical key-press. -1.0 to pause forever.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.keyboard.DefaultKeyAction">
