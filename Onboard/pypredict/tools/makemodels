@@ -26,6 +26,18 @@
 # ./models        - Output directory for final filtered system language models
 #                   (utf-8 encoded).
 #
+#
+# Spell checkers
+# --------------
+#
+# Various spell checker dictionaries are required to successfully generate
+# the language models. Hunspell and hunspell-compatible dictionaries are 
+# supported.
+
+# - Ubuntu 15.04 Vivid Vervet:
+#     Partial list:
+#     sudo apt-get install hunspell-en-us hunspell-de-de hunspell-de-ch hunspell-de-at myspell-es myspell-pt-pt hunspell-fr hunspell-ru myspell-it 
+#
 
 LANGUAGES=
 LANGUAGES+="en_US en_GB en_AU en_CA "
@@ -138,7 +150,7 @@ for lang in $LANGUAGES; do
             ;;
 
         de)
-            PRUNE_FREQ=399
+            PRUNE_FREQ=249
             MAX_LC_UC_RATIO=300.0
             ;;
 
