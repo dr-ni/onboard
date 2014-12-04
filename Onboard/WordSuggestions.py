@@ -366,8 +366,6 @@ class WordSuggestions:
         tokens, spans = self._wpengine.tokenize_context(context)
 
         if tokens:
-            print("get_prediction_choice_and_history:", tokens, repr(word))
-            assert(word.startswith(tokens[-1]))
             history = tokens[-2:-1]
         else:
             history = []
