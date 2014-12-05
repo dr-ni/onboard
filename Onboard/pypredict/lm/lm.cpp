@@ -269,7 +269,7 @@ LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
         sorted = NULL;
     }
 
-    // encode in utf-8 and store in "words"
+    // encode as utf-8 and store in "words"
     int initial_size = words.size(); // number of initial control words
     int n = new_words.size();
     for (int i = 0; i<n; i++)
@@ -511,13 +511,12 @@ void LanguageModel::get_candidates(const std::vector<WordId>& history,
                                    std::vector<WordId>& candidates,
                                    uint32_t options)
 {
-    std::vector<WordId> wids;
     bool has_prefix = (prefix && wcslen(prefix));
     int history_size = history.size();
     bool only_predictions =
                   !has_prefix &&
                   history_size >= 1 &&
-                  // turn it off when running unit tests
+                  // turn it off when running some unit tests
                   !(options & LanguageModel::INCLUDE_CONTROL_WORDS);
 
     if (has_prefix ||
@@ -530,30 +529,39 @@ void LanguageModel::get_candidates(const std::vector<WordId>& history,
             // Reduces clutter predicted between words by ignoring
             // unigram-only matches.
             std::vector<WordId> wids_in;
+
+            // Only words that have predecessors and
+            // implicitely filter out words with removed unigrams
             get_words_with_predictions(history, wids_in);
-            dictionary.prefix_search(NULL, &wids_in, wids, options);
+            dictionary.prefix_search(NULL, &wids_in, candidates, options);
         }
         else
         {
+            std::vector<WordId> wids;
             dictionary.prefix_search(prefix, NULL, wids, options);
+
+            // Filter out words with removed unigrams.
+            filter_candidates(wids, candidates);
         }
 
         // candidate word indices have to be sorted for binsearch in kneser-ney
-        sort(wids.begin(), wids.end());
+        sort(candidates.begin(), candidates.end());
     }
     else
     {
         int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
         int size = dictionary.get_num_word_types();
+        std::vector<WordId> wids;
         wids.reserve(size);
         for (int i=min_wid; i<size; i++)
         {
             wids.push_back(i);
         }
+
+        // Filter out words with removed unigrams.
+        filter_candidates(wids, candidates);
     }
 
-    // filter to remove words with removed unigrams
-    filter_candidates(wids, candidates);
 }
 
 void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
@@ -628,8 +636,8 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 
 // Return the probability of a single n-gram.
 // This is very inefficient, not optimized for speed at all, but it's
-// basically only there for entropy testing anyway and not involved in
-// actual word prediction tasks..
+// basically only there for entropy testing and not involved in
+// actual word prediction tasks.
 double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
 {
 #if 1
