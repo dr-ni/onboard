@@ -364,12 +364,7 @@ class WordSuggestions:
         word = self.get_prediction_choice(choice_index)
         context = self.text_context.get_bot_context()
         tokens, spans = self._wpengine.tokenize_context(context)
-
-        if tokens:
-            history = tokens[-2:-1]
-        else:
-            history = []
-
+        history = tokens[:-1]
         return word, history
 
     def remove_prediction_context(self, context):

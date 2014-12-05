@@ -263,6 +263,41 @@ class _TestMultiOrderRemove(_TestMultiOrder):
                 [ [["a"], ["b"], ["c"], ["d"], ["e"]], [""], ],
             ]
         ],
+        # remove word occuring after history of size 1, simple
+        [
+            ["a b c d e"],
+            [
+                [ [["a", "b"]], ["a", "b c d e"], ],
+                [ [["b", "c"]], ["a b", "c d e"], ],
+                [ [["c", "d"]], ["a b c", "d e"], ],
+                [ [["d", "e"]], ["a b c d", "e"], ],
+                [ [["a", "c"]], ["a b c d e"], ],
+            ],
+        ],
+        # remove word occuring after history of size 1, multiple occurences
+        [
+            ["a", "a b", "a b c", "a b c d", "a b c d e"],
+            [
+                [ [["a", "b"]],
+                  ["a", "a", "b", "a", "b c", "a", "b c d", "a", "b c d e"], ],
+            ]
+        ],
+        # remove word occuring after history of size 1, away from text begin
+        [
+            ["b a", "b a b", "b a b c", "b a b c d", "b a b c d e"],
+            [
+                [ [["a", "b"]],
+                  ["b a", "b a", "b", "b a", "b c", "b a", "b c d", "b a", "b c d e"], ],
+            ]
+        ],
+
+        # remove word occuring after history of size 2, simple
+        [
+            ["a b c d e"],
+            [
+#                [ [["a", "b", "c"]], ["a b", "c d e"], ],  # not supported yet
+            ],
+        ],
     ]
 
     def test_remove_context_control_words(self):

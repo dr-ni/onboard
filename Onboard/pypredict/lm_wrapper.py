@@ -145,6 +145,11 @@ class _BaseModel:
             raise e
 
     def remove_context(self, context):
+        """
+        Remove word context[-1] where it appears after history context[:-1]
+        from the model. If the history is empty all n-grams containing word
+        will be removed.
+        """
         changes = self.get_remove_context_changes(context)
         if changes:
             for ngram, count in changes.items():
@@ -155,6 +160,10 @@ class _BaseModel:
         return changes
 
     def get_remove_context_changes(self, context):
+        """
+        Simulate removal of context.
+        Returns a dict of affected n-grams and their count changes (negative).
+        """
         changes = {}
 
         for it in self.iter_ngrams():
@@ -162,39 +171,14 @@ class _BaseModel:
             count = it[1]
 
             # find intersection with context
-            intersect_len = 0
-            intersection_point = 0
             for i in range(len(ngram)):
                 for j in range(min(len(context), i+1)):
                     if ngram[i-j] != context[-j-1]:
                         break
-                    intersect_len += 1
                 else:
-                    intersection_point = i
-                    break
-
-            # context fully contained?
-            if intersect_len == len(context):
-                # remove full matches completely
-                changes[ngram] = -count
-
-                # Lower count of the n-gram after the intersection_point.
-                # This is analogous to breaking up learning text into
-                # separate sections at the word to remove (the last word of
-                # the context).
-                # Does ngram begin with context and is there a remainder?
-                if intersection_point == len(context)-1: #and intersection_point < len(ngram)-1
-                    # For every remainder n-gram up to the last word of context
-                    for i in range(len(context)-1):
-                        ng = ngram[intersection_point-i:]
-                        changes[ng] = changes.get(ng, 0) - count
-
-                # Lower count of n-grams contained in the
-                # context by the count of the exact match.
-                if len(ngram) == len(context): # g-gram == context?
-                    for i in range(1, len(ngram)):
-                        ng = ngram[i:]
-                        changes[ng] = -count
+                    if j == len(context) - 1:
+                        changes[ngram] = -count
+                        break
 
         return changes
 

@@ -1626,25 +1626,24 @@ class SuggestionMenu(KeyMenu):
         return menu
 
     def _on_remove_suggestion(self, menu_item):
-        word, history = self._keyboard.get_prediction_choice_and_history(
-                             self._choice_index)
-        if False:  # removal with history can't be trusted yet
-            question = _format("Remove suggestion '{}' "
-                               "wherever it occurs after '{}'?\n"
-                               "This will only affect learned suggestions.\n\n"
-                               "Really remove '{}'?",
-                               word, "  ".join(history), word)
-        else:
-            history = []
-            question = _format("Remove all occurences of '{}'?\n"
-                               "This will only affect learned suggestions.\n\n"
-                               "Really remove '{}'?", word, word)
+        keyboard = self._keyboard
+        suggestion, history = keyboard.get_prediction_choice_and_history( \
+                                                           self._choice_index)
+        history = history[-1:] # only single word history supported
+        dialog = RemoveSuggestionConfirmationDialog(
+                    self._keyboard_widget.get_kbd_window(),
+                    keyboard, suggestion, history)
+        context_length = dialog.run()
+        if context_length:
+            context = [suggestion]
+            if context_length == 2:
+                context = history[-1:] + context
+            keyboard.remove_prediction_context(context)
 
-        if show_confirmation_dialog(question,
-                                    self._keyboard_widget.get_kbd_window(),
-                                    title = _("Remove suggestion")):
-            context = history + [word]
-            self._keyboard.remove_prediction_context(context)
+            # Refresh word suggestions explicitely, the dialog
+            # disabled AT-SPI events.
+            keyboard.invalidate_context_ui()
+            keyboard.commit_ui_updates()
 
     def get_menu_position(self, rkey, menu_size):
         if menu_size[0] > rkey.w:
@@ -1652,4 +1651,120 @@ class SuggestionMenu(KeyMenu):
         else:
             return super(SuggestionMenu, self).get_menu_position(
                                                           rkey, menu_size)
+
+
+class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
+    """ Confirm removal of a word suggestion """
+
+    def __init__(self, parent, keyboard, suggestion, history):
+        self._keyboard = keyboard
+        self._radio1 = None
+        self._radio2 = None
+
+        Gtk.MessageDialog.__init__(self,
+                                   message_type=Gtk.MessageType.QUESTION,
+                                   buttons=Gtk.ButtonsType.OK_CANCEL,
+                                   title=_("Onboard"))
+
+        if parent:
+            self.set_transient_for(parent)
+
+        self.set_markup("<big>" + \
+                        _("Remove word suggestion:") + \
+                        "</big>")
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+
+        label = self._get_remove_context_length_2_label(suggestion, history)
+        self._radio2 = Gtk.RadioButton.new_with_label(None, label)
+        box.add(self._radio2)
+
+        self._radio1 = Gtk.RadioButton.new_with_label_from_widget(self._radio2,
+                       _format("Remove '{}' everywhere.", suggestion))
+        box.add(self._radio1)
+
+        if not history:
+            # This should rarly happen, if ever. Edited text usually
+            # start with the begin of text marker, so there exists a history
+            # even if the text appears to be empty.
+            self._radio2.set_sensitive(False)
+            self._radio1.set_active(True)
+
+        label = Gtk.Label(label=_("This will only affect learned suggestions."),
+                                   xalign=0.0)
+        box.add(label)
+
+        self.get_message_area().add(box)
+        self.show_all()
+
+        # Don't hide dialog behind the keyboard in force-to-top mode.
+        #if config.is_force_to_top():
+        #    dialog.set_position(Gtk.WindowPosition.CENTER)
+
+    @staticmethod
+    def _get_remove_context_length_2_label(suggestion, history):
+        """
+        Label of radio button for remove context length 2.
+
+        Doctests:
+        >>> from Onboard.KeyboardWidget import RemoveSuggestionConfirmationDialog
+        >>> test = RemoveSuggestionConfirmationDialog._get_remove_context_length_2_label
+        >>> def _format(msgstr, *args, **kwargs):
+        ...     return msgstr.format(*args, **kwargs)
+        >>> import builtins
+        >>> builtins.__dict__['_format'] = _format
+
+        >>> test("word", [])
+        "Remove 'word' only where it occures at text begin."
+
+        >>> test("word", ["word2"])
+        "Remove 'word' only where it occures after 'word2'."
+
+        >>> test("word", ["word2", "word3"])
+        "Remove 'word' only where it occures after 'word2 word3'."
+
+        >>> test("word", ["<unk>"])
+        "Remove 'word' only where it occures after '<unk>'."
+
+        >>> test("word", ["<s>"])
+        "Remove 'word' only where it occures at sentence begin."
+
+        >>> test("word", ["<num>"])
+        "Remove 'word' only where it occures after numbers."
+        """
+        hist0 = history[-1] if history else None
+        if not hist0 or hist0.startswith("<bot:"):
+            label = _format("Remove '{}' only where it occures at text begin.",
+                            suggestion)
+        elif hist0 == "<s>":
+            label = _format("Remove '{}' only where it occures at sentence begin.",
+                            suggestion)
+        elif hist0 == "<num>":
+            label = _format("Remove '{}' only where it occures after numbers.",
+                            suggestion)
+        else:
+            label = _format("Remove '{}' only where it occures after '{}'.",
+                            suggestion, " ".join(history))
+        return label
+
+    def run(self):
+        keyboard = self._keyboard
+
+        if keyboard:
+            keyboard.on_focusable_gui_opening()
+
+        response = Gtk.Dialog.run(self)
+        self.destroy()
+
+        if keyboard:
+            keyboard.on_focusable_gui_closed()
+
+        # return length of the remove context
+        if response == Gtk.ResponseType.OK:
+            if self._radio2.get_active():
+                return 2
+            if self._radio1.get_active():
+                return 1
+        return 0
+
 
