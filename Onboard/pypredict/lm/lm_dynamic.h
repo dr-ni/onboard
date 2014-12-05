@@ -550,6 +550,8 @@ class NGramTrie : public TNODE
             return static_cast<TNODE*>(parent)->children[index];
         }
 
+        // Return the word ids of all direct child nodes,
+        // excluding removed n-grams, i.g. count == 0.
         void get_child_wordids(const std::vector<WordId>& wids,
                           std::vector<WordId>& child_wids)
         {
@@ -561,7 +563,8 @@ class NGramTrie : public TNODE
                 for(int i=0; i<num_children; i++)
                 {
                     BaseNode* child = get_child_at(node, level, i);
-                    child_wids.push_back(child->word_id);
+                    if (child->count)
+                        child_wids.push_back(child->word_id);
                 }
             }
         }
