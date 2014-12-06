@@ -199,7 +199,7 @@ def check_model(filename):
                             count <= 0:
                             errors.append(Error(
                                 "FIELD_BELOW_EQUAL_ZERO",
-                                "count field '{}' is below or equal zero at line {}: '{}'",
+                                "count field '{}' is below or equal zero at position {} line {}: '{}'",
                                 fields[0], 0, lineno, line))
 
             if not "data" in sections:
