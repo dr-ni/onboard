@@ -110,30 +110,44 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                         break;
                     }
 
-                    int i = 0;
-                    CountType count = wcstol(tokens[i++], NULL, 10);
+                    int itok = 0;
+                    int count = wcstol(tokens[itok++], NULL, 10);
 
                     uint32_t time = 0;
                     if (ntoks >= current_level+2)
-                        time  = wcstol(tokens[i++], NULL, 10);
+                        time  = wcstol(tokens[itok++], NULL, 10);
 
-                    if (current_level == 1)
+                    // There is a slight possibility that old models have
+                    // zero counts. Since rev. 1845 n-grams with zero count
+                    // are considered removed, which causes load failures.
+                    // -> ignore n-grams with count 0
+                    if (count <= 0)
                     {
-                        // Temporarily collect unigrams so we can sort them.
-                        Unigram unigram = {tokens[i], count, time};
-                        unigrams.push_back(unigram);
+                        // Expect one n-gram fewer for this level.
+                        counts[current_level-1]--;
                     }
                     else
                     {
-                        BaseNode* node = count_ngram(tokens+i,
-                                                     current_level,
-                                                     count);
-                        if (!node)
+                        if (current_level == 1)
                         {
-                            err_code = ERR_MEMORY; // out of memory
-                            break;
+                            // Temporarily collect unigrams so we can sort them.
+                            Unigram unigram = {tokens[itok],
+                                               (CountType)count,
+                                               time};
+                            unigrams.push_back(unigram);
                         }
-                        set_node_time(node, time);
+                        else
+                        {
+                            BaseNode* node = count_ngram(tokens+itok,
+                                                        current_level,
+                                                        count);
+                            if (!node)
+                            {
+                                err_code = ERR_MEMORY; // out of memory
+                                break;
+                            }
+                            set_node_time(node, time);
+                        }
                     }
 
                     continue;
@@ -174,6 +188,8 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                     set_order(new_order);
                     if (new_order)
                     {
+                        // This drops control words! They are added back
+                        // with assure_valid_control_words() below.
                         reserve_unigrams(counts[0]);
                     }
                     state = NGRAMS_HEAD;
@@ -208,6 +224,10 @@ LMError DynamicModelBase::load_arpac(const char* filename)
         if (!err_code)
             err_code = ERR_UNEXPECTED_EOF;  // unexpected end of file
     }
+
+    // At this point, control words might possibly have been loaded with
+    // zero counts. Make sure they exist with at least count 1.
+    assure_valid_control_words();
 
     return err_code;
 }
@@ -294,7 +314,7 @@ LMError DynamicModelBase::set_unigrams(const vector<Unigram>& unigrams)
 
     if (!error)
     {
-        // eventually add all the unigrams
+        // finally add all the unigrams
         for (it=unigrams.begin(); it < unigrams.end(); it++)
         {
             const Unigram& unigram = *it;

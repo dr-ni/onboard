@@ -252,13 +252,13 @@ struct cmp_str
 };
 
 // Set words in bulk.
-// Allows use to sort "words" and ignore "sorted".
+// Allows us to sort "words" and ignore the "sorted" vector.
 //
 // Preconditions:
-// - Control words and only those had been added to
-//   this dictionary before.
+// - Control words and only those are expected to exist in
+//   the dictionary already (vector "words").
 // - If new_words contains control words, they are
-//   located at its very beginning.
+//   located close to its begin.
 LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
 {
     // This is the goal: keep "sorted" unallocated
@@ -274,19 +274,19 @@ LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
     int n = new_words.size();
     for (int i = 0; i<n; i++)
     {
+        // encode word to utf-8, this is how it is stored in the dictionary
         const char* wtmp = conv.wc2mb(new_words[i]);
         if (!wtmp)
             return ERR_WC2MB;
-
         char* w = (char*)MemAlloc((strlen(wtmp) + 1) * sizeof(char));
         if (!w)
             return ERR_MEMORY;
-
         strcpy(w, wtmp);
 
         // is this a known control word?
         bool exists = false;
-        if (i < 100) // control words have to be at the beginning
+        if (i < 100) // control words have to come in as some
+                     // of the first entries.
         {
             for (int j = 0; j<initial_size; j++)
             {

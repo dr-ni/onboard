@@ -130,7 +130,7 @@ class UnigramModel : public DynamicModelBase
             if (!n)
                 return 0;
             WordId wid = dictionary.word_to_id(ngram[0]);
-            return m_counts.at(wid);
+            return wid >= 0 && wid < m_counts.size() ? m_counts.at(wid) : 0;
         }
 
         virtual void get_node_values(BaseNode* node, int level,

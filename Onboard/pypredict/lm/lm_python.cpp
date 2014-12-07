@@ -2026,6 +2026,8 @@ moduleinit (void)
                              PyInt_FromLong(LanguageModel::NORMALIZE));
         PyDict_SetItemString(LanguageModelType.tp_dict, "NO_SORT",
                              PyInt_FromLong(LanguageModel::NO_SORT));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "NUM_CONTROL_WORDS",
+                             PyInt_FromLong(NUM_CONTROL_WORDS));
     }
 
     return module;

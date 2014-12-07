@@ -211,6 +211,133 @@ class _TestMultiOrderMisc(_TestMultiOrder):
             self.probability_sum(m)
 
 
+class _TestMultiOrderLoadingRobustness(_TestMultiOrder):
+
+    def setUp(self):
+        self._tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        self._dir = self._tmp_dir.name
+
+        # Enough text for at least 3 n-grams of max-order 5.
+        text = "word1 word2 word3 word4 word5 word6 word7"
+        tokens, _spans = tokenize_text(text)
+
+        # prepare contents of error-free model
+        order = self.order
+        fn = os.path.join(self._dir, "order{}.lm".format(order))
+        if order == 1:
+            model = UnigramModel()
+        else:
+            model = DynamicModel(order)
+        model.learn_tokens(tokens)
+        model.save(fn)
+
+        with open(fn, encoding="UTF-8") as f:
+            lines = f.readlines()
+
+        self._model = model
+        self._model_contents = [fn, lines]
+
+    def test_load_models_with_bad_control_word_counts(self):
+        """
+        Control words with counts <= 0 must be repaired on load.
+        """
+        model = self._model
+        order = self.order
+        counts_before = model.get_counts()
+
+        for field_change in ["-1000, -1", "0"]:
+            fn, lines = self._model_contents
+            index = lines.index("\\1-grams:\n")
+            nlines = []
+            for i, line in enumerate(lines):
+                if i > index and i < index + 1 + model.NUM_CONTROL_WORDS:
+                    fields = line.split()
+                    fields[0] = field_change
+                    line = " ".join(fields) + "\n"
+                nlines.append(line)
+
+            self._write_contents(fn, nlines)
+
+            # throws IOError
+            model.load(fn)
+
+            # Counts of control words must have been corrected to 1 after loading.
+            contents = [x for x in model.iter_ngrams()]
+            self.assertEqual(contents[:4],
+                            [(('<unk>',), 1, 0),
+                            (('<s>',), 1, 0),
+                            (('</s>',), 1, 0),
+                            (('<num>',), 1, 0)])
+
+    def test_load_models_with_bad_ngram_counts(self):
+        """
+        N-grams with counts <= 0 must be ignored on load.
+        """
+        model = self._model
+        order = self.order
+        counts_before = model.get_counts()
+
+        for field_change in ["-1000", "-1", "0"]:
+            fn, lines = self._model_contents
+            nlines = []
+            count = None
+            lineno = 0
+            for line in lines:
+                lineno += 1
+                if "1-grams:" in line:
+                    count = -model.NUM_CONTROL_WORDS   # skip control words
+                elif "-grams:" in line:
+                    count = 0
+                if count == 2:
+                    count = None
+                    fields = line.split()
+                    fields[0] = field_change
+                    line = " ".join(fields) + "\n"
+                if not count is None:
+                    count += 1
+                nlines.append(line)
+
+            self._write_contents(fn, nlines)
+
+            # throws IOError
+            model.load(fn)
+
+            msg = "order {}, field_change '{}'".format(order, field_change)
+
+            # Counts of control words must have been corrected to 1 after loading.
+            contents = [x for x in model.iter_ngrams()]
+            self.assertEqual(contents[:4],
+                            [(('<unk>',), 1, 0),
+                            (('<s>',), 1, 0),
+                            (('</s>',), 1, 0),
+                            (('<num>',), 1, 0)],
+                             msg)
+
+            # Verify count of the valid original model.
+            self.assertEqual(counts_before[0],
+                             [11, 6, 5, 4, 3][:order],
+                             msg)
+
+            # All other n-grams with bad counts must have been dropped.
+            self.assertEqual(model.get_counts()[0],
+                             [10, 5, 4, 3, 2][:order],
+                             msg)
+
+            # No unexpected counts must sneek in, all 1 here.
+            for it in model.iter_ngrams():
+                ngram = it[0]
+                count = it[1]
+                self.assertEqual(count, 1, "order {}, field_change '{}': "
+                                           "count mismatch in {}" \
+                                           .format(order, field_change,
+                                                   [ngram, count]))
+
+    def _write_contents(self, fn, lines):
+        with open(fn, mode="w", encoding="UTF-8") as f:
+            for l in lines:
+                f.write(l)
+
+
 class _TestMultiOrderRemove(_TestMultiOrder):
     tests = \
     [
@@ -315,6 +442,18 @@ class _TestMultiOrderRemove(_TestMultiOrder):
                           (('</s>',), 2, 0),
                           (('<num>',), 2, 0)])
 
+        # remove control words, counts must not go below 1
+        for w in control_words:
+            model.remove_context([w])
+
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents,
+                         [(('<unk>',), 1, 0),
+                          (('<s>',), 1, 0),
+                          (('</s>',), 1, 0),
+                          (('<num>',), 1, 0)])
+
+        # again, counts must still be at least 1
         for w in control_words:
             model.remove_context([w])
 
@@ -935,7 +1074,9 @@ def suite():
     suites.append(suite)
 
     suite = unittest.TestSuite()
-    for _class in [_TestMultiOrderMisc, _TestMultiOrderRemove]:
+    for _class in [_TestMultiOrderMisc,
+                   _TestMultiOrderRemove,
+                   _TestMultiOrderLoadingRobustness]:
         test_methods = unittest.TestLoader().getTestCaseNames(_class)
         for order in range(2, 5+1):
             for method in test_methods:

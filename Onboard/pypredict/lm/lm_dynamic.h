@@ -702,18 +702,30 @@ class DynamicModelBase : public NGramModel
         virtual void clear()
         {
             LanguageModel::clear();
+            assure_valid_control_words();
+        }
 
-            // Add entries for control words.
-            // Add them with a count of 1 as 0 throws off the normalization
-            // of witten-bell smoothing.
-            const wchar_t* words[] = {L"<unk>", L"<s>", L"</s>", L"<num>"};
+        // Make sure control words exist as unigrams.
+        // They must have a count of at least 1. 0 means removed and
+        // it also throws off the normalization of witten-bell smoothing.
+        virtual void assure_valid_control_words()
+        {
+            const wchar_t* words[NUM_CONTROL_WORDS] =
+                        {L"<unk>", L"<s>", L"</s>", L"<num>"};
+
             for (WordId i=0; i<ALEN(words); i++)
             {
-                count_ngram(words+i, 1, 1);
+                // Control words must have fixed positions at
+                // the very beginning of the dictionary.
                 assert(dictionary.word_to_id(words[i]) == i);
+
+                if (get_ngram_count(words+i, 1) <= 0)
+                    count_ngram(words+i, 1, 1);
+
             }
         }
 
+        virtual int  get_ngram_count(const wchar_t* const* ngram, int n) = 0;
         virtual void get_node_values(BaseNode* node, int level,
                                      std::vector<int>& values) = 0;
         virtual BaseNode* count_ngram(const wchar_t* const* ngram, int n,
@@ -726,6 +738,32 @@ class DynamicModelBase : public NGramModel
         virtual LMError save(const char* filename)
         {return save_arpac(filename);}
 
+        // Debug output, dump all n-grams.
+        virtual void dump()
+        {
+            std::vector<WordId> wids;
+            DynamicModelBase::ngrams_iter* it;
+            for (it = ngrams_begin(); ; (*it)++)
+            {
+                BaseNode* node = *(*it);
+                if (!node)
+                    break;
+
+                it->get_ngram(wids);
+
+                std::vector<int> values;
+                get_node_values(node, wids.size(), values);
+
+                unsigned i;
+                for (i=0; i<wids.size(); i++)
+                    printf("%ls ", dictionary.id_to_word(wids[i]));
+                for (i=0; i<values.size(); i++)
+                    printf("%d ", values[i]);
+                printf("\n");
+            }
+            printf("\n");
+        }
+
     protected:
         // temporary unigram, only used during loading
         typedef struct
@@ -734,8 +772,7 @@ class DynamicModelBase : public NGramModel
             uint32_t count;
             uint32_t time;
         } Unigram;
-        virtual LMError
-                   set_unigrams(const std::vector<Unigram>& unigrams);
+        virtual LMError set_unigrams(const std::vector<Unigram>& unigrams);
 
         virtual LMError write_arpa_ngram(FILE* f,
                                        const BaseNode* node,
