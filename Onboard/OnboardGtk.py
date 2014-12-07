@@ -215,9 +215,7 @@ class OnboardGtk(object):
         self.keyboard_widget.set_startup_visibility()
 
         # keep keyboard window and icon palette on top of dash
-        if not config.xid_mode: # be defensive, not necessary when embedding
-            self._osk_util.keep_windows_on_top([self._window,
-                                                self._window.icp])
+        self._keep_windows_on_top()
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -561,6 +559,21 @@ class OnboardGtk(object):
     def on_theme_changed(self, theme):
         config.apply_theme()
         self.reload_layout()
+
+    def _keep_windows_on_top(self, enable=True):
+        if not config.xid_mode: # be defensive, not necessary when embedding
+            if enable:
+                windows = [self._window, self._window.icp]
+            else:
+                windows = []
+            _logger.warning("keep_windows_on_top {}".format(windows))
+            self._osk_util.keep_windows_on_top(windows)
+
+    def on_focusable_gui_opening(self):
+        self._keep_windows_on_top(False)
+
+    def on_focusable_gui_closed(self):
+        self._keep_windows_on_top(True)
 
     def reload_layout_and_present(self):
         """

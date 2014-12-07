@@ -18,8 +18,7 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.utils          import Rect, Timer, FadeTimer, \
-                                   show_confirmation_dialog
+from Onboard.utils          import Rect, Timer, FadeTimer
 from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \
@@ -84,7 +83,7 @@ class InactivityTimer(Timer):
     """
     Waits for the inactivity delay and transitions between
     active and inactive state.
-    Inactivity here means, the pointer has left the keyboard window
+    Inactivity here means, the pointer has left the keyboard window.
     """
     _keyboard = None
     _active = False
@@ -1669,6 +1668,10 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
         if parent:
             self.set_transient_for(parent)
 
+        # Don't hide dialog behind the keyboard in force-to-top mode.
+        #if config.is_force_to_top():
+        #    dialog.set_position(Gtk.WindowPosition.CENTER)
+
         self.set_markup("<big>" + \
                         _("Remove word suggestion:") + \
                         "</big>")
@@ -1696,10 +1699,6 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
 
         self.get_message_area().add(box)
         self.show_all()
-
-        # Don't hide dialog behind the keyboard in force-to-top mode.
-        #if config.is_force_to_top():
-        #    dialog.set_position(Gtk.WindowPosition.CENTER)
 
     @staticmethod
     def _get_remove_context_length_2_label(suggestion, history):

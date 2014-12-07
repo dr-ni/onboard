@@ -1029,6 +1029,12 @@ class WordSuggestions:
         """
         if self._focusable_count == 0:
             AtspiStateTracker().freeze()
+
+            # disable keep_windows_on_top
+            app = self.get_application()
+            if app:
+                app.on_focusable_gui_opening()
+
         self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
@@ -1039,6 +1045,11 @@ class WordSuggestions:
         if self._focusable_count == 0:
             # Re-enable AT-SPI listeners
             AtspiStateTracker().thaw()
+
+            # re-enable keep_windows_on_top
+            app = self.get_application()
+            if app:
+                app.on_focusable_gui_closed()
 
     def _auto_correct_at(self, word_span, caret_offset):
         """
