@@ -50,8 +50,10 @@ class ContextMenu(GObject.GObject):
         menu.append(show_item)
 
         if not config.lockdown.disable_preferences:
-            settings_item = Gtk.ImageMenuItem.new_with_label(Gtk.STOCK_PREFERENCES)
-            settings_item.set_use_stock(True)
+            # Translators: label of a menu item. It used to be stock item
+            # STOCK_PREFERENCES until Gtk 3.12.2 deprecated those.
+            settings_item = Gtk.MenuItem.new_with_label(_("_Preferences"))
+            settings_item.set_use_underline(True)
             settings_item.connect("activate", self._on_settings_clicked)
             menu.append(settings_item)
 
@@ -59,8 +61,10 @@ class ContextMenu(GObject.GObject):
             item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
 
-            quit_item = Gtk.ImageMenuItem.new_with_label(Gtk.STOCK_QUIT)
-            quit_item.set_use_stock(True)
+            # Translators: label of a menu item. It used to be stock item
+            # STOCK_QUIT until Gtk 3.12.2 deprecated those.
+            quit_item = Gtk.MenuItem.new_with_label(_("_Quit"))
+            quit_item.set_use_underline(True)
             quit_item.connect("activate", self._on_quit)
             menu.append(quit_item)
 
