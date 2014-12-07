@@ -385,27 +385,27 @@ class WordSuggestions:
                 self._get_prediction_choice_changes(choice_index)
 
         separator = ""
-        after_insert_span = None
+        insert_result_span = None
         if config.wp.punctuation_assistance and \
            allow_separator:
             # Simulate the change and determine the final text
             # before the caret.
             caret_span = self.text_context.get_span_at_caret()
-            after_insert_span = self._simulate_insertion(caret_span,
+            insert_result_span = self._simulate_insertion(caret_span,
                                                          deletion, insertion)
             # Should we add an auto-separator after the inserted word?
             domain = self.text_context.get_text_domain()
-            separator = domain.get_auto_separator(after_insert_span.get_text())
+            separator = domain.get_auto_separator(insert_result_span.get_text())
 
         # Type remainder/replace word and possibly add separator.
         added_separator = self._replace_text_at_caret(deletion, insertion,
                                                       separator)
 
         # Arm punctuator with the span of the just added separator.
-        separator_span = TextSpan(after_insert_span.end(),
+        separator_span = TextSpan(insert_result_span.begin(),
                                   len(added_separator),
                                   added_separator,
-                                  after_insert_span.end()) \
+                                  insert_result_span.begin()) \
                          if added_separator else None
         self._punctuator.set_added_separator(separator_span)
 

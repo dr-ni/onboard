@@ -429,61 +429,113 @@ class DomainTerminal(TextDomain):
                              + unicode_str(ex))
                 return None
 
-        # remove prompt from the current or previous lines
-        context, context_start, line, line_start, line_caret = \
-                self._read_after_prompt(accessible, offset)
-        if context_start:
+        context_lines, prompt_length, line, line_start, line_caret = \
+                             self._get_text_after_prompt(accessible, offset)
+
+        if prompt_length:
             begin_of_text = True
             begin_of_text_offset = line_start
         else:
             begin_of_text = False
             begin_of_text_offset = None
 
-        # remove newlines
-        context = context.replace("\n","")
+        context = "".join(context_lines)
+        before_line = "".join(context_lines[:-1])
+        selection_span = TextSpan(offset, 0,
+                                  before_line + line,
+                                  line_start-len(before_line))
 
-        #caret_span = TextSpan(offset, 0, text, begin)
-        caret_span = TextSpan(offset, 0, line, line_start)
-
-        result = (context, line, line_caret, caret_span,
+        result = (context, line, line_caret, selection_span,
                   begin_of_text, begin_of_text_offset)
         return result
 
-    def _read_after_prompt(self, accessible, offset):
-        r = accessible.get_text_at_offset(offset,
+    def _get_text_after_prompt(self, accessible, caret_offset):
+        """
+        Return text from the input area of the terminal after the prompt.
+
+        Doctests:
+        >>> class AtspiTextRangeMockup:
+        ...     pass
+        >>> class AccessibleMockup:
+        ...     def __init__(self, text, width):
+        ...         self._text = text
+        ...         self._width = width
+        ...     def get_text_at_offset(self, offset, boundary):
+        ...         line = offset // self._width
+        ...         lbegin = line * self._width
+        ...         r = AtspiTextRangeMockup()
+        ...         r.content = self._text[lbegin:lbegin+self._width]
+        ...         r.start_offset = lbegin
+        ...         return r
+        ...     def get_text_before_offset(self, offset, boundary):
+        ...         return self.get_text_at_offset(offset - self._width, boundary)
+
+        >>> d = DomainTerminal()
+
+        # Single line
+        >>> a = AccessibleMockup("abc$ ls /etc\\n", 15)
+        >>> d._get_text_after_prompt(a, 12)
+        (['ls /etc'], 5, 'ls /etc\\n', 5, 7)
+
+        # Two lines
+        >>> a = AccessibleMockup("abc$ ls /e"
+        ...                      "tc\\n", 10)
+        >>> d._get_text_after_prompt(a, 12)
+        (['ls /e', 'tc'], 5, 'tc\\n', 10, 2)
+
+        # Three lines: prompt not detected
+        # More that two lines are not supported. The probability of detecting
+        # "prompts" in random scrolling data rises with each additional line.
+        >>> a = AccessibleMockup("abc$ ls /e"
+        ...                      "tc/X11/xor"
+        ...                      "g.conf.d\\n", 10)
+        >>> d._get_text_after_prompt(a, 28)
+        (['tc/X11/xor', 'g.conf.d'], 0, 'g.conf.d\\n', 20, 8)
+
+        # Two lines with slash at the beginning of the second: detect vi
+        # search prompt. Not ideal, but vi is important too.
+        >>> a = AccessibleMockup("abc$ ls /etc"
+        ...                      "/X11\\n", 12)
+        >>> d._get_text_after_prompt(a, 16)
+        (['X11'], 1, 'X11\\n', 13, 3)
+
+        """
+
+        r = accessible.get_text_at_offset(caret_offset,
                             Atspi.TextBoundaryType.LINE_START)
-        line = unicode_str(r.content).replace("\n","")
+        line = unicode_str(r.content)
         line_start = r.start_offset
-        line_caret = offset - line_start
+        line_caret = caret_offset - line_start
 
         # remove prompt from the current or previous lines
-        context = ""
-        context_start = None
+        context_lines = []
+        prompt_length = None
         l = line[:line_caret]
         for i in range(2):
 
-            # blacklist matches? -> cancel whole context
+            # matching blacklisted prompt? -> cancel whole context
             if self._find_blacklisted_prompt(l):
-                context = ""
-                context_start = None
+                context_lines = []
+                prompt_length = None
                 break
 
-            context_start = self._find_prompt(l)
-            context = l[context_start:] + context
+            prompt_length = self._find_prompt(l)
+            context_lines.insert(0, l[prompt_length:])
             if i == 0:
-                line = line[context_start:] # cut prompt from input line
-                line_start  += context_start
-                line_caret -= context_start
-            if context_start:
+                line = line[prompt_length:] # cut prompt from input line
+                line_start += prompt_length
+                line_caret -= prompt_length
+            if prompt_length:
                 break
 
             # no prompt yet -> let context reach
             # across one more line break
-            r = accessible.get_text_before_offset(offset,
+            r = accessible.get_text_before_offset(caret_offset,
                                 Atspi.TextBoundaryType.LINE_START)
-            l = unicode_str(r.content).replace("\n","")
+            l = unicode_str(r.content)
 
-        result = (context, context_start, line, line_start, line_caret)
+        result = (context_lines, prompt_length,
+                  line, line_start, line_caret)
         return result
 
     def _find_prompt(self, context):
@@ -511,9 +563,9 @@ class DomainTerminal(TextDomain):
         # Only record (for learning) when there is a known prompt in sight.
         # Problem: learning won't happen for uncommon prompts, but less random
         # junk scrolling by should enter the user model in return.
-        context, context_start, line, line_start, line_caret = \
-                self._read_after_prompt(accessible, offset)
-        return bool(context_start)
+        context_lines, prompt_length, line, line_start, line_caret = \
+                self._get_text_after_prompt(accessible, offset)
+        return bool(prompt_length)
 
     def can_suggest_before_typing(self):
         """ Can give word suggestions before typing has started? """
@@ -631,18 +683,18 @@ class PartialURLParser:
         Is this maybe something looking like an URL?
 
         Doctests:
-        >>> d = PartialURLParser()
-        >>> d.is_maybe_url("http")
+        >>> p = PartialURLParser()
+        >>> p.is_maybe_url("http")
         False
-        >>> d.is_maybe_url("http:")
+        >>> p.is_maybe_url("http:")
         True
-        >>> d.is_maybe_url("http://www.domain.org")
+        >>> p.is_maybe_url("http://www.domain.org")
         True
-        >>> d.is_maybe_url("www.domain.org")
+        >>> p.is_maybe_url("www.domain.org")
         True
-        >>> d.is_maybe_url("www.domain")
+        >>> p.is_maybe_url("www.domain")
         False
-        >>> d.is_maybe_url("www")
+        >>> p.is_maybe_url("www")
         False
         """
         tokens = self.tokenize_url(context)
