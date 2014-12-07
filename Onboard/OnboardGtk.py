@@ -566,7 +566,7 @@ class OnboardGtk(object):
                 windows = [self._window, self._window.icp]
             else:
                 windows = []
-            _logger.warning("keep_windows_on_top {}".format(windows))
+            _logger.debug("keep_windows_on_top {}".format(windows))
             self._osk_util.keep_windows_on_top(windows)
 
     def on_focusable_gui_opening(self):
