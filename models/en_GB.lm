@@ -1,7 +1,7 @@
 
 \data\
-ngram 1=42513
-ngram 2=6289
+ngram 1=42519
+ngram 2=6290
 
 \1-grams:
 1 <unk>
@@ -10376,6 +10376,10 @@ ngram 2=6289
 1007 Tramp
 1724 Tramways
 2274 Tranmere
+3596 Trans
+1231 Trans-Canada
+587 Trans-Mississippi
+881 Trans-Siberian
 966 Transcendental
 916 Transfiguration
 5327 Transformers
@@ -39991,6 +39995,8 @@ ngram 2=6289
 1255 tramways
 4025 trance
 1068 tranquil
+3554 trans
+893 trans-Atlantic
 12428 transaction
 896 transactional
 12016 transactions
@@ -48185,6 +48191,7 @@ ngram 2=6289
 675 Township School
 1573 Trail Blazers
 1641 Tranmere Rovers
+889 Trans-Canada Highway
 741 Traverse City
 1211 Treasury Department
 583 Treasury Secretary

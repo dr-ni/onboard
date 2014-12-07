@@ -198,7 +198,7 @@ class WPLocalEngine(object):
                 for j,t in enumerate(tokspans):
                     counts[j][i] = model.lookup_word(t[2])
 
-        _logger.debug("lookup_words: tokens=%s counts=%s" % \
+        _logger.debug("lookup_tokens: tokens=%s counts=%s" % \
                      (repr(tokens), repr(counts)) )
 
         # counts are 0 for no match, 1 for exact match or -n for partial matches
