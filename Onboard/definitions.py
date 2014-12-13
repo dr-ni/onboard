@@ -52,6 +52,13 @@ class LearningBehavior:
         ALL,
     ) = range(3)
 
+# auto-show repositioning
+class RepositionMethodEnum:
+    (
+        NONE,
+        PREVENT_OCCLUSION,
+    ) = range(2)
+
 # window corners
 class Handle:
     NORTH_WEST = Gdk.WindowEdge.NORTH_WEST

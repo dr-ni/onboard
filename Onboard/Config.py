@@ -20,6 +20,7 @@ from Onboard.definitions    import StatusIconProviderEnum, \
                                    InputEventSourceEnum, \
                                    TouchInputEnum, \
                                    LearningBehavior, \
+                                   RepositionMethodEnum, \
                                    Handle, DockingEdge
 from Onboard.ConfigUtils    import ConfigObject
 from Onboard.ClickSimulator import CSMousetweaks0, CSMousetweaks1
@@ -971,7 +972,12 @@ class Config(ConfigObject):
         return self.can_set_auto_hide() and \
                self.auto_show.hide_on_key_press
 
+    def can_auto_show_reposition(self):
+        return self.is_auto_show_enabled() and \
+            self.auto_show.reposition_method != RepositionMethodEnum.NONE
+
     def can_set_auto_hide(self):
+        """ Allowed to change auto hide on key-press? """
         return self.is_auto_show_enabled() and \
                self.is_event_source_xinput()
 
@@ -1509,11 +1515,18 @@ class ConfigICP(ConfigObject):
 class ConfigAutoShow(ConfigObject):
     """ auto_show configuration """
 
+    DEFAULT_REPOSITION_METHOD = RepositionMethodEnum.PREVENT_OCCLUSION
+
     def _init_keys(self):
         self.schema = SCHEMA_AUTO_SHOW
         self.sysdef_section = "auto-show"
 
         self.add_key("enabled", False)
+
+        self.add_key("reposition-method", self.DEFAULT_REPOSITION_METHOD,
+                      enum={"none" : 0,
+                            "prevent-occlusion" : 1,
+                           })
         self.add_key("widget-clearance", (25.0, 55.0, 25.0, 40.0), '(dddd)')
 
         self.add_key("hide-on-key-press", True)

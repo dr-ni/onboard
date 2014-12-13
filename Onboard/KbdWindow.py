@@ -940,28 +940,33 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             self.keyboard_widget.commit_transition()
 
     def get_repositioned_window_rect(self, home_rect):
-        clearance = config.auto_show.widget_clearance
-        test_clearance = clearance
-        move_clearance = clearance
-        limit_rects = None  # None: all monitors
+        if config.can_auto_show_reposition():
+            clearance = config.auto_show.widget_clearance
+            test_clearance = clearance
+            move_clearance = clearance
+            limit_rects = None  # None: all monitors
 
-        # No test clearance when docking. Make it harder to jump
-        # out of the dock, for example for the bottom search box
-        # in maximized firefox.
-        if config.is_docking_enabled():
-            test_clearance = (clearance[0], 0, clearance[2], 0)
+            # No test clearance when docking. Make it harder to jump
+            # out of the dock, for example for the bottom search box
+            # in maximized firefox.
+            if config.is_docking_enabled():
+                test_clearance = (clearance[0], 0, clearance[2], 0)
 
-            # limit the horizontal freedom to the docking monitor
-            area, geom = self.get_docking_monitor_rects()
-            limit_rects = [area]
+                # limit the horizontal freedom to the docking monitor
+                area, geom = self.get_docking_monitor_rects()
+                limit_rects = [area]
 
-        horizontal, vertical = self.get_repositioning_constraints()
-        keyboard = self.keyboard_widget.keyboard
-        return keyboard.get_auto_show_repositioned_window_rect( \
-                                        self.keyboard_widget,
-                                        home_rect, limit_rects,
-                                        test_clearance, move_clearance,
-                                        horizontal, vertical)
+            horizontal, vertical = self.get_repositioning_constraints()
+            keyboard = self.keyboard_widget.keyboard
+            rect = keyboard.get_auto_show_repositioned_window_rect( \
+                                            self.keyboard_widget,
+                                            home_rect, limit_rects,
+                                            test_clearance, move_clearance,
+                                            horizontal, vertical)
+        else:
+            rect = None
+
+        return rect
 
     def reposition(self, x, y):
         """
