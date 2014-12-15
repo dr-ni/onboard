@@ -1146,9 +1146,8 @@ class Keyboard(WordSuggestions):
 
         elif key_type == KeyCommon.MACRO_TYPE:
             snippet_id = int(key.code)
-            mlabel, mString = config.snippets.get(snippet_id, (None, None))
-            if mString:
-                self._text_changer.insert_string_at_caret(mString)
+            if self.insert_snippet(snippet_id):
+                pass
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
@@ -1161,6 +1160,13 @@ class Keyboard(WordSuggestions):
             if not config.xid_mode:  # block settings dialog in xembed mode
                 if key.code:
                     run_script(key.code)
+
+    def insert_snippet(self, snippet_id):
+        mlabel, mString = config.snippets.get(snippet_id, (None, None))
+        if mString:
+            self._text_changer.insert_string_at_caret(mString)
+            return True
+        return False
 
     def release_non_sticky_key(self, key, view, button, event_type):
         needs_layout_update = False
