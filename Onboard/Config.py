@@ -267,7 +267,8 @@ class Config(ConfigObject):
         # All the others are added in self._init_keys().
         self.children = []
         self.gnome_a11y = self.add_optional_child(ConfigGDA)
-        self.gnome_a11y.init_from_gsettings()
+        if self.gnome_a11y:  # schema may not exist on Gentoo (LP: #1402558)
+            self.gnome_a11y.init_from_gsettings()
 
         # detect who launched us
         self.launched_by = self.LAUNCHER_NONE
