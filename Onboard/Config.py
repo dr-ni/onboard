@@ -1249,13 +1249,17 @@ class Config(ConfigObject):
                           .format(schema, key, unicode_str(ex)))
         if fn:
             try:
-                try:
-                    fn, error = GLib.filename_from_uri(fn)
-                except TypeError: # broken introspection on Precise
-                    fn = GLib.filename_from_uri(fn, "")
-                    error = ""
-                if error:
-                    fn = ""
+                # Valid file URI?
+                # Prevents error 'not an absolute URI using the "file" scheme'
+                # when using the unity-greeter schema.
+                if GLib.uri_parse_scheme(fn) == "file":
+                    try:
+                        fn, error = GLib.filename_from_uri(fn)
+                    except TypeError: # broken introspection on Precise
+                        fn = GLib.filename_from_uri(fn, "")
+                        error = ""
+                    if error:
+                        fn = ""
             except Exception as ex: # private exception gi._glib.GError
                 _logger.error("failed to unescape URI for desktop background "
                               "'{}': {}" \
