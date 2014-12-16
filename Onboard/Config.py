@@ -239,9 +239,17 @@ class Config(ConfigObject):
                  "ARG=MIN_LEVEL[-MAX_LEVEL]\n"
                  "LEVEL={all|event|atspi|debug|info|warning|error|\n"
                  "critical}\n")
+
+        group.add_option("", "--launched-by", type="str", dest="launched_by",
+                         metavar="ARG",
+            help="Simulate being launched by certain XEmbed sockets. \n"
+                 "Use this together with option --xid.               \n"
+                 "ARG={unity-greeter|gnome-screen-saver}\n")
+
         group.add_option("-g", "--log-learning",
                   action="store_true", dest="log_learn", default=False,
                   help="log all learned text; off by default")
+
         parser.add_option_group(group)
 
 
@@ -273,10 +281,16 @@ class Config(ConfigObject):
         # detect who launched us
         self.launched_by = self.LAUNCHER_NONE
         if self.xid_mode:
-            if Process.was_launched_by("gnome-screensaver"):
-                self.launched_by = self.LAUNCHER_GSS
-            elif "UNITY_GREETER_DBUS_NAME" in os.environ:
-                self.launched_by = self.LAUNCHER_UNITY_GREETER
+            if options.launched_by:
+                if options.launched_by == "gnome-screensaver":
+                    self.launched_by = self.LAUNCHER_GSS
+                elif options.launched_by == "unity-greeter":
+                    self.launched_by = self.LAUNCHER_UNITY_GREETER
+            else:
+                if Process.was_launched_by("gnome-screensaver"):
+                    self.launched_by = self.LAUNCHER_GSS
+                elif "UNITY_GREETER_DBUS_NAME" in os.environ:
+                    self.launched_by = self.LAUNCHER_UNITY_GREETER
 
     def init(self):
         """
