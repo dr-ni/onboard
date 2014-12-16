@@ -2042,10 +2042,15 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self, view, button, event_type):
-        self.keyboard.set_visible(False)
+        if config.unity_greeter:
+            config.unity_greeter.onscreen_keyboard = False
+        else:
+            self.keyboard.set_visible(False)
 
     def update(self):
-        self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode
+        # insensitive in XEmbed mode except in unity-greeter
+        self.set_sensitive(not config.xid_mode or \
+                           config.unity_greeter)
 
 
 class BCShowClick(ButtonController):

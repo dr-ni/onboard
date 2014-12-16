@@ -51,6 +51,7 @@ SCHEMA_WORD_SUGGESTIONS  = "org.onboard.typing-assistance.word-suggestions"
 SCHEMA_GSS               = "org.gnome.desktop.screensaver"
 SCHEMA_GDI               = "org.gnome.desktop.interface"
 SCHEMA_GDA               = "org.gnome.desktop.a11y.applications"
+SCHEMA_UNITY_GREETER     = "com.canonical.unity-greeter"
 
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
@@ -601,6 +602,7 @@ class Config(ConfigObject):
                           self.scanner,
                           self.typing_assistance]
 
+        # moustweaks
         for _class in [CSMousetweaks1, CSMousetweaks0]:
             _class.MOUSETWEAKS_SCHEMA_ID
             try:
@@ -613,6 +615,15 @@ class Config(ConfigObject):
         if self.mousetweaks is None:
             _logger.warning("mousetweaks GSettings schema not found, "
                             "mousetweaks integration disabled.")
+
+        # unity greeter (very optional)
+        self.unity_greeter = None
+        if self.launched_by == self.LAUNCHER_UNITY_GREETER:
+            try:
+                self.unity_greeter = ConfigUnityGreeter(self)
+                self.children.append(self.unity_greeter)
+            except (SchemaError, ImportError) as e:
+                _logger.warning(unicode_str(e))
 
     def init_from_gsettings(self):
         """
@@ -1710,6 +1721,16 @@ class ConfigGDA(ConfigObject):
 
         # read-only for safety
         self.add_key("screen-keyboard-enabled", False, writable=False)
+
+
+class ConfigUnityGreeter(ConfigObject):
+    """ Key to hide onboard when embedded into unity-greeter """
+
+    def _init_keys(self):
+        self.schema = SCHEMA_UNITY_GREETER
+        self.sysdef_section = "unity-greeter"
+
+        self.add_key("onscreen-keyboard", False)
 
 
 class ConfigScanner(ConfigObject):
