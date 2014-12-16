@@ -1210,11 +1210,24 @@ class Config(ConfigObject):
 
 
     def get_desktop_background_filename(self):
-        schema="org.gnome.desktop.background"
-        key = "picture-uri"
+        fn = ""
 
+        # Starting with Vivid's unity greeter try to get the filename
+        # from the greeter's schema.
+        if self.launched_by == self.LAUNCHER_UNITY_GREETER:
+            fn = self._get_desktop_background_filename_from_schema(
+                     "com.canonical.unity-greeter", "background")
+
+        # Elsewhere (old Ubuntu releases, gnome-screen-saver) get it
+        # from the gnome key.
+        if not fn:
+            fn = self._get_desktop_background_filename_from_schema(
+                     "org.gnome.desktop.background", "picture-uri")
+        return fn
+
+    def _get_desktop_background_filename_from_schema(self, schema, key):
         try:
-            s = Gio.Settings(schema=schema)
+            s = Gio.Settings.new(schema)
             fn = s.get_string(key)
         except Exception as ex: # private exception gi._glib.GError
             fn = ""

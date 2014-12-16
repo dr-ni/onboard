@@ -305,7 +305,7 @@ class LayoutView:
         if config.xid_mode and \
            config.is_keep_aspect_ratio_enabled():
             if self.supports_alpha:
-                self._clear_xid_background(context)
+                self._clear_xembed_background(context)
                 transparent_bg = True
             else:
                 plain_bg = True
@@ -351,21 +351,21 @@ class LayoutView:
         context.paint()
         context.restore()
 
-    def _clear_xid_background(self, context):
+    def _clear_xembed_background(self, context):
         """ fill with plain layer 0 color; no alpha support required """
         rect = Rect(0, 0, self.get_allocated_width(),
                           self.get_allocated_height())
 
         # draw background image
         if config.get_xembed_background_image_enabled():
-            pixbuf = self._get_xid_background_image()
+            pixbuf = self._get_xembed_background_image()
             if pixbuf:
                 src_size = (pixbuf.get_width(), pixbuf.get_height())
                 x, y = 0, rect.bottom() - src_size[1]
                 Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
                 context.paint()
 
-        # draw solid colored bar on top
+        # draw solid colored bar on top (with transparency, usually)
         rgba = config.get_xembed_background_rgba()
         if rgba is None:
             rgba = self.get_background_rgba()
@@ -374,7 +374,7 @@ class LayoutView:
         context.rectangle(*rect)
         context.fill()
 
-    def _get_xid_background_image(self):
+    def _get_xembed_background_image(self):
         """ load the desktop background image in Unity """
         try:
             pixbuf = self._xid_background_image
@@ -399,7 +399,7 @@ class LayoutView:
                                                 GdkPixbuf.InterpType.BILINEAR)
                 except Exception as ex: # private exception gi._glib.GError when
                                         # librsvg2-common wasn't installed
-                    _logger.error("_get_xid_background_image(): " + \
+                    _logger.error("_get_xembed_background_image(): " + \
                                 unicode_str(ex))
                     pixbuf = None
 
