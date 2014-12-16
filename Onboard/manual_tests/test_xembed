@@ -1,0 +1,15 @@
+#!/bin/bash
+
+( tools/socket.py -x100 -y400 -s 1600x200 -t "Launched by gnome-screensaver" $(head -1 <(./onboard --xid --launched-by=gnome-screensaver)) ) &
+PID1=$!
+( tools/socket.py -x100 -y700 -s 1600x200 -t "Launched by unity-greeter" $(head -1 <(./onboard --xid --launched-by=unity-greeter))) &
+PID2=$!
+
+sleep 0.2
+tools/socket.py -x100 -y100 -s 1600x200 -t "Default" $(head -1 <(./onboard --xid))
+
+kill $PID1 $PID2
+wait $PID1 $PID2 2>/dev/null # no process termination messages
+
+killall onboard
+
