@@ -144,7 +144,7 @@ for lang in $LANGUAGES; do
     case "$lang_id" in
         en)
             PRUNE_FREQ=499,499
-            REGEX_DROP_UNIGRAM="\'s$|^[^IaA]$|^th$"
+            REGEX_DROP_UNIGRAM="\'s$|^[^IaA]$|^[Tt][Hh]$"
             NAME_EXCEPTIONS=Union,Kingdom,Nations,New,Barack,Obama,Bush,South,West,North,East,Southern,Western,Northern,Eastern,Mean,Standard,Coast,Time,Grand,Central,Station,Large,Cloud,Collider,Psychology,Geographic \
             MAX_LC_UC_RATIO=2.0
             ;;

@@ -1,6 +1,6 @@
 
 \data\
-ngram 1=42637
+ngram 1=42635
 ngram 2=6398
 
 \1-grams:
@@ -11588,7 +11588,6 @@ ngram 2=6398
 12849 TD
 1963 TE
 950 TED
-941 TH
 930 THC
 1033 TI
 704 TIFF
@@ -11784,7 +11783,6 @@ ngram 2=6398
 2111 Texan
 4672 Texans
 181826 Texas
-1131 Th
 944 Thackeray
 708 Thad
 1033 Thaddeus
