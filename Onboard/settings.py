@@ -1033,9 +1033,12 @@ class Settings(DialogBuilder):
         theme = self.get_selected_theme()
 
         if theme and (self.get_hidden_theme(theme) or theme.is_system):
-            self.delete_theme_button.set_label(_("Reset"))
+            # Translators: reset button of Preferences->Theme.
+            self.delete_theme_button.set_label(_("_Reset"))
         else:
-            self.delete_theme_button.set_label(Gtk.STOCK_DELETE)
+            # Translators: delete button of Preferences->Theme. It used to be
+            # stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+            self.delete_theme_button.set_label(_("_Delete"))
 
         self.delete_theme_button.set_sensitive(bool(theme) and not theme.is_system)
         self.customize_theme_button.set_sensitive(bool(theme))

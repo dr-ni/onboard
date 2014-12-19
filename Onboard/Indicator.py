@@ -51,7 +51,7 @@ class ContextMenu(GObject.GObject):
 
         if not config.lockdown.disable_preferences:
             # Translators: label of a menu item. It used to be stock item
-            # STOCK_PREFERENCES until Gtk 3.12.2 deprecated those.
+            # STOCK_PREFERENCES until Gtk 3.10 deprecated those.
             settings_item = Gtk.MenuItem.new_with_label(_("_Preferences"))
             settings_item.set_use_underline(True)
             settings_item.connect("activate", self._on_settings_clicked)
@@ -62,7 +62,7 @@ class ContextMenu(GObject.GObject):
             menu.append(item)
 
             # Translators: label of a menu item. It used to be stock item
-            # STOCK_QUIT until Gtk 3.12.2 deprecated those.
+            # STOCK_QUIT until Gtk 3.10 deprecated those.
             quit_item = Gtk.MenuItem.new_with_label(_("_Quit"))
             quit_item.set_use_underline(True)
             quit_item.connect("activate", self._on_quit)

@@ -396,7 +396,10 @@ def show_new_device_dialog(name, config_string, is_pointer, callback):
     secondary += _("Do you want to use this device for keyboard scanning?")
 
     dialog.format_secondary_markup(secondary)
-    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+
+    # Translators: cancel button of "New Input Device" dialog. It used to be
+    # stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+    dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
     dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
     dialog.connect("response", _show_new_device_dialog_response,
                    callback, config_string)

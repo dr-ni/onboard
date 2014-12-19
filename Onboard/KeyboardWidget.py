@@ -1394,7 +1394,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         dialog = Gtk.Dialog(title=_("New snippet"),
                            transient_for=self.get_toplevel(),
                            flags=0)
-        dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        # Translators: cancel button of the snippets dialog. It used to
+        # be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+        dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
         dialog.add_button(_("_Save snippet"), Gtk.ResponseType.OK)
 
         # Don't hide dialog behind the keyboard in force-to-top mode.
