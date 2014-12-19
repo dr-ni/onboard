@@ -7,7 +7,8 @@ import cairo
 
 from gi.repository          import Gdk, Gtk, Pango, PangoCairo
 
-from Onboard.utils          import Rect, Timer, roundrect_arc
+from Onboard.utils          import Rect, Timer, roundrect_arc, \
+                                   gtk_has_resize_grip_support
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
                                    canvas_to_root_window_rect, \
@@ -120,14 +121,19 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
 
     def __init__(self):
         WindowRectTracker.__init__(self)
-        Gtk.Window.__init__(self,
-                            skip_taskbar_hint=True,
-                            skip_pager_hint=True,
-                            has_resize_grip=False,
-                            urgency_hint=False,
-                            decorated=False,
-                            accept_focus=False,
-                            opacity=1.0)
+
+        args = {
+            "skip_taskbar_hint" : True,
+            "skip_pager_hint" : True,
+            "urgency_hint" : False,
+            "decorated" : False,
+            "accept_focus" : False,
+            "opacity" : 1.0,
+        }
+        if gtk_has_resize_grip_support():
+            args["has_resize_grip"] = False
+
+        Gtk.Window.__init__(self, **args)
 
         self.set_keep_above(True)
 

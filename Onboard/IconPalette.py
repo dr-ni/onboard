@@ -25,7 +25,7 @@ from gi.repository import GObject, Gdk, Gtk
 import cairo
 
 from Onboard.utils       import CallOnce, Rect, roundrect_arc, \
-                                Timer, Fade
+                                Timer, Fade, gtk_has_resize_grip_support
 from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
                                 Orientation, set_unity_property, \
                                 DwellProgress
@@ -78,17 +78,21 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
 
         self._menu = ContextMenu(keyboard)
 
-        Gtk.Window.__init__(self,
-                            type_hint=self._get_window_type_hint(),
-                            skip_taskbar_hint=True,
-                            skip_pager_hint=True,
-                            has_resize_grip=False,
-                            urgency_hint=False,
-                            decorated=False,
-                            accept_focus=False,
-                            opacity=0.75,
-                            width_request=self.MINIMUM_SIZE,
-                            height_request=self.MINIMUM_SIZE)
+        args = {
+            "type_hint" : self._get_window_type_hint(),
+            "skip_taskbar_hint" : True,
+            "skip_pager_hint" : True,
+            "urgency_hint" : False,
+            "decorated" : False,
+            "accept_focus" : False,
+            "opacity" : 0.75,
+            "width_request" : self.MINIMUM_SIZE,
+            "height_request" : self.MINIMUM_SIZE,
+        }
+        if gtk_has_resize_grip_support():
+            args["has_resize_grip"] = False
+
+        Gtk.Window.__init__(self, **args)
 
         WindowRectPersist.__init__(self)
         WindowManipulator.__init__(self)
@@ -215,9 +219,6 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         return config.get_drag_threshold()
 
     def _on_button_press_event(self, widget, event):
-        """
-        Save the pointer position.
-        """
         if event.window == self.get_window():
             if Gdk.Event.triggers_context_menu(event):
                 self._menu.popup(event.button, event.get_time())

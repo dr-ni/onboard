@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
-from Onboard.utils       import Rect, CallOnce, Timer
+from Onboard.utils       import Rect, CallOnce, Timer, gtk_has_resize_grip_support
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
                                 set_unity_property
 import Onboard.osk as osk
@@ -19,6 +19,7 @@ _logger = logging.getLogger("KbdWindow")
 from Onboard.Config import Config
 config = Config()
 ########################
+
 
 
 class KbdWindowBase:
@@ -54,7 +55,10 @@ class KbdWindowBase:
         self._monitor_workarea = {}
 
         self._opacity = 1.0
-        self._default_resize_grip = self.get_has_resize_grip()
+        if gtk_has_resize_grip_support():
+            self._default_resize_grip = self.get_has_resize_grip()
+        else:
+            self._default_resize_grip = False
         self._type_hint = None
 
         self._known_window_rects = []
@@ -253,10 +257,11 @@ class KbdWindowBase:
                 self._recreate_window()
 
             # Show the resize gripper?
-            if config.has_window_decoration():
-                self.set_has_resize_grip(self._default_resize_grip)
-            else:
-                self.set_has_resize_grip(False)
+            if gtk_has_resize_grip_support():
+                if config.has_window_decoration():
+                    self.set_has_resize_grip(self._default_resize_grip)
+                else:
+                    self.set_has_resize_grip(False)
 
             self.update_sticky_state()
 

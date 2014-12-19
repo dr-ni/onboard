@@ -25,16 +25,16 @@ from pypredict import *
 
 
 def main():
-    parser = OptionParser(usage="Usage: %prog [options] corpus model")
+    parser = OptionParser(usage="Usage: %prog [options] [history] [completion-prefix]")
     parser.add_option("-m", "--language-model", type="str", dest="language_model",
               help="optional filename of a language model")
-    parser.add_option("-d", "--dictionary-test", action="store_true", 
+    parser.add_option("-d", "--dictionary-test", action="store_true",
               dest="dictionary_test",
               help="use synthethic training data to test dictionary performance")
-    parser.add_option("-c", "--case-insensitive", action="store_true", 
+    parser.add_option("-c", "--case-insensitive", action="store_true",
               dest="case_insensitive",
               help="case insensitive completion")
-    parser.add_option("-a", "--accent-insensitive", action="store_true", 
+    parser.add_option("-a", "--accent-insensitive", action="store_true",
               dest="accent_insensitive",
               help="accent insensitive completion")
     options, args = parser.parse_args()
@@ -112,7 +112,7 @@ def main():
             _options |= model.CASE_INSENSITIVE
         if options.accent_insensitive:
             _options |= model.ACCENT_INSENSITIVE
-        
+
         choices = model.predictp(context=context, limit=-1, options=_options)
 
     print_choices(model, context, choices)

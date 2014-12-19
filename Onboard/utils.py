@@ -1911,3 +1911,9 @@ class TermColors(object):
             return ""
 
 
+def gtk_has_resize_grip_support():
+    """ Gtk from 3.14 removes resize grips. """
+    gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
+    return gtk_version < Version(3, 14)
+
+
