@@ -214,7 +214,7 @@ class Settings(DialogBuilder):
     LAYOUT_COL_IS_ROW_SENSITIVE = 4
 
 
-    def __init__(self,mainwin):
+    def __init__(self, mainwin):
         self.themes = {}       # cache of theme objects
 
         # Use D-bus main loop by default
@@ -468,6 +468,12 @@ class Settings(DialogBuilder):
         sel = self.pages_view.get_selection()
         if sel:
             sel.select_path(Gtk.TreePath(page))
+
+        # On startup with Gtk 3.14: "Gtk-Message: GtkDialog mapped
+        # without a transient parent. This is discouraged."
+        # Preferences is a top level dialog, we don't have a parent.
+        # No idea how to appease Gtk here.
+        #self.window.set_transient_for(None)
 
         self.window.show_all()
 

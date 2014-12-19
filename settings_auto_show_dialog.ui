@@ -106,7 +106,6 @@
                         <property name="receives_default">False</property>
                         <property name="tooltip_text" translatable="yes">Hide Onboard when any key is pressed on a physical keyboard. Requires input event source "XInput".</property>
                         <property name="use_underline">True</property>
-                        <property name="xalign">0</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -116,15 +115,11 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkAlignment" id="alignment2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="left_padding">26</property>
-                        <child>
                           <object class="GtkBox" id="hide_on_key_press_box">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
+                            <property name="margin_start">26</property>
                             <child>
                               <object class="GtkBox" id="box8">
                                 <property name="visible">True</property>
@@ -173,8 +168,6 @@
                               </packing>
                             </child>
                           </object>
-                        </child>
-                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
