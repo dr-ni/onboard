@@ -1376,12 +1376,11 @@
                         <property name="layout_style">start</property>
                         <child>
                           <object class="GtkButton" id="layout_new_button">
-                            <property name="label">gtk-new</property>
+                            <property name="label">_New</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                             <signal name="clicked" handler="on_layout_new_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1392,11 +1391,11 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="layout_remove_button">
-                            <property name="label">gtk-delete</property>
+                            <property name="label">_Delete</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
+                            <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_layout_remove_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1422,11 +1421,11 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="layout_about_button">
-                            <property name="label">gtk-about</property>
+                            <property name="label">_About</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
+                            <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_layout_about_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1532,11 +1531,11 @@
                             <property name="layout_style">start</property>
                             <child>
                               <object class="GtkButton" id="new_theme_button">
-                                <property name="label">gtk-new</property>
+                                <property name="label">_New</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="use_stock">True</property>
+                                <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_new_theme_button_clicked" swapped="no"/>
                               </object>
                               <packing>
@@ -1547,11 +1546,11 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="delete_theme_button">
-                                <property name="label">gtk-delete</property>
+                                <property name="label">_Delete</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
-                                <property name="use_stock">True</property>
+                                <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_delete_theme_button_clicked" swapped="no"/>
                               </object>
                               <packing>
@@ -1696,11 +1695,11 @@
                         <property name="layout_style">start</property>
                         <child>
                           <object class="GtkButton" id="snippet_add_button">
-                            <property name="label">gtk-add</property>
+                            <property name="label">_Add</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
+                            <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_snippet_add_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1711,11 +1710,11 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="snippet_remove_button">
-                            <property name="label">gtk-remove</property>
+                            <property name="label">_Remove</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_stock">True</property>
+                            <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_snippet_remove_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -3304,13 +3303,13 @@
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="close_button">
-                <property name="label">gtk-close</property>
+                <property name="label">_Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_stock">True</property>
+                <property name="use_underline">True</property>
                 <signal name="clicked" handler="on_close_button_clicked" swapped="no"/>
               </object>
               <packing>
