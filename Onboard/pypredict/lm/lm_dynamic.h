@@ -25,6 +25,9 @@ Author: marmuta <marmvta@gmail.com>
 
 #include "lm.h"
 
+#define HONOR_REMOVED_NODES true
+
+
 #pragma pack(2)
 
 //------------------------------------------------------------------------
@@ -212,15 +215,19 @@ class BeforeLastNode : public TBASE
 
         int get_N1prx()
         {
-            //return children.size();  // assumes all have counts>=1
             // Take removed nodes into account (count==0)
             int n = 0;
-            if (1)  // any removed nodes in the model?
+            if (HONOR_REMOVED_NODES)  // any removed nodes in the model?
             {
                 for (int i=0; i<children.size(); i++)
                     if (children[i].get_count() > 0)
                         n++;
             }
+            else
+            {
+                n = children.size();  // assumes all have counts>=1
+            }
+
             return n;
         }
 
@@ -298,7 +305,7 @@ class TrieNode : public TBASE
         int get_N1prx()
         {
             int n = 0;
-            if (1)  // any removed nodes in the model?
+            if (HONOR_REMOVED_NODES)  // any removed nodes in the model?
             {
                 for (int i=0; i<(int)children.size(); i++)
                     if (children[i]->get_count() > 0)
