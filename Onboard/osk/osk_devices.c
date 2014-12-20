@@ -205,6 +205,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     int event, error;
     int major = 2;
     int minor = 2;
+    Status status;
 
     /* set display before anything else! */
     GdkDisplay* display = gdk_display_get_default ();
@@ -228,7 +229,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     // successfully calling it before us, so just ignore the
     // error and move on.
     gdk_error_trap_push ();
-    Status status = XIQueryVersion (dev->dpy, &major, &minor);
+    status = XIQueryVersion (dev->dpy, &major, &minor);
     gdk_error_trap_pop_ignored ();
     if (status == BadRequest)
     {
@@ -1156,6 +1157,9 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
     unsigned char mask[1] = {0};
     XIEventMask events;
 
+    Status status;
+    gint error;
+
     if (!PyArg_ParseTuple (args, "ii", &id, &_win))
         return NULL;
 
@@ -1168,10 +1172,10 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
     events.mask_len = sizeof(mask);
 
     gdk_error_trap_push ();
-    Status status = XIGrabDevice(dev->dpy, id, win, CurrentTime, None,
+    status = XIGrabDevice(dev->dpy, id, win, CurrentTime, None,
                                  XIGrabModeSync, XIGrabModeAsync,
                                  True, &events);
-    gint error = gdk_error_trap_pop ();
+    error = gdk_error_trap_pop ();
 
     if (status != Success || error)
     {
@@ -1192,15 +1196,17 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
 static PyObject *
 osk_devices_ungrab_device (PyObject *self, PyObject *args)
 {
-    OskDevices       *dev = (OskDevices *) self;
-    int               id;
+    OskDevices *dev = (OskDevices *) self;
+    int         id;
+    Status      status;
+    gint        error;
 
     if (!PyArg_ParseTuple (args, "i", &id))
         return NULL;
 
     gdk_error_trap_push ();
-    Status status = XIUngrabDevice(dev->dpy, id, CurrentTime);
-    gint error = gdk_error_trap_pop ();
+    status = XIUngrabDevice(dev->dpy, id, CurrentTime);
+    error = gdk_error_trap_pop ();
     if (status != Success || error)
     {
         PyErr_Format (OSK_EXCEPTION, "failed to ungrab device (0x%x, 0x%x)",
