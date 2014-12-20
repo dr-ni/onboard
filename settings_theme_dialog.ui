@@ -93,7 +93,7 @@
                             <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkComboBox" id="color_scheme_combobox">
                                 <property name="visible">True</property>
@@ -141,7 +141,7 @@
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkScale" id="background_gradient_scale">
                                 <property name="visible">True</property>
@@ -214,7 +214,7 @@
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkScale" id="key_gradient_direction_scale">
                                 <property name="visible">True</property>
@@ -309,7 +309,7 @@
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkLabel" id="label14">
                                 <property name="visible">True</property>
@@ -493,7 +493,7 @@
                       <object class="GtkBox" id="gradients_box">
                         <property name="visible">True</property>
                         <property name="margin_top">6</property>
-                        <property name="margin_start">12</property>
+                        <property name="margin_left">12</property>
                         <child>
                           <object class="GtkGrid" id="grid3">
                             <property name="visible">True</property>
@@ -613,7 +613,7 @@
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkLabel" id="label8">
                                 <property name="visible">True</property>
@@ -748,7 +748,7 @@
                             <property name="row_spacing">12</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkLabel" id="label19">
                                 <property name="visible">True</property>
@@ -866,7 +866,7 @@
                             <property name="row_spacing">12</property>
                             <property name="column_spacing">6</property>
                             <property name="margin_top">6</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <child>
                               <object class="GtkCheckButton" id="superkey_label_size_checkbutton">
                                 <property name="label" translatable="yes">I_ndependent size</property>

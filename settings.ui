@@ -240,7 +240,7 @@
       <object class="GtkBox" id="dialog-vbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_end">9</property>
+        <property name="margin_right">9</property>
         <property name="orientation">vertical</property>
         <property name="spacing">3</property>
         <child internal-child="action_area">
@@ -372,7 +372,7 @@
                           <object class="GtkBox" id="box3">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <property name="margin_top">2</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">2</property>
@@ -410,8 +410,8 @@
                                       <object class="GtkLabel" id="label60">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="margin_start">6</property>
-                                        <property name="margin_end">6</property>
+                                        <property name="margin_left">6</property>
+                                        <property name="margin_right">6</property>
                                         <property name="label" translatable="yes">_Settings</property>
                                         <property name="use_underline">True</property>
                                         <property name="mnemonic_widget">scanner_settings</property>
@@ -480,7 +480,7 @@
                           <object class="GtkBox" id="box4">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_start">12</property>
+                            <property name="margin_left">12</property>
                             <property name="margin_top">6</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
@@ -647,7 +647,7 @@
                                   <object class="GtkBox" id="box18">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">2</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
@@ -684,8 +684,8 @@
                                               <object class="GtkLabel" id="label41">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="margin_start">6</property>
-                                                <property name="margin_end">6</property>
+                                                <property name="margin_left">6</property>
+                                                <property name="margin_right">6</property>
                                                 <property name="label" translatable="yes">_Settings</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="mnemonic_widget">scanner_settings</property>
@@ -735,7 +735,7 @@
                                   <object class="GtkBox" id="box17">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
@@ -865,7 +865,7 @@
                                   <object class="GtkBox" id="box10">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">11</property>
@@ -950,7 +950,7 @@
                                             <property name="has_tooltip">True</property>
                                             <property name="tooltip_markup" translatable="yes">Show the desktop through the gaps between keys.</property>
                                             <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
-                                            <property name="margin_start">20</property>
+                                            <property name="margin_left">20</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                             <signal name="toggled" handler="on_transparent_background_toggled" swapped="no"/>
@@ -1000,7 +1000,7 @@
                                   <object class="GtkBox" id="box13">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">2</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
@@ -1154,7 +1154,7 @@
                                   <object class="GtkBox" id="box15">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <child>
@@ -1264,7 +1264,7 @@
                   <object class="GtkBox" id="layout_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_end">9</property>
+                    <property name="margin_right">9</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">10</property>
                     <child>
@@ -1779,7 +1779,7 @@
                                   <object class="GtkBox" id="box23">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
@@ -1849,7 +1849,7 @@
                                   <object class="GtkBox" id="box28">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">2</property>
@@ -1923,7 +1923,7 @@
                                   <object class="GtkBox" id="box2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">2</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">2</property>
@@ -2102,7 +2102,7 @@
                                   <object class="GtkBox" id="box21">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">2</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">2</property>
@@ -2230,7 +2230,7 @@
                                   <object class="GtkBox" id="box37">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">2</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">2</property>
@@ -2454,7 +2454,7 @@
                               <object class="GtkBox" id="word_suggestions_general_box1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_start">20</property>
+                                <property name="margin_left">20</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">8</property>
                                 <child>
@@ -2467,7 +2467,7 @@
                                       <object class="GtkBox" id="box30">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="margin_start">12</property>
+                                        <property name="margin_left">12</property>
                                         <property name="margin_top">6</property>
                                         <property name="orientation">vertical</property>
                                         <property name="spacing">2</property>
@@ -2554,7 +2554,7 @@
                                       <object class="GtkBox" id="box29">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="margin_start">12</property>
+                                        <property name="margin_left">12</property>
                                         <property name="margin_top">6</property>
                                         <property name="orientation">vertical</property>
                                         <property name="spacing">2</property>
@@ -2779,7 +2779,7 @@
                                   <object class="GtkBox" id="box36">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_start">12</property>
+                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">2</property>
@@ -2939,7 +2939,7 @@
                               <object class="GtkBox" id="box11">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_start">12</property>
+                                <property name="margin_left">12</property>
                                 <property name="margin_top">6</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">6</property>
@@ -2971,8 +2971,8 @@
                                       <object class="GtkLabel" id="label16">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="margin_start">6</property>
-                                        <property name="margin_end">6</property>
+                                        <property name="margin_left">6</property>
+                                        <property name="margin_right">6</property>
                                         <property name="label" translatable="yes">Sc_anner Settings</property>
                                         <property name="use_underline">True</property>
                                         <property name="mnemonic_widget">scanner_settings</property>
@@ -3015,7 +3015,7 @@
                               <object class="GtkBox" id="box12">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_start">12</property>
+                                <property name="margin_left">12</property>
                                 <property name="margin_top">6</property>
                                 <property name="orientation">vertical</property>
                                 <child>

@@ -167,7 +167,7 @@
                   <object class="GtkNotebook" id="scan_mode_notebook">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_start">12</property>
+                    <property name="margin_left">12</property>
                     <property name="show_tabs">False</property>
                     <property name="show_border">False</property>
                     <child>
@@ -585,7 +585,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">The selected device should not control the system mouse cursor or the keyboard caret.</property>
-                    <property name="margin_start">12</property>
+                    <property name="margin_left">12</property>
                     <property name="use_underline">True</property>
                     <property name="draw_indicator">True</property>
                   </object>
