@@ -190,7 +190,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
         <key name="touch-input"  enum="org.onboard.keyboard.TouchInput">
             <default>"multi"</default>
             <summary>Touch input handling</summary>
-            <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
+            <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously.</description>
         </key>
         <key name="input-event-source"  enum="org.onboard.keyboard.InputEventSource">
             <default>"XInput"</default>
