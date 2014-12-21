@@ -392,6 +392,7 @@
                                     <property name="tooltip_text" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
                                     <property name="use_underline">True</property>
                                     <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_auto_show_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
