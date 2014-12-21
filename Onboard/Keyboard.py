@@ -2236,7 +2236,8 @@ class BCQuit(ButtonController):
     def release(self, view, button, event_type):
         app = self.keyboard.get_application()
         if app:
-            app.emit_quit_onboard()
+            # finish current key processing then quit
+            GLib.idle_add(app.do_quit_onboard)
 
     def update(self):
         self.set_visible(not config.xid_mode and \
