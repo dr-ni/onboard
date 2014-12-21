@@ -50,8 +50,13 @@
                 <key group='alphanumeric' id='v' keycode='55'/>
                 <key group='alphanumeric' id='b' keycode='56'/>
                 <key group='alphanumeric' id='n' keycode='57'/>
+
+                <key group="alphanumeric" id="m" keycode="47" layout="be,fr,cm(azerty)"/>
                 <key group='alphanumeric' id='m' keycode='58'/>
+
+                <key group="alphanumeric" id="full-stop" keycode="58" layout="be,fr,cm(azerty)"/>
                 <key group='alphanumeric' id='full-stop' keycode='60'/>
+                
                 <key group='alphanumeric' id='comma' keycode='59'/>
                 <key group='bottomrow' id='LFSH.grid'/>
                 <key group='bottomrow' id='SPCE.grid' label='Space'/>
