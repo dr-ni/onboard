@@ -272,6 +272,8 @@ class TextChanger():
         self._key_synth_virtkey = KeySynthVirtkey(vk)
         self._key_synth_atspi = KeySynthAtspi(vk)
 
+        self._delayed_mods = None
+
         if config.keyboard.key_synth: # == KeySynth.ATSPI:
             self._key_synth = self._key_synth_atspi
         else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
@@ -316,10 +318,41 @@ class TextChanger():
     def release_keysym(self, keysym):
         self._key_synth.release_keysym(keysym)
 
+    def delay_modifier_changes(self):
+        """
+        Delay changing modifiers until apply_modifier_changes().
+        """
+        self._delayed_mods = {}
+
+    def apply_modifier_changes(self):
+        """
+        Apply accumulated modifiers changes.
+        """
+        if not self._delayed_mods is None:
+            for mod, count in self._delayed_mods.items():
+                if count:
+                    self._do_lock_mod(mod)
+                else:
+                    self._do_unlock_mod(mod)
+
+            self._delayed_mods = None
+
     def lock_mod(self, mod):
-        self._key_synth.lock_mod(mod)
+        if self._delayed_mods is None:
+            self._do_lock_mod(mod)
+        else:
+            self._delayed_mods[mod] = True
 
     def unlock_mod(self, mod):
+        if self._delayed_mods is None:
+            self._do_unlock_mod(mod)
+        else:
+            self._delayed_mods[mod] = False
+
+    def _do_lock_mod(self, mod):
+        self._key_synth.lock_mod(mod)
+
+    def _do_unlock_mod(self, mod):
         self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
@@ -1036,7 +1069,7 @@ class Keyboard(WordSuggestions):
             # keys a second time in set_modifiers().
             self.mods[modifier] -= 1
 
-            # Alt is special because it activates the window managers move mode.
+            # Alt is special because it activates window manager's move mode.
             if modifier != 8: # not Alt?
                 self._text_changer.unlock_mod(modifier)
 
@@ -1177,6 +1210,13 @@ class Keyboard(WordSuggestions):
     def release_non_sticky_key(self, key, view, button, event_type):
         needs_layout_update = False
 
+        # Delay locking/unlockign modifiers. Multiple locks and unlocks
+        # of SHIFT may happen when the punctuator is active. Make sure
+        # we set the final resulting modifier state only once, else we can't
+        # distinguish our changes from physical keyboard actions in
+        # set_modifiers.
+        self._text_changer.delay_modifier_changes()
+
         # release key
         self.send_key_up(key, view, button, event_type)
 
@@ -1208,6 +1248,9 @@ class Keyboard(WordSuggestions):
 
         # punctuation assistance and collapse corrections
         WordSuggestions.on_after_key_release(self, key)
+
+        # lock/unlock modifiers
+        self._text_changer.apply_modifier_changes()
 
         return needs_layout_update
 

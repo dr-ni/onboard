@@ -41,7 +41,8 @@ from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine, ModelCache
 from Onboard.utils             import CallOnce, unicode_str, \
-                                      Timer, TimerOnce, escape_markup
+                                      Timer, TimerOnce, escape_markup, \
+                                      Modifiers
 import Onboard.utils as utils
 
 ### Config Singleton ###
@@ -294,8 +295,8 @@ class WordSuggestions:
                     self._latched_sticky_keys.append(key)
                 self.redraw([key])
 
+        self.mods[Modifiers.SHIFT] = 1
         self._text_changer.lock_mod(1)
-        self.mods[1] = 1   # shift
         self.redraw_labels(False)
 
     def on_spell_checker_changed(self):
@@ -516,7 +517,6 @@ class WordSuggestions:
                         auto_capitalization = word_caps
                         correction_span = word_span
 
-        #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
         return correction_choices, correction_span, auto_capitalization
 
     def _update_prediction_choices(self):
