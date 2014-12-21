@@ -1050,11 +1050,17 @@ class Keyboard(WordSuggestions):
         # with negative counts. Work around this and be verbose about it
         # so we can fix it eventually.
         # Seems fixed in 0.99, but keep the check just in case.
+        # Happens again since 1.1.0 when using physical keyboards in
+        # parallel with Onboard. Occasionally we fail to detect where a
+        # modifier change originated from.
         for mod, nkeys in self._mods.items():
             if nkeys < 0:
                 _logger.warning("Negative count {} for modifier {}, reset." \
                                 .format(self.mods[modifier], modifier))
                 self.mods[mod] = 0
+
+                # Reset this too, else unlatching won't happen until restart.
+                self._external_mod_changes[mod] = 0
 
     def maybe_send_alt_press_for_key(self, key, view, button, event_type):
         """ handle delayed Alt press """
