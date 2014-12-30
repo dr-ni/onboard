@@ -231,7 +231,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
                 if self.is_moving():
                     self.reset_drag_protection() # force threshold
 
-        return False
+        return True
 
     def _on_motion_notify_event(self, widget, event):
         """
@@ -255,25 +255,23 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         else:
             self._stop_dwelling()  # allow resizing in peace
 
-        return False
+        return True
 
     def _on_button_release_event(self, widget, event):
         """
         Save the window geometry, hide the IconPalette and
         emit the "activated" signal.
         """
-        result = False
+        if event.window == self.get_window():
+            if event.button == 1 and \
+            event.window == self.get_window() and \
+            not self.is_drag_active():
+                self.emit("activated")
 
-        if event.button == 1 and \
-           event.window == self.get_window() and \
-           not self.is_drag_active():
-            self.emit("activated")
-            result = True
+            self.stop_drag()
+            self.set_drag_cursor_at((event.x, event.y))
 
-        self.stop_drag()
-        self.set_drag_cursor_at((event.x, event.y))
-
-        return result
+        return True
 
     def _on_mouse_enter(self, widget, event):
         pass
