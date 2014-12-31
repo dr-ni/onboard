@@ -63,6 +63,8 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
     """ Minimum size of the IconPalette """
     MINIMUM_SIZE = 20
 
+    OPACITY = 0.75
+
     _layout_view = None
 
     def __init__(self, keyboard):
@@ -85,7 +87,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             "urgency_hint" : False,
             "decorated" : False,
             "accept_focus" : False,
-            "opacity" : 0.75,
+            "opacity" : self.OPACITY,    # no effect on Vivid
             "width_request" : self.MINIMUM_SIZE,
             "height_request" : self.MINIMUM_SIZE,
         }
@@ -172,6 +174,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         if config.is_force_to_top():
             self.set_override_redirect(True)
         self.restore_window_rect(True)
+
+        # Work around initial opacity having no effect in Vivid.
+        self.set_opacity(self.OPACITY - 0.01)
 
     def _on_unrealize_event(self, user_data):
         """ Gdk window destroyed """
