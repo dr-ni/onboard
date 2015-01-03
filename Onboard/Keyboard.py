@@ -910,8 +910,10 @@ class Keyboard(WordSuggestions):
                 # This key might have caused a completion popup to open,
                 # e.g. the firefox URL-bar popup.
                 # -> attempt to raise the keyboard over the popup
-
-                if action and \
+                # Disabled because only raising isn't enough for most
+                # drop-downs.
+                if False and \
+                   action and \
                    config.is_force_to_top() and \
                    not self.has_focusable_gui() and \
                    not config.xid_mode:
