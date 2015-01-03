@@ -1035,6 +1035,8 @@ class WordSuggestions:
             if app:
                 app.on_focusable_gui_opening()
 
+            self.stop_raise_attempts()
+
         self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
@@ -1050,6 +1052,9 @@ class WordSuggestions:
             app = self.get_application()
             if app:
                 app.on_focusable_gui_closed()
+
+    def has_focusable_gui(self):
+        return self._focusable_count > 0
 
     def _auto_correct_at(self, word_span, caret_offset):
         """

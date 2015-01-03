@@ -26,7 +26,8 @@ from Onboard.Sound                 import Sound
 from Onboard.ClickSimulator        import ClickSimulator, \
                                           CSButtonMapper, CSFloatingSlave
 from Onboard.Scanner               import Scanner
-from Onboard.utils                 import Timer, Modifiers, LABEL_MODIFIERS, \
+from Onboard.utils                 import Timer, ProgressiveDelayTimer, \
+                                          Modifiers, LABEL_MODIFIERS, \
                                           parse_key_combination, \
                                           unicode_str
 from Onboard.definitions           import Handle
@@ -500,6 +501,8 @@ class Keyboard(WordSuggestions):
         self._unpress_timers = UnpressTimers(self)
         self._touch_feedback = TouchFeedback()
 
+        self._raise_timer = ProgressiveDelayTimer()
+
         self._auto_show = AutoShow(self)
         self._auto_show.enable(config.is_auto_show_enabled())
         self._auto_hide = AutoHide(self)
@@ -528,6 +531,8 @@ class Keyboard(WordSuggestions):
 
         if self._auto_show:
             self._auto_show.reset()
+
+        self.stop_raise_attempts()
 
         # Keep caps-lock state on layout change to prevent LP #1313176.
         # Otherwise, a caps press causes a layout change, cleanup
@@ -805,6 +810,8 @@ class Keyboard(WordSuggestions):
         This may be either an initial press, or a switch of the active_key
         due to dragging.
         """
+        self.stop_raise_attempts()
+
         if sequence:
             button = sequence.button
             event_type = sequence.event_type
@@ -877,7 +884,7 @@ class Keyboard(WordSuggestions):
                                    key.is_pressed_only() and \
                                    action
 
-            # Draw key unpressed to remove the visual feedback.
+            # Draw key unpressed to remove Onboard/osk/osk_util.cthe visual feedback.
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
@@ -899,6 +906,16 @@ class Keyboard(WordSuggestions):
             # (vs. at-spi update due to scrolling, physical typing, ...).
             if self._is_text_insertion_key(key):
                 self.set_currently_typing()
+
+                # This key might have caused a completion popup to open,
+                # e.g. the firefox URL-bar popup.
+                # -> attempt to raise the keyboard over the popup
+
+                if action and \
+                   config.is_force_to_top() and \
+                   not self.has_focusable_gui() and \
+                   not config.xid_mode:
+                    self.raise_ui_delayed()
 
         # Was this the final touch sequence?
         if not self.has_input_sequences():
@@ -1891,6 +1908,25 @@ class Keyboard(WordSuggestions):
 
     def commit_transition(self):
         return self._broadcast_to_views("commit_transition")
+
+    def raise_ui_delayed(self):
+        """
+        Attempt to raise keyboard over popups like the one from the firefox
+        URL bar. Give it a moment for the popup to appear after a keypress.
+        """
+        self._raise_timer.growth = 2.0
+        self._raise_timer.max_duration = 2.0
+        self._raise_timer.start(0.1, self._on_raise_timer)
+
+    def _on_raise_timer(self):
+        _logger.warning("raising window - current delay {}s" \
+                        .format(self._raise_timer._current_delay))
+        self._broadcast_to_views("raise_to_top")
+        self._touch_feedback.raise_all()
+        return True
+
+    def stop_raise_attempts(self):
+        self._raise_timer.stop()
 
     def _broadcast_to_views(self, func_name, *params):
         for view in self._layout_views:

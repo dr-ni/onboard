@@ -319,6 +319,10 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
 
+        if not visible:
+            keyboard = self.keyboard_widget.keyboard
+            keyboard.stop_raise_attempts()
+
         visible_before = self._visible
         self._visible = visible
 
@@ -651,9 +655,11 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
                 self.restore_window_rect()
 
     def on_user_positioning_begin(self):
+        keyboard = self.keyboard_widget.keyboard
+
         self.stop_save_position_timer()
         self.stop_auto_positioning()
-        keyboard = self.keyboard_widget.keyboard
+        keyboard.stop_raise_attempts()
         keyboard.freeze_auto_show()
 
     def on_user_positioning_done(self):
@@ -1228,7 +1234,6 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         rect = self.get_dock_rect()
         top_start_x = top_end_x = 0
         bottom_start_x = bottom_end_x = 0
-        #print("geom", geom, "area", area, "rect", rect)
 
         if edge: # Bottom
             top    = 0
@@ -1364,6 +1369,11 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             if win:
                 win.move_to_current_desktop()
                 self._moved_desktop_switch_count = self._desktop_switch_count
+
+    def raise_to_top(self):
+        win = self.get_window()
+        if win and self.is_visible():
+            win.raise_()
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):

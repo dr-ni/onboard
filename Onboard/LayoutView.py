@@ -142,6 +142,9 @@ class LayoutView:
     def toggle_visible(self):
         pass
 
+    def raise_to_top(self):
+        pass
+
     def redraw(self, items = None, invalidate = True):
         """
         Queue redrawing for individual keys or the whole keyboard.

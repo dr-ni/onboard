@@ -658,6 +658,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         self.commit_transition()
 
+    def raise_to_top(self):
+        """ Raise the toplevel parent to top of the z-order. """
+        window = self.get_kbd_window()
+        if window:
+            window.raise_to_top()
+
     def auto_position(self):
         """ auto-show, start repositioning """
         window = self.get_kbd_window()

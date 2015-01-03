@@ -1154,6 +1154,39 @@ class TimerOnce(Timer):
         return False
 
 
+class ProgressiveDelayTimer(Timer):
+    """
+    Timer that increases the delay for each iteration
+    until max_duration is reached.
+    """
+    growth = 2.0
+    max_duration = 3.0
+    max_delay = 1.0
+
+    _start_time = 0
+    _current_delay = 0
+
+    def start(self, delay, callback = None, *callback_args):
+        self._start_time = time.time()
+        self._current_delay = delay
+        Timer.start(self, delay, callback, *callback_args)
+
+    def on_timer(self):
+        if not Timer.on_timer(self):
+            return False
+
+        # start another timer for progressively longer intervals
+        self._current_delay = min(self._current_delay * self.growth,
+                                  self.max_delay)
+        if time.time() + self._current_delay < \
+           self._start_time + self.max_duration:
+            Timer.start(self, self._current_delay,
+                        self._callback, *self._callback_args)
+            return True
+        else:
+            return False
+
+
 class DelayedLauncher(Timer):
     """
     Launches a process after a certain delay.

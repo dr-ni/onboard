@@ -83,6 +83,12 @@ class TouchFeedback:
                 popup.set_key(None)
                 del self._visible_key_feedback_popups[_key]
 
+    def raise_all(self):
+        for key, popup in self._visible_key_feedback_popups.items():
+            win = popup.get_window()
+            if win:
+                win.raise_()
+
     def _get_free_key_feedback_popup(self):
         """ Get a currently unused one from the pool of popups. """
         for popup in self._key_feedback_popup_pool:
