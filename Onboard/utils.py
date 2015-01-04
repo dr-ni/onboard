@@ -1621,6 +1621,7 @@ class XDGDirs:
 
     Doctests:
 
+    >>> old_env = os.environ.copy()
     >>> os.environ["HOME"] = "/home/test_user"
 
     # XDG_CONFIG_HOME unavailable
@@ -1673,6 +1674,8 @@ class XDGDirs:
 '/usr/share/gnome/onboard/test.dat', \
 '/usr/local/share/onboard/test.dat', \
 '/usr/share/onboard/test.dat']
+
+    >>> os.environ = old_env
     """
 
     @staticmethod
