@@ -1,0 +1,71 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2014, marmuta
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+import operator
+import optparse
+
+try:
+    import pypredict
+except ImportError:
+    import Onboard.pypredict
+
+
+def main():
+
+    parser = optparse.OptionParser(usage=
+             "Usage: %prog [options] language_id")
+    options, args = parser.parse_args()
+
+    if not args:
+        print("language_id required.", file=sys.stderr)
+        sys.exit(1)
+
+    lang_id = args[0]
+    fn = os.path.join("models", lang_id + ".lm")
+
+    model = pypredict.DynamicModel()
+    model.load(fn)
+
+    frequencies = {}
+    for ng in model.iter_ngrams():
+        ngram = ng[0]
+        if len(ngram) == 1: # we're only interested in unigrams
+            word = ngram[0]
+            for char in word:
+                char = char.lower()
+                frequencies[char] = frequencies.get(char, 0) + 1
+
+    sorted_freqs = list(reversed(sorted(frequencies.items(), key=operator.itemgetter(0))))
+    sorted_freqs = list(reversed(sorted(sorted_freqs, key=operator.itemgetter(1))))
+    total_letters = sum([f for l, f in sorted_freqs])
+
+    for i, (letter, frequency) in enumerate(sorted_freqs):
+        probability = frequency / total_letters
+        print("'{}' {:10} {:10.4f}".format(letter, frequency, probability))
+
+
+if __name__ == '__main__':
+    main()
+
+
+
+
