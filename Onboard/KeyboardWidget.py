@@ -1527,7 +1527,7 @@ class LanguageMenu(KeyMenu):
         languagedb = keyboard._languagedb
 
         active_lang_id = keyboard.get_active_lang_id()
-        system_lang_id = keyboard.get_system_default_lang_id()
+        system_lang_id = config.get_system_default_lang_id()
 
         lang_ids = set(languagedb.get_language_ids())
         if system_lang_id in lang_ids:
@@ -1589,7 +1589,7 @@ class LanguageMenu(KeyMenu):
         return menu
 
     def _on_language_activated(self, menu, lang_id):
-        system_lang_id = self._keyboard.get_system_default_lang_id()
+        system_lang_id = config.get_system_default_lang_id()
         if lang_id == system_lang_id:
             lang_id = ""
         self._set_active_lang_id(lang_id)

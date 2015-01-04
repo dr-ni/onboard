@@ -347,7 +347,7 @@ class Config(ConfigObject):
         from Onboard.WPEngine import ModelCache
         old_fn = ModelCache.get_filename("lm:user:user")
         if os.path.exists(old_fn):
-            lang_id = locale.getdefaultlocale()[0]
+            lang_id = self.get_system_default_lang_id()
             new_fn = ModelCache.get_filename("lm:user:" + lang_id)
             old_bak = ModelCache.get_backup_filename(old_fn)
             new_bak = ModelCache.get_backup_filename(new_fn)
@@ -1338,6 +1338,12 @@ class Config(ConfigObject):
 
     def get_user_layout_dir(self):
         return os.path.join(self.user_dir, "layouts/")
+
+    def get_system_default_lang_id(self):
+        lang_id = locale.getdefaultlocale()[0]
+        if not lang_id: # None e.g. with LANG=C
+            lang_id = "en_US"
+        return lang_id
 
 
 class ConfigKeyboard(ConfigObject):
