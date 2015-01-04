@@ -24,11 +24,6 @@ from xml.dom import minidom
 
 from Onboard.utils import open_utf8
 
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
-
 ### Logging ###
 import logging
 _logger = logging.getLogger("LanguageSupport")
@@ -74,6 +69,10 @@ class LanguageDB:
         self._wp = wp
         self._locale_ids = []
         self._iso_codes = ISOCodes()
+
+    @staticmethod
+    def get_main_languages():
+        return list(LanguageDB._main_languages.keys())
 
     def get_language_full_name_or_id(self, lang_id):
         full_name = self.get_language_full_name(lang_id)

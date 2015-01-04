@@ -202,6 +202,7 @@ class TestCommand(Command):
                "hunspell-ru",
                "myspell-it",
                "myspell-el-gr",
+               "xautomation",
               ]
 
     def initialize_options(self):
