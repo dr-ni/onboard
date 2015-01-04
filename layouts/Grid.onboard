@@ -25,8 +25,6 @@
                 <key group='alphanumeric' id='7' keycode='16'/>
                 <key group='alphanumeric' id='8' keycode='17'/>
                 <key group='alphanumeric' id='9' keycode='18'/>
-                <key group='alphanumeric' id='q' keycode='24'/>
-                <key group='alphanumeric' id='w' keycode='25'/>
                 <key group='alphanumeric' id='e' keycode='26'/>
                 <key group='alphanumeric' id='r' keycode='27'/>
                 <key group='alphanumeric' id='t' keycode='28'/>
@@ -35,7 +33,6 @@
                 <key group='alphanumeric' id='i' keycode='31'/>
                 <key group='alphanumeric' id='o' keycode='32'/>
                 <key group='alphanumeric' id='p' keycode='33'/>
-                <key group='alphanumeric' id='a' keycode='38'/>
                 <key group='alphanumeric' id='s' keycode='39'/>
                 <key group='alphanumeric' id='d' keycode='40'/>
                 <key group='alphanumeric' id='f' keycode='41'/>
@@ -44,20 +41,30 @@
                 <key group='alphanumeric' id='j' keycode='44'/>
                 <key group='alphanumeric' id='k' keycode='45'/>
                 <key group='alphanumeric' id='l' keycode='46'/>
-                <key group='alphanumeric' id='z' keycode='52'/>
                 <key group='alphanumeric' id='x' keycode='53'/>
                 <key group='alphanumeric' id='c' keycode='54'/>
                 <key group='alphanumeric' id='v' keycode='55'/>
                 <key group='alphanumeric' id='b' keycode='56'/>
                 <key group='alphanumeric' id='n' keycode='57'/>
-
-                <key group="alphanumeric" id="m" keycode="47" layout="be,fr,cm(azerty)"/>
-                <key group='alphanumeric' id='m' keycode='58'/>
-
-                <key group="alphanumeric" id="full-stop" keycode="58" layout="be,fr,cm(azerty)"/>
-                <key group='alphanumeric' id='full-stop' keycode='60'/>
-                
                 <key group='alphanumeric' id='comma' keycode='59'/>
+
+                <panel id="variable_keys" layout="be,fr,cm(azerty)">
+                    <key group="alphanumeric" id="q" keycode='38' />
+                    <key group="alphanumeric" id="a" keycode='24' />
+                    <key group="alphanumeric" id="m" keycode="47" />
+                    <key group='alphanumeric' id='w' keycode='52'/>
+                    <key group='alphanumeric' id='z' keycode='25'/>
+                    <key group="alphanumeric" id="full-stop" keycode="58" />
+                </panel>
+                <panel id="variable_keys">
+                    <key group='alphanumeric' id='q' keycode='24'/>
+                    <key group='alphanumeric' id='a' keycode='38'/>
+                    <key group='alphanumeric' id='m' keycode='58'/>
+                    <key group='alphanumeric' id='w' keycode='25'/>
+                    <key group='alphanumeric' id='z' keycode='52'/>
+                    <key group='alphanumeric' id='full-stop' keycode='60'/>
+                </panel>
+
                 <key group='bottomrow' id='LFSH.grid'/>
                 <key group='bottomrow' id='SPCE.grid' label='Space'/>
                 <key group='bottomrow' id='BKSP.grid'/>
