@@ -32,6 +32,7 @@ from gi.repository import GLib
 
 from Onboard.utils import Rect
 from Onboard.LanguageSupport import LanguageDB
+from Onboard.definitions import Handle
 
 
 DBUS_NAME  = "org.onboard.Onboard"
@@ -58,6 +59,22 @@ class _TestGUIBase(unittest.TestCase):
 
     def tearDown(self):
         os.remove(self._dconf_db_fn)
+        self._tmp_dir.cleanup()
+
+    def assertRectInRange(self, r_result, r_expect, tolerance=0):
+        for attr in Rect.attributes:
+            with self.subTest(attribute=attr):
+                expected = getattr(r_expect, attr)
+                result =   getattr(r_result, attr)
+                self.assertInRange(result,
+                                   expected-tolerance,
+                                   expected+tolerance,
+                                   "Rect."+attr)
+
+    def assertInRange(self, value, begin, end, variable):
+        self.assertTrue(begin <= value <= end,
+                    "{}={} not in range {}..{}" \
+                    .format(variable, value, begin, end))
 
     def _key_center(self, rwin, key_id):
         frame = 5
@@ -76,12 +93,24 @@ class _TestGUIBase(unittest.TestCase):
             self._gsettings_get("org.onboard.window.landscape", "width"),
             self._gsettings_get("org.onboard.window.landscape", "height"))
 
+    def _set_window_rect(self, r):
+        self._gsettings_set("org.onboard.window.landscape", "x", r.x)
+        self._gsettings_set("org.onboard.window.landscape", "y", r.y)
+        self._gsettings_set("org.onboard.window.landscape", "width", r.w)
+        self._gsettings_set("org.onboard.window.landscape", "height", r.h)
+
     def _get_icon_palette_rect(self):
         return Rect(
             self._gsettings_get("org.onboard.icon-palette.landscape", "x"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "y"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "width"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "height"))
+
+    def _set_icon_palette_rect(self, r):
+        self._gsettings_set("org.onboard.icon-palette.landscape", "x", r.x)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "y", r.y)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "width", r.w)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "height", r.h)
 
     def _mousemove(self, x0, y0, x1, y1, step=5):
         xd = x1 - x0
@@ -93,24 +122,31 @@ class _TestGUIBase(unittest.TestCase):
             self._xte("mousemove", int(x), int(y))
             #time.sleep(0.1)
 
+        # The last motion event seems to be only sent for the core
+        # pointer device. -> Trigger a redundant motion event with the last
+        # position to make sure there is an event coming from the XTest
+        # slave device too. Else handles won't move all the way in the
+        # move/resize tests.
+        self._xte("mousemove", int(x1), int(y1))
+
     @contextmanager
-    def _run_onboard(self, _env={}):
-        with self._run_onboard_script("./onboard", _env) as p:
+    def _run_onboard(self, env={}, catch_output=False):
+        with self._run_onboard_script("./onboard", env, catch_output) as p:
             self._wait_name_owner_changed(self._bus, DBUS_NAME)
             time.sleep(1)
             yield p
             p.terminate()
 
     @contextmanager
-    def _run_onboard_settings(self, _env={}, delay=2.0):
-        with self._run_onboard_script("./onboard-settings", _env) as p:
+    def _run_onboard_settings(self, env={}, catch_output=False, delay=2.0):
+        with self._run_onboard_script("./onboard-settings", env, catch_output) as p:
             time.sleep(delay)
             yield p
             p.terminate()
             #self._xte("key", "Escape")
 
     @contextmanager
-    def _run_onboard_script(self, command, _env={}):
+    def _run_onboard_script(self, command, _env={}, catch_output=False):
         try:
             env = dict(os.environ)
             env["DCONF_PROFILE"] = self._dconf_profile_fn
@@ -119,24 +155,27 @@ class _TestGUIBase(unittest.TestCase):
             env.update(_env)
 
             p = subprocess.Popen([command], env=env,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT,
+                                 stdout=subprocess.PIPE \
+                                    if catch_output else None,
+                                 stderr=subprocess.STDOUT \
+                                    if catch_output else None,
                                  close_fds=True,
                                  )
             yield p
 
         finally:
-            outs = p.stdout.read()
+            if catch_output:
+                outs = p.stdout.read()
 
-            # filter out annoying Gtk deprecation warnings we cannot remove yet
-            blacklist = ["is deprecated and shouldn't be used anymore",
-                         "builder.add_from_file",
-                         "GtkDialog mapped without a transient parent",
-                         ]
-            for line in outs.decode("UTF-8").split("\n"):
-                if line and \
-                   not any(s in line for s in blacklist):
-                    print("outs:", line, file=sys.stderr)
+                # filter out annoying Gtk deprecation warnings we cannot remove yet
+                blacklist = ["is deprecated and shouldn't be used anymore",
+                            "builder.add_from_file",
+                            "GtkDialog mapped without a transient parent",
+                            ]
+                for line in outs.decode("UTF-8").split("\n"):
+                    if line and \
+                    not any(s in line for s in blacklist):
+                        print("outs:", line, file=sys.stderr)
 
     def _gsettings_set(self, schema, key, value):
         env = dict(os.environ)
@@ -233,96 +272,7 @@ class _TestGUIBase(unittest.TestCase):
                 f.write("*"*size)
 
 
-class TestGUI(_TestGUIBase):
-
-    def setUp(self):
-        self._tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
-        self._dir = self._tmp_dir.name
-        self._user_dir = os.path.join(self._dir, "onboard")
-        self._model_dir = os.path.join(self._user_dir, "models")
-
-        # setup a fresh dconf database
-        self._dconf_db_name = "_onboard_test_db"
-        self._dconf_db_fn = os.path.join(self.get_config_home(),
-                                         "dconf", self._dconf_db_name)
-        self._dconf_profile_fn = os.path.join(self._dir, "dconf_profile")
-        self._write_file(self._dconf_profile_fn,
-                         ["user-db:" + self._dconf_db_name])
-        self._dconf_reset() # clear everything
-
-        self._bus = dbus.SessionBus(mainloop=DBusGMainLoop())
-
-    def tearDown(self):
-        os.remove(self._dconf_db_fn)
-
-    def test_valid_test_environment(self):
-        # write to dconf database to make sure it exists
-        self._gsettings_set("org.onboard", "use-system-defaults", True)
-        self.assertEqual(
-            self._gsettings_get("org.onboard", "use-system-defaults"),
-            True)
-        self.assertTrue(os.path.exists(self._dconf_db_fn))
-
-        # database must be reset to defaults
-        self.assertEqual(str(self._get_window_rect()),
-                         str(Rect(100, 50, 700, 205)))
-
-    def test_startup_with_C_locale(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
-
-        with self._run_onboard({"LANG": "C"}) as p:
-            pass
-
-        with self._run_onboard_settings({"LANG": "C"}) as p:
-            pass
-
-    @staticmethod
-    def _get_languages():
-        return LanguageDB.get_main_languages()
-
-    def test_startup_with_various_languages_onboard(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
-
-        languages = self._get_languages()
-        for language in languages:
-            with self.subTest(language=language):
-                with self._run_onboard({"LANGUAGE": language}) as p:
-                    pass
-
-    def test_startup_with_various_languages_onboard_settings(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
-
-        languages = self._get_languages()
-
-        # run onboard-settings for all languages
-        k = 4 # max parallel languages
-        for i in range(0, len(languages), k):
-            langs = languages[i:i+k]
-            with self.subTest(languages=langs):
-                with ExitStack() as stack:
-                    for language in langs:
-                        stack.enter_context(
-                            self._run_onboard_settings({"LANGUAGE": language},
-                                                    0.5))
-                    time.sleep(2)
+class TestWindowHandling(_TestGUIBase):
 
     def test_keyboard_moving_remembered_after_restart(self):
         r = self._get_window_rect()
@@ -473,8 +423,207 @@ class TestGUI(_TestGUIBase):
             pass
         self.assertEqual(str(r_result), str(self._get_icon_palette_rect()))
 
+    def test_icon_palette_resizing(self):
+        self._gsettings_set("org.onboard", "start-minimized", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "x", 300)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "y", 300)
+        #self._gsettings_set("org.onboard.universal-access", "drag-threshold", 0)
+        self._test_window_resizing(self._get_icon_palette_rect,
+                                   self._set_icon_palette_rect)
 
-class TestEnvironment(unittest.TestCase):
+    def test_keyboard_window_resizing(self):
+        self._gsettings_set("org.onboard.window.landscape", "x", 300)
+        self._gsettings_set("org.onboard.window.landscape", "y", 300)
+        #self._gsettings_set("org.onboard.universal-access", "drag-threshold", 0)
+        self._test_window_resizing(self._get_window_rect,
+                                   self._set_window_rect)
+
+    def _test_window_resizing(self, get_window_rect, set_window_rect):
+        dx = 100
+        dy = 100
+        tolerance = 15  # there's some loss due to drag-threshold and others
+        r_default = get_window_rect()
+
+        with self.subTest(comment="corners1"):
+            set_window_rect(r_default)
+
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.NORTH_WEST, r, dx, dy)
+                self._move_handle_rel(Handle.SOUTH_EAST, r, dx, dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.inflate(dx, dy), tolerance)
+
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.NORTH_WEST, r, -dx, -dy)
+                self._move_handle_rel(Handle.SOUTH_EAST, r, -dx, -dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.deflate(dx, dy), tolerance)
+
+        with self.subTest(comment="corners2"):
+            set_window_rect(r_default)
+
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.SOUTH_WEST, r, dx, dy)
+                self._move_handle_rel(Handle.NORTH_EAST, r, dx, dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.inflate(dx, dy), tolerance)
+
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.SOUTH_WEST, r, -dx, -dy)
+                self._move_handle_rel(Handle.NORTH_EAST, r, -dx, -dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.deflate(dx, dy), tolerance)
+
+        with self.subTest(comment="edges"):
+            set_window_rect(r_default)
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.NORTH, r, dx, dy)
+                self._move_handle_rel(Handle.EAST, r, dx, dy)
+                self._move_handle_rel(Handle.SOUTH, r, dx, dy)
+                self._move_handle_rel(Handle.WEST, r, dx, dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.inflate(dx, dy), tolerance)
+
+            r = get_window_rect()
+            with self._run_onboard() as p:
+                self._move_handle_rel(Handle.NORTH, r, -dx, -dy)
+                self._move_handle_rel(Handle.EAST, r, -dx, -dy)
+                self._move_handle_rel(Handle.SOUTH, r, -dx, -dy)
+                self._move_handle_rel(Handle.WEST, r, -dx, -dy)
+
+            self.assertRectInRange(get_window_rect(),
+                                r.deflate(dx, dy), tolerance)
+
+    def _move_handle_rel(self, handle, r, dx, dy):
+        x0, y0, x1, y1 = self._get_handle_move_vector(handle, r, dx, dy)
+        self._xte("mousemove", x0, y0)
+        self._xte("mousedown", 1)
+        time.sleep(0.3)
+        self._mousemove(x0, y0, x1, y1)
+        self._xte("mouseup", 1)
+        time.sleep(0.3)
+
+    def _get_handle_move_vector(self, handle, r, dx, dy):
+        handle_offset = 4
+        if handle in [Handle.NORTH,
+                      Handle.NORTH_WEST,
+                      Handle.NORTH_EAST]:
+            y0 = r.y + handle_offset
+            y1 = y0 - dy
+        if handle in [Handle.WEST,
+                      Handle.NORTH_WEST,
+                      Handle.SOUTH_WEST]:
+            x0 = r.x + handle_offset
+            x1 = x0 - dx
+        if handle in [Handle.EAST,
+                      Handle.NORTH_EAST,
+                      Handle.SOUTH_EAST]:
+            x0 = r.right() - handle_offset
+            x1 = x0 + dx
+        if handle in [Handle.SOUTH,
+                      Handle.SOUTH_WEST,
+                      Handle.SOUTH_EAST]:
+            y0 = r.bottom() - handle_offset
+            y1 = y0 + dy
+
+        if handle in [Handle.NORTH,
+                      Handle.SOUTH]:
+            x0 = int(r.get_center()[0])
+            x1 = x0
+        if handle in [Handle.WEST,
+                      Handle.EAST]:
+            y0 = int(r.get_center()[1])
+            y1 = y0
+
+        return x0, y0, x1, y1
+
+
+class TestMisc(_TestGUIBase):
+
+    def test_valid_test_environment(self):
+        # write to dconf database to make sure it exists
+        self._gsettings_set("org.onboard", "use-system-defaults", True)
+        self.assertEqual(
+            self._gsettings_get("org.onboard", "use-system-defaults"),
+            True)
+        self.assertTrue(os.path.exists(self._dconf_db_fn))
+
+        # database must be reset to defaults
+        self.assertEqual(str(self._get_window_rect()),
+                         str(Rect(100, 50, 700, 205)))
+
+    def test_startup_with_C_locale(self):
+        # turn major features on
+        self._gsettings_set("org.onboard.auto-show", "enabled", True)
+        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+
+        # no dialog on startup
+        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+
+        with self._run_onboard(env={"LANG": "C"}) as p:
+            pass
+
+        with self._run_onboard_settings(env={"LANG": "C"}, catch_output=True) as p:
+            pass
+
+    @staticmethod
+    def _get_languages():
+        return LanguageDB.get_main_languages()
+
+    def test_startup_with_various_languages_onboard(self):
+        # turn major features on
+        self._gsettings_set("org.onboard.auto-show", "enabled", True)
+        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+
+        # no dialog on startup
+        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+
+        languages = self._get_languages()
+        for language in languages:
+            with self.subTest(language=language):
+                with self._run_onboard({"LANGUAGE": language}) as p:
+                    pass
+
+    def test_startup_with_various_languages_onboard_settings(self):
+        # turn major features on
+        self._gsettings_set("org.onboard.auto-show", "enabled", True)
+        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+
+        # no dialog on startup
+        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+
+        languages = self._get_languages()
+
+        # run onboard-settings for all languages
+        k = 4 # max parallel languages
+        for i in range(0, len(languages), k):
+            langs = languages[i:i+k]
+            with self.subTest(languages=langs):
+                with ExitStack() as stack:
+                    for language in langs:
+                        stack.enter_context(
+                            self._run_onboard_settings(
+                                env={"LANGUAGE": language},
+                                catch_output=True,
+                                delay=0.5))
+                    time.sleep(2)
+
+
+class TestNoSetup(unittest.TestCase):
 
     def test_apt_cache_unmet_onboard(self):
         result = subprocess.check_output(["apt-cache", "unmet", "onboard"])
