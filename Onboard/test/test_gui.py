@@ -130,23 +130,30 @@ class _TestGUIBase(unittest.TestCase):
         self._xte("mousemove", int(x1), int(y1))
 
     @contextmanager
-    def _run_onboard(self, env={}, catch_output=False):
-        with self._run_onboard_script("./onboard", env, catch_output) as p:
+    def _run_onboard(self, params=[], env={},
+                     capture_output=False, print_output=False):
+        with self._run_onboard_script("./onboard", params, env,
+                                      capture_output, print_output) as p:
             self._wait_name_owner_changed(self._bus, DBUS_NAME)
             time.sleep(1)
             yield p
             p.terminate()
 
     @contextmanager
-    def _run_onboard_settings(self, env={}, catch_output=False, delay=2.0):
-        with self._run_onboard_script("./onboard-settings", env, catch_output) as p:
+    def _run_onboard_settings(self, params=[], env={},
+                              capture_output=False, print_output=False,
+                              delay=2.0):
+        with self._run_onboard_script("./onboard-settings",
+                                      params, env,
+                                      capture_output, print_output) as p:
             time.sleep(delay)
             yield p
             p.terminate()
             #self._xte("key", "Escape")
 
     @contextmanager
-    def _run_onboard_script(self, command, _env={}, catch_output=False):
+    def _run_onboard_script(self, command, params=[], _env={},
+                            capture_output=False, print_output=False):
         try:
             env = dict(os.environ)
             env["DCONF_PROFILE"] = self._dconf_profile_fn
@@ -154,34 +161,64 @@ class _TestGUIBase(unittest.TestCase):
             env["LANG"] = "en_US.UTF-8"
             env.update(_env)
 
-            p = subprocess.Popen([command], env=env,
-                                 stdout=subprocess.PIPE \
-                                    if catch_output else None,
-                                 stderr=subprocess.STDOUT \
-                                    if catch_output else None,
+            cmd_line = [command]
+            if params:
+                cmd_line += params
+
+            if capture_output:
+                stdout_opt=subprocess.PIPE
+                stderr_opt=subprocess.PIPE
+            elif print_output:
+                stdout_opt=subprocess.PIPE
+                stderr_opt=subprocess.STDOUT
+            else:
+                stdout_opt=None
+                stderr_opt=None
+
+            p = subprocess.Popen(cmd_line, env=env,
+                                 stdout=stdout_opt,
+                                 stderr=stderr_opt,
                                  close_fds=True,
+                                 universal_newlines=True,
                                  )
             yield p
 
         finally:
-            if catch_output:
-                outs = p.stdout.read()
+            if capture_output:
+                p.stdout_lines = [line.replace("\n", "") for line in p.stdout]
+                p.stderr_lines = [line.replace("\n", "") for line in p.stderr]
 
+                # prevent ResourceWarning:
+                # unclosed file <_io.BufferedReader name=12> testMethod()
+                p.stderr.close()
+                p.stdout.close()
+
+            elif print_output:
                 # filter out annoying Gtk deprecation warnings we cannot remove yet
                 blacklist = ["is deprecated and shouldn't be used anymore",
                             "builder.add_from_file",
                             "GtkDialog mapped without a transient parent",
                             ]
-                for line in outs.decode("UTF-8").split("\n"):
+                for line in p.stdout:
+                    line = line.replace("\n", "")
                     if line and \
                     not any(s in line for s in blacklist):
-                        print("outs:", line, file=sys.stderr)
+                        print("stderr:", line, file=sys.stderr)
+
+                # prevent ResourceWarning:
+                # unclosed file <_io.BufferedReader name=12> testMethod()
+                p.stdout.close()
+
+    def _system_gsettings_set(self, schema, key, value):
+        self._gsettings_set_with_env(schema, key, value, None)
 
     def _gsettings_set(self, schema, key, value):
         env = dict(os.environ)
         env["DCONF_PROFILE"] = self._dconf_profile_fn
         env["LANG"] = "en_US.UTF-8"
+        self._gsettings_set_with_env(schema, key, value, env)
 
+    def _gsettings_set_with_env(self, schema, key, value, env):
         if value is True:
             valstr = "true"
         elif value is False:
@@ -193,11 +230,16 @@ class _TestGUIBase(unittest.TestCase):
                                 schema, key, valstr], env=env)
         p.wait()
 
+    def _system_gsettings_get(self, schema, key):
+        return self._gsettings_get_with_env(schema, key, None)
+
     def _gsettings_get(self, schema, key):
         env = dict(os.environ)
         env["DCONF_PROFILE"] = self._dconf_profile_fn
         env["LANG"] = "en_US.UTF-8"
+        return self._gsettings_get_with_env(schema, key, env)
 
+    def _gsettings_get_with_env(self, schema, key, env):
         valstr = subprocess.check_output(["gsettings", "get",
                                          schema, key], env=env)
         valstr = valstr.decode("UTF-8").replace("\n", "")
@@ -575,7 +617,7 @@ class TestMisc(_TestGUIBase):
         with self._run_onboard(env={"LANG": "C"}) as p:
             pass
 
-        with self._run_onboard_settings(env={"LANG": "C"}, catch_output=True) as p:
+        with self._run_onboard_settings(env={"LANG": "C"}, print_output=True) as p:
             pass
 
     @staticmethod
@@ -618,9 +660,62 @@ class TestMisc(_TestGUIBase):
                         stack.enter_context(
                             self._run_onboard_settings(
                                 env={"LANGUAGE": language},
-                                catch_output=True,
+                                print_output=True,
                                 delay=0.5))
                     time.sleep(2)
+
+
+    def test_gnome_high_contrast_themes(self):
+        # turn major features on
+        self._gsettings_set("org.onboard.auto-show", "enabled", True)
+        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+
+        # no dialog on startup
+        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+
+        # make sure system theme tracking is enabled, should be default
+        self.assertEqual(self._gsettings_get("org.onboard",
+                                             "system-theme-tracking-enabled"),
+                         True)
+
+        default_gtk_theme = "Ambiance" # default in Vivid is Adwaita?
+        default_onboard_theme = "Nightshade" # default in Vivid is Adwaita?
+        contrast_themes = ["HighContrast",
+                           "HighContrastInverse",
+                           "LowContrast"]
+
+        # save current gsettings state
+        old_theme = self._system_gsettings_get("org.gnome.desktop.interface",
+                                               "gtk-theme")
+
+        # set normal theme for startup
+        self._system_gsettings_set("org.gnome.desktop.interface",
+                                   "gtk-theme", default_gtk_theme)
+
+        # run onboard and switch through gtk-themes
+        with self._run_onboard(params=["-d", "info"], capture_output=True) as p:
+            time.sleep(2)
+            for contrast_theme in contrast_themes:
+                self._system_gsettings_set("org.gnome.desktop.interface",
+                                        "gtk-theme", contrast_theme)
+                time.sleep(3)
+
+            self._system_gsettings_set("org.gnome.desktop.interface",
+                                    "gtk-theme", default_gtk_theme)
+            time.sleep(3)
+
+        # process debug output
+        lines = [line for line in p.stderr_lines if "Loading theme" in line]
+        self.assertEqual(len(lines), len(contrast_themes)+2)
+        self.assertIn(default_onboard_theme, lines[0])
+        for i, theme in enumerate(contrast_themes):
+            self.assertIn(theme + ".theme", lines[i+1])
+        self.assertIn(default_onboard_theme, lines[-1])
+
+        # undo our gsettings changes
+        self._system_gsettings_set("org.gnome.desktop.interface",
+                                   "gtk-theme", old_theme)
 
 
 class TestNoSetup(unittest.TestCase):
