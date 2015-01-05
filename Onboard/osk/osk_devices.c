@@ -346,7 +346,7 @@ static gboolean idle_process_event_queue (OskDevices* dev)
         if (!event)
             break;
 
-	arglist = Py_BuildValue("(O)", event);
+        arglist = Py_BuildValue("(O)", event);
         if (arglist)
         {
             Py_INCREF(dev->event_handler);
@@ -577,11 +577,13 @@ osk_devices_translate_keycode (int              keycode,
  * Get Gdk event state of the master pointer.
  *
  * The master aggregates currently pressed buttons and key presses from all
- * slave devices, something we would have to do ourselves otherwise.
+ * slave devices.
  *
- * Reason: Francesco uses one pointing device for button presses and another
+ * Why we need aggregate button presses:
+ * Francesco uses one pointing device for button presses and different one
  * for motion events. The motion slave doesn't know about the button
- * slave's state, requiring us to get the aggregate state of all slaves.
+ * slave's state. We can either aggregate the button state over all slaves
+ * ourselves or rely on the master to do it for us.
  */
 static unsigned int
 get_master_state (OskDevices* dev)
