@@ -255,7 +255,7 @@ class _TestGUIBase(unittest.TestCase):
         if valstr == "true":
             value = True
         elif valstr == "false":
-            valstr = False
+            value = False
         else:
             try:
                 value = int(valstr)
@@ -673,9 +673,8 @@ class TestMisc(_TestGUIBase):
         self._enable_major_features()
 
         # make sure system theme tracking is enabled, should be default
-        self.assertEqual(self._gsettings_get("org.onboard",
-                                             "system-theme-tracking-enabled"),
-                         True)
+        self.assertTrue(self._gsettings_get("org.onboard",
+                                            "system-theme-tracking-enabled"))
 
         default_gtk_theme = "Ambiance" # default in Vivid is Adwaita?
         default_onboard_theme = "Nightshade" # default in Vivid is Adwaita?
@@ -692,7 +691,8 @@ class TestMisc(_TestGUIBase):
                                    "gtk-theme", default_gtk_theme)
 
         # run onboard and switch through gtk-themes
-        with self._run_onboard(params=["-d", "info"], capture_output=True) as p:
+        with self._run_onboard(params=["-d", "info"],
+                               capture_output=True) as p:
             time.sleep(2)
             for contrast_theme in contrast_themes:
                 self._system_gsettings_set("org.gnome.desktop.interface",
@@ -718,7 +718,6 @@ class TestMisc(_TestGUIBase):
     def test_numlock_state_on_exit(self):
         self._enable_major_features()
 
-        # save old state
         old_state = self._get_numlock_state()
 
         # numlock on
@@ -743,8 +742,37 @@ class TestMisc(_TestGUIBase):
         self.assertEqual(self._get_numlock_state(), False,
                          "numlock must still be off after the second run")
 
-        # restore old numlock state
         self._set_numlock_state(old_state)
+
+    def test_running_in_live_cd_environment(self):
+        # make sure icon palatte is off (default)
+        self.assertFalse(
+            self._gsettings_get("org.onboard.icon-palette", "in-use"))
+
+        # make sure status icon is on (default)
+        self.assertTrue(
+            self._gsettings_get("org.onboard", "show-status-icon"))
+
+        with self._run_onboard(params=["-d", "debug"],
+                               env={"RUNNING_UNDER_GDM" : "1"},
+                               capture_output=True) as p:
+            pass
+
+        # preferences key must have become inaccessible
+        lines = [line for line in p.stderr_lines
+                 if "RectKey('settings').visible" in line]
+        self.assertTrue(
+            len(lines)>=1 and all("False" in line for line in lines))
+        self.assertTrue(
+            len(lines)>=1 and not any("True" in line for line in lines))
+
+        # icon palette must be on
+        self.assertTrue(
+            self._gsettings_get("org.onboard.icon-palette", "in-use"))
+
+        # status icon must be off
+        self.assertFalse(
+            self._gsettings_get("org.onboard", "show-status-icon"))
 
 
 class TestNoSetup(unittest.TestCase):

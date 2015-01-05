@@ -714,6 +714,7 @@ class GSKey:
 
     def gsettings_set(self, value):
         """ Send value to gsettings. """
+        #print("gsettings_set", self.key, repr(value))
         if self.writable:
             if self.enum:
                 self.settings.set_enum(self.key, value)

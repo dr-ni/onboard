@@ -320,8 +320,16 @@ class OnboardGtk(object):
 
         # Minimize to IconPalette if running under GDM
         if 'RUNNING_UNDER_GDM' in os.environ:
+            _logger.info("RUNNING_UNDER_GDM set, turning on icon palette")
             config.icp.in_use = True
+            _logger.info("RUNNING_UNDER_GDM set, turning off indicator")
             config.show_status_icon = False
+
+            # For some reason the new values don't arrive in gsettings when
+            # running the unit test "test_running_in_live_cd_environment".
+            # -> Force gsettings to apply them, that seems to do the trick.
+            config.icp.apply()
+            config.apply()
 
         # unity-2d needs the skip-task-bar hint set before the first mapping.
         self.show_hide_taskbar()

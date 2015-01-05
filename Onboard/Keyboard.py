@@ -2000,22 +2000,30 @@ class ButtonController(object):
 
     def set_visible(self, visible):
         if self.key.visible != visible:
+            _logger.debug("ButtonController: {}.visible = {}" \
+                          .format(self.key, visible))
             layout = self.keyboard.layout
             layout.set_item_visible(self.key, visible)
             self.keyboard.redraw([self.key])
 
     def set_sensitive(self, sensitive):
         if self.key.sensitive != sensitive:
+            _logger.debug("ButtonController: {}.sensitive = {}" \
+                          .format(self.key, sensitive))
             self.key.sensitive = sensitive
             self.keyboard.redraw([self.key])
 
     def set_active(self, active = None):
         if not active is None and self.key.active != active:
+            _logger.debug("ButtonController: {}.active = {}" \
+                          .format(self.key, active))
             self.key.active = active
             self.keyboard.redraw([self.key])
 
     def set_locked(self, locked = None):
         if not locked is None and self.key.locked != locked:
+            _logger.debug("ButtonController: {}.locked = {}" \
+                          .format(self.key, locked))
             self.key.active = locked
             self.key.locked = locked
             self.keyboard.redraw([self.key])
