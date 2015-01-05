@@ -112,6 +112,15 @@ class _TestGUIBase(unittest.TestCase):
         self._gsettings_set("org.onboard.icon-palette.landscape", "width", r.w)
         self._gsettings_set("org.onboard.icon-palette.landscape", "height", r.h)
 
+    def _enable_major_features(self):
+        # turn major features on
+        self._gsettings_set("org.onboard.auto-show", "enabled", True)
+        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+
+        # no dialog on startup
+        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+
     def _mousemove(self, x0, y0, x1, y1, step=5):
         xd = x1 - x0
         yd = y1 - y0
@@ -269,6 +278,19 @@ class _TestGUIBase(unittest.TestCase):
         command = ["xte", " ".join(str(p) for p in params)]
         #print(command, file=sys.stderr)
         subprocess.check_call(command, env=env)
+
+    def _get_numlock_state(self):
+        output = subprocess.check_output(["numlockx", "status"]).decode()
+        if " off" in output:
+            return False
+        elif " on" in output:
+            return True
+        else:
+            self.assertTrue(False)
+        return None
+
+    def _set_numlock_state(self, on):
+        subprocess.check_call(["numlockx", "on" if on else "off"])
 
     @staticmethod
     def _wait_name_owner_changed(bus, name):
@@ -606,13 +628,7 @@ class TestMisc(_TestGUIBase):
                          str(Rect(100, 50, 700, 205)))
 
     def test_startup_with_C_locale(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+        self._enable_major_features()
 
         with self._run_onboard(env={"LANG": "C"}) as p:
             pass
@@ -625,13 +641,7 @@ class TestMisc(_TestGUIBase):
         return LanguageDB.get_main_languages()
 
     def test_startup_with_various_languages_onboard(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+        self._enable_major_features()
 
         languages = self._get_languages()
         for language in languages:
@@ -640,13 +650,7 @@ class TestMisc(_TestGUIBase):
                     pass
 
     def test_startup_with_various_languages_onboard_settings(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+        self._enable_major_features()
 
         languages = self._get_languages()
 
@@ -666,13 +670,7 @@ class TestMisc(_TestGUIBase):
 
 
     def test_gnome_high_contrast_themes(self):
-        # turn major features on
-        self._gsettings_set("org.onboard.auto-show", "enabled", True)
-        self._gsettings_set("org.onboard.typing-assistance.word-suggestions", "enabled", True)
-        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
-
-        # no dialog on startup
-        self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
+        self._enable_major_features()
 
         # make sure system theme tracking is enabled, should be default
         self.assertEqual(self._gsettings_get("org.onboard",
@@ -716,6 +714,37 @@ class TestMisc(_TestGUIBase):
         # undo our gsettings changes
         self._system_gsettings_set("org.gnome.desktop.interface",
                                    "gtk-theme", old_theme)
+
+    def test_numlock_state_on_exit(self):
+        self._enable_major_features()
+
+        # save old state
+        old_state = self._get_numlock_state()
+
+        # numlock on
+        self._set_numlock_state(True)
+
+        with self._run_onboard() as p:
+            time.sleep(2)
+        with self._run_onboard() as p:
+            time.sleep(2)
+
+        self.assertEqual(self._get_numlock_state(), True,
+                         "numlock must still be on after the second run")
+
+        # numlock off
+        self._set_numlock_state(False)
+
+        with self._run_onboard() as p:
+            time.sleep(2)
+        with self._run_onboard() as p:
+            time.sleep(2)
+
+        self.assertEqual(self._get_numlock_state(), False,
+                         "numlock must still be off after the second run")
+
+        # restore old numlock state
+        self._set_numlock_state(old_state)
 
 
 class TestNoSetup(unittest.TestCase):

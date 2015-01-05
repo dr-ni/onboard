@@ -203,6 +203,7 @@ class TestCommand(Command):
                "myspell-it",
                "myspell-el-gr",
                "xautomation",
+               "numlockx",
               ]
 
     def initialize_options(self):
