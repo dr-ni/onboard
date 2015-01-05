@@ -146,7 +146,7 @@ class WindowManipulator(object):
             if self.drag_protection:
                 # snap off for temporary unlocking
                 if self._temporary_unlock_time is None and \
-                   d > self._drag_threshold:
+                   d >= self._drag_threshold:
                     self._temporary_unlock_time = 1
 
                     # Snap to cursor position for large drag thresholds
