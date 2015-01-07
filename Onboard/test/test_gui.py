@@ -78,11 +78,29 @@ class _TestGUIBase(unittest.TestCase):
 
     def _key_center(self, rwin, key_id):
         frame = 5
-        h_key = (rwin.h - 2*frame) / 5
+        rkb = rwin.copy()
+
+        # word suggestion row visible?
+        if self._gsettings_get(
+            "org.onboard.typing-assistance.word-suggestions", "enabled"):
+            hws = (rwin.h - 2*frame) / 6
+            rkb.y += hws
+            rkb.h -= hws
+
+        h_key = (rkb.h - 2*frame) / 5
         w_key = h_key
+
         if key_id == "move":
-            x = rwin.x + rwin.w - w_key/2
-            y = rwin.y + frame + 1.5*h_key
+            x = rkb.right() - w_key/2
+            y = rkb.y + frame + 1.5*h_key
+
+        if key_id == "layer1":
+            x = rkb.right() - w_key/2
+            y = rkb.y + frame + 3.5*h_key
+
+        if key_id == "NUMLK":
+            x = rkb.x + rkb.w * 0.7
+            y = rkb.y + frame + 0.5*h_key
 
         return int(x), int(y)
 
@@ -121,7 +139,7 @@ class _TestGUIBase(unittest.TestCase):
         # no dialog on startup
         self._gsettings_set("org.gnome.desktop.interface", "toolkit-accessibility", True)
 
-    def _mousemove(self, x0, y0, x1, y1, step=5):
+    def _mouse_sweep(self, x0, y0, x1, y1, step=5):
         xd = x1 - x0
         yd = y1 - y0
         n = int(max(abs(xd), abs(yd)) / step)
@@ -137,6 +155,12 @@ class _TestGUIBase(unittest.TestCase):
         # slave device too. Else handles won't move all the way in the
         # move/resize tests.
         self._xte("mousemove", int(x1), int(y1))
+
+    def _activate_key(self, r, key_id):
+        x, y = self._key_center(r, key_id)
+        self._xte("mousemove", x, y)
+        self._xte("mouseclick", 1)
+        time.sleep(0.5)
 
     @contextmanager
     def _run_onboard(self, params=[], env={},
@@ -347,7 +371,7 @@ class TestWindowHandling(_TestGUIBase):
             self._xte("mousemove", x, y)
             self._xte("mousedown", 1)
             time.sleep(0.5)
-            self._mousemove(x, y, x+dx, y+dy)
+            self._mouse_sweep(x, y, x+dx, y+dy)
             time.sleep(0.5)
             self._xte("mouseup", 1)
             time.sleep(0.5)
@@ -382,7 +406,7 @@ class TestWindowHandling(_TestGUIBase):
             self._xte("mousemove", x, y)
             self._xte("mousedown", 1)
             time.sleep(0.5)
-            self._mousemove(x, y, x+dx, y+dy)
+            self._mouse_sweep(x, y, x+dx, y+dy)
             time.sleep(0.5)
             self._xte("mouseup", 1)
             time.sleep(0.5)
@@ -422,7 +446,7 @@ class TestWindowHandling(_TestGUIBase):
             self._xte("mousemove", x, y)
             self._xte("mousedown", 1)
             time.sleep(0.5)
-            self._mousemove(x, y, x+dx, y+dy)
+            self._mouse_sweep(x, y, x+dx, y+dy)
             time.sleep(0.5)
             self._xte("mouseup", 1)
             time.sleep(0.5)
@@ -460,7 +484,7 @@ class TestWindowHandling(_TestGUIBase):
             self._xte("mousemove", x, y)
             self._xte("mousedown", 1)
             time.sleep(0.5)
-            self._mousemove(x, y, x+dx, y+dy)
+            self._mouse_sweep(x, y, x+dx, y+dy)
             time.sleep(0.5)
             self._xte("mouseup", 1)
             time.sleep(0.5)
@@ -574,7 +598,7 @@ class TestWindowHandling(_TestGUIBase):
         self._xte("mousemove", x0, y0)
         self._xte("mousedown", 1)
         time.sleep(0.3)
-        self._mousemove(x0, y0, x1, y1)
+        self._mouse_sweep(x0, y0, x1, y1)
         self._xte("mouseup", 1)
         time.sleep(0.3)
 
@@ -718,31 +742,55 @@ class TestMisc(_TestGUIBase):
     def test_numlock_state_on_exit(self):
         self._enable_major_features()
 
+        tests = [
+            [
+                "NUMLK off state must be preserved after exit",  # comment
+                0.0,     # sticky_key_release_delay 0.0=off, !=0 = kiosk mode
+                False,   # NUMLK state before start
+                False,   # toggle NUMLK key at runtime
+                False,   # NUMLK state after exit
+            ],
+            [
+                "NUMLK on state must be preserved after exit",  # comment
+                0.0, True, False, True,
+            ],
+            [
+                "NUMLK toggled on must still be on after exit",
+                0.0, False, True, True,
+            ],
+            [
+                "NUMLK toggled off must still be off after exit",
+                0.0, True, True, False,
+            ],
+            # Currently, if sticky_key_release_delay is != 0.0 we assume we're
+            # running in a kiosk setting and reset NUMLK after the delay as well
+            # as on exit.
+            [
+                "NUMLK toggled on in kiosk mode reverts to off after exit",
+                5.0, False, True, False,
+            ],
+        ]
+
+        r = self._get_window_rect()
         old_state = self._get_numlock_state()
 
-        # numlock on
-        self._set_numlock_state(True)
+        for comment, skrd, active_before, toggle, active_after in tests:
+            self._set_numlock_state(active_before)
+            self._gsettings_set("org.onboard.keyboard",
+                                "sticky-key-release-delay", skrd)
 
-        with self._run_onboard() as p:
-            time.sleep(2)
-        with self._run_onboard() as p:
-            time.sleep(2)
+            with self._run_onboard() as p:
+                if toggle:
+                    self._activate_key(r, "layer1")
+                    self._activate_key(r, "NUMLK")
+                else:
+                    time.sleep(1)
 
-        self.assertEqual(self._get_numlock_state(), True,
-                         "numlock must still be on after the second run")
+            if not toggle:  # run twice only the first two times
+                with self._run_onboard() as p:
+                    time.sleep(1)
 
-        # numlock off
-        self._set_numlock_state(False)
-
-        with self._run_onboard() as p:
-            time.sleep(2)
-        with self._run_onboard() as p:
-            time.sleep(2)
-
-        self.assertEqual(self._get_numlock_state(), False,
-                         "numlock must still be off after the second run")
-
-        self._set_numlock_state(old_state)
+            self.assertEqual(self._get_numlock_state(), active_after, comment)
 
     def test_running_in_live_cd_environment(self):
         # make sure icon palatte is off (default)
