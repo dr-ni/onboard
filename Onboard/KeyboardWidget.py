@@ -1394,10 +1394,21 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
     def show_snippets_dialog(self, snippet_id):
         """ Show dialog for creating a new snippet """
 
+        label, text = config.snippets.get(snippet_id, (None, None))
+        if snippet_id in config.snippets:
+            # Title of the snippets dialog for existing snippets
+            title = _("Edit snippet")
+            message=""
+        else:
+            # Title of the snippets dialog for new snippets
+            title = _("New snippet")
+            # Message in the snippets dialog for new snippets
+            message=_("Enter a new snippet for this button:")
+
         # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
         self.keyboard.on_focusable_gui_opening()
 
-        dialog = Gtk.Dialog(title=_("New snippet"),
+        dialog = Gtk.Dialog(title=title,
                            transient_for=self.get_toplevel(),
                            flags=0)
         # Translators: cancel button of the snippets dialog. It used to
@@ -1415,12 +1426,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
                       spacing=12, border_width=5)
         dialog.get_content_area().add(box)
 
-        msg = Gtk.Label(label=_("Enter a new snippet for this button:"),
-                        xalign=0.0)
-        box.add(msg)
+        if message:
+            msg_label = Gtk.Label(label=message, xalign=0.0)
+            box.add(msg_label)
 
         label_entry = Gtk.Entry(hexpand=True)
-        text_entry  = Gtk.Entry(hexpand=True, activates_default = True)
+        text_entry  = Gtk.Entry(hexpand=True,
+                                activates_default = True,
+                                width_chars=35)
         label_label = Gtk.Label(label=_("_Button label:"),
                                 xalign=0.0,
                                 use_underline=True,
@@ -1437,19 +1450,20 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         grid.attach(text_entry, 1, 1, 1, 1)
         box.add(grid)
 
-        dialog.connect("response", self._on_snippet_dialog_response, \
-                       snippet_id, label_entry, text_entry)
-
         # Init entries, mainly the label for the case when text is empty.
         label, text = config.snippets.get(snippet_id, (None, None))
         if label:
             label_entry.set_text(label)
-            text_entry.grab_focus()
-        else:
-            label_entry.grab_focus()
         if text:
             text_entry.set_text(text)
 
+        if label and not text:
+            text_entry.grab_focus()
+        else:
+            label_entry.grab_focus()
+
+        dialog.connect("response", self._on_snippet_dialog_response, \
+                       snippet_id, label_entry, text_entry)
         dialog.show_all()
 
     def _on_snippet_dialog_response(self, dialog, response, snippet_id, \

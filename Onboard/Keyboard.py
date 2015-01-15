@@ -951,6 +951,10 @@ class Keyboard(WordSuggestions):
                 view.show_prediction_menu(key, button)
                 long_pressed = True
 
+            elif key_type == KeyCommon.MACRO_TYPE:
+                snippet_id = int(key.code)
+                self._edit_snippet(view, snippet_id)
+                long_pressed = True
             else:
                 # All other keys get hard-coded long press menus
                 # (where available).
@@ -1209,15 +1213,20 @@ class Keyboard(WordSuggestions):
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
-            elif not config.xid_mode and \
-                not self.editing_snippet:
-                view.show_snippets_dialog(snippet_id)
-                self.editing_snippet = True
+            else:
+                self._edit_snippet(view, snippet_id)
 
         elif key_type == KeyCommon.SCRIPT_TYPE:
             if not config.xid_mode:  # block settings dialog in xembed mode
                 if key.code:
                     run_script(key.code)
+
+    def _edit_snippet(self, view, snippet_id):
+        if not config.xid_mode and \
+            not self.editing_snippet and \
+            view:
+            view.show_snippets_dialog(snippet_id)
+            self.editing_snippet = True
 
     def insert_snippet(self, snippet_id):
         mlabel, mString = config.snippets.get(snippet_id, (None, None))
