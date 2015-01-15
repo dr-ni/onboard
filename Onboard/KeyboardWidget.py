@@ -1440,7 +1440,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         dialog.connect("response", self._on_snippet_dialog_response, \
                        snippet_id, label_entry, text_entry)
 
-        label_entry.grab_focus()
+        # Init entries, mainly the label for the case when text is empty.
+        label, text = config.snippets.get(snippet_id, (None, None))
+        if label:
+            label_entry.set_text(label)
+            text_entry.grab_focus()
+        else:
+            label_entry.grab_focus()
+        if text:
+            text_entry.set_text(text)
+
         dialog.show_all()
 
     def _on_snippet_dialog_response(self, dialog, response, snippet_id, \
