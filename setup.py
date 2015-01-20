@@ -254,6 +254,12 @@ if 0:
         print("Running '{}'".format(" ".join(args)))
         subprocess.check_call(args)
 
+# __pycache__ directories confuse the build. Delete them.
+if "build" in sys.argv or \
+   "build_ext" in sys.argv:
+    subprocess.check_call(
+        ['/bin/bash', '-c', 'find . -name __pycache__ -prune | xargs rm -rf'])
+
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
