@@ -337,8 +337,13 @@ class DomainGenericText(TextDomain):
             sel = accessible.get_selection(0)
             # Gtk-2 applications return 0,0 when there is no selection.
             # Gtk-3 applications return caret positions in that case.
-            if sel.start_offset != 0 or \
-               sel.end_offset != 0:
+            # LibreOffice Writer in Vivid initially returns -1,-1 when there
+            # is no selection, later the caret position.
+            start = sel.start_offset
+            end = sel.end_offset
+            if start > 0 and \
+               end > 0 and \
+               start <= end:
                 selection = (sel.start_offset, sel.end_offset)
         except Exception as ex: # Private exception gi._glib.GErro
             _logger.info("DomainGenericText.read_context(), selection: " \

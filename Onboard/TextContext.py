@@ -341,7 +341,7 @@ class AtspiTextContext(TextContext):
         insertion_span = self._record_text_change(event.pos,
                                                   event.length,
                                                   event.insert)
-        # synchrounously notify of text insertion
+        # synchronously notify of text insertion
         if insertion_span:
             try:
                 caret_offset = self._accessible.get_caret_offset()
