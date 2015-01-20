@@ -105,30 +105,68 @@ class _TestGUIBase(unittest.TestCase):
         return int(x), int(y)
 
     def _get_window_rect(self):
+        return self._get_window_landscape_rect()
+
+    def _set_window_rect(self, r):
+        self._set_window_landscape_rect(r)
+
+    def _get_window_landscape_rect(self):
         return Rect(
             self._gsettings_get("org.onboard.window.landscape", "x"),
             self._gsettings_get("org.onboard.window.landscape", "y"),
             self._gsettings_get("org.onboard.window.landscape", "width"),
             self._gsettings_get("org.onboard.window.landscape", "height"))
 
-    def _set_window_rect(self, r):
+    def _set_window_landscape_rect(self, r):
         self._gsettings_set("org.onboard.window.landscape", "x", r.x)
         self._gsettings_set("org.onboard.window.landscape", "y", r.y)
         self._gsettings_set("org.onboard.window.landscape", "width", r.w)
         self._gsettings_set("org.onboard.window.landscape", "height", r.h)
 
+    def _get_window_portrait_rect(self):
+        return Rect(
+            self._gsettings_get("org.onboard.window.portrait", "x"),
+            self._gsettings_get("org.onboard.window.portrait", "y"),
+            self._gsettings_get("org.onboard.window.portrait", "width"),
+            self._gsettings_get("org.onboard.window.portrait", "height"))
+
+    def _set_window_portrait_rect(self, r):
+        self._gsettings_set("org.onboard.window.portrait", "x", r.x)
+        self._gsettings_set("org.onboard.window.portrait", "y", r.y)
+        self._gsettings_set("org.onboard.window.portrait", "width", r.w)
+        self._gsettings_set("org.onboard.window.portrait", "height", r.h)
+
     def _get_icon_palette_rect(self):
+        return self._get_icon_palette_landscape_rect()
+
+    def _set_icon_palette_rect(self, r):
+        self._set_window_landscape_rect(r)
+
+    def _get_icon_palette_landscape_rect(self):
         return Rect(
             self._gsettings_get("org.onboard.icon-palette.landscape", "x"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "y"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "width"),
             self._gsettings_get("org.onboard.icon-palette.landscape", "height"))
 
-    def _set_icon_palette_rect(self, r):
+    def _set_icon_palette_landscape_rect(self, r):
         self._gsettings_set("org.onboard.icon-palette.landscape", "x", r.x)
         self._gsettings_set("org.onboard.icon-palette.landscape", "y", r.y)
         self._gsettings_set("org.onboard.icon-palette.landscape", "width", r.w)
         self._gsettings_set("org.onboard.icon-palette.landscape", "height", r.h)
+
+    def _get_icon_palette_portrait_rect(self):
+        return Rect(
+            self._gsettings_get("org.onboard.icon-palette.portrait", "x"),
+            self._gsettings_get("org.onboard.icon-palette.portrait", "y"),
+            self._gsettings_get("org.onboard.icon-palette.portrait", "width"),
+            self._gsettings_get("org.onboard.icon-palette.portrait", "height"))
+
+    def _set_icon_palette_portrait_rect(self, r):
+        self._gsettings_set("org.onboard.icon-palette.portrait", "x", r.x)
+        self._gsettings_set("org.onboard.icon-palette.portrait", "y", r.y)
+        self._gsettings_set("org.onboard.icon-palette.portrait", "width", r.w)
+        self._gsettings_set("org.onboard.icon-palette.portrait", "height", r.h)
 
     def _enable_major_features(self):
         # turn major features on
@@ -315,6 +353,17 @@ class _TestGUIBase(unittest.TestCase):
 
     def _set_numlock_state(self, on):
         subprocess.check_call(["numlockx", "on" if on else "off"])
+
+    def _rotate_screen(self, rotation):
+        output = subprocess.check_output(
+            ['/bin/bash', '-c', 'xrandr | grep primary | cut -d" " -f1'])
+        output = output.decode().replace("\n", "")
+        if rotation == "landscape":
+            subprocess.check_call(
+                ['xrandr', "--output", output, "--rotate", "normal"])
+        elif rotation == "portrait":
+            subprocess.check_call(
+                ['xrandr', "--output", output, "--rotate", "left"])
 
     @staticmethod
     def _wait_name_owner_changed(bus, name):
@@ -510,6 +559,60 @@ class TestWindowHandling(_TestGUIBase):
         with self._run_onboard() as p:
             pass
         self.assertEqual(str(r_result), str(self._get_icon_palette_rect()))
+
+    @unittest.skip("unfinished")
+    def test_screen_rotation(self):
+        self._enable_major_features()
+        self._gsettings_set("org.onboard.icon-palette", "in-use", True)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "x", 600)
+        self._gsettings_set("org.onboard.icon-palette.landscape", "y", 200)
+        self._gsettings_set("org.onboard.window.landscape", "x", 200)
+        self._gsettings_set("org.onboard.window.landscape", "y", 300)
+
+        self._gsettings_set("org.onboard.window.portrait", "x", 200)
+        self._gsettings_set("org.onboard.window.portrait", "y", 600)
+
+        self._rotate_screen("landscape")
+
+        dx = 100
+        dy = 100
+        tolerance = 15
+        r_before_landscape = self._get_window_landscape_rect()
+        r_before_portrait = self._get_window_portrait_rect()
+        with self._run_onboard() as p:
+            self._move_handle_rel(Handle.NORTH_WEST, r_before_landscape, dx, dy)
+            self._move_handle_rel(Handle.SOUTH_EAST, r_before_landscape, dx, dy)
+            time.sleep(1.0)
+
+            self._rotate_screen("portrait")
+            time.sleep(5)
+
+            self._move_handle_rel(Handle.NORTH_WEST, r_before_portrait, dx, dy)
+            self._move_handle_rel(Handle.SOUTH_EAST, r_before_portrait, dx, dy)
+            time.sleep(1.0)
+
+            self._rotate_screen("landscape")
+            time.sleep(5)
+
+        time.sleep(0.5)
+
+        #print (r, file=sys.stderr)
+        #print (r.inflate(dx, dy), file=sys.stderr)
+        #print (self._get_window_landscape_rect(), file=sys.stderr)
+        self.assertRectInRange(self._get_window_landscape_rect(),
+                               r_before_landscape.inflate(dx, dy), tolerance)
+        self.assertRectInRange(self._get_window_portrait_rect(),
+                               r_before_portrait.inflate(dx, dy), tolerance)
+        return
+        self._rotate_screen("landscape")
+
+        self._rotate_screen("landscape")
+        self.assertRectInRange(self._get_window_landscape_rect(),
+                            r.inflate(dx, dy), tolerance)
+
+        self._test_window_rect_remembered_on_rotation(
+            self._get_icon_palette_rect,
+            self._set_icon_palette_rect)
 
     def test_icon_palette_resizing(self):
         self._gsettings_set("org.onboard", "start-minimized", True)
