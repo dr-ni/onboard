@@ -871,12 +871,11 @@ class Keyboard(WordSuggestions):
                 if not key.activated:
                     self._do_key_down_action(key, view, button, event_type)
 
-                update = self._do_key_up_action(key, view, button, event_type)
+                self._do_key_up_action(key, view, button, event_type)
 
-                # Skip updates for the common letter press to improve
-                # responsiveness on slow systems.
-                if update or \
-                   key.type == KeyCommon.BUTTON_TYPE:
+                # Skip context and button controller updates for the common
+                # letter press to improve responsiveness on slow systems.
+                if key.type == KeyCommon.BUTTON_TYPE:
                     self.invalidate_context_ui()
 
             # no action but key was activated: must have been a long press
@@ -1001,7 +1000,6 @@ class Keyboard(WordSuggestions):
                 key.activated = controller.is_activated_on_press()
 
     def _do_key_up_action(self, key, view, button, event_type):
-        update = False
         if key.sticky:
             # Multi-touch release?
             if key.is_modifier() and \
@@ -1015,7 +1013,7 @@ class Keyboard(WordSuggestions):
                 if key.is_modifier():
                     self.redraw_labels(False)
         else:
-            update = self.release_non_sticky_key(key, view, button, event_type)
+            self.release_non_sticky_key(key, view, button, event_type)
 
         # Multi-touch: temporarily stop cycling modifiers if
         # a non-modifier key was pressed. This way we get both,
@@ -1023,8 +1021,6 @@ class Keyboard(WordSuggestions):
         # and press-only action for multi-touch modifer + key press.
         if not key.is_modifier():
             self._non_modifier_released = True
-
-        return update
 
     def send_key_down(self, key, view, button, event_type):
         if self.is_key_disabled(key):
@@ -1242,8 +1238,6 @@ class Keyboard(WordSuggestions):
         return False
 
     def release_non_sticky_key(self, key, view, button, event_type):
-        needs_layout_update = False
-
         # Delay locking/unlockign modifiers. Multiple locks and unlocks
         # of SHIFT may happen when the punctuator is active. Make sure
         # we set the final resulting modifier state only once, else we can't
@@ -1278,15 +1272,13 @@ class Keyboard(WordSuggestions):
         #self.send_punctuation_suffix()
 
         # switch to layer 0 on (almost) any key release
-        needs_layout_update = self.maybe_switch_to_first_layer(key)
+        self.maybe_switch_to_first_layer(key)
 
         # punctuation assistance and collapse corrections
         WordSuggestions.on_after_key_release(self, key)
 
         # lock/unlock modifiers
         self._text_changer.apply_modifier_changes()
-
-        return needs_layout_update
 
     def maybe_switch_to_first_layer(self, key):
         """
