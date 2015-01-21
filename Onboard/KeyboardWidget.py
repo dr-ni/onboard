@@ -1397,13 +1397,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         label, text = config.snippets.get(snippet_id, (None, None))
         if snippet_id in config.snippets:
             # Title of the snippets dialog for existing snippets
-            title = _("Edit snippet")
-            message=""
+            title = _format("Edit snippet #{}", snippet_id)
+            message = ""
         else:
             # Title of the snippets dialog for new snippets
             title = _("New snippet")
             # Message in the snippets dialog for new snippets
-            message=_("Enter a new snippet for this button:")
+            message = _format("Enter a new snippet for button #{}:", snippet_id)
 
         # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
         self.keyboard.on_focusable_gui_opening()
