@@ -879,6 +879,12 @@ class Keyboard(WordSuggestions):
                    key.type == KeyCommon.BUTTON_TYPE:
                     self.invalidate_context_ui()
 
+            # no action but key was activated: must have been a long press
+            elif key.activated:
+                # switch to layer 0 after long pressing snippet buttons
+                if key.type == KeyCommon.MACRO_TYPE:
+                    self.maybe_switch_to_first_layer(key)
+
             # Is the key still nothing but pressed?
             extend_pressed_state = extend_pressed_state and \
                                    key.is_pressed_only() and \
@@ -1287,8 +1293,7 @@ class Keyboard(WordSuggestions):
         Activate the first layer if key allows it.
         """
         if self.active_layer_index != 0 and \
-           not self._layer_locked and \
-           not self.editing_snippet:
+           not self._layer_locked:
 
             unlatch = key.can_unlatch_layer()
             if unlatch is None:
@@ -1300,7 +1305,7 @@ class Keyboard(WordSuggestions):
                 self.active_layer_index = 0
                 self.invalidate_visible_layers()
                 self.invalidate_canvas()
-                self.commit_ui_updates()
+                self.invalidate_context_ui() # update layer button state
 
             return unlatch
 
