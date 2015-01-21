@@ -558,6 +558,9 @@ class Settings(DialogBuilder):
     def update_window_widgets(self):
         force_to_top =  config.is_force_to_top()
 
+        w = self.wid("auto_show_settings_button")
+        w.set_sensitive(config.is_auto_show_enabled())
+
         self.icon_palette_toggle.set_sensitive( \
                              not config.is_icon_palette_last_unhide_option())
         active = config.is_icon_palette_in_use()
