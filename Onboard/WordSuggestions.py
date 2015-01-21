@@ -862,7 +862,7 @@ class WordSuggestions:
             # Insert separator if the separator does not exist at the caret
             # yet. For space characters also check if the caret is at the
             # end of the line. The end of the line in the terminal
-            # (e.g. in vim) may mean lot's of spaces until the final new line.
+            # (e.g. in vim) may mean lots of spaces until the final new line.
             if not caret_text.startswith(auto_separator) or \
                auto_separator.isspace() and remaining_line.isspace():
                 added_separator = auto_separator
@@ -1009,7 +1009,7 @@ class WordSuggestions:
         return False
 
     def can_auto_correct(self):
-        """ No spell checking for passwords, URLs, etc. """
+        """ No auto correct for passwords, URLs, etc. """
         domain = self.text_context.get_text_domain()
         if domain and domain.can_auto_correct():
             return True
@@ -1708,7 +1708,7 @@ class WordListPanel(LayoutPanel):
         for button in hideable_buttons:
             button.set_visible(button.get_id() in visible_button_ids)
 
-        # align visible buttons
+        # position visible buttons
         buttons = []
         button_spacing = self._get_button_spacing()
         for button_id in reversed(visible_button_ids):
