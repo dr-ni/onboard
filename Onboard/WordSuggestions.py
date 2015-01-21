@@ -821,6 +821,12 @@ class WordSuggestions:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
+        # delete any selected text first
+        selection_span = self.text_context.get_selection_span()
+        if not selection_span.is_empty():
+            self.text_context.delete_text(selection_span.pos,
+                                          selection_span.length)
+
         self.text_context.delete_text(begin, end - begin)
         self.text_context.insert_text(begin, new_text)
 
