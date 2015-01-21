@@ -889,7 +889,7 @@ class Keyboard(WordSuggestions):
                                    key.is_pressed_only() and \
                                    action
 
-            # Draw key unpressed to remove Onboard/osk/osk_util.cthe visual feedback.
+            # Draw key unpressed to remove the visual feedback.
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
@@ -1267,10 +1267,6 @@ class Keyboard(WordSuggestions):
         # affect the whole inserted string.
         WordSuggestions.send_key_up(self, key, button, event_type)
 
-        # Send punctuation after the key press and after sticky keys have
-        # been released, since this may trigger latching right shift.
-        #self.send_punctuation_suffix()
-
         # switch to layer 0 on (almost) any key release
         self.maybe_switch_to_first_layer(key)
 
@@ -1329,7 +1325,7 @@ class Keyboard(WordSuggestions):
             # -1.0 restores the onboard 1.0.0 behavior, no updates
             if delay >= 0:
                 self.set_modifier(mod_bit, bool(mod_mask & mod_bit), delay)
-    _
+
     def set_modifier(self, mod_bit, active, draw_delay=0.0):
         """
         Update Onboard to reflect the state of the given modifier in the ui.
