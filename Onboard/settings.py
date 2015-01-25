@@ -25,7 +25,9 @@ from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.XInput          import XIDeviceManager, XIEventType
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
-                                    unicode_str, open_utf8, escape_markup
+                                    unicode_str, open_utf8, escape_markup, \
+                                    XDGDirs
+
 
 app = "onboard"
 
@@ -644,7 +646,9 @@ class Settings(DialogBuilder):
                 self.update_layout_view()
 
     def open_user_layout_dir(self):
-        cmd = ["xdg-open", self.user_layout_root]
+        user_layout_dir = self.user_layout_root
+        XDGDirs.assure_user_dir_exists(user_layout_dir)
+        cmd = ["xdg-open", user_layout_dir]
         try:
             Popen(cmd)
         except OSError as e:
