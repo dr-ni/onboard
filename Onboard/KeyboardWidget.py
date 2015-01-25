@@ -18,7 +18,7 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.utils          import Rect, Timer, FadeTimer
+from Onboard.utils          import Rect, Timer, FadeTimer, escape_markup
 from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \
@@ -1700,9 +1700,9 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
         #if config.is_force_to_top():
         #    dialog.set_position(Gtk.WindowPosition.CENTER)
 
-        self.set_markup("<big>" + \
-                        _("Remove word suggestion:") + \
-                        "</big>")
+        markup = "<big>" + _("Remove word suggestion") + "</big>"
+        markup = escape_markup(markup, preserve_tags=True)
+        self.set_markup(markup)
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
 
