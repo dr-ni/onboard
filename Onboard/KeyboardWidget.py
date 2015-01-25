@@ -1646,7 +1646,7 @@ class SuggestionMenu(KeyMenu):
         # popup menu
         menu = Gtk.Menu()
 
-        item = Gtk.MenuItem.new_with_mnemonic(_("_Remove suggestion..."))
+        item = Gtk.MenuItem.new_with_mnemonic(_("_Remove suggestion"))
         item.connect("activate", self._on_remove_suggestion)
         menu.append(item)
 
