@@ -1598,10 +1598,7 @@ class LanguageMenu(KeyMenu):
                 menu.append(item)
 
         if other_langs:
-            if mru_lang_ids:
-                item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
-            else:
-                item = Gtk.MenuItem.new_with_mnemonic(_("_Languages"))
+            item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
             item.set_submenu(lang_menu)
             menu.append(item)
 
