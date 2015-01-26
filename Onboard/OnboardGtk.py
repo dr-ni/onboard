@@ -727,12 +727,21 @@ class OnboardGtk(object):
         """
         result = True
 
+        # Content of XDG_CURRENT_DESKTOP:
+        # Before Vivid: GNOME Shell:   GNOME
+        #               GNOME Classic: GNOME
+        # Since Vivid:  GNOME Shell:   GNOME
+        #               GNOME Classic: GNOME-Classic:GNOME
+
         if config.options.not_show_in:
             bus = dbus.SessionBus()
             current = os.environ.get("XDG_CURRENT_DESKTOP", "")
             names = config.options.not_show_in.split(",")
             for name in names:
                 if name == current:
+                    # Before Vivid GNOME Shell and GNOME Classic had the same
+                    # desktop name "GNOME". Use the D-BUS name to decide if we
+                    # are in the Shell.
                     if name == "GNOME":
                         if bus.name_has_owner("org.gnome.Shell"):
                             result = False

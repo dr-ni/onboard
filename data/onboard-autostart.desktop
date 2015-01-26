@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Onboard
-Exec=onboard --not-show-in=GNOME
+Exec=onboard --not-show-in=GNOME,GNOME-Classic:GNOME
 Type=Application
 NoDisplay=true
 X-Ubuntu-Gettext-Domain=onboard
