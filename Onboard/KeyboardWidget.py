@@ -486,19 +486,32 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             opacity_visible = True
 
             if win:
-                if visible:
-                    begin_rect = win.get_hidden_rect()
-                    end_rect = win.get_visible_rect()
-                else:
-                    begin_rect = win.get_rect()
-                    end_rect = win.get_docking_hideout_rect()
-                state.y.value = begin_rect.y
-                y             = end_rect.y
-                state.x.value = begin_rect.x
-                x             = end_rect.x
+                visible_before = win.is_visible()
+                visible_later  = visible
+                hideout_old_mon = win.get_docking_hideout_rect()
+                mon_changed = win.update_docking_monitor()
+                hideout_new_mon = win.get_docking_hideout_rect() \
+                                if mon_changed else hideout_old_mon
 
-                result |= self._init_transition(state.x, x, slide_duration)
-                result |= self._init_transition(state.y, y, slide_duration)
+                # Only position here if visibility or the active monitor
+                # changed. Leave it to auto_position to move the keyboard
+                # while it is visible, i.e. not being hidden or shown.
+                if visible_before != visible_later or \
+                   mon_changed:
+                    if visible:
+                        begin_rect = hideout_new_mon
+                        end_rect = win.get_visible_rect()
+                    else:
+                        begin_rect = win.get_rect()
+                        end_rect = hideout_old_mon
+
+                    state.y.value = begin_rect.y
+                    y             = end_rect.y
+                    state.x.value = begin_rect.x
+                    x             = end_rect.x
+
+                    result |= self._init_transition(state.x, x, slide_duration)
+                    result |= self._init_transition(state.y, y, slide_duration)
         else:
             opacity_visible  = visible
 

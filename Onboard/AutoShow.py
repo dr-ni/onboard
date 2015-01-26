@@ -197,14 +197,6 @@ class AutoShow(object):
             # -> less erratic movement during quick focus changes
             self._keyboard.stop_auto_positioning()
 
-        # reposition the keyboard window
-        if active and \
-           not accessible is None and \
-           not self._lock_visible and \
-           not self.is_paused() and \
-           not self.is_frozen():
-           self._keyboard.auto_position()
-
     def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
         # Don't act on each and every focus message. Delay the start
@@ -216,6 +208,8 @@ class AutoShow(object):
 
     def _begin_transition(self, show):
         self._keyboard.transition_visible_to(show)
+        if show:
+            self._keyboard.auto_position()
         self._keyboard.commit_transition()
         return False
 

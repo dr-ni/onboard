@@ -911,7 +911,9 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def auto_position(self):
         self._auto_position_started = True
-        self.update_position()
+
+        # Leave the first commit to AutoShow._begin_transition()
+        self.update_position(False)
 
         # With docking enabled, when focusing the search entry of a
         # maximized firefox window, it changes position when the work
@@ -940,7 +942,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
     def stop_auto_positioning(self):
         self._auto_position_poll_timer.stop()
 
-    def update_position(self):
+    def update_position(self, commit=True):
         home_rect = self.get_home_rect()
         rect = self.get_repositioned_window_rect(home_rect)
         if rect is None:
@@ -949,7 +951,8 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
         if self.get_position() != rect.get_position():
             self.keyboard_widget.transition_position_to(rect.x, rect.y)
-            self.keyboard_widget.commit_transition()
+            if commit:
+                self.keyboard_widget.commit_transition()
 
     def get_repositioned_window_rect(self, home_rect):
         if config.can_auto_show_reposition():
