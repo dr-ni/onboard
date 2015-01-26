@@ -1263,7 +1263,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             return 0.0
         co = self.get_kbd_window().get_orientation_config_object()
         if config.is_dock_expanded(co):
-            return 0.5
+            return 2.0
         if config.window.transparent_background:
             return 3.0
         return config.UNDECORATED_FRAME_WIDTH
