@@ -1548,7 +1548,7 @@ class KeyMenu:
         menu_size  = (menu.get_allocated_width(),
                       menu.get_allocated_width())
         x, y = self.get_menu_position(r, menu_size)
-        return x, y, True
+        return x, y, False
 
     def get_menu_position(self, rkey, menu_size):
         return rkey.left() + (rkey.w - menu_size[0]) * self._x_align, \
