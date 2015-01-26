@@ -1597,13 +1597,13 @@ class LanguageMenu(KeyMenu):
                 item.connect("activate", self._on_language_activated, lang_id)
                 menu.append(item)
 
+        if mru_lang_ids:
+            item = Gtk.SeparatorMenuItem.new()
+            menu.append(item)
+
         if other_langs:
             item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
             item.set_submenu(lang_menu)
-            menu.append(item)
-
-        if lang_ids:
-            item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
 
         return menu
