@@ -21,7 +21,7 @@ from Onboard.definitions    import StatusIconProviderEnum, \
                                    TouchInputEnum, \
                                    LearningBehavior, \
                                    RepositionMethodEnum, \
-                                   Handle, DockingEdge
+                                   Handle, DockingEdge, DockingMonitor
 from Onboard.ConfigUtils    import ConfigObject
 from Onboard.ClickSimulator import CSMousetweaks0, CSMousetweaks1
 from Onboard.Exceptions     import SchemaError
@@ -1391,6 +1391,7 @@ class ConfigKeyboard(ConfigObject):
 class ConfigWindow(ConfigObject):
     """Window configuration """
     DEFAULT_DOCKING_EDGE = DockingEdge.BOTTOM
+    DEFAULT_DOCKING_MONITOR = DockingMonitor.ACTIVE
 
     def _init_keys(self):
         self.schema = SCHEMA_WINDOW
@@ -1411,6 +1412,19 @@ class ConfigWindow(ConfigObject):
         self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE,
                                      enum={"top"    : DockingEdge.TOP,
                                            "bottom" : DockingEdge.BOTTOM,
+                                          })
+        self.add_key("docking-monitor", self.DEFAULT_DOCKING_MONITOR,
+                                     enum={"active" : DockingMonitor.ACTIVE,
+                                           "primary" : DockingMonitor.PRIMARY,
+                                           "monitor0" : DockingMonitor.MONITOR0,
+                                           "monitor1" : DockingMonitor.MONITOR1,
+                                           "monitor2" : DockingMonitor.MONITOR2,
+                                           "monitor3" : DockingMonitor.MONITOR3,
+                                           "monitor4" : DockingMonitor.MONITOR4,
+                                           "monitor5" : DockingMonitor.MONITOR5,
+                                           "monitor6" : DockingMonitor.MONITOR6,
+                                           "monitor7" : DockingMonitor.MONITOR7,
+                                           "monitor8" : DockingMonitor.MONITOR8,
                                           })
         self.add_key("docking-shrink-workarea", True)
 
@@ -1454,6 +1468,7 @@ class ConfigWindow(ConfigObject):
     def docking_notify_add(self, callback):
         self.docking_enabled_notify_add(callback)
         self.docking_edge_notify_add(callback)
+        self.docking_monitor_notify_add(callback)
         self.docking_shrink_workarea_notify_add(callback)
 
         self.landscape.dock_expand_notify_add(callback)

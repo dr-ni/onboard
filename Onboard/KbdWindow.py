@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
+from Onboard.definitions import DockingMonitor
 from Onboard.utils       import Rect, CallOnce, Timer, gtk_has_resize_grip_support
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
                                 set_unity_property
@@ -49,9 +50,12 @@ class KbdWindowBase:
         self._docking_enabled = False
         self._docking_edge = None
         self._docking_rect = Rect()
+        self._docking_monitor = None
         self._shrink_work_area = False
         self._dock_expand = False
         self._current_struts = None
+
+        self._current_docking_monitor = None
         self._monitor_workarea = {}
 
         self._opacity = 1.0
@@ -484,7 +488,6 @@ class KbdWindowBase:
             if biggestHeight < tempHeight:
                 biggestHeight = tempHeight
 
-        geom = self.get_screen().get_monitor_geometry(0)
         eg = self.edgeGravity
         x, y = self.window.get_origin()
 
@@ -494,8 +497,6 @@ class KbdWindowBase:
             propvals[2] = height + y
             propvals[9] = width
         elif eg == Gdk.Gravity.SOUTH and y != 0:
-            #propvals[2] = y
-            #propvals[9] = geom.width - 1
             propvals[3] = biggestHeight - y
             propvals[11] = width - 1
 
@@ -577,9 +578,9 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
            if config.is_docking_enabled() and \
               not config.xid_mode:
-                mon = self.get_docking_monitor()
-                new_area = self.get_monitor_workarea()
-                area = self._monitor_workarea.get(0)
+                monitor = self.get_docking_monitor()
+                new_area = self.get_monitor_workarea(monitor)
+                area = self._monitor_workarea.get(monitor)
                 if area:
                     # Only check for x changes, y is too dangerous for now,
                     # too easy to get the timing wrong and end up with double docks.
@@ -1022,7 +1023,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def get_hidden_rect(self):
         """
-        Returns the rect of the hidden window rect with auto-show
+        Returns the rect of the hidden window with auto-show
         repositioning taken into account.
         """
         if config.is_docking_enabled():
@@ -1185,25 +1186,30 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         else:
             rect = Rect()
         shrink = config.window.docking_shrink_workarea
-        edge = config.window.docking_edge
         expand = self.get_dock_expand()
+        edge = config.window.docking_edge
+        monitor = self.get_docking_monitor(True)
 
         if self._docking_enabled != enable or \
            (self._docking_enabled and \
             (self._docking_rect != rect or \
              self._shrink_work_area != shrink or \
              self._dock_expand != expand or \
-             bool(self._current_struts) != shrink)
+             bool(self._current_struts) != shrink or
+             self._docking_monitor != monitor)
            ):
-            self.enable_docking(enable)
+            self._current_docking_monitor = monitor
+
+            self._realize_docking(enable)
 
             self._shrink_work_area = shrink
             self._dock_expand = expand
             self._docking_edge = edge
+            self._docking_monitor = monitor
             self._docking_enabled = enable
             self._docking_rect = rect
 
-    def enable_docking(self, enable):
+    def _realize_docking(self, enable):
         if enable:
             self._set_docking_struts(config.window.docking_shrink_workarea,
                                      config.window.docking_edge,
@@ -1212,6 +1218,12 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         else:
             self.restore_window_rect()
             self.clear_struts()
+
+    def update_docking_monitor(self):
+        mon_before = self._current_docking_monitor
+        mon_now = self.get_docking_monitor(True)
+        self._current_docking_monitor = mon_now
+        return mon_before != mon_now
 
     def clear_struts(self):
         self._set_docking_struts(False)
@@ -1314,38 +1326,55 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def get_docking_monitor_rects(self):
         screen = self.get_screen()
-        mon = self.get_docking_monitor()
+        monitor = self.get_docking_monitor()
 
-        area = self._monitor_workarea.get(mon)
+        area = self._monitor_workarea.get(monitor)
         if area is None:
-            area = self.update_monitor_workarea()
+            area = self.update_monitor_workarea(monitor)
 
-        geom = screen.get_monitor_geometry(mon)
+        geom = screen.get_monitor_geometry(monitor)
         geom = Rect(geom.x, geom.y, geom.width, geom.height)
 
         return area, geom
 
-    def get_docking_monitor(self):
-        screen = self.get_screen()
-        return screen.get_primary_monitor()
+    def get_docking_monitor(self, force_update=False):
+        if self._current_docking_monitor is None or force_update:
+            screen = self.get_screen()
+            docking_monitor = config.window.docking_monitor
+
+            monitor = int(docking_monitor)
+            if monitor < 100:
+                if monitor < 0 or \
+                   monitor >= screen.get_n_monitors():
+                    docking_monitor = DockingMonitor.PRIMARY
+
+            if docking_monitor == DockingMonitor.ACTIVE:
+                window = screen.get_active_window()
+                if window:
+                    monitor = screen.get_monitor_at_window(window)
+                else:
+                    monitor = screen.get_primary_monitor()
+            elif docking_monitor == DockingMonitor.PRIMARY:
+                monitor = screen.get_primary_monitor()
+        else:
+            monitor = self._current_docking_monitor
+        return monitor
 
     def reset_monitor_workarea(self):
         self._monitor_workarea = {}
 
-    def update_monitor_workarea(self):
+    def update_monitor_workarea(self, monitor):
         """
         Save the workarea, so we don't have to
         check all the time if our strut is already installed.
         """
-        mon = self.get_docking_monitor()
-        area = self.get_monitor_workarea()
-        self._monitor_workarea[mon] = area
+        area = self.get_monitor_workarea(monitor)
+        self._monitor_workarea[monitor] = area
         return area
 
-    def get_monitor_workarea(self):
+    def get_monitor_workarea(self, monitor):
         screen = self.get_screen()
-        mon = self.get_docking_monitor()
-        area = screen.get_monitor_workarea(mon)
+        area = screen.get_monitor_workarea(monitor)
         area = Rect(area.x, area.y, area.width, area.height)
         return area
 

@@ -1213,6 +1213,8 @@ class DockingDialog(DialogBuilder):
                         config.window.portrait, "dock_expand")
         self.bind_combobox_id("docking_edge_combobox",
                         config.window, "docking_edge")
+        self.bind_combobox_id("docking_monitor_combobox",
+                        config.window, "docking_monitor")
 
         self.update_ui()
 

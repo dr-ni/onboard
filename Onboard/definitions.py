@@ -144,5 +144,16 @@ class DockingEdge:
     TOP = 0
     BOTTOM = 3
 
-
+class DockingMonitor:
+    ACTIVE   = 100
+    PRIMARY  = 110
+    MONITOR0 = 0
+    MONITOR1 = 1
+    MONITOR2 = 2
+    MONITOR3 = 3
+    MONITOR4 = 4
+    MONITOR5 = 5
+    MONITOR6 = 6
+    MONITOR7 = 7
+    MONITOR8 = 8
 

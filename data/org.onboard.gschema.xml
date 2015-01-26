@@ -234,6 +234,20 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
         <value nick="bottom" value="3"/>
     </enum>
 
+    <enum id="org.onboard.window.DockingMonitor">
+        <value nick="active"   value="100"/>
+        <value nick="primary"  value="110"/>
+        <value nick="monitor0" value="0"/>
+        <value nick="monitor1" value="1"/>
+        <value nick="monitor2" value="2"/>
+        <value nick="monitor3" value="3"/>
+        <value nick="monitor4" value="4"/>
+        <value nick="monitor5" value="5"/>
+        <value nick="monitor6" value="6"/>
+        <value nick="monitor7" value="7"/>
+        <value nick="monitor8" value="8"/>
+    </enum>
+
     <schema id="org.onboard.window" path="/org/onboard/window/">
         <key name="window-state-sticky" type="b">
             <default>true</default>
@@ -295,15 +309,20 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Docking enabled</summary>
             <description>Enable docking of the keyboard window to screen edges. 'False' to leave the keaboard floating.</description>
         </key>
+        <key name="docking-shrink-workarea" type="b">
+            <default>true</default>
+            <summary>Shrink workarea when docked.</summary>
+            <description>When docked, shrink the avaliable space for maximized windows.</description>
+        </key>
         <key name="docking-edge" enum="org.onboard.window.DockingEdge">
             <default>"bottom"</default>
             <summary>Docking screen edge</summary>
             <description>Edge to dock the keyboard window at.</description>
         </key>
-        <key name="docking-shrink-workarea" type="b">
-            <default>true</default>
-            <summary>Shrink workarea when docked.</summary>
-            <description>When docked, shrink the avaliable space for maximized windows.</description>
+        <key name="docking-monitor" enum="org.onboard.window.DockingMonitor">
+            <default>"active"</default>
+            <summary>Docking monitor</summary>
+            <description>Monitor where the keyboard docks.</description>
         </key>
 
         <child name="landscape" schema="org.onboard.window.landscape"/>
