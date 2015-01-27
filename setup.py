@@ -32,6 +32,14 @@ current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
 required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
+project_root = dirname(abspath(__file__))
+build_root = join(project_root, 'build', 'lib*{}.*' \
+                  .format(sys.version_info.major))
+libs_to_symlink = [['Onboard', 'osk*.so'],
+                   ['Onboard/pypredict', 'lm*.so']]
+setup_command = sys.argv[1]
+
+
 @contextmanager
 def import_path(path):
     """ temporily change python import path """
@@ -39,7 +47,6 @@ def import_path(path):
     sys.path = [path] + sys.path
     yield
     sys.path = old_path
-
 
 def pkgconfig(*packages, **kw):
     command = "pkg-config --libs --cflags %s" % ' '.join(packages)
@@ -57,7 +64,6 @@ def pkgconfig(*packages, **kw):
         print('setup.py: sdist needs libgtk-3-dev, libxtst-dev, libxkbfile-dev, libdconf-dev, libcanberra-dev and libhunspell-dev')
         sys.exit(1)
 
-
     flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
     for token in output.split():
         if token[:2] in flag_map:
@@ -68,7 +74,6 @@ def pkgconfig(*packages, **kw):
         kw[k] = list(set(v))
 
     return kw
-
 
 def get_pkg_version(package):
     """ get major, minor version of package """
@@ -86,10 +91,57 @@ def get_pkg_version(package):
     revision = int(components[2]) if len(components) >= 3 else 0
     return major, minor, revision
 
+def clean_before_build(command):
+    """
+    Clean up project before building.
+    """
+    # __pycache__ directories confuse the build. Delete them.
+    if command in ["build", "build_ext", "clean", "sdist"]:
+        print("removing __pycache__ directories recursively")
+        subprocess.check_call(
+         ['/bin/bash', '-c', 'find . -name __pycache__ -prune | xargs rm -rf'])
+
+    # Symlinked extension libraries trip up "setup.py sdist". Delete them.
+    if command in ["clean", "sdist"]:
+        for path, pattern in libs_to_symlink:
+            files = glob.glob(join(project_root, path, pattern))
+            for file in files:
+                print("removing symlink {}".format(file))
+                try: os.unlink(file)
+                except OSError: pass
+
+def symlink_extension_libraries(setup_command):
+    """
+    Link the extensions back to the project directory
+    so Onboard can be run from source as usual, without --inplace.
+    Remove this at any time if there is a better way.
+    """
+    if setup_command in ["build", "build_ext"]:
+        for path, pattern in libs_to_symlink:
+            files = glob.glob(join(build_root, path, pattern))
+            for file in files:
+                dstfile = join(path, split(file)[1])
+                print("symlinking {} to {}".format(file, dstfile))
+
+                try: os.unlink(dstfile)
+                except OSError: pass
+                os.symlink(file, dstfile)
 
 # Make xgettext extract translatable strings from _format() calls too.
 var = "XGETTEXT_ARGS"
 os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
+
+# scan for translatable layout strings in layouts
+# disabled until know how to make it work.
+# layoutstring.px has those string manually added now.
+if 0:
+    if "build_i18n" in sys.argv:
+        args = ["./tools/gen_i18n_strings",
+                "-o./data/layoutstrings_generated.py"]
+        print("Running '{}'".format(" ".join(args)))
+        subprocess.check_call(args)
+
+clean_before_build(setup_command)
 
 
 ##### private extension 'osk' #####
@@ -244,21 +296,6 @@ class TestCommand(Command):
 
         return True
 
-# scan for translatable layout strings in layouts
-# disabled until know how to make it work.
-# layoutstring.px has those string manually added now.
-if 0:
-    if "build_i18n" in sys.argv:
-        args = ["./tools/gen_i18n_strings",
-                "-o./data/layoutstrings_generated.py"]
-        print("Running '{}'".format(" ".join(args)))
-        subprocess.check_call(args)
-
-# __pycache__ directories confuse the build. Delete them.
-if "build" in sys.argv or \
-   "build_ext" in sys.argv:
-    subprocess.check_call(
-        ['/bin/bash', '-c', 'find . -name __pycache__ -prune | xargs rm -rf'])
 
 ##### setup #####
 
@@ -307,22 +344,6 @@ DistUtilsExtra.auto.setup(
     cmdclass = {'test': TestCommand},
 )
 
-# Link the extensions back to the project directory
-# so Onboard can be run from source as usual, without --inplace.
-# Remove this at any time if there is a better way.
-if "build" in sys.argv or \
-   "build_ext" in sys.argv:
-    root = dirname(abspath(__file__))
-    build_root = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major))
-    libs = [['Onboard', 'osk*.so'],
-            ['Onboard/pypredict', 'lm*.so']]
-    for path, pattern in libs:
-        files = glob.glob(join(build_root, path, pattern))
-        for file in files:
-            dstfile = join(path, split(file)[1])
-            print("symlinking {} to {}".format(file, dstfile))
 
-            try: os.unlink(dstfile)
-            except OSError: pass
-            os.symlink(file, dstfile)
+symlink_extension_libraries(setup_command)
 
