@@ -37,7 +37,7 @@ build_root = join(project_root, 'build', 'lib*{}.*' \
                   .format(sys.version_info.major))
 libs_to_symlink = [['Onboard', 'osk*.so'],
                    ['Onboard/pypredict', 'lm*.so']]
-setup_command = sys.argv[1]
+setup_command = sys.argv[1] if len(sys.argv) >= 2 else ""
 
 
 @contextmanager
