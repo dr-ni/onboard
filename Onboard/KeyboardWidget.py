@@ -1401,7 +1401,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         root_rect = canvas_to_root_window_rect(self, r)
         popup.position_at(root_rect.x + root_rect.w * 0.5,
                          root_rect.y, 0.5, 1.0)
-        popup.show()
+        popup.show_all()
         return popup
 
     def show_snippets_dialog(self, snippet_id):

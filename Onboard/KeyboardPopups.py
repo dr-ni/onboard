@@ -146,15 +146,31 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
 
         self.set_keep_above(True)
 
+        # In Precise, directly drawing on the top level window has no effect.
+        # The Cairo target surface is correctly rendered, but somehow it
+        # doesn't become visible. Compositing or not doesn't matter.
+        # It's most likely an old issue with Gtk/Gdk. Later releases like
+        # Trusty, Vivid are unaffected.
+        # -> Create a widget we can successfully draw on anywhere.
+        self.drawing_area = Gtk.DrawingArea()
+        self.add(self.drawing_area)
+        self.drawing_area.connect("draw", self.on_draw)
+
         # use transparency if available
         screen = Gdk.Screen.get_default()
         visual = screen.get_rgba_visual()
         self.supports_alpha = False
         if visual:
             self.set_visual(visual)
+            self.drawing_area.set_visual(visual)
             self.override_background_color(Gtk.StateFlags.NORMAL,
                                            Gdk.RGBA(0, 0, 0, 0))
+            self.drawing_area.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
             self.supports_alpha = True
+
+    def on_draw(self, widget, context):
+        raise NotImplementedError()
 
     def position_at(self, x, y, x_align, y_align):
         """
@@ -197,7 +213,6 @@ class LabelPopup(KeyboardPopup):
         KeyboardPopup.__init__(self)
         self._key = None
         self.connect("realize", self._on_realize_event)
-        self.connect("draw", self._on_draw)
 
     def _on_realize_event(self, user_data):
         self.set_override_redirect(True)
@@ -206,8 +221,7 @@ class LabelPopup(KeyboardPopup):
         win = self.get_window()
         self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
-    def _on_draw(self, widget, context):
-
+    def on_draw(self, widget, context):
         if not LabelPopup._pango_layout:
             LabelPopup._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
 
@@ -320,7 +334,6 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
 
-        self.connect("draw",                 self._on_draw)
         self.connect("destroy",              self._on_destroy_event)
 
         self._close_timer = Timer()
@@ -404,8 +417,8 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
         else:
             self.close_window()
 
-    def _on_draw(self, widget, context):
-        decorated = LayoutView.draw(self, widget, context)
+    def on_draw(self, widget, context):
+        LayoutView.draw(self, widget, context)
 
     def draw_window_frame(self, context, lod):
         corner_radius = config.CORNER_RADIUS

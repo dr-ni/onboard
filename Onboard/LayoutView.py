@@ -250,7 +250,7 @@ class LayoutView:
                (not self._starting_up or self._keys_pre_rendered)
 
     def draw(self, widget, context):
-        if not Gtk.cairo_should_draw_window(context, self.get_window()):
+        if not Gtk.cairo_should_draw_window(context, widget.get_window()):
             return
 
         lod = self._lod
