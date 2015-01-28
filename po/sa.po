@@ -1,21 +1,21 @@
-# Breton translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Sanskrit translation for onboard
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-27 11:46+0100\n"
-"PO-Revision-Date: 2010-07-15 08:28+0000\n"
-"Last-Translator: Francesco Fumanti <Unknown>\n"
-"Language-Team: Breton <br@li.org>\n"
-"Language: br\n"
+"PO-Revision-Date: 2014-06-06 07:18+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Sanskrit <sa@li.org>\n"
+"Language: sa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
+"X-Launchpad-Export-Date: 2015-01-27 10:25+0000\n"
 "X-Generator: Launchpad (build 17306)\n"
 
 #. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
@@ -30,27 +30,27 @@ msgstr ""
 #. translators: very short label of the left Alt key
 #: ../data/layoutstrings.py:18
 msgid "Alt"
-msgstr "Alt"
+msgstr ""
 
 #. translators: very short label of the Alt Gr key
 #: ../data/layoutstrings.py:20
 msgid "Alt Gr"
-msgstr "Alt Gr"
+msgstr ""
 
 #. translators: very short label of the CAPS LOCK key
 #: ../data/layoutstrings.py:22
 msgid "CAPS"
-msgstr "PENNLZR"
+msgstr ""
 
 #. translators: very short label of the Ctrl key
 #: ../data/layoutstrings.py:24
 msgid "Ctrl"
-msgstr "Ctrl"
+msgstr ""
 
 #. translators: very short label of the DELETE key
 #: ../data/layoutstrings.py:26
 msgid "Del"
-msgstr "Dilemel"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
@@ -65,12 +65,12 @@ msgstr ""
 #. translators: very short label of the numpad END key
 #: ../data/layoutstrings.py:30
 msgid "End"
-msgstr "Dibenn"
+msgstr ""
 
 #. translators: very short label of the numpad ENTER key
 #: ../data/layoutstrings.py:32
 msgid "Ent"
-msgstr "Enankañ"
+msgstr ""
 
 #. translators: very short label of the ESCAPE key
 #: ../data/layoutstrings.py:34
@@ -98,12 +98,12 @@ msgstr ""
 #. translators: very short label of the HOME key
 #: ../data/layoutstrings.py:40
 msgid "Hm"
-msgstr "D'arGêr"
+msgstr ""
 
 #. translators: very short label of the INSERT key
 #: ../data/layoutstrings.py:42
 msgid "Ins"
-msgstr "Enl"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
@@ -113,7 +113,7 @@ msgstr ""
 #. translators: very short label of the Menu key
 #: ../data/layoutstrings.py:45
 msgid "Menu"
-msgstr "Lañser"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
@@ -138,7 +138,7 @@ msgstr ""
 #. translators: very short label of the PAUSE key
 #: ../data/layoutstrings.py:52
 msgid "Pause"
-msgstr "Ehan"
+msgstr ""
 
 #. translators: very short label of the PAGE DOWN key
 #: ../data/layoutstrings.py:54
@@ -159,7 +159,7 @@ msgstr ""
 #. translators: very short label of the PRINT key
 #: ../data/layoutstrings.py:60
 msgid "Prnt"
-msgstr "Moullañ"
+msgstr ""
 
 #. translators: very short label of the Quit button
 #: ../data/layoutstrings.py:62
@@ -169,7 +169,7 @@ msgstr ""
 #. translators: very short label of the RETURN key
 #: ../data/layoutstrings.py:64
 msgid "Return"
-msgstr "Distro"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
@@ -179,13 +179,13 @@ msgstr ""
 #. translators: very short label of the SCROLL key
 #: ../data/layoutstrings.py:67
 msgid "Scroll"
-msgstr "Dibunañ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
 #: ../settings.ui.h:13
 msgid "Snippets"
-msgstr "Parzhioù"
+msgstr ""
 
 #: ../data/layoutstrings.py:69
 msgid "Space"
@@ -199,12 +199,12 @@ msgstr ""
 #. translators: very short label of the TAB key
 #: ../data/layoutstrings.py:72
 msgid "Tab"
-msgstr "Taolennata"
+msgstr ""
 
 #. translators: very short label of the default SUPER key
 #: ../data/layoutstrings.py:74
 msgid "Win"
-msgstr "Prenestr"
+msgstr ""
 
 #. translators: description of unicode character U+2602
 #. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
@@ -558,7 +558,7 @@ msgstr ""
 #. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:296
 msgid "Settings"
-msgstr "Arventennoù"
+msgstr ""
 
 #. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:320
@@ -600,7 +600,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
 msgid "_Background:"
-msgstr ""
+msgstr "पृष्ठदेशः-"
 
 #. Key style with simple gradients
 #: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
@@ -617,7 +617,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
 msgid "Keyboard"
-msgstr ""
+msgstr "कीलफलकम्"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
@@ -906,13 +906,6 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
-"Kefluniet eo Onboard evit bezañ diskouezet gant ar voestad emziviz da "
-"zibrennañ ar skramm ; da skouer a-benn diweredekaat arload arboellañ ar "
-"skramm.\n"
-"\n"
-"Koulskoude ez eo diwerekedaet an arc'hwel-mañ er reizhiad.\n"
-"\n"
-"Ha fellout a ra deoc'h gweredekaat an arc'hwel-mañ ?"
 
 #. Default dialog title: name of the application """
 #: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
@@ -957,11 +950,11 @@ msgstr ""
 
 #: ../Onboard/Indicator.py:31
 msgid "_Show Onboard"
-msgstr "_Diskouez onBoard"
+msgstr ""
 
 #: ../Onboard/Indicator.py:32
 msgid "_Hide Onboard"
-msgstr "_Kuzhañ onBoard"
+msgstr ""
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
@@ -1006,7 +999,7 @@ msgstr ""
 
 #: ../data/onboard.desktop.in.h:3
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Klavier war ar skramm pleustrek evit GNOME"
+msgstr ""
 
 #: ../Onboard/LayoutLoaderSVG.py:139
 msgid ""
@@ -1325,11 +1318,11 @@ msgstr ""
 
 #: ../settings.ui.h:9
 msgid "General"
-msgstr "Hollek"
+msgstr ""
 
 #: ../settings.ui.h:10
 msgid "Window"
-msgstr ""
+msgstr "चित्रायणम्"
 
 #: ../settings.ui.h:11
 msgid "Layout"
@@ -1395,7 +1388,7 @@ msgstr ""
 
 #: ../settings.ui.h:28
 msgid "_Settings"
-msgstr ""
+msgstr "संरूपणम्"
 
 #: ../settings.ui.h:29
 msgid "Start Onboard _hidden"
@@ -1411,7 +1404,7 @@ msgstr ""
 
 #: ../settings.ui.h:32
 msgid "_Show status icon"
-msgstr "Diskouez arlun ar stad"
+msgstr ""
 
 #: ../settings.ui.h:33
 msgid "Show the status item. A click on that icon hides or shows Onboard."
@@ -1452,7 +1445,7 @@ msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Desktop Integration"
-msgstr "Enkorfadur ar burev"
+msgstr ""
 
 #: ../settings.ui.h:42
 msgid "Dock to screen edge"
@@ -1512,11 +1505,11 @@ msgstr ""
 
 #: ../settings.ui.h:56
 msgid "Window options"
-msgstr ""
+msgstr "चित्रायणविकल्पाः"
 
 #: ../settings.ui.h:57
 msgid "Wind_ow:"
-msgstr ""
+msgstr "चित्रायणम्-"
 
 #: ../settings.ui.h:58
 msgid "Transparency of the whole keyboard window. Requires compositing."
@@ -1536,7 +1529,7 @@ msgstr ""
 
 #: ../settings.ui.h:63
 msgid "Transparency"
-msgstr ""
+msgstr "पारदर्शिता"
 
 #: ../settings.ui.h:64
 msgid "Set _transparency to"
@@ -1568,8 +1561,9 @@ msgid "When Inactive"
 msgstr ""
 
 #: ../settings.ui.h:71
+#, fuzzy
 msgid "_Window handles:"
-msgstr ""
+msgstr "चित्रायणविकल्पाः"
 
 #: ../settings.ui.h:72
 msgid "Resize Protection"
@@ -1604,8 +1598,6 @@ msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"Ar parzhioù zo tammoù testenn hag a zo skrivet pa vez pouezet war ar stokell "
-"e onBoard o klotañ ganto."
 
 #: ../settings.ui.h:80
 msgid "Show label popups"
@@ -1699,9 +1691,8 @@ msgid "Input Options"
 msgstr ""
 
 #: ../settings.ui.h:100
-#, fuzzy
 msgid "Keystroke _generation:"
-msgstr "Enkorfadur ar burev"
+msgstr ""
 
 #: ../settings.ui.h:101
 msgid "Delay between keystrokes in milliseconds:"
@@ -1719,9 +1710,8 @@ msgid "0,00"
 msgstr ""
 
 #: ../settings.ui.h:104
-#, fuzzy
 msgid "Keystroke Generation"
-msgstr "Enkorfadur ar burev"
+msgstr ""
 
 #: ../settings.ui.h:105
 msgid "Advanced"
@@ -2153,6 +2143,3 @@ msgstr ""
 #: ../Onboard/KbdWindow.py:183
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
-
-#~ msgid "No file manager to open layout folder"
-#~ msgstr "N'eut ardoer restroù ebet a-benn digeriñ teuliad an aozadur klavier"

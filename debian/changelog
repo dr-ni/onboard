@@ -1,3 +1,175 @@
+onboard (1.1.0-0ubuntu1) vivid; urgency=low
+
+  * Request for sponsorship for new upstream release (LP: #1415041)
+  * debian/control:
+    - Raise Standards-Version to 3.9.6
+    - Add xdg-utils to Recommends
+  * debian/copyright:
+    - Edit emails to add small protection against email harvesting
+    - Update years information
+  * debian/onboard.install:
+    - Add the usr/share/onboard/settings_auto_show_dialog.ui file
+  * debian/patches:
+    - Remove patch to add support for MATE (now upstream)
+    - Remove patch to fix the auto-start issue (now upstream)
+    - Update add_defaults_for_ubuntu.patch with values for this release
+  * debian/rules:
+    - Remove shebang rewrite from override_dh_python3
+    - Add no-guessing-deps to override_dh_python3
+  * Word suggestions:
+    - Add possibility to learn word sequences, but no new words
+    - Add removal of words from current user language model on long press
+    - Add removal of a word in current context only
+    - Add tool to extract letter frequencies from a given language model
+    - Use slash as word separator in the path component of URLs
+    - Improve word suggestions after a wrap to a second line in gnome-terminal
+    - Better handle interaction with the awesome bar's URL completion of firefox
+    - Fix synchronisation between libreoffice writer and text document
+    - Fix insertion of word separators consisting of more than one character
+    - Delete selected text before inserting suggestions into Gtk-3 widgets
+    - Fix memory leak in predict calls
+    - Improve robustness of language model loading by handling word counts <= 0
+    - Have the checkmodels tool check for valid n-gram frequency fields
+    - Fix and improve broken doctest for _get_word_to_spell_check()
+    - Remove "th" from the English system language models
+    - Increase the number of words in the German system language models
+    - Fix traceback when migrating user language model with LANG=C
+    - Always use "Other Languages" as name for submenu of languages menu
+    - Move second separator in language menu to correct position
+  * Auto-show and auto-hide:
+    - Add hiding of Onboard keyboard on physical key-press for XInput
+    - Add setting for the time to stay hidden after physical key-press
+    - Add possibility to turn off repositioning on auto-show (LP #1402212)
+    - Centralize auto-show code to make it available for future views
+    - Correctly register at-spi listeners on startup
+    - Correctly disconnect events on exit
+    - Fix auto-show on cursor movement in single-line text entries
+  * XEmbedding in unity-greeter and gnome-screensaver:
+    - Enable hide button in unity-greeter; needs restart until greeter assists
+    - Add a toggle to system defaults to enable the background image
+    - Read filename of background in greeter's shema in unity-greeter
+    - Ignore xembed-unity-greeter-offset-x on small screens
+    - Increase xembed aspect change range (LP: #1297695)
+    - Add the color of the background bar to system defaults
+    - Fix loading of desktop backgrounds with non-ascii filenames
+    - Fix black bars problem
+    - Fix background image not showing with python 3.2 on Precise
+    - Add debug command line option "--launched-by" to ease testing xembedding
+    - Add script to manually test the xembed behaviour
+  * Improvements when org.gnome.interface scaling-factor is > 1:
+    - Apply scaling to XImput events
+    - Also scale docking struts
+    - Switch more reliably when scaling factor changes
+    - Work around unscaled accessible extents (LP: #1325026)
+    - Fix incomplete rendering of keys (LP #1283491)
+    - Fix get_position() of all override redirect windows (LP #1283491)
+    - Improve display of blurry images
+  * Layouts:
+    - Update layout format to new version 3.2
+    - New key attribute "show_active" shifts hard-coded behavior to layouts
+    - Add nocycle variants to the sticky key behaviour attribute
+    - Add push-button behaviour for sticky keys
+    - Fix keys with the same id being ignored
+    - Fix images not being found for layouts given on command line
+    - Fix typo of the author's name in GPL header of the Whiteboard layouts
+    - Reorder keys in Grid layout for more efficient scanning for azerty maps
+    - Show 'm' key in Grid layout for azerty key maps (LP: #1293259)
+    - Fix opening of layouts folder when layouts folder does not exist
+  * Logging:
+    - Tweak and colorize log output in interactive terminals
+    - Add new logging levels "atspi", "event" and "all"
+    - Move all at-spi logging to log-level "atspi"
+    - Allow to specify a range of logging levels for the -d command line option
+  * Unit tests:
+    - Add unit tests for moving/resizing of keyboard and floating icon
+    - Add unit test for system theme tracking with high/low contrast gtk-themes
+    - Add unit test for preserving the numlock state after exit
+    - Add unit test for running in the live-CD environment
+    - Fix unit tests failures with python 3.2 on Precise
+  * Add support for multiple monitors to docking
+  * By default, automatically move docked keyboard to monitor with active window
+  * Add context menu to floating icon
+  * Add tool to install gsettings shema without building the debian package
+  * Add deletion of build files from source tree to some setup.py commands
+  * Add new snippets dialog for empty snippets on snippets button click
+  * Also open new snippets dialog on long press for snippet editing
+  * Synchronize Onboard with all externally activated modifiers (LP: #1331549)
+  * Reorganize output of the onboard --help switch
+  * Take new window manager name "GNOME-Shell" into account
+  * Don't auto-start Onboard in GNOME classic as it uses its own keyboard now
+  * Set opacity after realizing window for compatibility with Vivid
+  * Remove the restart requirement for the "Touch input" setting
+  * Close the language menu when the language button is pressed a second time
+  * Don't show keyboard on moving and resizing the floating icon
+  * Use xdg-open for layout folder; thanks J.Beekman (LP: #1322368,LP: #1389978)
+  * Remove useless notebook tab from the docking settings and auto-show dialog
+  * Add optional delay between automatic keystrokes  (LP: #1391241)
+  * Extend resize protection to include window movement
+  * Fix CAPS behavior when set up as switcher for "input sources" (LP: #1313176)
+  * Don't activate the move button twice per press
+  * Don't hide dialogs behind keyboard when using force-to-top mode
+  * Improve handling of absolute paths containing space characters
+  * Correctly show the on/off state of auto-show in the Preferences dialog
+  * Fix Onboard start when it gets enabled in the system settings (LP: #1376764)
+  * Fix start when org.gnome.desktop.a11y.applications is missing (LP: #1402558)
+  * Fix start when hint file was created for wrong user
+  * Fix start with non-unicode locales and with C locale
+  * Fix Onboard becoming unusable because of invisible warning dialogs
+  * Fix unresponsive keyboard with wacom driver (LP: #1297692)
+  * Fix display of About dialog when po file has empty msgids (LP: #1293829)
+  * Make sure to escape markup to prevent errors with translations
+  * Scale the default size of label popups with the window-scaling-factor
+  * Assume RGBA support exist without compositing only for unity-greeter
+  * Have key events from the XInput event source deliver a valid source_id
+  * Fix EventSource cleanup
+  * Prevent package build failures when running onboard-settings before build
+  * Enable gcc option -Wdeclaration-after-statement for building on Arch Linux
+  * Fix declarations after statement warnings when compiling osk in Precise
+  * Fix traceback and hang when using click buttons with python 3.2 on Precise
+  * Add information about our stable PPA to README
+  * Add build instructions for Ubuntu, Arch and Mageia 4 to README
+  * Perform some small visual tweaks
+  * Add missing GPL header to some files
+  * Fix some Gtk deprecation warnings; not all for compatibility with Precise
+  * Perform various code cleanups
+  * Include translations for vivid from the Ubuntu Translators as of 20150127
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Wed, 28 Jan 2015 12:17:36 +0100
+
+onboard (1.0.0-0ubuntu6) vivid; urgency=medium
+
+  * Added support for MATE to the autostart .desktop file
+
+ -- Martin Wimpress <martin@flexion.org>  Tue, 13 Jan 2015 11:56:27 +0000
+
+onboard (1.0.0-0ubuntu5) vivid; urgency=medium
+
+  * Request for sponsorship (LP: #1378739)
+  * debian/patches:
+    - Add fix_autostart.patch (LP: #1376764)
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Wed, 08 Oct 2014 21:52:03 +0200
+
+onboard (1.0.0-0ubuntu4) trusty; urgency=medium
+
+  * Request for sponsorship (LP: #1303370)
+  * debian/patches/add_defaults_for_ubuntu.patch:
+    - Increase xembed aspect change range (LP: #1297695)
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 04 Apr 2014 21:11:15 +0200
+
+onboard (1.0.0-0ubuntu3) trusty; urgency=medium
+
+  * No change rebuild to drop python3.3 compiled extension.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Mon, 31 Mar 2014 19:35:53 +0100
+
+onboard (1.0.0-0ubuntu2) trusty; urgency=medium
+
+  * Rewrite the python shebang path to /usr/bin/python3.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 20 Feb 2014 13:14:16 +0100
+
 onboard (1.0.0-0ubuntu1) trusty; urgency=low
 
   * Request for sponsorship for new upstream release (LP: #1282231)

@@ -1,645 +1,714 @@
+# translation of po_onboard-km.po to Khmer
 # Khmer translation for onboard
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# Khoem Sokhem <khoemsokhem@khmeros.info>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: onboard\n"
+"Project-Id-Version: po_onboard-km\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-19 19:53+0100\n"
-"PO-Revision-Date: 2011-10-11 15:00+0000\n"
-"Last-Translator: Nguon Chan <Unknown>\n"
-"Language-Team: Khmer <km@li.org>\n"
+"POT-Creation-Date: 2015-01-27 11:46+0100\n"
+"PO-Revision-Date: 2014-03-11 03:55+0000\n"
+"Last-Translator: Khoem Sokhem <khoemsokhem@khmeros.info>\n"
+"Language-Team: Khmer <support@khmeros.info>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-19 15:32+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
+"X-Generator: Launchpad (build 17306)\n"
 
-#: ../Onboard/OnboardGtk.py:345
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់ ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
-"បានការ​ពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
-"\n"
-"យ៉ាង​ណា​ក៏​ដោយ ប្រព័ន្ធ​មិន​ត្រូវ​បាន​កំណត់​រចនា​សម្ព័ន្ធ​ទៀត​ឡើយ  ដើម្បី​ប្រើ​ Onboard ក្នុង​ការ​ដោះ​សោ​ធាតុ​រក្សា​"
-"អេក្រង់ ។ មូលហេតុ​អាច​ដោយ​សារ​តែ​​កម្មវិធី​ផ្សេង​ទៀត​បាន​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​ត្រូវ​ប្រើ​​​កម្មវិធី​​មួយ​ចំនួន​ទៀត "
-"។\n"
-"\n"
-"តើ​អ្នក​ចង់​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ ដើម្បី​បង្ហាញ Onboard នៅ​ពេល​​ដោះ​សោ​អេក្រង់​ដែរ​ឬ​ទេ ?"
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
+msgid "Activate Hover Click"
+msgstr "សំកាំង​សកម្ម​នៅ​ពេល​ចុច"
 
-#: ../Onboard/OnboardGtk.py:361
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់​​ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
-"បាន​ការពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
-"\n"
-"យ៉ាងណាក៏ដោយ អាច​បិទ​មុខងារ​នេះ​នៅ​ក្នុង​ប្រព័ន្ធ​បាន ។\n"
-"\n"
-"តើ​អ្នក​ចង់​ធ្វើឲ្យ​វា​សកម្ម​ដែរ​ឬ​ទេ ?"
+#: ../data/layoutstrings.py:16
+msgid "Alphanumeric keys"
+msgstr "គ្រាប់ចុច​អក្សរក្រម​លេខ"
 
-#: ../settings.ui.h:1
-msgid "key-repeat"
-msgstr ""
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
+msgid "Alt"
+msgstr "ជំនួស (Alt)"
 
-#: ../settings.ui.h:2
-msgid "international character selection"
-msgstr ""
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
+msgid "Alt Gr"
+msgstr "ឆ្លាស់ (Alt Gr)"
 
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr ""
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
+msgid "CAPS"
+msgstr "CAPS"
 
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr ""
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
+msgid "Ctrl"
+msgstr "បញ្ជា (Ctrl)"
 
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
+msgid "Del"
+msgstr "លុប"
 
-#: ../settings.ui.h:6
-msgid "1"
-msgstr "១"
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
+msgid "Double click"
+msgstr "ចុច​ទ្វេដង"
 
-#: ../settings.ui.h:7
-msgid "AT-SPI"
-msgstr "AT-SPI"
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
+msgid "Drag click"
+msgstr "អូស/ចុច"
 
-#: ../settings.ui.h:8
-msgid "General"
-msgstr "ទូ​ទៅ"
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr "ចុង"
 
-#: ../settings.ui.h:9
-msgid "Window"
-msgstr "បង្អួច"
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
+msgid "Ent"
+msgstr "Ent"
 
-#: ../settings.ui.h:10
-msgid "Layout"
-msgstr "ប្លង់"
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
+msgid "Esc"
+msgstr "គេច (Esc)"
 
-#: ../settings.ui.h:11
-msgid "Theme"
-msgstr "រូបរាង"
+#: ../data/layoutstrings.py:35
+msgid "Function keys"
+msgstr "មុខងារ​គ្រាប់ចុច"
+
+#: ../data/layoutstrings.py:36
+msgid "Number block and function keys"
+msgstr "ចំនួន​ទប់ស្កាត់ និង​មុខងារ​គ្រាប់ចុច"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
+msgid "Hide Onboard"
+msgstr "លាក់ Onboard"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
+msgid "Pause learning"
+msgstr "ផ្អាក​ការ​ស្វែងយល់"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:40
+msgid "Hm"
+msgstr "Hm"
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:42
+msgid "Ins"
+msgstr "បញ្ជាន់​(Ins)"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
+msgid "Main keyboard"
+msgstr "ក្ដារ​ចុច​ចម្បង"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:45
+msgid "Menu"
+msgstr "ម៉ឺនុយ"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
+msgid "Middle click"
+msgstr "ចុច​ណ្ដាល"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
+msgid "Move Onboard"
+msgstr "ផ្លាស់ទី Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:49
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
+msgid "Number block and snippets"
+msgstr "ចំនួន​​ទប់ស្កាត់ និង​អត្ថបទ​ខ្លីៗ"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:52
+msgid "Pause"
+msgstr "ផ្អាក"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:54
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:56
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
+msgid "Preferences"
+msgstr "ចំណូល​ចិត្ត"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:60
+msgid "Prnt"
+msgstr "Prnt"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:62
+msgid "Quit"
+msgstr "បោះបង់"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:64
+msgid "Return"
+msgstr "ត្រឡប់"
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
+msgid "Right click"
+msgstr "ចុច​កណ្ដុរ​ស្ដាំ"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:67
+msgid "Scroll"
+msgstr "រមូរ"
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:12 ../data/layoutstrings.py:68
-#: ../data/layoutstrings.py:317
+#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
+#: ../settings.ui.h:13
 msgid "Snippets"
 msgstr "អត្ថបទ​ខ្លីៗ"
 
-#: ../settings.ui.h:13 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "ក្ដារចុច"
+#: ../data/layoutstrings.py:69
+msgid "Space"
+msgstr "ចន្លោះ"
 
-#: ../settings.ui.h:14
-msgid "Typing Assistance"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
+msgid "Toggle click helpers"
+msgstr "ចុច បើក/បិទ​កម្មវិធី​ជំនួយ"
 
-#: ../settings.ui.h:15
-msgid "Universal Access"
-msgstr "ការ​ចូល​ដំណើរការ​សកល"
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:72
+msgid "Tab"
+msgstr "ថេប"
 
-#: ../settings.ui.h:16
-msgid "latch, then lock"
-msgstr ""
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:74
+msgid "Win"
+msgstr "បង្អួច"
 
-#: ../settings.ui.h:17
-msgid "latch, double-click to lock"
-msgstr ""
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
+msgid "Umbrella"
+msgstr "ឆ័ត្រ"
 
-#: ../settings.ui.h:18
-msgid "latch only"
-msgstr ""
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
+msgid "White star"
+msgstr "ផ្កាយ​​ពណ៌​ស"
 
-#: ../settings.ui.h:19
-msgid "lock only"
-msgstr ""
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
+msgid "White telephone"
+msgstr "ទូរស័ព្ទ​ពណ៌​ស"
 
-#: ../settings.ui.h:20
-msgid "none"
-msgstr ""
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:82
+msgid "Hot beverage"
+msgstr "Hot beverage"
 
-#: ../settings.ui.h:21
-msgid "single-touch"
-msgstr ""
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:84
+msgid "Skull and crossbones"
+msgstr "Skull and crossbones"
 
-#: ../settings.ui.h:22
-msgid "multi-touch"
-msgstr ""
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
+msgid "Radioactive sign"
+msgstr "Radioactive sign"
 
-#: ../settings.ui.h:23
-msgid "column"
-msgstr "ជួរ​ឈរ"
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
+msgid "Peace symbol"
+msgstr "សញ្ញា​សន្តិភាព"
 
-#: ../settings.ui.h:24
-msgid "_Auto-show when editing text"
-msgstr "បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ នៅ​ពេល​កែសម្រួល​អត្ថបទ"
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
+msgid "Yin yang"
+msgstr "Yin yang"
 
-#: ../settings.ui.h:25
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
+msgid "Frowning face"
+msgstr "មុខ​ពេបជ្រាយ"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
+msgid "Smiling face"
+msgstr "មុខ​ញញឹម"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
+msgid "White sun with rays"
+msgstr "ព្រះ​អាទិត្យ​មាន​​ពន្លឺ​ស"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
+msgid "Last quarter moon"
+msgstr "Last quarter moon"
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
+msgid "Female sign"
+msgstr "រូប​សម្គាល់​នារី"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
+msgid "Male sign"
+msgstr "រូប​សម្គាល់​បុរស"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
+msgid "White heart suit"
+msgstr "រូប​បេះដូង​ពណ៌​ស"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:106
+msgid "White diamond suit"
+msgstr "White diamond suit"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:108
+msgid "White spade suit"
+msgstr "White spade suit"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:110
+msgid "White club suit"
+msgstr "White club suit"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
+msgid "Beamed eighth note"
+msgstr "Beamed eighth note"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
+msgid "Envelope"
+msgstr "ស្រោម​សំបុត្រ"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:116
+msgid "Victory hand"
+msgstr "Victory hand"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:118
+msgid "Writing hand"
+msgstr "Writing hand"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "ផ្ទៃ​មុខ​ញញឹម​ដោយ​​ហាមាត់ បើក​ភ្នែក"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
+msgid "Smiling face with halo"
+msgstr "មុខ​ញញឹម​ជាមួយ halo"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
+msgid "Smiling face with horns"
+msgstr "មុខ​ញញឹម​ជាមួយ horns"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
+msgid "Winking face"
+msgstr "មិច​ភ្នែក"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
+msgid "Smiling face with smiling eyes"
+msgstr "មុខ​ញញឹម​ដោយ​ភ្នែក​ស្រស់ស្អាត"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
+msgid "Face savouring delicious food"
+msgstr "មុខ​ញញឹម​ស្រង់​ក្លិន​​អាហារ​​ឈ្ងុយឆ្ងាញ់"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:132
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Smiling face with heart-shaped eyes"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
+msgid "Smiling face with sunglasses"
+msgstr "Smiling face with sunglasses"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:136
+msgid "Smirking face"
+msgstr "មុខ​ញញឹម"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:138
+msgid "Neutral face"
+msgstr "មុខ​ស្មើ"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:140
+msgid "Unamused face"
+msgstr "មុខ​មិន​សប្បាយ​ចិត្ត"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
+msgid "Confounded face"
+msgstr "Confounded face"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:144
+msgid "Face throwing a kiss"
+msgstr "Face throwing a kiss"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
+msgid "Kissing face with closed eyes"
+msgstr "ថើប​មុខ​ដោយ​បិទ​ភ្នែក"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "លៀន​អណ្ដាត​ និង​មិច​ភ្នែក"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:150
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "លៀន​អណ្ដាត និង​​​បិទ​ភ្នែក"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:152
+msgid "Disappointed face"
+msgstr "មុខ​ពេប"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
+msgid "Angry face"
+msgstr "មុខ​ខឹង"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:156
+msgid "Pouting face"
+msgstr "មុខ​ក្រមៅ"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
+msgid "Crying face"
+msgstr "មុខ​យំ"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:160
+msgid "Persevering face"
+msgstr "Persevering face"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:162
+msgid "Weary face"
+msgstr "Weary face"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
+msgid "Tired face"
+msgstr "Tired face"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
+msgid "Astonished face"
+msgstr "Astonished face"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:168
+msgid "Flushed face"
+msgstr "Flushed face"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:170
+msgid "Dizzy face"
+msgstr "Dizzy face"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:179
+msgid "Arrows"
+msgstr "ព្រួញ"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:194
+msgid "Custom"
+msgstr "ផ្ទាល់​ខ្លួន​"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:197
+msgid "Desktop keyboard with edit and function keys"
+msgstr "ក្ដារចុច​ផ្ទៃតុ​ជាមួយ​ការ​កែ និង​គ្រាប់ចុច​មុខងារ"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:221
+msgid "Greek"
+msgstr "ក្រិច"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:224
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "ក្រឡា​សោ សមស្រប​សម្រាប់​ការ​វិភាគរក​កក្ដារ​ចុច"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:230
+msgid "Hide keyboard"
+msgstr "លាក់​ក្តារចុច"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:233
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr "បង្ហាញ Onboard នៅ​ពេល​ដែល​​​មាន​ការ​ទទួល​ស្គាល់​បង្អួច​អត្ថបទ​។ ទាមទារ​ភាព​ងាយស្រួល Gnome ។"
-
-#: ../settings.ui.h:26
-msgid "Start Onboard _hidden"
-msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់"
-
-#: ../settings.ui.h:27
-msgid "Start Onboard hidden."
-msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់ ។"
-
-#: ../settings.ui.h:28
-msgid "Show/Hide options"
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
 msgstr ""
+"ប្លង់ក្ដារ​ចុច​មាន​អក្សរ​ក្រិច ព្រួញ និង​ផ្សេងៗ​ទៀត សម្រាប់ការអប់រំ​​គណិតវិទ្យា និង​រូបវិទ្យា​លើផ្ទាំង​អន្តរកម្ម។"
 
-#: ../settings.ui.h:29
-msgid "_Show status icon"
-msgstr "បង្ហាញ​រូបតំណាង​ស្ថានភាព"
-
-#: ../settings.ui.h:30
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "បង្ហាញ​ធាតុ​ស្ថានភាព ។ ចុច​លើ​រូបតំណាង​​ដែល​លាក់​នោះ ឬ​បង្ហាញ Onboard ។"
-
-#: ../settings.ui.h:31
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "បង្ហាញ​រូបតំណាង​អណ្ដែត នៅ​ពេល​លាក់ Onboard"
-
-#: ../settings.ui.h:32
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:236
 msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
 msgstr ""
-"បង្ហាញ​រូបតំណាង​អណ្ដែត​នៅ​លើ​ផ្ទៃតុ នៅ​ពេល​លាក់ Onboard ។ ចុច​លើ​រូបតំណាង​ ដើម្បី​ធ្វើ​​ឲ្យ Onboard លេច​"
-"ឡើង ។"
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
 
-#: ../settings.ui.h:33
-msgid "Show when _unlocking the screen"
-msgstr "បង្ហាញ​នៅ​ពេល​ដោះ​សោ​អេក្រង់"
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:251
+msgid "Medium size desktop keyboard"
+msgstr "ក្ដារចុច​ទំហំ​មធ្យម"
 
-#: ../settings.ui.h:34
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"បង្ហាញ Onboard នៅ​ពេល​ប្រអប់​ត្រូវ​ដោះ​សោ​អេក្រង់ វិធី​នេះ Onboard អាច​ត្រូវ​បាន​ប្រើ​ ជា​ឧទាហរណ៍​សម្រាប់​"
-"បញ្ចូល​ពាក្យ​សម្ងាត់ និង​បដិសេធ​ម៉ាស៊ីន​មេ​អេក្រង់ នៅ​ពេល​វា​ត្រូវ​បាន​កំណត់​ដើម្បី​ស្នើ​វា។"
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:257
+msgid "Mobile keyboard for small screens"
+msgstr "ក្ដារ​ចុច​ចល័ត​សម្រាប់​អេក្រង់​តូចៗ"
 
-#: ../settings.ui.h:35
-msgid "Show _tooltips"
-msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ"
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:260
+msgid "More suggestions"
+msgstr "ការ​ផ្ដល់​យោបល់​ច្រើន"
 
-#: ../settings.ui.h:36
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច &apos;s ។"
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:266
+msgid "Move keyboard"
+msgstr "ផ្លាស់ទី​ក្ដារចុច"
 
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច។"
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:281
+msgid "Quit Keyboard"
+msgstr "ចេញ​ពី​ក្ដារចុច"
 
-#: ../settings.ui.h:38
-msgid "Desktop Integration"
-msgstr "ការ​រួមបញ្ចូល​ផ្ទៃតុ"
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:284
+msgid "Quit Onboard"
+msgstr "ចេញ​ពី​ផ្ទាំង"
 
-#: ../settings.ui.h:39
-msgid "Dock to screen edge"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:293
+msgid "Set and Settings"
+msgstr "កំណត់ និង​ការ​កំណត់"
 
-#: ../settings.ui.h:40
-msgid "Dock the keyboard to the edge of the screen."
-msgstr ""
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:296
+msgid "Settings"
+msgstr "ការ​កំណត់"
 
-#: ../settings.ui.h:41
-msgid "_Settings"
-msgstr ""
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:320
+msgid "Space efficient desktop keyboard"
+msgstr "Space efficient desktop keyboard"
 
-#: ../settings.ui.h:42
-msgid "Docking"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:323
+msgid "Special Characters"
+msgstr "តួអក្សរ​ពិសេស"
 
-#: ../settings.ui.h:43
-msgid "Show window _decoration"
-msgstr "បង្ហាញ​ការ​តុបតែង​បង្អួច"
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:326
+#, fuzzy
+msgid "Special characters for interactive whiteboards, wide"
+msgstr "តួ​អក្សរ​ពិសេស​សម្រាប់​ក្ដារ​អន្តរ​សកម្ម, ធំ​ទូលាយ"
 
-#: ../settings.ui.h:44
-msgid "Show window caption and frame."
-msgstr "បង្ហាញ​ស៊ុម និង​ចំណងជើង​បង្អួច ។"
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:329
+msgid "Special characters for interactive whiteboards"
+msgstr "តួ​អក្សរ​ពិសេស​សម្រាប់​ក្ដារ​អន្តរ​សកម្ម"
 
-#: ../settings.ui.h:45
-msgid "Show always on visible _workspace"
-msgstr "បង្ហាញ​តំបន់​ធ្វើការ​ដែល​អាច​​មើល​ឃើញ​ជា​និច្ច"
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:332
+msgid "Spelling suggestion"
+msgstr "ស្នើ​ការ​ប្រកប"
 
-#: ../settings.ui.h:46
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "&quot;Sticky&quot; របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:335
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Sub-, Superscripts; Fractions"
 
-#: ../settings.ui.h:47
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "\"Sticky\" របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "ប្ដូរ​រូបតំណាង​ផ្ទាំង​តាម​បំណង"
 
-#: ../settings.ui.h:48
-msgid "_Force window to top"
-msgstr "បង្ខំ​បង្អួច​ទៅ​​លើ"
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "ពណ៌​ជម្រើស"
 
-#: ../settings.ui.h:49
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "សាកល្បង ដើម្បី​រក្សាទុក Onboard ខាង​លើ​អ្វី​ដែល​មាន​នៅ​លើ​អេក្រង់។"
-
-#: ../settings.ui.h:50
-msgid "Keep _aspect ratio"
-msgstr "រក្សា​សមាមាត្រ"
-
-#: ../settings.ui.h:51
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr ""
-
-#: ../settings.ui.h:52
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "បង្ខំ​ទំហំ​បង្អួច​ឲ្យ​សម​នឹង​សមាមាត្រ​ប្លង់ ។"
-
-#: ../settings.ui.h:53
-msgid "Floating Window Options"
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Window options"
-msgstr ""
-
-#: ../settings.ui.h:55
-msgid "Wind_ow:"
-msgstr "បង្អួច៖"
-
-#: ../settings.ui.h:56
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "ភាព​ថ្លា​នៃ​បង្អួច​ក្ដារចុច​ទាំង​មូល ។ ទាមទារ​សមាសភាគ ។"
-
-#: ../settings.ui.h:57 ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
 msgid "_Background:"
 msgstr "ផ្ទៃខាងក្រោយ៖"
 
-#: ../settings.ui.h:58
-msgid "Transparency of the keyboard background"
-msgstr "ភាព​ថ្លា​នៃ​ផ្ទៃខាងក្រោយ​ក្ដារចុច"
-
-#: ../settings.ui.h:59
-msgid "_No background"
-msgstr "គ្មាន​ផ្ទៃខាងក្រោយ​ឡើយ"
-
-#: ../settings.ui.h:60
-msgid "Show the desktop through the gaps between keys."
-msgstr "បង្ហាញ​ផ្ទៃតុ​​តាម​ចន្លោះ​គ្រាប់​ចុច ។"
-
-#: ../settings.ui.h:61
-msgid "Transparency"
-msgstr "ភាព​​ថ្លា"
-
-#: ../settings.ui.h:62
-msgid "Set _transparency to"
-msgstr "កំណត់​ភាព​ថ្លា​ទៅកាន់"
-
-#: ../settings.ui.h:63
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "បើក​ភាព​ថ្លា​អសកម្ម។ ទាមទារ​សមាសភាគ។"
-
-#: ../settings.ui.h:64
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "ភាព​ថ្លា នៅ​ពេល​​ទ្រនិច​នៅ​លើ​ក្ដារ​ចុច ។ ទាមទារ​សមាសភាគ ។"
-
-#: ../settings.ui.h:65
-msgid "after"
-msgstr "ក្រោយ"
-
-#: ../settings.ui.h:66
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "ពន្យារពេល​ជា​វិនាទី​រហូត​ដល់​ភាព​ថ្លា​អសកម្ម​មាន​ប្រសិទ្ធភាព ។"
-
-#: ../settings.ui.h:67
-msgid "seconds"
-msgstr "វិនាទី"
-
-#: ../settings.ui.h:68
-msgid "When Inactive"
-msgstr "នៅ​ពេល​អសកម្ម"
-
-#: ../settings.ui.h:69
-msgid "_Frame resize handles:"
-msgstr "ចំណុច​ទាញ​ផ្លាស់ប្ដូរ​ទំហំ​ស៊ុម ៖"
-
-#: ../settings.ui.h:70
-msgid "Resize Protection"
-msgstr "ការពារ​ការ​ផ្លាស់ប្ដូរ​ទំហំ"
-
-#: ../settings.ui.h:71
-msgid "Name"
-msgstr ""
-
-#: ../settings.ui.h:72
-#, fuzzy
-msgid "Description"
-msgstr "ទិស ៖"
-
-#: ../settings.ui.h:73
-msgid "_Open layouts folder"
-msgstr "បើក​ថត​ប្លង់"
-
-#: ../settings.ui.h:74
-msgid "C_ustomize theme"
-msgstr "ប្ដូរ​​រូបតំណាង​ផ្ទាំង"
-
-#: ../settings.ui.h:75
-msgid "Follow _system theme"
-msgstr "អនុវត្ត​តាម​រូបរាង​ប្រព័ន្ធ"
-
-#: ../settings.ui.h:76
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr "Onboard."
-
-#: ../settings.ui.h:77
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr "ផ្នែក​តូច​ៗ​របស់​អត្ថបទ​ដែល​ត្រូវ​បាន​បញ្ចូល នៅ​ពេល​ចុច​ប៊ូតុង​​ដែល​ទាក់ទង​ Onboard ។"
-
-#: ../settings.ui.h:78
-msgid "Show label popups"
-msgstr ""
-
-#: ../settings.ui.h:79
-msgid "Show label popups above pressed keys."
-msgstr ""
-
-#: ../settings.ui.h:80
-msgid "Play sound"
-msgstr ""
-
-#: ../settings.ui.h:81
-msgid "Play click sound on keypress."
-msgstr ""
-
-#: ../settings.ui.h:82
-msgid "Key-press Feedback"
-msgstr ""
-
-#: ../settings.ui.h:83
-msgid "Show secondary labels"
-msgstr ""
-
-#: ../settings.ui.h:84
-msgid "Show characters reachable with or without the shift key."
-msgstr ""
-
-#: ../settings.ui.h:85
-msgid "Key Labels"
-msgstr ""
-
-#: ../settings.ui.h:86
-msgid "_Long press action:"
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-stroke _generation:"
-msgstr ""
-
-#: ../settings.ui.h:89
-msgid "Modifier _behavior:"
-msgstr ""
-
-#: ../settings.ui.h:90
-msgid "Behavior of modifier and layer keys."
-msgstr ""
-
-#: ../settings.ui.h:91
-msgid "Modifier auto-release delay:"
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "Key Behavior"
-msgstr ""
-
-#: ../settings.ui.h:94
-msgid "_Touch input (requires restart):"
-msgstr ""
-
-#: ../settings.ui.h:95
-msgid "_Input event source:"
-msgstr ""
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-
-#: ../settings.ui.h:97
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-
-#: ../settings.ui.h:98
-msgid "Input Options"
-msgstr ""
-
-#: ../settings.ui.h:99
-msgid "Advanced"
-msgstr "កម្រិត​ខ្ពស់"
-
-#: ../settings.ui.h:100
-msgid "Show _suggestions"
-msgstr ""
-
-#: ../settings.ui.h:101
-msgid "Enable word completion and prediction."
-msgstr ""
-
-#: ../settings.ui.h:102
-msgid "Show spelling suggestions"
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "Check spelling of the word at or before the cursor."
-msgstr ""
-
-#: ../settings.ui.h:104
-msgid "_Learn from typed text"
-msgstr ""
-
-#: ../settings.ui.h:105
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-
-#: ../settings.ui.h:106
-msgid "Insert word _separators"
-msgstr ""
-
-#: ../settings.ui.h:107
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-
-#: ../settings.ui.h:108
-#, fuzzy
-msgid "Options"
-msgstr "ជម្រើស​បង្អួច"
-
-#: ../settings.ui.h:109
-msgid "Show lan_guage switcher"
-msgstr ""
-
-#: ../settings.ui.h:110
-msgid "Show a button for language selection."
-msgstr ""
-
-#: ../settings.ui.h:111
-msgid "Show button to pause learning"
-msgstr ""
-
-#: ../settings.ui.h:112
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-
-#: ../settings.ui.h:113
-#, fuzzy
-msgid "Buttons"
-msgstr "ប៊ូតុង"
-
-#: ../settings.ui.h:114
-msgid "Word Suggestions"
-msgstr ""
-
-#: ../settings.ui.h:115
-msgid "Auto-capitalize while typing"
-msgstr ""
-
-#: ../settings.ui.h:116
-msgid "Automatically capitalize sentence begins and name words."
-msgstr ""
-
-#: ../settings.ui.h:117
-msgid "Auto-correct spelling"
-msgstr ""
-
-#: ../settings.ui.h:118
-msgid "Automatically correct the last word."
-msgstr ""
-
-#: ../settings.ui.h:119
-msgid "The spell check engine to use."
-msgstr ""
-
-#: ../settings.ui.h:120
-msgid "Spell-check backend:"
-msgstr ""
-
-#: ../settings.ui.h:121
-msgid "Auto-correction"
-msgstr ""
-
-#: ../settings.ui.h:122
-msgid "_Delay:"
-msgstr ""
-
-#: ../settings.ui.h:123
-msgid "_Motion threshold:"
-msgstr ""
-
-#: ../settings.ui.h:124
-msgid "Time in seconds before a click is triggered."
-msgstr ""
-
-#: ../settings.ui.h:125
-msgid "Distance in pixels before movement will be recognized."
-msgstr ""
-
-#: ../settings.ui.h:126
-msgid "Hide hover click window"
-msgstr ""
-
-#: ../settings.ui.h:127
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "លាក់​ការ​សំកាំង​ប្រព័ន្ធ​ដែល​បាន​ផ្ដល់ នៅ​ពេល​ចុច​បង្អួច ខណៈ​ពេល​ Onboard កំពុង​ដំណើរការ ។"
-
-#: ../settings.ui.h:128
-msgid "Enable click type window on exit"
-msgstr ""
-
-#: ../settings.ui.h:129
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr "បើក​ការ​សំកាំង​​ប្រព័ន្ធ​ដែល​ផ្ដល់​ជា​និច្ច នៅ​ពេល​ចុច​បង្អួច នៅ​ពេល​ចេញ Onboard ។"
-
-#: ../settings.ui.h:130
-msgid "Hover Click"
-msgstr "សំកាំង​នៅ​ពេល​ចុច"
-
-#: ../settings.ui.h:131
-msgid "Enable  keyboard _scanning"
-msgstr "បើក​ការ​វិភាគ​រក​ក្ដារចុច"
-
-#: ../settings.ui.h:132
-msgid "Sc_anner Settings"
-msgstr "ការ​កំណត់"
-
-#: ../settings.ui.h:133
-msgid "Keyboard Scanning"
-msgstr "វិភាគ​រក"
-
-#: ../Onboard/pypredict/tools/filter.py:382 ../Onboard/SpellChecker.py:617
-#: ../Onboard/SpellChecker.py:653 ../Onboard/SpellChecker.py:692
-#: ../Onboard/SpellChecker.py:706 ../Onboard/LanguageSupport.py:168
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/utils.py:1072
-msgid "Failed to execute '{}', {}"
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្រតិបត្តិ '{}', {}"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Show Onboard"
-msgstr "បង្ហាញ​ Onboard"
-
-#: ../Onboard/Indicator.py:69
-msgid "_Hide Onboard"
-msgstr "លាក់ Onboard"
-
-#: ../Onboard/Indicator.py:117
-msgid "Onboard on-screen keyboard"
-msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
+msgid "Gradient"
+msgstr "ជម្រាល"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "មុំ៖"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Light Direction"
+
+#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
+msgid "Keyboard"
+msgstr "ក្ដារចុច"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "រចនាប័ទ្ម ៖"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "R_oundness:"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "ទំហំ ៖"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "ទទឹង​ស៊ុម៖"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "រចនាប័ទ្ម​គ្រាប់ចុច"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "គ្រាប់ចុច ៖"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "ស៊ុម"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "ជម្រាល"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "កម្លាំង៖"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "ស្រមោល"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "គ្រាប់ចុច"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "ពុម្ព​អក្សរ ៖"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "គុណលក្ខណៈ ៖"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "ពុម្ព​អក្សរ"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "ទំហំ​​ឯករាជ្យ"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "_Super key:"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "បដិសេធ​ស្លាក"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "ស្លាក"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "ការ​កំណត់ Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "ការកំណត់​ក្ដារ​ចុច​លើ​អេក្រង់ Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "ប្ដូរ​ការ​កំណត់ Onboard"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
@@ -656,47 +725,53 @@ msgstr "រក​មិន​ឃើញ {description} '{filename}' នៅ​ឡ�
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr "មិន​អាច​រក​ទីតាំង '{filename}' ឃើញ​ទេ ផ្ទុក​លំនាំដើម {description} ជំនួសវិញ"
 
-#: ../Onboard/ConfigUtils.py:436
+#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
 #, python-brace-format
 msgid "failed to find {description} '{filename}'"
 msgstr "បាន​បរាជ័យ​ក្នុង​ការ​រក {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
 #, python-brace-format
 msgid "{description} '{filepath}' found."
 msgstr "រក​ឃើញ {description} '{filepath}' ។"
 
-#: ../Onboard/ConfigUtils.py:531
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:475
+#, fuzzy, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr "រក​មិន​ឃើញ {description} '{filename}' នៅ​ឡើយ​ទេ ព្យាយាម​​ផ្លូវ​លំនាំដើម​ឡើង​វិញ"
+
+#: ../Onboard/ConfigUtils.py:568
 #, python-brace-format
 msgid "Looking for system defaults in {paths}"
 msgstr "រកមើល​លំនាំដើម​ប្រព័ន្ធ​នៅ​ក្នុង {paths}"
 
-#: ../Onboard/ConfigUtils.py:542
+#: ../Onboard/ConfigUtils.py:579
 msgid "Failed to read system defaults. "
 msgstr "បាន​បរាជ័យ​ក្នុង​ការ​អាន​ប្រព័ន្ធ​លំនាំដើម ។ "
 
-#: ../Onboard/ConfigUtils.py:546
+#: ../Onboard/ConfigUtils.py:583
 msgid "No system defaults found."
 msgstr "No system defaults found."
 
-#: ../Onboard/ConfigUtils.py:548
+#: ../Onboard/ConfigUtils.py:585
 #, python-brace-format
 msgid "Loading system defaults from {filename}"
 msgstr "ផ្ទុក​លំនាំដើម​ប្រព័ន្ធ​ពី {filename}"
 
-#: ../Onboard/ConfigUtils.py:572
+#: ../Onboard/ConfigUtils.py:609
 msgid "Found system default '[{}] {}={}'"
 msgstr "រក​ឃើញ​លំនាំដើម​ប្រព័ន្ធ '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:590
+#: ../Onboard/ConfigUtils.py:627
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "ប្រព័ន្ធ​លំនាំដើម ៖ មិន​ស្គាល់​​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'"
 
-#: ../Onboard/ConfigUtils.py:597
+#: ../Onboard/ConfigUtils.py:634
 msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
 msgstr "លំនាំដើម​ប្រព័ន្ធ៖ តម្លៃ enum មិន​ត្រឹមត្រូវ​សម្រាប់​សោ '{}' នៅ​ក្នុង​ផ្នែក '{}': {}"
 
-#: ../Onboard/ConfigUtils.py:610
+#: ../Onboard/ConfigUtils.py:647
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -704,7 +779,7 @@ msgstr ""
 "ប្រព័ន្ធ​លំនាំដើម ៖ តម្លៃ​មិន​ត្រឹមត្រូវ​សម្រាប់​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:673
+#: ../Onboard/ConfigUtils.py:710
 msgid "Failed to get gsettings value. "
 msgstr "បាន​បរាជ័យ​​ក្នុង​ការ​យក​តម្លៃ gsettings ។ "
 
@@ -820,78 +895,333 @@ msgstr "ឧបករណ៍​ដែលបាន​ជ្រើស​មិន​
 msgid "Input Device"
 msgstr "ឧបករណ៍​បញ្ចូល"
 
-#. run again
-#: ../Onboard/KbdWindow.py:75 ../data/onboard.desktop.in.h:1
+#: ../Onboard/OnboardGtk.py:357
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់ ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
+"បានការ​ពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
+"\n"
+"យ៉ាង​ណា​ក៏​ដោយ ប្រព័ន្ធ​មិន​ត្រូវ​បាន​កំណត់​រចនា​សម្ព័ន្ធ​ទៀត​ឡើយ  ដើម្បី​ប្រើ​ Onboard ក្នុង​ការ​ដោះ​សោ​ធាតុ​រក្សា​"
+"អេក្រង់ ។ មូលហេតុ​អាច​ដោយ​សារ​តែ​​កម្មវិធី​ផ្សេង​ទៀត​បាន​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​ត្រូវ​ប្រើ​​​កម្មវិធី​​មួយ​ចំនួន​ទៀត "
+"។\n"
+"\n"
+"តើ​អ្នក​ចង់​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ ដើម្បី​បង្ហាញ Onboard នៅ​ពេល​​ដោះ​សោ​អេក្រង់​ដែរ​ឬ​ទេ ?"
+
+#: ../Onboard/OnboardGtk.py:376
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់​​ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
+"បាន​ការពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
+"\n"
+"យ៉ាងណាក៏ដោយ អាច​បិទ​មុខងារ​នេះ​នៅ​ក្នុង​ប្រព័ន្ធ​បាន ។\n"
+"\n"
+"តើ​អ្នក​ចង់​ធ្វើឲ្យ​វា​សកម្ម​ដែរ​ឬ​ទេ ?"
+
+#. Default dialog title: name of the application """
+#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
 msgid "Onboard"
 msgstr "Onboard"
 
-#: ../Onboard/KbdWindow.py:174
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr "គ្មាន​ភាព​ថ្លា​បង្អួច​​ឡើយ អេក្រង់​មិន​គាំទ្រ​ឆានែល​អាល់ហ្វា​ឡើយ"
+#: ../Onboard/utils.py:386
+msgid "New Input Device"
+msgstr "ឧបករណ៍​បញ្ចូល​ថ្មី"
 
-#: ../Onboard/settings.py:211
+#: ../Onboard/utils.py:387
+msgid "Onboard has detected a new input device"
+msgstr "Onboard"
+
+#: ../Onboard/utils.py:396
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "តើ​អ្នក​ចង់​ប្រើ​ឧបករណ៍​នេះ​សម្រាប់​ការ​វិភាគ​រក​ក្ដារចុច​ដែរឬទេ ?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/utils.py:403
+msgid "Use device"
+msgstr "ប្រើ​ឧបករណ៍"
+
+#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
+#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
+#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
+msgid "Failed to execute '{}', {}"
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្រតិបត្តិ '{}', {}"
+
+#: ../Onboard/utils.py:1808
+msgid "failed to create directory '{}': {}"
+msgstr "បាន​បរាជ័យ​ក្នុង​​ការ​បង្កើត​ថត '{}': {}"
+
+#: ../Onboard/Indicator.py:31
+msgid "_Show Onboard"
+msgstr "បង្ហាញ​ Onboard"
+
+#: ../Onboard/Indicator.py:32
+msgid "_Hide Onboard"
+msgstr "លាក់ Onboard"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:55
+#, fuzzy
+msgid "_Preferences"
+msgstr "ចំណូល​ចិត្ត"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:66
+#, fuzzy
+msgid "_Quit"
+msgstr "បោះបង់"
+
+#: ../Onboard/Indicator.py:160
+msgid "Onboard on-screen keyboard"
+msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
+
+#: ../Onboard/WordSuggestions.py:2102
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>បាន​បរាជ័យ Onboard ដើម្បី​បើក​ការ​ស្នើ​ពាក្យ​ដែល​បាន​ស្វែងយល់។</big>\n"
+"\n"
+"កំហុស៖\n"
+"<tt>{}</tt>\n"
+"\n"
+"ស្ដារ​​ការ​ស្នើ​ពាក្យ​សម្រាប់​ការ​បម្រុង​ទុក​ចុងក្រោយ (បាន​ផ្ដល់​អនុសាសន៍)?"
+
+#: ../Onboard/WordSuggestions.py:2121
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>បាន​បរាជ័យ Onboard ក្នុង​ការ​បើក​សំណើ​ពាក្យ​ដែល​បាន​ស្វែងយល់។</big>\n"
+"\n"
+"កំហុស៖\n"
+"<tt>{}</tt>\n"
+"\n"
+"សំណើ​ត្រូវ​បាន​កំណត់​ឡើង​វិញ, ប៉ុន្តែ​ឯកសារ​ដែល​មាន​កំហុស​នឹង​នៅ​តែ​មាន \n"
+"'{}'"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "ក្ដារចុច​នៅ​លើ​អេក្រង់​ដែល​អាច​ផ្លាស់ប្ដូរ​បាន​សម្រាប់ GNOME"
+
+#: ../Onboard/LayoutLoaderSVG.py:139
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr "ផ្ទុក​​ប្លង់​ចាស់ៗ, ទ្រង់ទ្រាយ '{}'។ សូម​ធ្វើ​បច្ចុប្បន្នភាព​ទ្រង់ទ្រាយ​បច្ចុប្បន្ន '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:378
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ គ្មាន​ឈ្មោះ​ឯកសារ svg ដែល​បាន​កំណត់​ឡើយ ។"
+
+#: ../Onboard/LayoutLoaderSVG.py:606
+msgid "Snippet {}"
+msgstr "អត្ថបទ​ខ្លីៗ {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:610
+msgid ", unassigned"
+msgstr "មិន​បាន​កំណត់​ឡើយ"
+
+#: ../Onboard/LayoutLoaderSVG.py:919
+msgid "copying layout '{}' to '{}'"
+msgstr "ចម្លង​ប្លង់ '{}' ទៅ '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:939
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ចម្លង​ប្លង់ មិន​គាំទ្រ​ទ្រង់ទ្រាយ​ប្លង់​ឡើយ '{}' ។"
+
+#: ../Onboard/LayoutLoaderSVG.py:982
+msgid "copying svg file '{}' to '{}'"
+msgstr "ចម្លង​ឯកសារ svg '{}' ទៅ '{}'"
+
+#. ##############
+#: ../Onboard/SnippetView.py:19
+msgid "<Enter label>"
+msgstr "<បញ្ចូល​ស្លាក>"
+
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter text>"
+msgstr "<បញ្ចូល​អត្ថបទ>"
+
+#: ../Onboard/SnippetView.py:32
+msgid "Button Number"
+msgstr "ចំនួន​​ប៊ូតុង"
+
+#: ../Onboard/SnippetView.py:39
+msgid "Button Label"
+msgstr "ស្លាក​ប៊ូតុង"
+
+#: ../Onboard/SnippetView.py:48
+msgid "Snippet Text"
+msgstr "អត្ថបទ​ខ្លីៗ"
+
+#: ../Onboard/SnippetView.py:93
+msgid "Must be an integer number"
+msgstr "ត្រូវ​តែ​ជា​លេខគត់"
+
+#: ../Onboard/SnippetView.py:102
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "កំហុស​​ប្រើ​អត្ថបទ​ខ្លី %d ។"
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:9
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ នៅ​ពេល​កែសម្រួល​អត្ថបទ"
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់ ។"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../Onboard/settings.py:237
 msgid "Onboard Preferences"
 msgstr "ចំណូលចិត្ត​ Onboard"
 
-#: ../Onboard/settings.py:574
-#, fuzzy
+#: ../Onboard/settings.py:627
 msgid "Copy layout '{}' to this new name:"
-msgstr "ចម្លង​ប្លង់ '{}' ទៅ '{}'"
+msgstr "ចម្លង​ប្លង់ '{}' ទៅ​ឈ្មោះ​ថ្មី​នេះ៖"
 
-#: ../Onboard/settings.py:587
+#: ../Onboard/settings.py:640
 msgid "Delete layout '{}'?"
-msgstr ""
+msgstr "លុប​ប្លង់ '{}'?"
 
-#: ../Onboard/settings.py:601
-msgid "No file manager to open layout folder"
-msgstr "គ្មាន​កម្មវិធី​គ្រប់គ្រង​ឯកសារ ដើម្បី​បើក​ថត​ប្លង់​បាន​ទេ"
-
-#: ../Onboard/settings.py:633
+#: ../Onboard/settings.py:688
 msgid "System settings not found ({}): {}"
 msgstr "រក​មិន​ឃើញ​ការ​កំណត់​ប្រព័ន្ធ​ឡើយ ({}): {}"
 
-#. Frame resize handles: None
-#: ../Onboard/settings.py:646
+#. Window handles: None
+#: ../Onboard/settings.py:701
 msgid "None"
 msgstr "គ្មាន"
 
+#. Window handles: None
+#: ../Onboard/settings.py:703
+msgid "Movement only"
+msgstr ""
+
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:648
-msgid "Corners only"
+#: ../Onboard/settings.py:705
+#, fuzzy
+msgid "Corners"
 msgstr "តែ​នៅ​ជ្រុង"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:650
+#: ../Onboard/settings.py:707
 msgid "All corners and edges"
 msgstr "គ្រប់​ជ្រុង និង​គែម"
 
-#: ../Onboard/settings.py:691
-#, fuzzy
+#: ../Onboard/settings.py:748
 msgid "Core layouts"
-msgstr "ឯកសារ​ប្លង់ Onboard"
+msgstr "ប្លង់​សំខាន់"
 
-#: ../Onboard/settings.py:692
+#: ../Onboard/settings.py:749
 msgid "Contributions"
-msgstr ""
+msgstr "ការ​ចូលរួម"
 
-#: ../Onboard/settings.py:693
+#: ../Onboard/settings.py:750
 msgid "User layouts"
-msgstr ""
+msgstr "ប្លង់​អ្នក​ប្រើ"
 
-#: ../Onboard/settings.py:727
+#: ../Onboard/settings.py:785
 msgid "Author: {}"
-msgstr ""
+msgstr "អ្នក​និពន្ធ៖ {}"
 
-#: ../Onboard/settings.py:730
-#, fuzzy
+#: ../Onboard/settings.py:789
 msgid "About Layout"
-msgstr "បន្ថែម​ប្លង់"
+msgstr "អំពី​ប្លង់"
 
-#: ../Onboard/settings.py:836
+#: ../Onboard/settings.py:894
 msgid "Enter a name for the new theme:"
 msgstr "បញ្ចូល​ឈ្មោះ​សម្រាប់​រូបតំណាង​ផ្ទាំង​ថ្មី ៖"
 
-#: ../Onboard/settings.py:844
+#: ../Onboard/settings.py:902
 #, python-brace-format
 msgid ""
 "This theme file already exists.\n"
@@ -904,971 +1234,796 @@ msgstr ""
 "\n"
 "សរសេរ​ជាន់​លើ​វា ?"
 
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:919
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "កំណត់​រូបតំណាង​ផ្ទាំង​ដែល​បាន​ជ្រើស​ឡើង​វិញ​ចំពោះ Onboard លំនាំដើម​ឬ ?"
 
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:921
 msgid "Delete selected theme?"
 msgstr "លុប​រូបតំណាង​ផ្ទាំង​ដែល​បាន​ជ្រើស​ឬ ?"
 
-#: ../Onboard/settings.py:991
-msgid "Reset"
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1050
+#, fuzzy
+msgid "_Reset"
 msgstr "កំណត់​ឡើង​វិញ"
 
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1054
+msgid "_Delete"
+msgstr ""
+
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1242
+#: ../Onboard/settings.py:1359
 msgid "Flat"
 msgstr "រាបស្នើ"
 
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1244 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "ជម្រាល"
-
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:1246
+#: ../Onboard/settings.py:1363
 msgid "Dish"
 msgstr "ចាន"
 
-#: ../Onboard/settings.py:1295 ../Onboard/settings.py:1352
+#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
 msgid "Default"
 msgstr "លំនាំដើម"
 
-#: ../Onboard/settings.py:1336
+#: ../Onboard/settings.py:1453
 msgid "Bold"
 msgstr "ដិត"
 
-#: ../Onboard/settings.py:1338
+#: ../Onboard/settings.py:1455
 msgid "Italic"
 msgstr "ទ្រេត"
 
-#: ../Onboard/settings.py:1340
+#: ../Onboard/settings.py:1457
 msgid "Condensed"
 msgstr "ញឹក"
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid "Ubuntu Logo"
 msgstr "រូប​សញ្ញា​អូប៊ុនទូ"
 
-#: ../Onboard/settings.py:1487
+#: ../Onboard/settings.py:1604
 msgid "Step"
 msgstr "ជំហាន"
 
-#: ../Onboard/settings.py:1488
+#: ../Onboard/settings.py:1605
 msgid "Left"
 msgstr "ឆ្វេង"
 
-#: ../Onboard/settings.py:1489
+#: ../Onboard/settings.py:1606
 msgid "Right"
 msgstr "ស្ដាំ"
 
-#: ../Onboard/settings.py:1490
+#: ../Onboard/settings.py:1607
 msgid "Up"
 msgstr "ឡើង​លើ"
 
-#: ../Onboard/settings.py:1491
+#: ../Onboard/settings.py:1608
 msgid "Down"
 msgstr "ចុះក្រោម"
 
-#: ../Onboard/settings.py:1492
+#: ../Onboard/settings.py:1609
 msgid "Activate"
 msgstr "ធ្វើ​ឲ្យ​សកម្ម"
 
-#: ../Onboard/settings.py:1661
+#: ../Onboard/settings.py:1778
 msgid "Action:"
 msgstr "សកម្មភាព ៖"
 
-#: ../Onboard/settings.py:1825
+#: ../Onboard/settings.py:1942
 msgid "Disabled"
 msgstr "បាន​បិទ"
 
-#: ../Onboard/settings.py:1831
+#: ../Onboard/settings.py:1948
 msgid "Button"
 msgstr "ប៊ូតុង"
 
-#: ../Onboard/settings.py:1886 ../Onboard/settings.py:1931
+#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
 msgid "Press a button..."
 msgstr "ចុច​ប៊ូតុង..."
 
-#: ../Onboard/settings.py:1933
+#: ../Onboard/settings.py:2050
 msgid "Press a key..."
 msgstr "ចុច​គ្រាប់​ចុច..."
 
-#: ../Onboard/Config.py:192
-msgid "Layout file ({}) or name"
-msgstr "ឯកសារ​ប្លង់ ({}) ឬ​ឈ្មោះ"
+#: ../settings.ui.h:1
+#, fuzzy
+msgid "Key-repeat"
+msgstr "key-repeat"
 
-#: ../Onboard/Config.py:195
-msgid "Theme file (.theme) or name"
-msgstr "ឯកសារ​រូបរាង (.theme) ឬ​ឈ្មោះ"
+#: ../settings.ui.h:2
+#, fuzzy
+msgid "International character selection"
+msgstr "ការ​ជ្រើសរើស​តួអក្សរ​​​អន្តរជាតិ"
 
-#: ../Onboard/Config.py:196
-msgid "Window x position"
-msgstr "ទីតាំង Window x"
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr "GTK"
 
-#: ../Onboard/Config.py:197
-msgid "Window y position"
-msgstr "ទីតាំង Window y"
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr "XInput"
 
-#: ../Onboard/Config.py:199
-msgid "Window size, widthxheight"
-msgstr "ទំហំ​បង្អួច widthxheight"
+#: ../settings.ui.h:5
+msgid "XTest"
+msgstr "XTest"
 
-#: ../Onboard/Config.py:201
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "ចាប់ផ្ដើម​ជា​របៀប XEmbed mode, ឧ. សម្រាប់ gnome-screensaver"
+#: ../settings.ui.h:6
+msgid "AT-SPI"
+msgstr "AT-SPI"
 
-#: ../Onboard/Config.py:204
-msgid "Keep aspect ratio when resizing the window"
-msgstr "រក្សាទុក​សមាមាត្រ​​​នៅ​ពេល​ប្ដូរ​​ទំហំ​បង្អួច"
-
-#: ../Onboard/Config.py:209
-msgid "Allow multiple Onboard instances"
-msgstr "អនុញ្ញាត​ឲ្យ​ឧទាហរណ៍ Onboard ជា​ច្រើន"
-
-#: ../Onboard/Config.py:211
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
-msgstr ""
-"បដិសេធ​ការ​រក​ឃើញ​ស្វ័យប្រវត្តិ និង​ជ្រើស quirks ដោយ​ដៃ\n"
-"QUIRKS={metacity|compiz|mutter}"
-
-#: ../Onboard/Config.py:215
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-"បរាជ័យ​ក្នុង​ការ​ចាប់ផ្ដើម​ក្នុង​បរិស្ថាន​ផ្ទៃតុ​​ដែល​បាន​ផ្ដល់។ DESKTOPS ត្រូវ​បាន​បំបែក​ដោយ​សញ្ញា​ក្បឿង​នៃ​"
-"ឈ្មោះ​ផ្ទៃតុ XDG , ឧ. GNOME សម្រាប់ GNOME Shell ។"
-
-#: ../Onboard/Config.py:281
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "ប្ដូរ​ថត​​អ្នក​ប្រើ '{}' ទៅ '{}' ។"
-
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:289
-msgid "failed to migrate user directory. "
+#: ../settings.ui.h:7
+msgid "Remember nothing"
 msgstr ""
 
-#: ../Onboard/Config.py:595
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "មិនមាន​ប្លង់ '{filename}' ទេ"
-
-#: ../Onboard/Config.py:637
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "មិន​មាន​រូបរាង '{filename}'"
-
-#: ../Onboard/Config.py:662
-msgid "Loading theme from '{}'"
-msgstr "ផ្ទុក​រូបរាង​ផ្ទាំង​ពី '{}'"
-
-#: ../Onboard/Config.py:666
-msgid "Unable to read theme '{}'"
-msgstr "មិន​អាច​អាន​អំពី​រូបរាង​ផ្ទាំង​បាន​ទេ '{}'"
-
-#: ../Onboard/Config.py:793
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"ការ​បើក​បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ​ទាមទារ​ការ​​ចូល​ដំណើរ​ការ​ Gnome ។\n"
-"\n"
-"Onboard អាច​បើក​ការ​ចូល​ដំណើរការ​ឥឡូវ ទោះ​ជា​យ៉ាង​ណា​ក៏​ដោយ វា​បានផ្ដល់​អនុសាសន៍​ឲ្យ​អ្នក​ចេញ​ ហើយ​ចូល​វិញ "
-"ដើម្បី​​អាច​ពេញលេញ​បាន ។\n"
-"\n"
-"បើក​ការ​ចូល​ដំណោះរ​ឥឡូវ ?"
-
-#: ../Onboard/Config.py:1297
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "មិនមាន​គ្រោងពណ៌ '{filename}' ទេ"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "ការ​កំណត់ Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "ការកំណត់​ក្ដារ​ចុច​លើ​អេក្រង់ Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "ប្ដូរ​ការ​កំណត់ Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "សំកាំង​សកម្ម​នៅ​ពេល​ចុច"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "គ្រាប់ចុច​អក្សរក្រម​លេខ"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "ជំនួស (Alt)"
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "ឆ្លាស់ (Alt Gr)"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "CAPS"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "បញ្ជា (Ctrl)"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "លុប"
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "ចុច​ទ្វេដង"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "អូស/ចុច"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "ចុង"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "គេច (Esc)"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "មុខងារ​គ្រាប់ចុច"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "ចំនួន​ទប់ស្កាត់ និង​មុខងារ​គ្រាប់ចុច"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "លាក់ Onboard"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
+#: ../settings.ui.h:8
+msgid "Don't remember new words"
 msgstr ""
 
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Hm"
+#: ../settings.ui.h:9
+msgid "General"
+msgstr "ទូ​ទៅ"
 
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "បញ្ជាន់​(Ins)"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "ក្ដារ​ចុច​ចម្បង"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "ម៉ឺនុយ"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "ចុច​ណ្ដាល"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "ផ្លាស់ទី Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "ចំនួន​​ទប់ស្កាត់ និង​អត្ថបទ​ខ្លីៗ"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "ផ្អាក"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "ចំណូល​ចិត្ត"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Prnt"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "បោះបង់"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "ត្រឡប់"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "ចុច​កណ្ដុរ​ស្ដាំ"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "រមូរ"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "ចន្លោះ"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "ចុច បើក/បិទ​កម្មវិធី​ជំនួយ"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "ថេប"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
+#: ../settings.ui.h:10
+msgid "Window"
 msgstr "បង្អួច"
 
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
-msgstr ""
+#: ../settings.ui.h:11
+msgid "Layout"
+msgstr "ប្លង់"
 
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
-msgstr ""
+#: ../settings.ui.h:12
+msgid "Theme"
+msgstr "រូបរាង"
 
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
-msgstr ""
+#: ../settings.ui.h:15
+msgid "Typing Assistance"
+msgstr "Typing Assistance"
 
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
-msgstr ""
+#: ../settings.ui.h:16
+msgid "Universal Access"
+msgstr "ការ​ចូល​ដំណើរការ​សកល"
 
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
-msgstr ""
-
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
-msgstr ""
-
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr ""
-
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr ""
-
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr ""
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr ""
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr ""
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr ""
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr ""
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr ""
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr ""
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr ""
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr ""
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr ""
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr ""
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr ""
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr ""
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr ""
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr ""
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr ""
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr ""
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr ""
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr ""
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr ""
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr ""
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr ""
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr ""
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr ""
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr ""
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr ""
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr ""
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr ""
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr ""
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr ""
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
+#: ../settings.ui.h:17
 #, fuzzy
-msgid "Grid of keys, suitable for keyboard scanning"
+msgid "Latch, then lock"
+msgstr "កូនសោ, បន្ទាប់​មក​ចាក់សោ"
+
+#: ../settings.ui.h:18
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "កូនសោ, ចុច​ពី​ដង​ដើម្បី​ចាក់សោ"
+
+#: ../settings.ui.h:19
+#, fuzzy
+msgid "Latch only"
+msgstr "តែ​កូនសោ"
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Lock only"
+msgstr "ចាក់សោ"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Push button"
+msgstr "ចុច​ប៊ូតុង..."
+
+#: ../settings.ui.h:22
+msgid "none"
+msgstr "គ្មាន"
+
+#: ../settings.ui.h:23
+msgid "single-touch"
+msgstr "ប៉ះ​ម្ដង"
+
+#: ../settings.ui.h:24
+msgid "multi-touch"
+msgstr "ប៉ះ​ច្រើនដង"
+
+#: ../settings.ui.h:25
+msgid "column"
+msgstr "ជួរ​ឈរ"
+
+#: ../settings.ui.h:26
+msgid "_Auto-show when editing text"
+msgstr "បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ នៅ​ពេល​កែសម្រួល​អត្ថបទ"
+
+#: ../settings.ui.h:27
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr "បង្ហាញ Onboard នៅ​ពេល​ដែល​​​មាន​ការ​ទទួល​ស្គាល់​បង្អួច​អត្ថបទ​។ ទាមទារ​ភាព​ងាយស្រួល Gnome ។"
+
+#: ../settings.ui.h:28
+msgid "_Settings"
+msgstr "ការ​កំណត់"
+
+#: ../settings.ui.h:29
+msgid "Start Onboard _hidden"
+msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់"
+
+#: ../settings.ui.h:30
+msgid "Start Onboard hidden."
+msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់ ។"
+
+#: ../settings.ui.h:31
+msgid "Show/Hide options"
+msgstr "ជម្រើស​ បង្ហាញ/លាក់"
+
+#: ../settings.ui.h:32
+msgid "_Show status icon"
+msgstr "បង្ហាញ​រូបតំណាង​ស្ថានភាព"
+
+#: ../settings.ui.h:33
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr "បង្ហាញ​ធាតុ​ស្ថានភាព ។ ចុច​លើ​រូបតំណាង​​ដែល​លាក់​នោះ ឬ​បង្ហាញ Onboard ។"
+
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "បង្ហាញ​រូបតំណាង​អណ្ដែត នៅ​ពេល​លាក់ Onboard"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"បង្ហាញ​រូបតំណាង​អណ្ដែត​នៅ​លើ​ផ្ទៃតុ នៅ​ពេល​លាក់ Onboard ។ ចុច​លើ​រូបតំណាង​ ដើម្បី​ធ្វើ​​ឲ្យ Onboard លេច​"
+"ឡើង ។"
+
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "បង្ហាញ​នៅ​ពេល​ដោះ​សោ​អេក្រង់"
+
+#: ../settings.ui.h:37
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"បង្ហាញ Onboard នៅ​ពេល​ប្រអប់​ត្រូវ​ដោះ​សោ​អេក្រង់ វិធី​នេះ Onboard អាច​ត្រូវ​បាន​ប្រើ​ ជា​ឧទាហរណ៍​សម្រាប់​"
+"បញ្ចូល​ពាក្យ​សម្ងាត់ និង​បដិសេធ​ម៉ាស៊ីន​មេ​អេក្រង់ នៅ​ពេល​វា​ត្រូវ​បាន​កំណត់​ដើម្បី​ស្នើ​វា។"
+
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច &apos;s ។"
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច។"
+
+#: ../settings.ui.h:41
+msgid "Desktop Integration"
+msgstr "ការ​រួមបញ្ចូល​ផ្ទៃតុ"
+
+#: ../settings.ui.h:42
+msgid "Dock to screen edge"
+msgstr "ចត​ទៅ​គែម​អេក្រង់"
+
+#: ../settings.ui.h:43
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "ចត​ក្ដារចុច​ទៅ​គែម​អេក្រង់"
+
+#: ../settings.ui.h:44
+msgid "Docking"
+msgstr "ការ​ចត"
+
+#: ../settings.ui.h:45
+msgid "Show window _decoration"
+msgstr "បង្ហាញ​ការ​តុបតែង​បង្អួច"
+
+#: ../settings.ui.h:46
+msgid "Show window caption and frame."
+msgstr "បង្ហាញ​ស៊ុម និង​ចំណងជើង​បង្អួច ។"
+
+#: ../settings.ui.h:47
+msgid "Show always on visible _workspace"
+msgstr "បង្ហាញ​តំបន់​ធ្វើការ​ដែល​អាច​​មើល​ឃើញ​ជា​និច្ច"
+
+#: ../settings.ui.h:48
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "&quot;Sticky&quot; របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+
+#: ../settings.ui.h:49
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "\"Sticky\" របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+
+#: ../settings.ui.h:50
+msgid "_Force window to top"
+msgstr "បង្ខំ​បង្អួច​ទៅ​​លើ"
+
+#: ../settings.ui.h:51
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "សាកល្បង ដើម្បី​រក្សាទុក Onboard ខាង​លើ​អ្វី​ដែល​មាន​នៅ​លើ​អេក្រង់។"
+
+#: ../settings.ui.h:52
+msgid "Keep _aspect ratio"
+msgstr "រក្សា​សមាមាត្រ"
+
+#: ../settings.ui.h:53
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "កម្រិត​ទំហំ​បង្អួច​ចំពោះ​ស្រទាប់&apos;s សមាមាត្រ​ទិដ្ឋភាព។"
+
+#: ../settings.ui.h:54
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "បង្ខំ​ទំហំ​បង្អួច​ឲ្យ​សម​នឹង​សមាមាត្រ​ប្លង់ ។"
+
+#: ../settings.ui.h:55
+msgid "Floating Window Options"
+msgstr "ជម្រើស​បង្អួច​អណ្ដែត"
+
+#: ../settings.ui.h:56
+msgid "Window options"
+msgstr "ជម្រើសបង្អួច"
+
+#: ../settings.ui.h:57
+msgid "Wind_ow:"
+msgstr "បង្អួច៖"
+
+#: ../settings.ui.h:58
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "ភាព​ថ្លា​នៃ​បង្អួច​ក្ដារចុច​ទាំង​មូល ។ ទាមទារ​សមាសភាគ ។"
+
+#: ../settings.ui.h:60
+msgid "Transparency of the keyboard background"
+msgstr "ភាព​ថ្លា​នៃ​ផ្ទៃខាងក្រោយ​ក្ដារចុច"
+
+#: ../settings.ui.h:61
+msgid "_No background"
+msgstr "គ្មាន​ផ្ទៃខាងក្រោយ​ឡើយ"
+
+#: ../settings.ui.h:62
+msgid "Show the desktop through the gaps between keys."
+msgstr "បង្ហាញ​ផ្ទៃតុ​​តាម​ចន្លោះ​គ្រាប់​ចុច ។"
+
+#: ../settings.ui.h:63
+msgid "Transparency"
+msgstr "ភាព​​ថ្លា"
+
+#: ../settings.ui.h:64
+msgid "Set _transparency to"
+msgstr "កំណត់​ភាព​ថ្លា​ទៅកាន់"
+
+#: ../settings.ui.h:65
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "បើក​ភាព​ថ្លា​អសកម្ម។ ទាមទារ​សមាសភាគ។"
+
+#: ../settings.ui.h:66
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "ភាព​ថ្លា នៅ​ពេល​​ទ្រនិច​នៅ​លើ​ក្ដារ​ចុច ។ ទាមទារ​សមាសភាគ ។"
+
+#: ../settings.ui.h:67
+msgid "after"
+msgstr "ក្រោយ"
+
+#: ../settings.ui.h:68
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "ពន្យារពេល​ជា​វិនាទី​រហូត​ដល់​ភាព​ថ្លា​អសកម្ម​មាន​ប្រសិទ្ធភាព ។"
+
+#: ../settings.ui.h:69
+msgid "seconds"
+msgstr "វិនាទី"
+
+#: ../settings.ui.h:70
+msgid "When Inactive"
+msgstr "នៅ​ពេល​អសកម្ម"
+
+#: ../settings.ui.h:71
+#, fuzzy
+msgid "_Window handles:"
+msgstr "ជម្រើសបង្អួច"
+
+#: ../settings.ui.h:72
+msgid "Resize Protection"
+msgstr "ការពារ​ការ​ផ្លាស់ប្ដូរ​ទំហំ"
+
+#: ../settings.ui.h:73
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+#: ../settings.ui.h:74
+msgid "Description"
+msgstr "សេចក្ដី​ពិពណ៌នា"
+
+#: ../settings.ui.h:75
+msgid "_Open layouts folder"
+msgstr "បើក​ថត​ប្លង់"
+
+#: ../settings.ui.h:76
+msgid "C_ustomize theme"
+msgstr "ប្ដូរ​​រូបតំណាង​ផ្ទាំង"
+
+#: ../settings.ui.h:77
+msgid "Follow _system theme"
+msgstr "អនុវត្ត​តាម​រូបរាង​ប្រព័ន្ធ"
+
+#: ../settings.ui.h:78
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr "Onboard."
+
+#: ../settings.ui.h:79
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "ផ្នែក​តូច​ៗ​របស់​អត្ថបទ​ដែល​ត្រូវ​បាន​បញ្ចូល នៅ​ពេល​ចុច​ប៊ូតុង​​ដែល​ទាក់ទង​ Onboard ។"
+
+#: ../settings.ui.h:80
+msgid "Show label popups"
+msgstr "បង្ហាញ​ស្លាក​លេចឡើង"
+
+#: ../settings.ui.h:81
+msgid "Show label popups above pressed keys."
+msgstr "បង្ហាញ​ស្លាក​លេច​ឡើង​លើ​គ្រាប់ចុច​ដែល​បាន​ចុច។"
+
+#: ../settings.ui.h:82
+msgid "Play sound"
+msgstr "ចាក់​សំឡេង"
+
+#: ../settings.ui.h:83
+msgid "Play click sound on keypress."
+msgstr "ចាក់​សំឡេង​ចុច​លើ​គ្រាប់ចុច។"
+
+#: ../settings.ui.h:84
+msgid "Key-press Feedback"
+msgstr "ចុច​គ្រាប់ចុច​មតិ​អ្នក​​ប្រើ"
+
+#: ../settings.ui.h:85
+msgid "Show secondary labels"
+msgstr "បង្ហាញ​ស្លាក​រង"
+
+#: ../settings.ui.h:86
+msgid "Show characters reachable with or without the shift key."
+msgstr "បង្ហាញ​តួអក្សរ​ដែល​មាន ឬ​ដោយ​មិន​ចាំបាច់​ប្រើ​គ្រាប់ចុច​ប្ដូរ។"
+
+#: ../settings.ui.h:87
+msgid "Key Labels"
+msgstr "ស្លាក​គ្រាប់ចុច"
+
+#: ../settings.ui.h:88
+msgid "_Long press action:"
+msgstr "សកម្មភាព​ចុច​យូរ៖"
+
+#: ../settings.ui.h:89
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+
+#: ../settings.ui.h:90
+msgid "Modifier _behavior:"
+msgstr "ឥរិយាបថ​កម្មវិធី​កែប្រែ៖"
+
+#: ../settings.ui.h:91
+msgid "Behavior of modifier and layer keys."
+msgstr "ឥរិយាបថ​របស់​កម្មវិធី​កែប្រែ និង layer keys ។"
+
+#: ../settings.ui.h:92
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "ពន្យារពេល​ចេញផ្សាយ​ស្វ័យប្រវត្តិ​កម្មវិធី​កែប្រែ៖"
+
+#: ../settings.ui.h:93
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"ភាព​គ្មាន​សកម្មភាព​លើក​ទីពីរ​រហូត​ដល់​កម្មវិធី​កែប្រែ​សកម្ម ហើយ layer keys ត្រូវ​បាន​ចេញ​ផ្សាយ។ 0 បិទ។"
+
+#: ../settings.ui.h:94
+msgid "Key Behavior"
+msgstr "Key Behavior"
+
+#: ../settings.ui.h:95
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid "_Input event source:"
+msgstr "បញ្ចូល​ប្រភព​ព្រឹត្តិការណ៍៖"
+
+#: ../settings.ui.h:97
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+"ជ្រើស &apos;XInput&apos; សម្រាប់​ការ​បញ្ចូល​ទៅ​កាន់​​ធាតុ​អត្ថបទ​ដែល​មាន​ជម្រើស​លេច​ឡើង។  &apos;"
+"GTK&apos; ជម្រើស​ផ្ដល់​ឲ្យ​សមត្ថភាព​ថ្ម, ប៉ុន្តែ​ការ​បញ្ចូល​អាច​បរាជ័យ​ចំពោះ​ក្រាហ្វ​​, ឧ. ដោយ​បើក​បង្អួច​លេច​"
+"ឡើង។"
+
+#: ../settings.ui.h:98
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+"ជ្រើស 'XInput' សម្រាប់​ការ​បញ្ចូល​ទៅ​កាន់​ធាតុ​អត្ថបទ​​ដែល​មាន​ជម្រើស​លេច​ឡើង។ ជម្រើស 'GTK' ផ្ដល់​ឲ្យ​"
+"សមត្ថភាព​ថ្ម, ប៉ុន្តែ​ការ​បញ្ចូល​អាច​បរាជ័យ​ចំពោះ​ក្រាហ្វ, ឧ. ដោយ​បើក​បង្អួច​លេច​ឡើង។"
+
+#: ../settings.ui.h:99
+msgid "Input Options"
+msgstr "ជម្រើស​បញ្ចូល"
+
+#: ../settings.ui.h:100
+#, fuzzy
+msgid "Keystroke _generation:"
+msgstr "Key-stroke _generation:"
+
+#: ../settings.ui.h:101
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:103
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:104
+#, fuzzy
+msgid "Keystroke Generation"
+msgstr "Key-stroke _generation:"
+
+#: ../settings.ui.h:105
+msgid "Advanced"
+msgstr "កម្រិត​ខ្ពស់"
+
+#: ../settings.ui.h:106
+msgid "Show _suggestions"
+msgstr "បង្ហាញ​សំណើ"
+
+#: ../settings.ui.h:107
+msgid "Enable word completion and prediction."
+msgstr "បើក​ការ​ព្យាករណ៍ និង​ការ​បញ្ចប់​ពាក្យ"
+
+#: ../settings.ui.h:108
+msgid "Show spelling suggestions"
+msgstr "បង្ហាញ​សំណើ​ពិនិត្យ​អក្ខរាវិរុទ្ធ"
+
+#: ../settings.ui.h:109
+msgid "Check spelling of the word at or before the cursor."
+msgstr "ពិនិត្យ​អក្ខរាវិរុទ្ធ​ពាក្យ​នៅ​មុខ​ទស្សន៍ទ្រនិច។"
+
+#: ../settings.ui.h:110
+msgid "_Learn from typed text"
+msgstr "សិក្សា​ពី​អត្ថបទ​ដែល​បាន​វាយ"
+
+#: ../settings.ui.h:111
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr "ចងចាំ​ពាក្យ​ថ្មី, ញឹកញាប់ និង​ថ្មី​របស់​ពួក​គេ ដើម្បី​បង្កើន​សំណើ"
+
+#: ../settings.ui.h:112
+msgid "Insert word _separators"
+msgstr "បញ្ចូល​សញ្ញា​ចែក​ពាក្យ"
+
+#: ../settings.ui.h:113
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr "បន្ថែម និង​លុប​ចន្លោះ​នៅ​ពេល​បញ្ចូល​ពាក្យ​ស្នើ​​បាន​អនុវត្ត​ដោយ​តួអក្សរ​ដែល​មាន​សញ្ញា​វណ្ណយុត្ត។"
+
+#: ../settings.ui.h:114
+msgid "Options"
+msgstr "ជម្រើស​"
+
+#: ../settings.ui.h:115
+msgid "Show lan_guage switcher"
+msgstr "បង្ហាញ​កម្មវិធី​ប្ដូរ​ភាសា"
+
+#: ../settings.ui.h:116
+msgid "Show a button for language selection."
+msgstr "បង្ហាញ​ប៊ូតុង​សម្រាប់​ជម្រើស​ភាសា។"
+
+#: ../settings.ui.h:117
+msgid "Show button to pause learning"
+msgstr "បង្ហាញ​ប៊ូតុង​សម្រាប់​ផ្អាក​ការ​សិក្សា"
+
+#: ../settings.ui.h:118
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr "បាន​បញ្ចូល​ពាក្យ​ខណៈ​ពេល​ចុច​ប៊ូតុង​នេះ​នឹង​មិន​ត្រូវ​បាន​ចងចាំ​។"
+
+#: ../settings.ui.h:119
+msgid "Buttons"
+msgstr "ប៊ូតុង"
+
+#: ../settings.ui.h:120
+msgid "Word Suggestions"
+msgstr "សំណើ​ពាក្យ"
+
+#: ../settings.ui.h:121
+msgid "Auto-capitalize while typing"
+msgstr "សរសេរ​ជា​អក្សរ​ពុម្ព​ស្វ័យប្រវត្តិ​នៅ​ពេល​វាយ"
+
+#: ../settings.ui.h:122
+msgid "Automatically capitalize sentence begins and name words."
+msgstr "ឈ្មោះ និង​​ដើម​ពាក្យ​ប្រយោគ​ត្រូវ​សរសេរ​អក្សរ​ពុម្ព​​ដោយ​ស្វ័យប្រវត្តិ។"
+
+#: ../settings.ui.h:123
+msgid "Auto-correct spelling"
+msgstr "ពិនិត្យ​អក្ខរាវិរុទ្ធ​​ត្រឹមត្រូវ​ស្វ័យប្រវត្តិ"
+
+#: ../settings.ui.h:124
+msgid "Automatically correct the last word."
+msgstr "កែ​ពាក្យ​ដោយ​ស្វ័យប្រវត្តិ។"
+
+#: ../settings.ui.h:125
+msgid "The spell check engine to use."
+msgstr "កម្មវិធី​ពិនិត្យ​​អក្ខរាវិរុទ្ធ​ត្រូវ​ប្រើ។"
+
+#: ../settings.ui.h:126
+msgid "Spell-check backend:"
+msgstr "កម្មវិធី​ខាងក្រោយ​ពិនិត្យ​​អក្ខរាវិរុទ្ធ៖"
+
+#: ../settings.ui.h:127
+msgid "Auto-correction"
+msgstr "ការ​កែ​​ស្វ័យប្រវត្តិ"
+
+#: ../settings.ui.h:128
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:129
+#, fuzzy
+msgid "Learning"
+msgstr "ផ្អាក​ការ​ស្វែងយល់"
+
+#: ../settings.ui.h:130
+msgid "Enable  keyboard _scanning"
 msgstr "បើក​ការ​វិភាគ​រក​ក្ដារចុច"
 
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-#, fuzzy
-msgid "Hide keyboard"
-msgstr "លាក់ Onboard"
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
-msgstr ""
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-#, fuzzy
-msgid "Move keyboard"
-msgstr "ផ្លាស់ទី Onboard"
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-#, fuzzy
-msgid "Quit Keyboard"
-msgstr "ក្ដារចុច"
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-#, fuzzy
-msgid "Quit Onboard"
-msgstr "លាក់ Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-#, fuzzy
-msgid "Set and Settings"
+#: ../settings.ui.h:131
+msgid "Sc_anner Settings"
 msgstr "ការ​កំណត់"
 
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296 ../settings_docking_dialog.ui.h:10
-msgid "Settings"
-msgstr "ការ​កំណត់"
+#: ../settings.ui.h:132
+msgid "Keyboard Scanning"
+msgstr "វិភាគ​រក"
 
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr ""
+#: ../settings.ui.h:133
+msgid "_Delay:"
+msgstr "ពន្យារពេល ៖"
 
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr ""
+#: ../settings.ui.h:134
+msgid "_Motion threshold:"
+msgstr "_Motion threshold:"
 
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-msgid "Special characters for interactive Whiteboards, wide"
-msgstr ""
+#: ../settings.ui.h:135
+msgid "Time in seconds before a click is triggered."
+msgstr "ពេលវេលា​គិត​ជា​វិនាទី​មុន​ពេល​ចុច​បើក/បិទ។"
 
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr ""
+#: ../settings.ui.h:136
+msgid "Distance in pixels before movement will be recognized."
+msgstr "ចម្ងាយ​គិត​​ជា​ភីកសែល​មុន​ពេល​ចលនា​នឹង​ត្រូវ​បាន​ទទួល​ស្គាល់។"
 
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr ""
+#: ../settings.ui.h:137
+msgid "Hide hover click window"
+msgstr "លាក់​សំកាំង​ចុច​បង្អួច"
 
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr ""
+#: ../settings.ui.h:138
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "លាក់​ការ​សំកាំង​ប្រព័ន្ធ​ដែល​បាន​ផ្ដល់ នៅ​ពេល​ចុច​បង្អួច ខណៈ​ពេល​ Onboard កំពុង​ដំណើរការ ។"
 
-#: ../Onboard/WordSuggestions.py:2052
+#: ../settings.ui.h:139
+msgid "Enable click type window on exit"
+msgstr "បើក​ចុច​វាយ​បង្អួច​នៅ​ពេល​ចេញ"
+
+#: ../settings.ui.h:140
 msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr "បើក​ការ​សំកាំង​​ប្រព័ន្ធ​ដែល​ផ្ដល់​ជា​និច្ច នៅ​ពេល​ចុច​បង្អួច នៅ​ពេល​ចេញ Onboard ។"
+
+#: ../settings.ui.h:141
+msgid "Hover Click"
+msgstr "សំកាំង​នៅ​ពេល​ចុច"
+
+#: ../Onboard/WPEngine.py:468
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ផ្ទុក​ម៉ូដែល​ភាសា '{}': {} ({})"
+
+#. run again
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "ខាង​លើ"
+
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "ខាង​ក្រោម"
+
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
 msgstr ""
 
-#: ../Onboard/WordSuggestions.py:2070
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
 msgstr ""
 
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<បញ្ចូល​ស្លាក>"
-
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<បញ្ចូល​អត្ថបទ>"
-
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "ចំនួន​​ប៊ូតុង"
-
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "ស្លាក​ប៊ូតុង"
-
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "អត្ថបទ​ខ្លីៗ"
-
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "ត្រូវ​តែ​ជា​លេខគត់"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "កំហុស​​ប្រើ​អត្ថបទ​ខ្លី %d ។"
-
-#: ../Onboard/KeyboardWidget.py:1400
-msgid "New snippet"
-msgstr "អត្ថបទ​ខ្លីៗ​ថ្មី"
-
-#: ../Onboard/KeyboardWidget.py:1404
-msgid "_Save snippet"
-msgstr "រក្សាទុក​អត្ថបទ​ខ្លីៗ"
-
-#: ../Onboard/KeyboardWidget.py:1416
-msgid "Enter a new snippet for this button:"
-msgstr "បញ្ចូល​អត្ថបទ​ខ្លីៗ​ថ្មី​សម្រាប់​ប៊ូតុង​នេះ ៖"
-
-#: ../Onboard/KeyboardWidget.py:1422
-msgid "_Button label:"
-msgstr "ស្លាក​ប៊ូតុង ៖"
-
-#: ../Onboard/KeyboardWidget.py:1426
-msgid "S_nippet:"
-msgstr "អត្ថបទ​ខ្លី ៖"
-
-#: ../Onboard/KeyboardWidget.py:1508
-msgid " - System Language"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1542
-msgid "Other _Languages"
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1544
-msgid "_Languages"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "ប្ដូរ​រូបតំណាង​ផ្ទាំង​តាម​បំណង"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "ពណ៌​ជម្រើស"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "មុំ៖"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "រចនាប័ទ្ម ៖"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "R_oundness:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "ទំហំ ៖"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "រចនាប័ទ្ម​គ្រាប់ចុច"
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "គ្រាប់ចុច ៖"
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "ស៊ុម"
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "ជម្រាល"
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "កម្លាំង៖"
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "កំណត់​ការ​ចត"
 
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "ស្រមោល"
+#: ../settings_docking_dialog.ui.h:15
+msgid "Shrink workarea"
+msgstr "បង្រួញ​តំបន់​ការងារ"
 
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "គ្រាប់ចុច"
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink the available space for maximized windows."
+msgstr "បង្រួញ​ចន្លោះ​វីនដូ​ដែល​បាន​ពង្រីក​អតិបរមា។"
 
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "ពុម្ព​អក្សរ ៖"
+#: ../settings_docking_dialog.ui.h:17
+msgid "Expand on landscape screens"
+msgstr "ពង្រីក​អេក្រង់​ផ្ដេក"
 
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "គុណលក្ខណៈ ៖"
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand keyboard to the width of the workarea."
+msgstr "ពង្រីក​ក្ដារចុច​ទៅ​ទទឹង​តំបន់​ការងារ។"
 
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "ពុម្ព​អក្សរ"
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand on portrait screens"
+msgstr "ពង្រីក​អេក្រង់​បញ្ឈរ"
 
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "ទំហំ​​ឯករាជ្យ"
+#: ../settings_docking_dialog.ui.h:20
+msgid "Dock to screen edge:"
+msgstr "ចត​ទៅ​គែម​អេក្រង់៖"
 
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Super key:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "បដិសេធ​ស្លាក"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "ស្លាក"
-
-#: ../Onboard/utils.py:324
-msgid "New Input Device"
-msgstr "ឧបករណ៍​បញ្ចូល​ថ្មី"
-
-#: ../Onboard/utils.py:325
-msgid "Onboard has detected a new input device"
-msgstr "Onboard"
-
-#: ../Onboard/utils.py:334
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "តើ​អ្នក​ចង់​ប្រើ​ឧបករណ៍​នេះ​សម្រាប់​ការ​វិភាគ​រក​ក្ដារចុច​ដែរឬទេ ?"
-
-#: ../Onboard/utils.py:338
-msgid "Use device"
-msgstr "ប្រើ​ឧបករណ៍"
-
-#: ../Onboard/utils.py:1669
-msgid "failed to create directory '{}': {}"
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to monitor:"
 msgstr ""
 
 #: ../Onboard/Appearance.py:112
@@ -1907,172 +2062,191 @@ msgstr ""
 "រក​ឃើញ​ភាព​​ស្ទួន​លេខ​សម្គាល់​​ពាក្យ​គន្លឹះ '{}' នៅ​ក្នុង​ឯកសារ​ពណ៌​ចម្រុះ ។ លេខ​សម្គាល់​ពាក្យ​គន្លឹះ​ត្រូវ​តែ​​កើត​"
 "ឡើង​តែ​ម្ដង​ប៉ុណ្ណោះ ។"
 
-#: ../Onboard/LayoutLoaderSVG.py:134
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:374
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ គ្មាន​ឈ្មោះ​ឯកសារ svg ដែល​បាន​កំណត់​ឡើយ ។"
-
-#: ../Onboard/LayoutLoaderSVG.py:593
-msgid "Snippet {}"
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1413
+#, fuzzy
+msgid "Edit snippet #{}"
 msgstr "អត្ថបទ​ខ្លីៗ {}"
 
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:597
-msgid ", unassigned"
-msgstr "មិន​បាន​កំណត់​ឡើយ"
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1417
+msgid "New snippet"
+msgstr "អត្ថបទ​ខ្លីៗ​ថ្មី"
 
-#: ../Onboard/LayoutLoaderSVG.py:906
-msgid "copying layout '{}' to '{}'"
-msgstr "ចម្លង​ប្លង់ '{}' ទៅ '{}'"
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1419
+#, fuzzy
+msgid "Enter a new snippet for button #{}:"
+msgstr "បញ្ចូល​អត្ថបទ​ខ្លីៗ​ថ្មី​សម្រាប់​ប៊ូតុង​នេះ ៖"
 
-#: ../Onboard/LayoutLoaderSVG.py:926
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ចម្លង​ប្លង់ មិន​គាំទ្រ​ទ្រង់ទ្រាយ​ប្លង់​ឡើយ '{}' ។"
+#: ../Onboard/KeyboardWidget.py:1430
+msgid "_Save snippet"
+msgstr "រក្សាទុក​អត្ថបទ​ខ្លីៗ"
 
-#: ../Onboard/LayoutLoaderSVG.py:969
-msgid "copying svg file '{}' to '{}'"
-msgstr "ចម្លង​ឯកសារ svg '{}' ទៅ '{}'"
+#: ../Onboard/KeyboardWidget.py:1450
+msgid "_Button label:"
+msgstr "ស្លាក​ប៊ូតុង ៖"
 
-#: ../Onboard/WPEngine.py:427
-msgid "Failed to load language model '{}': {} ({})"
+#: ../Onboard/KeyboardWidget.py:1454
+msgid "S_nippet:"
+msgstr "អត្ថបទ​ខ្លី ៖"
+
+#: ../Onboard/KeyboardWidget.py:1618
+msgid "Other _Languages"
+msgstr "ភាសា​ផ្សេង"
+
+#: ../Onboard/KeyboardWidget.py:1662
+#, fuzzy
+msgid "_Remove suggestion…"
+msgstr "ការ​ផ្ដល់​យោបល់​ច្រើន"
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1716
+#, fuzzy
+msgid "Remove word suggestion"
+msgstr "ការ​ផ្ដល់​យោបល់​ច្រើន"
+
+#: ../Onboard/KeyboardWidget.py:1727
+msgid "Remove '{}' everywhere."
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "ក្ដារចុច​នៅ​លើ​អេក្រង់​ដែល​អាច​ផ្លាស់ប្ដូរ​បាន​សម្រាប់ GNOME"
-
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
+#: ../Onboard/KeyboardWidget.py:1737
+msgid "This will only affect learned suggestions."
 msgstr ""
 
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
+#: ../Onboard/KeyboardWidget.py:1777
+msgid "Remove '{}' only where it occures at text begin."
 msgstr ""
 
-#: ../settings_docking_dialog.ui.h:3
-msgid "Docking settings"
+#: ../Onboard/KeyboardWidget.py:1780
+msgid "Remove '{}' only where it occures at sentence begin."
 msgstr ""
 
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
+#: ../Onboard/KeyboardWidget.py:1783
+msgid "Remove '{}' only where it occures after numbers."
 msgstr ""
 
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
+#: ../Onboard/KeyboardWidget.py:1786
+msgid "Remove '{}' only where it occures after '{}'."
 msgstr ""
 
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
+#: ../Onboard/Config.py:206
+msgid "Layout file ({}) or name"
+msgstr "ឯកសារ​ប្លង់ ({}) ឬ​ឈ្មោះ"
+
+#: ../Onboard/Config.py:209
+msgid "Theme file (.theme) or name"
+msgstr "ឯកសារ​រូបរាង (.theme) ឬ​ឈ្មោះ"
+
+#: ../Onboard/Config.py:211
+msgid "Window size, widthxheight"
+msgstr "ទំហំ​បង្អួច widthxheight"
+
+#: ../Onboard/Config.py:212
+msgid "Window x position"
+msgstr "ទីតាំង Window x"
+
+#: ../Onboard/Config.py:213
+msgid "Window y position"
+msgstr "ទីតាំង Window y"
+
+#: ../Onboard/Config.py:218
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "ចាប់ផ្ដើម​ជា​របៀប XEmbed mode, ឧ. សម្រាប់ gnome-screensaver"
+
+#: ../Onboard/Config.py:221
+msgid "Allow multiple Onboard instances"
+msgstr "អនុញ្ញាត​ឲ្យ​ឧទាហរណ៍ Onboard ជា​ច្រើន"
+
+#: ../Onboard/Config.py:224
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
 msgstr ""
+"បរាជ័យ​ក្នុង​ការ​ចាប់ផ្ដើម​ក្នុង​បរិស្ថាន​ផ្ទៃតុ​​ដែល​បាន​ផ្ដល់។ DESKTOPS ត្រូវ​បាន​បំបែក​ដោយ​សញ្ញា​ក្បឿង​នៃ​"
+"ឈ្មោះ​ផ្ទៃតុ XDG , ឧ. GNOME សម្រាប់ GNOME Shell ។"
 
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
+#: ../Onboard/Config.py:230
+msgid "Keep aspect ratio when resizing the window"
+msgstr "រក្សាទុក​សមាមាត្រ​​​នៅ​ពេល​ប្ដូរ​​ទំហំ​បង្អួច"
+
+#: ../Onboard/Config.py:232
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
 msgstr ""
+"បដិសេធ​ការ​រក​ឃើញ​ស្វ័យប្រវត្តិ និង​ជ្រើស quirks ដោយ​ដៃ\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
+#: ../Onboard/Config.py:320
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "ប្ដូរ​ថត​​អ្នក​ប្រើ '{}' ទៅ '{}' ។"
+
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:328
+msgid "failed to migrate user directory. "
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្ដូរ​ទីតាំង​វចនានុក្រម​អ្នក​ប្រើ។ "
+
+#: ../Onboard/Config.py:794
+#, python-brace-format
+msgid "layout '{filename}' does not exist"
+msgstr "មិនមាន​ប្លង់ '{filename}' ទេ"
+
+#: ../Onboard/Config.py:835
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "មិន​មាន​រូបរាង '{filename}'"
+
+#: ../Onboard/Config.py:860
+msgid "Loading theme from '{}'"
+msgstr "ផ្ទុក​រូបរាង​ផ្ទាំង​ពី '{}'"
+
+#: ../Onboard/Config.py:864
+msgid "Unable to read theme '{}'"
+msgstr "មិន​អាច​អាន​អំពី​រូបរាង​ផ្ទាំង​បាន​ទេ '{}'"
+
+#: ../Onboard/Config.py:1047
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
 msgstr ""
+"ការ​បើក​បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ​ទាមទារ​ការ​​ចូល​ដំណើរ​ការ​ Gnome ។\n"
+"\n"
+"Onboard អាច​បើក​ការ​ចូល​ដំណើរការ​ឥឡូវ ទោះ​ជា​យ៉ាង​ណា​ក៏​ដោយ វា​បានផ្ដល់​អនុសាសន៍​ឲ្យ​អ្នក​ចេញ​ ហើយ​ចូល​វិញ "
+"ដើម្បី​​អាច​ពេញលេញ​បាន ។\n"
+"\n"
+"បើក​ការ​ចូល​ដំណោះរ​ឥឡូវ ?"
 
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr ""
+#: ../Onboard/Config.py:1661
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "មិនមាន​គ្រោងពណ៌ '{filename}' ទេ"
 
-#~ msgid "Enter name for personalised layout"
-#~ msgstr "បញ្ចូល​ឈ្មោះ​សម្រាប់​ប្លង់​ដែល​តម្រូវ​តាម​បុគ្គល"
+#: ../Onboard/KbdWindow.py:183
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr "គ្មាន​ភាព​ថ្លា​បង្អួច​​ឡើយ អេក្រង់​មិន​គាំទ្រ​ឆានែល​អាល់ហ្វា​ឡើយ"
 
-#~ msgid "All files"
-#~ msgstr "ឯកសារ​ទាំងអស់"
+#~ msgid "1"
+#~ msgstr "១"
 
-#~ msgid "Atspi unavailable, auto-hide won't be available"
-#~ msgstr "Atspi មិន​អាច​ប្រើ​បាន​ទេ ការ​លាក់​ដោយ​ស្វ័យ​ប្រវត្តិ​មិនអាច​ប្រើ​បាន​ទេ"
+#~ msgid "_Frame resize handles:"
+#~ msgstr "ចំណុច​ទាញ​ផ្លាស់ប្ដូរ​ទំហំ​ស៊ុម ៖"
 
-#~ msgid "Error loading "
-#~ msgstr "កំហុស​ក្នុង​ការ​ផ្ទុក "
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "ប៉ះ​បញ្ចូល (ទាមទារ​ចាប់​ចាប់ផ្ដើម​ឡើងវិញ)៖"
 
-#~ msgid "_Personalize"
-#~ msgstr "តម្រូវ​តាម​បុគ្គល"
+#~ msgid "No file manager to open layout folder"
+#~ msgstr "គ្មាន​កម្មវិធី​គ្រប់គ្រង​ឯកសារ ដើម្បី​បើក​ថត​ប្លង់​បាន​ទេ"
 
-#~ msgid "Scanning"
-#~ msgstr "កំពុងមើលត្រួសៗ"
+#~ msgid " - System Language"
+#~ msgstr " - ភាសា​ប្រព័ន្ធ"
 
-#~ msgid "Ignoring key '{}'. Not found in '{}'."
-#~ msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ រក​មិន​ឃើញ​នៅ​ក្នុង '{}' ឡើយ ។"
-
-#~ msgid "Releasing still pressed key '{}'"
-#~ msgstr "បញ្ចេញ​នៅ​តែ​ចុច​គ្រាប់ចុច '{}'"
-
-#~ msgid "Style"
-#~ msgstr "រចនាប័ទ្ម"
-
-#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
-#~ msgstr "ធ្វើ​ឲ្យ​ប្លង់​ pango ស្រស់ កំណត់​ពុម្ព​អក្សរ​ថ្មី dpi  '{}'"
-
-#~ msgid "screen changed, supports_alpha={}"
-#~ msgstr "បាន​ប្ដូរ​អេក្រង់ supports_alpha={}"
-
-#~ msgid "launching '{}'"
-#~ msgstr "ចាប់ផ្ដើម '{}'"
-
-#~ msgid ""
-#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
-#~ "format '{}'"
-#~ msgstr ""
-#~ "ផ្ទុក​ទ្រង់ទ្រាយ​ប្លង់​ចាស់ៗ '{}' ។ សូម​គិត​ថា​អំពី​ការ​ធ្វើ​ឲ្យ​ប្រសើរ​ឡើង​ទៅ​ទ្រង់ទ្រាយ​បច្ចុប្បន្ន'{}'"
-
-#~ msgid "Enable Hover Click window on _exit"
-#~ msgstr "បើក​ការ​សំកាំង​នៅ​ពេល​ចុច​បង្អួច​នៅ​ពេល​ចាកចេញ"
-
-#~ msgid "_Hide Hover Click window"
-#~ msgstr "លាក់​ការ​សំកាំង​នៅ​បេល​ចុច​បង្អួច"
-
-#~ msgid "_Universal Access Panel"
-#~ msgstr "បន្ទះ​ចូលដំណើរការ​សកល"
-
-#~ msgid ""
-#~ "The time the scanner rests on a key or group  before moving to the next. "
-#~ "(in seconds)"
-#~ msgstr "វិនាទី"
-
-#~ msgid ""
-#~ "Swap the scan actions after every key activation. The Step acticon will "
-#~ "become the Activate action and vice versa."
-#~ msgstr "ក្រោយ."
-
-#~ msgid "Failed to migrate user directory. "
-#~ msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្ដូរ​ទីតាំង​ថត​អ្នក​ប្រើ "
-
-#~ msgid "Multi-touch"
-#~ msgstr "ប៉ះ​ច្រើន"
-
-#~ msgid "Single-touch"
-#~ msgstr "ប៉ះ​ម្ដង"
-
-#~ msgid "Lock"
-#~ msgstr "ចាក់​សោ"
-
-#~ msgid "Double-click to lock"
-#~ msgstr "ចុច​ពីរ​ដង​ដើម្បី​ដោះសោ"
-
-#~ msgid "Latch"
-#~ msgstr "គន្លឹះ"
-
-#~ msgid "Show/Hide Options"
-#~ msgstr "បង្ហាញ/លាក់ ជម្រើស"
-
-#~ msgid "Window management"
-#~ msgstr "Window management"
-
-#~ msgid "Press & release - hold for key-repeat"
-#~ msgstr "ចុច ហើយ​លែង​គ្រាប់ចុច"
-
-#~ msgid "Keyboard options"
-#~ msgstr "ជម្រើស​ក្ដារចុច"
+#~ msgid "_Languages"
+#~ msgstr "ភាសា"

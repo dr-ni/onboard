@@ -1,661 +1,714 @@
 # Ukrainian translation for onboard
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# Yuri Chornoivan <yurchor@ukr.net>, 2013, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-19 19:53+0100\n"
-"PO-Revision-Date: 2012-03-02 10:17+0000\n"
-"Last-Translator: Сергій Найтінгейл <Unknown>\n"
+"POT-Creation-Date: 2015-01-27 11:46+0100\n"
+"PO-Revision-Date: 2014-02-24 10:48+0000\n"
+"Last-Translator: yurchor <Unknown>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-19 15:32+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2015-01-27 10:25+0000\n"
+"X-Generator: Launchpad (build 17306)\n"
 
-#: ../Onboard/OnboardGtk.py:345
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Onboard налаштовано з’являтись разом з діалогом розблокування екрану, "
-"наприклад, для обходу скрінсейвера, який захищено паролем.\n"
-"\n"
-"Втім, системі не дозволено використання Onboard для розблокування екрану. "
-"Можливу причину цього слід шукати у іншій програмі, налаштованій для "
-"виконання даної функції.\n"
-"\n"
-"Ви справді бажаєте змінити налаштування системи для використання Onboard при "
-"розблокуванні екрану?"
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
+msgid "Activate Hover Click"
+msgstr "Активувати натискання при наведенні"
 
-#: ../Onboard/OnboardGtk.py:361
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"Onboard налаштовано, так що буде показуватися на екрані розблокування, "
-"наприклад захищеної паролем заставки.\n"
-"\n"
-"Але цю функцію вимкнено у вашій системі.\n"
-"\n"
-"Чи бажаєте ви залучити її?"
+#: ../data/layoutstrings.py:16
+msgid "Alphanumeric keys"
+msgstr "Алфавітно-цифрові клавіші"
 
-#: ../settings.ui.h:1
-msgid "key-repeat"
-msgstr ""
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
+msgid "Alt"
+msgstr "Alt"
 
-#: ../settings.ui.h:2
-msgid "international character selection"
-msgstr ""
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
+msgid "Alt Gr"
+msgstr "Alt Gr"
 
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr ""
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
+msgid "CAPS"
+msgstr "Клавіша \"CAPS\""
 
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr ""
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
+msgid "Ctrl"
+msgstr "Ctrl"
 
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
+msgid "Del"
+msgstr "Клавіша \"Delete\""
 
-#: ../settings.ui.h:6
-msgid "1"
-msgstr "1"
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
+msgid "Double click"
+msgstr "Подвійне клацання"
 
-#: ../settings.ui.h:7
-msgid "AT-SPI"
-msgstr "AT-SPI"
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
+msgid "Drag click"
+msgstr "Клацання для перетягування"
 
-#: ../settings.ui.h:8
-msgid "General"
-msgstr "Загальне"
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr "Клавіша \"End\""
 
-#: ../settings.ui.h:9
-msgid "Window"
-msgstr "Вікно"
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
+msgid "Ent"
+msgstr "Клавіша \"Enter\""
 
-#: ../settings.ui.h:10
-msgid "Layout"
-msgstr "Розкладка"
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
+msgid "Esc"
+msgstr "Клавіша \"Escape\""
 
-#: ../settings.ui.h:11
-msgid "Theme"
-msgstr "Тема"
+#: ../data/layoutstrings.py:35
+msgid "Function keys"
+msgstr "Клавіші з функціями"
+
+#: ../data/layoutstrings.py:36
+msgid "Number block and function keys"
+msgstr "Цифровий блок і клавіші з функціями"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
+msgid "Hide Onboard"
+msgstr "Сховати Onboard"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
+msgid "Pause learning"
+msgstr "Призупинити навчання"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:40
+msgid "Hm"
+msgstr "Клвіша \"Home\""
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:42
+msgid "Ins"
+msgstr "Клавіша \"Insert\""
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
+msgid "Main keyboard"
+msgstr "Основна клавіатура"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:45
+msgid "Menu"
+msgstr "Меню"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
+msgid "Middle click"
+msgstr "Клац середньою"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
+msgid "Move Onboard"
+msgstr "Рухати Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:49
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
+msgid "Number block and snippets"
+msgstr "Цифрова клавіатура та фрагменти"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:52
+msgid "Pause"
+msgstr "Клавіша \"Pause\""
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:54
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:56
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
+msgid "Preferences"
+msgstr "Налаштування"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:60
+msgid "Prnt"
+msgstr "Клавіша \"Print Screen\""
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:62
+msgid "Quit"
+msgstr "Вийти"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:64
+msgid "Return"
+msgstr "Клавіша \"Return\""
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
+msgid "Right click"
+msgstr "Правий клац"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:67
+msgid "Scroll"
+msgstr "Клавіша \"Scroll Lock\""
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:12 ../data/layoutstrings.py:68
-#: ../data/layoutstrings.py:317
+#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
+#: ../settings.ui.h:13
 msgid "Snippets"
 msgstr "Фрагменти"
 
-#: ../settings.ui.h:13 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "Клавіатура"
+#: ../data/layoutstrings.py:69
+msgid "Space"
+msgstr "Пробіл"
 
-#: ../settings.ui.h:14
-msgid "Typing Assistance"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
+msgid "Toggle click helpers"
+msgstr "Перемикати варіанти кліків"
 
-#: ../settings.ui.h:15
-msgid "Universal Access"
-msgstr "Універсальний доступ"
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:72
+msgid "Tab"
+msgstr "Клавіша \"Tab\""
 
-#: ../settings.ui.h:16
-msgid "latch, then lock"
-msgstr ""
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:74
+msgid "Win"
+msgstr "Клавіша \"Win\""
 
-#: ../settings.ui.h:17
-msgid "latch, double-click to lock"
-msgstr ""
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
+msgid "Umbrella"
+msgstr "Парасолька"
 
-#: ../settings.ui.h:18
-msgid "latch only"
-msgstr ""
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
+msgid "White star"
+msgstr "Біла зірка"
 
-#: ../settings.ui.h:19
-msgid "lock only"
-msgstr ""
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
+msgid "White telephone"
+msgstr "Білий телефон"
 
-#: ../settings.ui.h:20
-msgid "none"
-msgstr ""
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:82
+msgid "Hot beverage"
+msgstr "Гаряче питво"
 
-#: ../settings.ui.h:21
-msgid "single-touch"
-msgstr ""
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:84
+msgid "Skull and crossbones"
+msgstr "Через із кістками"
 
-#: ../settings.ui.h:22
-msgid "multi-touch"
-msgstr ""
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
+msgid "Radioactive sign"
+msgstr "Знак радіаційної небезпеки"
 
-#: ../settings.ui.h:23
-msgid "column"
-msgstr "стовбчик"
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
+msgid "Peace symbol"
+msgstr "Знак миру"
 
-#: ../settings.ui.h:24
-msgid "_Auto-show when editing text"
-msgstr "_Показувати автоматично при введенні тексту"
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
+msgid "Yin yang"
+msgstr "Інь-янь"
 
-#: ../settings.ui.h:25
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
+msgid "Frowning face"
+msgstr "Злякане обличчя"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
+msgid "Smiling face"
+msgstr "Усміхнене обличчя"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
+msgid "White sun with rays"
+msgstr "Біле сонце з променями"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
+msgid "Last quarter moon"
+msgstr "Остання чверть місяця"
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
+msgid "Female sign"
+msgstr "Символ жіночої статі"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
+msgid "Male sign"
+msgstr "Символ чоловічої статі"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
+msgid "White heart suit"
+msgstr "Білі черви"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:106
+msgid "White diamond suit"
+msgstr "Білі бубни"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:108
+msgid "White spade suit"
+msgstr "Білі піки"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:110
+msgid "White club suit"
+msgstr "Білі трефи"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
+msgid "Beamed eighth note"
+msgstr "З’єднані восьмі ноти"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
+msgid "Envelope"
+msgstr "Конверт"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:116
+msgid "Victory hand"
+msgstr "Жест перемоги"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:118
+msgid "Writing hand"
+msgstr "Рука, що пише"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "Усміхнене обличчя з відкритим ротом і примруженими очима"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
+msgid "Smiling face with halo"
+msgstr "Усміхнене обличчя з німбом"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
+msgid "Smiling face with horns"
+msgstr "Усміхнене обличчя з рогами"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
+msgid "Winking face"
+msgstr "Обличчя, що підморгує"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
+msgid "Smiling face with smiling eyes"
+msgstr "Усміхнене обличчя з примруженими очима"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
+msgid "Face savouring delicious food"
+msgstr "Обличчя з виразом задоволення смаком їжі"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:132
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Усміхнене обличчя з очима у формі серця"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
+msgid "Smiling face with sunglasses"
+msgstr "Усміхнене обличчя у сонцезахисних окулярах"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:136
+msgid "Smirking face"
+msgstr "Обличчя з усмішкою задоволення собою"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:138
+msgid "Neutral face"
+msgstr "Нейтральне обличчя"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:140
+msgid "Unamused face"
+msgstr "Безрадісне обличчя"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
+msgid "Confounded face"
+msgstr "Збентежене обличчя"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:144
+msgid "Face throwing a kiss"
+msgstr "Обличчя з виразом повітряного поцілунку"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
+msgid "Kissing face with closed eyes"
+msgstr "Обличчя, що цілує з закритими очима"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "Обличчя з висолопленим язиком і підморгуванням"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:150
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "Обличчя з висолопленим язиком і щільно закритими очима"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:152
+msgid "Disappointed face"
+msgstr "Розчароване обличчя"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
+msgid "Angry face"
+msgstr "Зле обличчя"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:156
+msgid "Pouting face"
+msgstr "Ображене обличчя"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
+msgid "Crying face"
+msgstr "Обличчя, що плаче"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:160
+msgid "Persevering face"
+msgstr "Обличчя з виразом упертості"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:162
+msgid "Weary face"
+msgstr "Роздратоване обличчя"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
+msgid "Tired face"
+msgstr "Втомлене обличчя"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
+msgid "Astonished face"
+msgstr "Вражене обличчя"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:168
+msgid "Flushed face"
+msgstr "Почервоніле обличчя"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:170
+msgid "Dizzy face"
+msgstr "Приголомшене обличчя"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:179
+msgid "Arrows"
+msgstr "Стрілки"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:194
+msgid "Custom"
+msgstr "Нетипові"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:197
+msgid "Desktop keyboard with edit and function keys"
+msgstr "Стільнична клавіатура з кнопками редагування та функцій"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:221
+msgid "Greek"
+msgstr "Грецька"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:224
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "Сітка клавіш, зручна для сканування клавіатури"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:230
+msgid "Hide keyboard"
+msgstr "Приховати клавіатуру"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:233
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
 msgstr ""
-"Показувати Onboard при фокусуванні вікна розпізнаного тексту. Потребує "
-"компоненту спеціальних можливостей Gnome."
+"Розкладка клавіатури із символами, стрілками та додатковими символами для "
+"навчання математиці і фізиці за допомогою інтерактивних дощок."
 
-#: ../settings.ui.h:26
-msgid "Start Onboard _hidden"
-msgstr "Запускати Onboard _прихованим"
-
-#: ../settings.ui.h:27
-msgid "Start Onboard hidden."
-msgstr "Запускати Onboard прихованим."
-
-#: ../settings.ui.h:28
-msgid "Show/Hide options"
-msgstr ""
-
-#: ../settings.ui.h:29
-msgid "_Show status icon"
-msgstr "Показати піктограму _стану"
-
-#: ../settings.ui.h:30
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Показувати пункт статусу. Клац на цій піктограмі приховає / покаже Onboard."
-
-#: ../settings.ui.h:31
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Показувати плаваючу _пікограму, коли Onboard приховано"
-
-#: ../settings.ui.h:32
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:236
 msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
 msgstr ""
-"Показувати плаваючу піктограму на дисплеї, коли Onboard приховано. Клац на "
-"піктограмі покаже Onboard знову."
+"Розкладка клавіатури із символами, стрілками та додатковими символами для "
+"навчання математиці і фізиці за допомогою інтерактивних дощок.\n"
+"У цій розкладці усі клавіші розташовано у одному дуже широкому шарі."
 
-#: ../settings.ui.h:33
-msgid "Show when _unlocking the screen"
-msgstr "Показувати коли _розблоковую екран"
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:251
+msgid "Medium size desktop keyboard"
+msgstr "Стільнична клавіатура середніх розмірів"
 
-#: ../settings.ui.h:34
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Показувати Onboard під час появи вікна розблокування екрану. Так, Onboard "
-"можна буде використовувати, наприклад, для введення паролю та відкриття "
-"стільниці, якщо активовано блокування экрану після вимкнення заставки."
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:257
+msgid "Mobile keyboard for small screens"
+msgstr "Мобільна клавіатура для малих екранів"
 
-#: ../settings.ui.h:35
-msgid "Show _tooltips"
-msgstr "Показувати _підказки"
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:260
+msgid "More suggestions"
+msgstr "Інші варіанти"
 
-#: ../settings.ui.h:36
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Показувати підказки для кнопок клавіатури &apos;s."
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:266
+msgid "Move keyboard"
+msgstr "Пересунути клавіатуру"
 
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Показувати підказки для кнопок клавіатури."
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:281
+msgid "Quit Keyboard"
+msgstr "Закрити клавіатуру"
 
-#: ../settings.ui.h:38
-msgid "Desktop Integration"
-msgstr "Інтеграція зі стільницею"
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:284
+msgid "Quit Onboard"
+msgstr "Вийти з Onboard"
 
-#: ../settings.ui.h:39
-msgid "Dock to screen edge"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:293
+msgid "Set and Settings"
+msgstr "Набір і параметри"
 
-#: ../settings.ui.h:40
-msgid "Dock the keyboard to the edge of the screen."
-msgstr "Прикріпити клавіатуру до краю екрану."
-
-#: ../settings.ui.h:41
-msgid "_Settings"
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:296
+msgid "Settings"
 msgstr "Налаштування"
 
-#: ../settings.ui.h:42
-msgid "Docking"
-msgstr "Прикріплення"
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:320
+msgid "Space efficient desktop keyboard"
+msgstr "Ергономічна настільна клавіатура"
 
-#: ../settings.ui.h:43
-msgid "Show window _decoration"
-msgstr "Показати віконні_прикраси"
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:323
+msgid "Special Characters"
+msgstr "Спеціальні символи"
 
-#: ../settings.ui.h:44
-msgid "Show window caption and frame."
-msgstr "Показувати заголовок і рамку вікна."
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:326
+#, fuzzy
+msgid "Special characters for interactive whiteboards, wide"
+msgstr "Спеціальні символи для інтерактивних маркерних дощок, широка"
 
-#: ../settings.ui.h:45
-msgid "Show always on visible _workspace"
-msgstr "Завжди показувати на видимій _робочій області"
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:329
+msgid "Special characters for interactive whiteboards"
+msgstr "Спеціальні символи для інтерактивних дощок"
 
-#: ../settings.ui.h:46
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "Режим &quot;залипання&quot; клавіатури та плаваюча піктограма."
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:332
+msgid "Spelling suggestion"
+msgstr "Пропозиції щодо правопису"
 
-#: ../settings.ui.h:47
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "Режим \"залипання\"; клавіатури та плаваюча піктограма."
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:335
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Нижні, верхні індекси; дроби"
 
-#: ../settings.ui.h:48
-msgid "_Force window to top"
-msgstr "_Завжди над іншими вікнами"
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Налаштувати тему"
 
-#: ../settings.ui.h:49
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "Намагайтеся краще тримати Onboard поверх усього на екрані."
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "Колірна Схе_ма"
 
-#: ../settings.ui.h:50
-msgid "Keep _aspect ratio"
-msgstr "Зберігати _пропорції"
-
-#: ../settings.ui.h:51
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr "Привести розмір вікна пропорційно розкладці."
-
-#: ../settings.ui.h:52
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "Обмежити розмір вікна пропорціями розкладки."
-
-#: ../settings.ui.h:53
-msgid "Floating Window Options"
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Window options"
-msgstr ""
-
-#: ../settings.ui.h:55
-msgid "Wind_ow:"
-msgstr "В_ікно"
-
-#: ../settings.ui.h:56
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-"Прозорість усього вікна клавіатури. Необхідна підтримка композитного "
-"робочого столу."
-
-#: ../settings.ui.h:57 ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
 msgid "_Background:"
 msgstr "_Тло:"
 
-#: ../settings.ui.h:58
-msgid "Transparency of the keyboard background"
-msgstr "Прозорість тла клавіатури"
-
-#: ../settings.ui.h:59
-msgid "_No background"
-msgstr "_Немає тла"
-
-#: ../settings.ui.h:60
-msgid "Show the desktop through the gaps between keys."
-msgstr "Показувати робочий стіл через проміжки між клавішами."
-
-#: ../settings.ui.h:61
-msgid "Transparency"
-msgstr "Прозорість"
-
-#: ../settings.ui.h:62
-msgid "Set _transparency to"
-msgstr "Змінити_прозорість на"
-
-#: ../settings.ui.h:63
-msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
-"Увімкнути прозорість неактивних елементів. Необхідна підтримка композитного "
-"робочого столу."
-
-#: ../settings.ui.h:64
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
-"Прозорість при знаходженні курсора поза вікном клавіатури. Необхідна "
-"підтримка композитного робочого столу."
-
-#: ../settings.ui.h:65
-msgid "after"
-msgstr "після"
-
-#: ../settings.ui.h:66
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "Час у секундах, через який неактивна прозорість набуде чинності."
-
-#: ../settings.ui.h:67
-msgid "seconds"
-msgstr "секунди"
-
-#: ../settings.ui.h:68
-msgid "When Inactive"
-msgstr "Коли Неактивна"
-
-#: ../settings.ui.h:69
-msgid "_Frame resize handles:"
-msgstr "Рамка зміни розміру"
-
-#: ../settings.ui.h:70
-msgid "Resize Protection"
-msgstr "Захист від зміни розміру"
-
-#: ../settings.ui.h:71
-msgid "Name"
-msgstr ""
-
-#: ../settings.ui.h:72
-#, fuzzy
-msgid "Description"
-msgstr "_Напрямок:"
-
-#: ../settings.ui.h:73
-msgid "_Open layouts folder"
-msgstr "_Відкрити теку розкладок"
-
-#: ../settings.ui.h:74
-msgid "C_ustomize theme"
-msgstr "Н_алаштувати тему"
-
-#: ../settings.ui.h:75
-msgid "Follow _system theme"
-msgstr "Використовувати _системну тему"
-
-#: ../settings.ui.h:76
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr "Пам’ятати останню використану тему Onboard для кожної системної теми."
-
-#: ../settings.ui.h:77
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Фрагменти - це уривки тексту, які вводяться, коли натиснуто відповідну "
-"клавішу Onboard"
-
-#: ../settings.ui.h:78
-msgid "Show label popups"
-msgstr ""
-
-#: ../settings.ui.h:79
-msgid "Show label popups above pressed keys."
-msgstr ""
-
-#: ../settings.ui.h:80
-msgid "Play sound"
-msgstr ""
-
-#: ../settings.ui.h:81
-msgid "Play click sound on keypress."
-msgstr ""
-
-#: ../settings.ui.h:82
-msgid "Key-press Feedback"
-msgstr ""
-
-#: ../settings.ui.h:83
-msgid "Show secondary labels"
-msgstr ""
-
-#: ../settings.ui.h:84
-msgid "Show characters reachable with or without the shift key."
-msgstr ""
-
-#: ../settings.ui.h:85
-msgid "Key Labels"
-msgstr ""
-
-#: ../settings.ui.h:86
-msgid "_Long press action:"
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-stroke _generation:"
-msgstr "Натиснення клавіші _створення"
-
-#: ../settings.ui.h:89
-msgid "Modifier _behavior:"
-msgstr "Поведінка_модифікатора"
-
-#: ../settings.ui.h:90
-msgid "Behavior of modifier and layer keys."
-msgstr "Поведінка модифікатора та рівневих клавіш"
-
-#: ../settings.ui.h:91
-msgid "Modifier auto-release delay:"
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-"Секунд неактивності, до авто-відпускання активних модифікаторів та "
-"перемикачів розкладки. 0 - заборонити"
-
-#: ../settings.ui.h:93
-msgid "Key Behavior"
-msgstr ""
-
-#: ../settings.ui.h:94
-msgid "_Touch input (requires restart):"
-msgstr "_Сенсорний ввід (необхідний перезапуск):"
-
-#: ../settings.ui.h:95
-msgid "_Input event source:"
-msgstr ""
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-
-#: ../settings.ui.h:97
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-
-#: ../settings.ui.h:98
-msgid "Input Options"
-msgstr ""
-
-#: ../settings.ui.h:99
-msgid "Advanced"
-msgstr "Додатково"
-
-#: ../settings.ui.h:100
-msgid "Show _suggestions"
-msgstr ""
-
-#: ../settings.ui.h:101
-msgid "Enable word completion and prediction."
-msgstr ""
-
-#: ../settings.ui.h:102
-msgid "Show spelling suggestions"
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "Check spelling of the word at or before the cursor."
-msgstr ""
-
-#: ../settings.ui.h:104
-msgid "_Learn from typed text"
-msgstr ""
-
-#: ../settings.ui.h:105
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-
-#: ../settings.ui.h:106
-msgid "Insert word _separators"
-msgstr ""
-
-#: ../settings.ui.h:107
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-
-#: ../settings.ui.h:108
-#, fuzzy
-msgid "Options"
-msgstr "Параметри вікна"
-
-#: ../settings.ui.h:109
-msgid "Show lan_guage switcher"
-msgstr ""
-
-#: ../settings.ui.h:110
-msgid "Show a button for language selection."
-msgstr ""
-
-#: ../settings.ui.h:111
-msgid "Show button to pause learning"
-msgstr ""
-
-#: ../settings.ui.h:112
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-
-#: ../settings.ui.h:113
-#, fuzzy
-msgid "Buttons"
-msgstr "Кнопка"
-
-#: ../settings.ui.h:114
-msgid "Word Suggestions"
-msgstr ""
-
-#: ../settings.ui.h:115
-msgid "Auto-capitalize while typing"
-msgstr ""
-
-#: ../settings.ui.h:116
-msgid "Automatically capitalize sentence begins and name words."
-msgstr ""
-
-#: ../settings.ui.h:117
-msgid "Auto-correct spelling"
-msgstr ""
-
-#: ../settings.ui.h:118
-msgid "Automatically correct the last word."
-msgstr ""
-
-#: ../settings.ui.h:119
-msgid "The spell check engine to use."
-msgstr ""
-
-#: ../settings.ui.h:120
-msgid "Spell-check backend:"
-msgstr ""
-
-#: ../settings.ui.h:121
-msgid "Auto-correction"
-msgstr ""
-
-#: ../settings.ui.h:122
-msgid "_Delay:"
-msgstr "_Затримка:"
-
-#: ../settings.ui.h:123
-msgid "_Motion threshold:"
-msgstr "_Поріг руху:"
-
-#: ../settings.ui.h:124
-msgid "Time in seconds before a click is triggered."
-msgstr "Час у секундах до виконання клацання."
-
-#: ../settings.ui.h:125
-msgid "Distance in pixels before movement will be recognized."
-msgstr "Відстань у точках, що розпізнається як рух."
-
-#: ../settings.ui.h:126
-msgid "Hide hover click window"
-msgstr "Сховати вікно кліку по наведенню"
-
-#: ../settings.ui.h:127
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "Приховати системне вікно наведення кліку під час роботи Onboard."
-
-#: ../settings.ui.h:128
-msgid "Enable click type window on exit"
-msgstr "Показати вікно видів кліка при виході"
-
-#: ../settings.ui.h:129
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Завжди вмикати системне вікно наведення кліку після _завершення Onboard"
-
-#: ../settings.ui.h:130
-msgid "Hover Click"
-msgstr "Натискання при наведенні"
-
-#: ../settings.ui.h:131
-msgid "Enable  keyboard _scanning"
-msgstr "Увімкнути _сканування клавіатури"
-
-#: ../settings.ui.h:132
-msgid "Sc_anner Settings"
-msgstr "Параметри с_канера"
-
-#: ../settings.ui.h:133
-msgid "Keyboard Scanning"
-msgstr "Сканування клавіатури"
-
-#: ../Onboard/pypredict/tools/filter.py:382 ../Onboard/SpellChecker.py:617
-#: ../Onboard/SpellChecker.py:653 ../Onboard/SpellChecker.py:692
-#: ../Onboard/SpellChecker.py:706 ../Onboard/LanguageSupport.py:168
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/utils.py:1072
-msgid "Failed to execute '{}', {}"
-msgstr "Не вдалося виконати '{}', {}"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Show Onboard"
-msgstr "_Показати Onboard"
-
-#: ../Onboard/Indicator.py:69
-msgid "_Hide Onboard"
-msgstr "_Сховати Onboard"
-
-#: ../Onboard/Indicator.py:117
-msgid "Onboard on-screen keyboard"
-msgstr "Onboard екранна клавіатура"
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
+msgid "Gradient"
+msgstr "Градієнт"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "Кут:"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Напрямок освітлення"
+
+#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
+msgid "Keyboard"
+msgstr "Клавіатура"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "_Стиль:"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "О_круглість:"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "Р_озмір:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "Ширина межі:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "Стиль клавіш"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "_Ключ:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "_Рамка:"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "Градієнти"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "_Сила:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "Тінь"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Клавіші"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "_Шрифт:"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "_Атрибути:"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "Шрифт"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "Н_езалежний розмір"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "_Клавіша Супер:"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "Перевизначення мітки"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "Позначки"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Налаштування Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Налаштування екранної клавіатури Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Змінити налаштування Onboard"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
@@ -675,49 +728,56 @@ msgstr ""
 "неможливо визначити місцезнаходження '{filename}', буде завантажено "
 "{description} типово"
 
-#: ../Onboard/ConfigUtils.py:436
+#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
 #, python-brace-format
 msgid "failed to find {description} '{filename}'"
 msgstr "Не вдалося знайти {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
 #, python-brace-format
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' знайдено."
 
-#: ../Onboard/ConfigUtils.py:531
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:475
+#, fuzzy, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr ""
+"{description} '{filename}' досі не знайдено, спробуйте у стандартних шляхах"
+
+#: ../Onboard/ConfigUtils.py:568
 #, python-brace-format
 msgid "Looking for system defaults in {paths}"
 msgstr "Пошук типових системних значень у {paths}"
 
-#: ../Onboard/ConfigUtils.py:542
+#: ../Onboard/ConfigUtils.py:579
 msgid "Failed to read system defaults. "
 msgstr "Не вдалося прочитати системні стандарти. "
 
-#: ../Onboard/ConfigUtils.py:546
+#: ../Onboard/ConfigUtils.py:583
 msgid "No system defaults found."
 msgstr "Не знайдено системних стандартів."
 
-#: ../Onboard/ConfigUtils.py:548
+#: ../Onboard/ConfigUtils.py:585
 #, python-brace-format
 msgid "Loading system defaults from {filename}"
 msgstr "Завантаження типових системних значень з {filename}"
 
-#: ../Onboard/ConfigUtils.py:572
+#: ../Onboard/ConfigUtils.py:609
 msgid "Found system default '[{}] {}={}'"
 msgstr "Знайдено типову ситему '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:590
+#: ../Onboard/ConfigUtils.py:627
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Системні стандарти: невідома клавіша '{}' у секції '{}'"
 
-#: ../Onboard/ConfigUtils.py:597
+#: ../Onboard/ConfigUtils.py:634
 msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
 msgstr ""
-"Типові ситемні налаштування: Невірне значення перерахування для ключа '{}' у "
-"розділі '{}': {}"
+"Типові системні налаштування: некоректний номер у списку для клавіші «{}» у "
+"розділі «{}»: {}"
 
-#: ../Onboard/ConfigUtils.py:610
+#: ../Onboard/ConfigUtils.py:647
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -725,7 +785,7 @@ msgstr ""
 "Системні стандарти: неправильне значення у клавіші '{}' у секції '{}'\n"
 "  '{}'"
 
-#: ../Onboard/ConfigUtils.py:673
+#: ../Onboard/ConfigUtils.py:710
 msgid "Failed to get gsettings value. "
 msgstr "Помилка при отриманні значення gsettings "
 
@@ -846,79 +906,340 @@ msgstr "Обраний пристрій не керує курсором миш�
 msgid "Input Device"
 msgstr "Пристрій вводу"
 
-#. run again
-#: ../Onboard/KbdWindow.py:75 ../data/onboard.desktop.in.h:1
+#: ../Onboard/OnboardGtk.py:357
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard налаштовано з’являтись разом з діалогом розблокування екрану, "
+"наприклад, для обходу скрінсейвера, який захищено паролем.\n"
+"\n"
+"Втім, системі не дозволено використання Onboard для розблокування екрану. "
+"Можливу причину цього слід шукати у іншій програмі, налаштованій для "
+"виконання даної функції.\n"
+"\n"
+"Ви справді бажаєте змінити налаштування системи для використання Onboard при "
+"розблокуванні екрану?"
+
+#: ../Onboard/OnboardGtk.py:376
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard налаштовано, так що буде показуватися на екрані розблокування, "
+"наприклад захищеної паролем заставки.\n"
+"\n"
+"Але цю функцію вимкнено у вашій системі.\n"
+"\n"
+"Чи бажаєте ви залучити її?"
+
+#. Default dialog title: name of the application """
+#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
 msgid "Onboard"
 msgstr "Onboard"
 
-#: ../Onboard/KbdWindow.py:174
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr "прозорість недоступна; екран не підтримує альфа канали"
+#: ../Onboard/utils.py:386
+msgid "New Input Device"
+msgstr "Новий пристрій вводу"
 
-#: ../Onboard/settings.py:211
+#: ../Onboard/utils.py:387
+msgid "Onboard has detected a new input device"
+msgstr "Onboard виявив новий пристрій вводу"
+
+#: ../Onboard/utils.py:396
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+"Ви дійсно бажаєте використати даний пристрій для сканування клавіатури?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/utils.py:403
+msgid "Use device"
+msgstr "Використовувати пристрій"
+
+#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
+#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
+#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
+msgid "Failed to execute '{}', {}"
+msgstr "Не вдалося виконати '{}', {}"
+
+#: ../Onboard/utils.py:1808
+msgid "failed to create directory '{}': {}"
+msgstr "не вдалося створити каталог «{}»: {}"
+
+#: ../Onboard/Indicator.py:31
+msgid "_Show Onboard"
+msgstr "_Показати Onboard"
+
+#: ../Onboard/Indicator.py:32
+msgid "_Hide Onboard"
+msgstr "_Сховати Onboard"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:55
+#, fuzzy
+msgid "_Preferences"
+msgstr "Налаштування"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:66
+#, fuzzy
+msgid "_Quit"
+msgstr "Вийти"
+
+#: ../Onboard/Indicator.py:160
+msgid "Onboard on-screen keyboard"
+msgstr "Onboard екранна клавіатура"
+
+#: ../Onboard/WordSuggestions.py:2102
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>Onboard не вдалося відкрити список вивчених пропозицій слів.</big>\n"
+"\n"
+"Повідомлення щодо помилки:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Відновити пропозиції слів до останньої резервної копії (рекомендуємо вам "
+"зробити саме це)?"
+
+#: ../Onboard/WordSuggestions.py:2121
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>Onboard не вдалося відкрити список пропозицій з вивчених слів.</big>\n"
+"\n"
+"Повідомлення про помилку:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Доведеться відкинути усі пропозиції. Пошкоджений файл збережено за адресою \n"
+"«{}»"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Onboard екранна клавіатура"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Зручна екранна клавіатура для середовища GNOME"
+
+#: ../Onboard/LayoutLoaderSVG.py:139
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"Завантаження застарілої розкладки, формат '{}'. Рекомендується виконати "
+"оновлення до поточного формату '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:378
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "Клавішу '{}' буде проігноровано. Ім’я файлу svg не визначено."
+
+#: ../Onboard/LayoutLoaderSVG.py:606
+msgid "Snippet {}"
+msgstr "Фрагмент '{}'"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:610
+msgid ", unassigned"
+msgstr ", не призначено"
+
+#: ../Onboard/LayoutLoaderSVG.py:919
+msgid "copying layout '{}' to '{}'"
+msgstr "копіювання розташування '{}' в '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:939
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+"копіювання_розташування завершилося помилкою, непідтримуваний формат "
+"розташування '{}'."
+
+#: ../Onboard/LayoutLoaderSVG.py:982
+msgid "copying svg file '{}' to '{}'"
+msgstr "копіювання svg файлу '{}' до '{}'"
+
+#. ##############
+#: ../Onboard/SnippetView.py:19
+msgid "<Enter label>"
+msgstr "<Enter label>"
+
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter text>"
+msgstr "<Enter text>"
+
+#: ../Onboard/SnippetView.py:32
+msgid "Button Number"
+msgstr "Номер Кнопки"
+
+#: ../Onboard/SnippetView.py:39
+msgid "Button Label"
+msgstr "Позначка Кнопки"
+
+#: ../Onboard/SnippetView.py:48
+msgid "Snippet Text"
+msgstr "Фрагмент тексту"
+
+#: ../Onboard/SnippetView.py:93
+msgid "Must be an integer number"
+msgstr "Має бути ціле число"
+
+#: ../Onboard/SnippetView.py:102
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Фрагмент %d вже використовується."
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:9
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "_Показувати автоматично при введенні тексту"
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "Запускати Onboard прихованим."
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../Onboard/settings.py:237
 msgid "Onboard Preferences"
 msgstr "Налаштування Onboard"
 
-#: ../Onboard/settings.py:574
-#, fuzzy
+#: ../Onboard/settings.py:627
 msgid "Copy layout '{}' to this new name:"
-msgstr "копіювання розташування '{}' в '{}'"
+msgstr "Копіювати розкладку «{}» за такою новою назвою:"
 
-#: ../Onboard/settings.py:587
+#: ../Onboard/settings.py:640
 msgid "Delete layout '{}'?"
-msgstr ""
+msgstr "Вилучити розкладку «{}»?"
 
-#: ../Onboard/settings.py:601
-msgid "No file manager to open layout folder"
-msgstr "Не знайдено файлового менеджера для відкриття теки з розкладкою"
-
-#: ../Onboard/settings.py:633
+#: ../Onboard/settings.py:688
 msgid "System settings not found ({}): {}"
 msgstr "Системні налаштування не знайдено ({}): {}"
 
-#. Frame resize handles: None
-#: ../Onboard/settings.py:646
+#. Window handles: None
+#: ../Onboard/settings.py:701
 msgid "None"
 msgstr "Нічого"
 
+#. Window handles: None
+#: ../Onboard/settings.py:703
+msgid "Movement only"
+msgstr ""
+
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:648
-msgid "Corners only"
+#: ../Onboard/settings.py:705
+#, fuzzy
+msgid "Corners"
 msgstr "Лише кути"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:650
+#: ../Onboard/settings.py:707
 msgid "All corners and edges"
 msgstr "Усі кути та межі"
 
-#: ../Onboard/settings.py:691
-#, fuzzy
+#: ../Onboard/settings.py:748
 msgid "Core layouts"
-msgstr "Розкладки"
+msgstr "Основні розкладки"
 
-#: ../Onboard/settings.py:692
+#: ../Onboard/settings.py:749
 msgid "Contributions"
-msgstr ""
+msgstr "Внески"
 
-#: ../Onboard/settings.py:693
-#, fuzzy
+#: ../Onboard/settings.py:750
 msgid "User layouts"
-msgstr "Розкладки"
+msgstr "Розкладки користувача"
 
-#: ../Onboard/settings.py:727
+#: ../Onboard/settings.py:785
 msgid "Author: {}"
-msgstr ""
+msgstr "Автор: {}"
 
-#: ../Onboard/settings.py:730
-#, fuzzy
+#: ../Onboard/settings.py:789
 msgid "About Layout"
-msgstr "Додати розкладку"
+msgstr "Про розкладку"
 
-#: ../Onboard/settings.py:836
+#: ../Onboard/settings.py:894
 msgid "Enter a name for the new theme:"
 msgstr "Впишіть ім'я для нової теми:"
 
-#: ../Onboard/settings.py:844
+#: ../Onboard/settings.py:902
 #, python-brace-format
 msgid ""
 "This theme file already exists.\n"
@@ -931,975 +1252,827 @@ msgstr ""
 "\n"
 "Замінити його?"
 
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:919
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Скинути налаштування обраної теми до стандартних налаштувань Onboard?"
 
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:921
 msgid "Delete selected theme?"
 msgstr "Вилучити обрану тему?"
 
-#: ../Onboard/settings.py:991
-msgid "Reset"
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1050
+#, fuzzy
+msgid "_Reset"
 msgstr "Скинути"
 
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1242
-msgid "Flat"
-msgstr "Плоский"
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1054
+msgid "_Delete"
+msgstr ""
 
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1244 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Градієнт"
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1359
+msgid "Flat"
+msgstr "Плаский"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:1246
+#: ../Onboard/settings.py:1363
 msgid "Dish"
-msgstr "Блюдце"
+msgstr "Увігнутий"
 
-#: ../Onboard/settings.py:1295 ../Onboard/settings.py:1352
+#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
 msgid "Default"
 msgstr "Типовий"
 
-#: ../Onboard/settings.py:1336
+#: ../Onboard/settings.py:1453
 msgid "Bold"
 msgstr "Напівжирний"
 
-#: ../Onboard/settings.py:1338
+#: ../Onboard/settings.py:1455
 msgid "Italic"
 msgstr "Курсив"
 
-#: ../Onboard/settings.py:1340
+#: ../Onboard/settings.py:1457
 msgid "Condensed"
 msgstr "Ущільнений"
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid "Ubuntu Logo"
 msgstr "Логотип Ubuntu"
 
-#: ../Onboard/settings.py:1487
+#: ../Onboard/settings.py:1604
 msgid "Step"
 msgstr "Крок"
 
-#: ../Onboard/settings.py:1488
+#: ../Onboard/settings.py:1605
 msgid "Left"
 msgstr "Ліво"
 
-#: ../Onboard/settings.py:1489
+#: ../Onboard/settings.py:1606
 msgid "Right"
 msgstr "Право"
 
-#: ../Onboard/settings.py:1490
+#: ../Onboard/settings.py:1607
 msgid "Up"
 msgstr "Вгору"
 
-#: ../Onboard/settings.py:1491
+#: ../Onboard/settings.py:1608
 msgid "Down"
 msgstr "Вниз"
 
-#: ../Onboard/settings.py:1492
+#: ../Onboard/settings.py:1609
 msgid "Activate"
 msgstr "Активувати"
 
-#: ../Onboard/settings.py:1661
+#: ../Onboard/settings.py:1778
 msgid "Action:"
 msgstr "Дія:"
 
-#: ../Onboard/settings.py:1825
+#: ../Onboard/settings.py:1942
 msgid "Disabled"
 msgstr "Вимкнено"
 
-#: ../Onboard/settings.py:1831
+#: ../Onboard/settings.py:1948
 msgid "Button"
 msgstr "Кнопка"
 
-#: ../Onboard/settings.py:1886 ../Onboard/settings.py:1931
+#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
 msgid "Press a button..."
-msgstr "Натисність кнопку..."
+msgstr "Натисніть кнопку…"
 
-#: ../Onboard/settings.py:1933
+#: ../Onboard/settings.py:2050
 msgid "Press a key..."
 msgstr "Натисніть клавішу…"
 
-#: ../Onboard/Config.py:192
-msgid "Layout file ({}) or name"
-msgstr "Файл розкладки ({}) або назва"
+#: ../settings.ui.h:1
+#, fuzzy
+msgid "Key-repeat"
+msgstr "повторення клавіш"
 
-#: ../Onboard/Config.py:195
-msgid "Theme file (.theme) or name"
-msgstr "Файл теми (.theme) або ім'я"
+#: ../settings.ui.h:2
+#, fuzzy
+msgid "International character selection"
+msgstr "вибір спеціальних символів"
 
-#: ../Onboard/Config.py:196
-msgid "Window x position"
-msgstr "Позиція вікна по горизонталі"
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr "GTK"
 
-#: ../Onboard/Config.py:197
-msgid "Window y position"
-msgstr "Позиція вікна по вертикалі"
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr "XInput"
 
-#: ../Onboard/Config.py:199
-msgid "Window size, widthxheight"
-msgstr "Розміри вікна, ширина × висота"
+#: ../settings.ui.h:5
+msgid "XTest"
+msgstr "XTest"
 
-#: ../Onboard/Config.py:201
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "Запустити  у режимі XEmbed, наприклад для gnome-screensaver"
+#: ../settings.ui.h:6
+msgid "AT-SPI"
+msgstr "AT-SPI"
 
-#: ../Onboard/Config.py:204
-msgid "Keep aspect ratio when resizing the window"
-msgstr "Зберігати співвідношення при зміні розмірів вікна"
+#: ../settings.ui.h:7
+msgid "Remember nothing"
+msgstr ""
 
-#: ../Onboard/Config.py:209
-msgid "Allow multiple Onboard instances"
-msgstr "Дозволити запуск декількох копій Onboard"
+#: ../settings.ui.h:8
+msgid "Don't remember new words"
+msgstr ""
 
-#: ../Onboard/Config.py:211
+#: ../settings.ui.h:9
+msgid "General"
+msgstr "Загальне"
+
+#: ../settings.ui.h:10
+msgid "Window"
+msgstr "Вікно"
+
+#: ../settings.ui.h:11
+msgid "Layout"
+msgstr "Розкладка"
+
+#: ../settings.ui.h:12
+msgid "Theme"
+msgstr "Тема"
+
+#: ../settings.ui.h:15
+msgid "Typing Assistance"
+msgstr "Допомога у введенні"
+
+#: ../settings.ui.h:16
+msgid "Universal Access"
+msgstr "Універсальний доступ"
+
+#: ../settings.ui.h:17
+#, fuzzy
+msgid "Latch, then lock"
+msgstr "защіпнути, потім заблокувати"
+
+#: ../settings.ui.h:18
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "защіпнути, двічі клацнути, що заблокувати"
+
+#: ../settings.ui.h:19
+#, fuzzy
+msgid "Latch only"
+msgstr "лише защіпнути"
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Lock only"
+msgstr "лише блокування"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Push button"
+msgstr "Натисніть кнопку…"
+
+#: ../settings.ui.h:22
+msgid "none"
+msgstr "нічого"
+
+#: ../settings.ui.h:23
+msgid "single-touch"
+msgstr "одинарний дотик"
+
+#: ../settings.ui.h:24
+msgid "multi-touch"
+msgstr "мультидотик"
+
+#: ../settings.ui.h:25
+msgid "column"
+msgstr "стовпчик"
+
+#: ../settings.ui.h:26
+msgid "_Auto-show when editing text"
+msgstr "_Показувати автоматично при введенні тексту"
+
+#: ../settings.ui.h:27
 msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
 msgstr ""
-"Не брати до уваги автоматичне визначення і вручну обрати режим сумісності "
-"quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
+"Показувати Onboard при фокусуванні вікна розпізнаного тексту. Потребує "
+"компоненту спеціальних можливостей Gnome."
 
-#: ../Onboard/Config.py:215
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-"Прихована неполадка при запуску у заданих робочих середовищах. DESKTOPS — це "
-"список назв робочих столів XDG, розділених комами, наприклад GNOME для GNOME "
-"Shell."
-
-#: ../Onboard/Config.py:281
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Переміщення теки користувача з '{}' до '{}'."
-
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:289
-msgid "failed to migrate user directory. "
-msgstr ""
-
-#: ../Onboard/Config.py:595
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "розкладка «{filename}» не існує"
-
-#: ../Onboard/Config.py:637
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "тема «{filename}» не існує"
-
-#: ../Onboard/Config.py:662
-msgid "Loading theme from '{}'"
-msgstr "Завантаження теми з '{}'"
-
-#: ../Onboard/Config.py:666
-msgid "Unable to read theme '{}'"
-msgstr "Не вдалося прочитати тему '{}'"
-
-#: ../Onboard/Config.py:793
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"Активація автоматичного показу вимагає наявності компоненту спеціальних "
-"можливостей Gnome.\n"
-"\n"
-"Onboard може увімкнути більшість можливостей зараз, втім, для застосування "
-"їх усіх, рекомендується завершити сеанс та повторити вхід.\n"
-"\n"
-"Ви справді бажаєте задіяти спеціальні можливості зараз?"
-
-#: ../Onboard/Config.py:1297
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "кольорова тема '{filename}' не існує"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Налаштування Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Налаштування екранної клавіатури Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Змінити налаштування Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "Активувати натискання при наведенні"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "Алфавітно-цифрові клавіші"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "Клавіша \"Alt\""
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "Клавіша \"CAPS\""
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "Клавіша \"Ctrl\""
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "Клавіша \"Delete\""
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "Подвійне клацання"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "Клацання для перетягування"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "Клавіша \"End\""
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Клавіша \"Enter\""
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Клавіша \"Escape\""
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "Клавіші з функціями"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "Цифровий блок і клавіші з функціями"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "Сховати Onboard"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
-msgstr ""
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Клвіша \"Home\""
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "Клавіша \"Insert\""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "Основна клавіатура"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "Меню"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "Клац середньою"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "Рухати Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "Цифрова клавіатура та фрагменти"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Клавіша \"Pause\""
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
+#: ../settings.ui.h:28
+msgid "_Settings"
 msgstr "Налаштування"
 
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Клавіша \"Print Screen\""
+#: ../settings.ui.h:29
+msgid "Start Onboard _hidden"
+msgstr "Запускати Onboard _прихованим"
 
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "Вийти"
+#: ../settings.ui.h:30
+msgid "Start Onboard hidden."
+msgstr "Запускати Onboard прихованим."
 
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "Клавіша \"Return\""
+#: ../settings.ui.h:31
+msgid "Show/Hide options"
+msgstr "Показати/Сховати параметри"
 
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "Правий клац"
+#: ../settings.ui.h:32
+msgid "_Show status icon"
+msgstr "Показати піктограму _стану"
 
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Клавіша \"Scroll Lock\""
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "Пробіл"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "Перемикати варіанти кліків"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "Клавіша \"Tab\""
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "Клавіша \"Win\""
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
+#: ../settings.ui.h:33
+msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
+"Показувати пункт статусу. Клац на цій піктограмі приховає / покаже Onboard."
 
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Показувати плаваючу _пікограму, коли Onboard приховано"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
 msgstr ""
+"Показувати плаваючу піктограму на дисплеї, коли Onboard приховано. Клац на "
+"піктограмі покаже Onboard знову."
 
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "Показувати коли _розблоковую екран"
+
+#: ../settings.ui.h:37
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
 msgstr ""
+"Показувати Onboard під час появи вікна розблокування екрана. Так, Onboard "
+"можна буде використовувати, наприклад, для введення пароля та відкриття "
+"стільниці, якщо активовано введення пароля для розблокування зберігача "
+"екрана."
 
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "Показувати _підказки"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Показувати підказки для кнопок клавіатури &apos;s."
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Показувати підказки для кнопок клавіатури."
+
+#: ../settings.ui.h:41
+msgid "Desktop Integration"
+msgstr "Інтеграція зі стільницею"
+
+#: ../settings.ui.h:42
+msgid "Dock to screen edge"
+msgstr "Фіксувати на краю екрана"
+
+#: ../settings.ui.h:43
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "Прикріпити клавіатуру до краю екрану."
+
+#: ../settings.ui.h:44
+msgid "Docking"
+msgstr "Прикріплення"
+
+#: ../settings.ui.h:45
+msgid "Show window _decoration"
+msgstr "Показати віконні_прикраси"
+
+#: ../settings.ui.h:46
+msgid "Show window caption and frame."
+msgstr "Показувати заголовок і рамку вікна."
+
+#: ../settings.ui.h:47
+msgid "Show always on visible _workspace"
+msgstr "Завжди показувати на видимій _робочій області"
+
+#: ../settings.ui.h:48
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "Режим &quot;залипання&quot; клавіатури та плаваюча піктограма."
+
+#: ../settings.ui.h:49
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "Режим \"залипання\"; клавіатури та плаваюча піктограма."
+
+#: ../settings.ui.h:50
+msgid "_Force window to top"
+msgstr "_Завжди над іншими вікнами"
+
+#: ../settings.ui.h:51
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "Намагайтеся краще тримати Onboard поверх усього на екрані."
+
+#: ../settings.ui.h:52
+msgid "Keep _aspect ratio"
+msgstr "Зберігати _пропорції"
+
+#: ../settings.ui.h:53
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "Привести розмір вікна пропорційно розкладці."
+
+#: ../settings.ui.h:54
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "Обмежити розмір вікна пропорціями розкладки."
+
+#: ../settings.ui.h:55
+msgid "Floating Window Options"
+msgstr "Параметри рухомого вікна"
+
+#: ../settings.ui.h:56
+msgid "Window options"
+msgstr "Параметри вікна"
+
+#: ../settings.ui.h:57
+msgid "Wind_ow:"
+msgstr "В_ікно"
+
+#: ../settings.ui.h:58
+msgid "Transparency of the whole keyboard window. Requires compositing."
 msgstr ""
+"Прозорість усього вікна клавіатури. Необхідна підтримка композитного "
+"робочого столу."
 
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
+#: ../settings.ui.h:60
+msgid "Transparency of the keyboard background"
+msgstr "Прозорість тла клавіатури"
+
+#: ../settings.ui.h:61
+msgid "_No background"
+msgstr "_Немає тла"
+
+#: ../settings.ui.h:62
+msgid "Show the desktop through the gaps between keys."
+msgstr "Показувати робочий стіл через проміжки між клавішами."
+
+#: ../settings.ui.h:63
+msgid "Transparency"
+msgstr "Прозорість"
+
+#: ../settings.ui.h:64
+msgid "Set _transparency to"
+msgstr "Змінити_прозорість на"
+
+#: ../settings.ui.h:65
+msgid "Enable inactive transparency. Requires compositing."
 msgstr ""
+"Увімкнути прозорість неактивних елементів. Необхідна підтримка композитного "
+"робочого столу."
 
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
+#: ../settings.ui.h:66
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
 msgstr ""
+"Прозорість при знаходженні курсора поза вікном клавіатури. Необхідна "
+"підтримка композитного робочого столу."
 
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr ""
+#: ../settings.ui.h:67
+msgid "after"
+msgstr "після"
 
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr ""
+#: ../settings.ui.h:68
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "Час у секундах, через який неактивна прозорість набуде чинності."
 
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr ""
+#: ../settings.ui.h:69
+msgid "seconds"
+msgstr "секунди"
 
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr ""
+#: ../settings.ui.h:70
+msgid "When Inactive"
+msgstr "Коли Неактивна"
 
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr ""
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr ""
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr ""
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr ""
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr ""
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr ""
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr ""
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr ""
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr ""
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr ""
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr ""
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr ""
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr ""
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr ""
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr ""
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr ""
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr ""
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr ""
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr ""
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr ""
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr ""
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr ""
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr ""
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr ""
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr ""
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr ""
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr ""
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr ""
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
+#: ../settings.ui.h:71
 #, fuzzy
-msgid "Grid of keys, suitable for keyboard scanning"
+msgid "_Window handles:"
+msgstr "Параметри вікна"
+
+#: ../settings.ui.h:72
+msgid "Resize Protection"
+msgstr "Захист від зміни розміру"
+
+#: ../settings.ui.h:73
+msgid "Name"
+msgstr "Назва"
+
+#: ../settings.ui.h:74
+msgid "Description"
+msgstr "Опис"
+
+#: ../settings.ui.h:75
+msgid "_Open layouts folder"
+msgstr "_Відкрити теку розкладок"
+
+#: ../settings.ui.h:76
+msgid "C_ustomize theme"
+msgstr "Н_алаштувати тему"
+
+#: ../settings.ui.h:77
+msgid "Follow _system theme"
+msgstr "Використовувати _системну тему"
+
+#: ../settings.ui.h:78
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr "Пам’ятати останню використану тему Onboard для кожної системної теми."
+
+#: ../settings.ui.h:79
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Фрагменти - це уривки тексту, які вводяться, коли натиснуто відповідну "
+"клавішу Onboard"
+
+#: ../settings.ui.h:80
+msgid "Show label popups"
+msgstr "Показувати підказки"
+
+#: ../settings.ui.h:81
+msgid "Show label popups above pressed keys."
+msgstr "Показувати панелі з підказками над натиснутими клавішами."
+
+#: ../settings.ui.h:82
+msgid "Play sound"
+msgstr "Звук клацання"
+
+#: ../settings.ui.h:83
+msgid "Play click sound on keypress."
+msgstr "Відтворювати звук у відповідь на натискання клавіші."
+
+#: ../settings.ui.h:84
+msgid "Key-press Feedback"
+msgstr "Супровід натискання клавіші"
+
+#: ../settings.ui.h:85
+msgid "Show secondary labels"
+msgstr "Показувати вторинні мітки"
+
+#: ../settings.ui.h:86
+msgid "Show characters reachable with or without the shift key."
+msgstr ""
+"Показувати символи, які можна ввести з натисканням або без натискання "
+"клавіші Shift."
+
+#: ../settings.ui.h:87
+msgid "Key Labels"
+msgstr "Мітки клавіш"
+
+#: ../settings.ui.h:88
+msgid "_Long press action:"
+msgstr "_Дія у відповідь на довге натискання:"
+
+#: ../settings.ui.h:89
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+"Виберіть між повторенням клавіші та меню довгого натискання. Здебільшого, "
+"впливає на введення літер і цифр."
+
+#: ../settings.ui.h:90
+msgid "Modifier _behavior:"
+msgstr "Поведінка_модифікатора"
+
+#: ../settings.ui.h:91
+msgid "Behavior of modifier and layer keys."
+msgstr "Поведінка модифікатора та рівневих клавіш"
+
+#: ../settings.ui.h:92
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "Затримка автоматичного вимикання модифікатора:"
+
+#: ../settings.ui.h:93
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"Секунд неактивності, до авто-відпускання активних модифікаторів та "
+"перемикачів розкладки. 0 - заборонити"
+
+#: ../settings.ui.h:94
+msgid "Key Behavior"
+msgstr "Поведінка клавіш"
+
+#: ../settings.ui.h:95
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid "_Input event source:"
+msgstr "_Джерело подій введення:"
+
+#: ../settings.ui.h:97
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+"Виберіть «XInput», щоб скористатися надійним способом введення текстових "
+"записів з вибором варіантів завершення слів у контекстних підказках. Варіант "
+"«GTK» краще сумісний з усіма програмами, але якщо ви ним скористаєтеся, "
+"можуть виникнути незручності, пов’язані з перехопленням фокусу введення, "
+"наприклад, під час відкриття контекстних вікон."
+
+#: ../settings.ui.h:98
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+"Виберіть «XInput», щоб скористатися надійним способом введення текстових "
+"записів з вибором варіантів завершення слів у контекстних підказках. Варіант "
+"«GTK» краще сумісний з усіма програмами, але якщо ви ним скористаєтеся, "
+"можуть виникнути незручності, пов’язані з перехопленням фокусу введення, "
+"наприклад, під час відкриття контекстних вікон."
+
+#: ../settings.ui.h:99
+msgid "Input Options"
+msgstr "Параметри введення"
+
+#: ../settings.ui.h:100
+#, fuzzy
+msgid "Keystroke _generation:"
+msgstr "Натиснення клавіші _створення"
+
+#: ../settings.ui.h:101
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:103
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:104
+#, fuzzy
+msgid "Keystroke Generation"
+msgstr "Натиснення клавіші _створення"
+
+#: ../settings.ui.h:105
+msgid "Advanced"
+msgstr "Додатково"
+
+#: ../settings.ui.h:106
+msgid "Show _suggestions"
+msgstr "Показувати п_ропозиції"
+
+#: ../settings.ui.h:107
+msgid "Enable word completion and prediction."
+msgstr "Увімкнути автоматичне доповнення та передбачення завершення слів."
+
+#: ../settings.ui.h:108
+msgid "Show spelling suggestions"
+msgstr "Показувати підказки щодо правопису"
+
+#: ../settings.ui.h:109
+msgid "Check spelling of the word at or before the cursor."
+msgstr ""
+"Перевіряти правильність написання слова, на якому або перед яким перебуває "
+"курсор."
+
+#: ../settings.ui.h:110
+msgid "_Learn from typed text"
+msgstr "_Навчатися на основі введених слів"
+
+#: ../settings.ui.h:111
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+"Запам’ятовувати нові слова, час їхнього введення та частоту для поліпшення "
+"пропозицій і самонавчання програми."
+
+#: ../settings.ui.h:112
+msgid "Insert word _separators"
+msgstr "Вставляти р_оздільники між словами"
+
+#: ../settings.ui.h:113
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+"Додавати і вилучати пробіли під час вставляння пропозицій з символами "
+"пунктуації."
+
+#: ../settings.ui.h:114
+msgid "Options"
+msgstr "Параметри"
+
+#: ../settings.ui.h:115
+msgid "Show lan_guage switcher"
+msgstr "Показати п_еремикач мов"
+
+#: ../settings.ui.h:116
+msgid "Show a button for language selection."
+msgstr "Показувати кнопку для вибору мови"
+
+#: ../settings.ui.h:117
+msgid "Show button to pause learning"
+msgstr "Показати кнопку призупинення навчання"
+
+#: ../settings.ui.h:118
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr ""
+"Програма не запам’ятовуватиме слова, які буде набрано, доки натиснуто цю "
+"кнопку."
+
+#: ../settings.ui.h:119
+msgid "Buttons"
+msgstr "Кнопки"
+
+#: ../settings.ui.h:120
+msgid "Word Suggestions"
+msgstr "Пропозиції слів"
+
+#: ../settings.ui.h:121
+msgid "Auto-capitalize while typing"
+msgstr "Автоматично визначати регістр під час введення"
+
+#: ../settings.ui.h:122
+msgid "Automatically capitalize sentence begins and name words."
+msgstr ""
+"Автоматично замінювати літери на великі на початку речень, назв та імен."
+
+#: ../settings.ui.h:123
+msgid "Auto-correct spelling"
+msgstr "Виправляти помилки у правописі"
+
+#: ../settings.ui.h:124
+msgid "Automatically correct the last word."
+msgstr "Автоматично виправляти останнє введене слово відповідно до правопису."
+
+#: ../settings.ui.h:125
+msgid "The spell check engine to use."
+msgstr "Рушій перевірки правопису, яким слід користуватися."
+
+#: ../settings.ui.h:126
+msgid "Spell-check backend:"
+msgstr "Модуль перевірки правопису:"
+
+#: ../settings.ui.h:127
+msgid "Auto-correction"
+msgstr "Автоматичне виправлення"
+
+#: ../settings.ui.h:128
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:129
+#, fuzzy
+msgid "Learning"
+msgstr "Призупинити навчання"
+
+#: ../settings.ui.h:130
+msgid "Enable  keyboard _scanning"
 msgstr "Увімкнути _сканування клавіатури"
 
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-#, fuzzy
-msgid "Hide keyboard"
-msgstr "Сховати Onboard"
+#: ../settings.ui.h:131
+msgid "Sc_anner Settings"
+msgstr "Параметри с_канера"
 
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
+#: ../settings.ui.h:132
+msgid "Keyboard Scanning"
+msgstr "Сканування клавіатури"
+
+#: ../settings.ui.h:133
+msgid "_Delay:"
+msgstr "_Затримка:"
+
+#: ../settings.ui.h:134
+msgid "_Motion threshold:"
+msgstr "_Поріг руху:"
+
+#: ../settings.ui.h:135
+msgid "Time in seconds before a click is triggered."
+msgstr "Час у секундах до виконання клацання."
+
+#: ../settings.ui.h:136
+msgid "Distance in pixels before movement will be recognized."
+msgstr "Відстань у точках, що розпізнається як рух."
+
+#: ../settings.ui.h:137
+msgid "Hide hover click window"
+msgstr "Сховати вікно кліку по наведенню"
+
+#: ../settings.ui.h:138
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "Приховати системне вікно наведення кліку під час роботи Onboard."
+
+#: ../settings.ui.h:139
+msgid "Enable click type window on exit"
+msgstr "Показати вікно видів кліка при виході"
+
+#: ../settings.ui.h:140
 msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Завжди вмикати системне вікно наведення кліку після _завершення Onboard"
+
+#: ../settings.ui.h:141
+msgid "Hover Click"
+msgstr "Натискання при наведенні"
+
+#: ../Onboard/WPEngine.py:468
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Не вдалося завантажити модель мови «{}»: {} ({})"
+
+#. run again
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "Верхньому"
+
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "Нижньому"
+
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
 msgstr ""
 
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
 msgstr ""
 
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
 msgstr ""
 
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
 msgstr ""
 
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
 msgstr ""
 
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-#, fuzzy
-msgid "Move keyboard"
-msgstr "Рухати Onboard"
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-#, fuzzy
-msgid "Quit Keyboard"
-msgstr "Клавіатура"
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-#, fuzzy
-msgid "Quit Onboard"
-msgstr "Вийти з onBoard"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-#, fuzzy
-msgid "Set and Settings"
-msgstr "Параметри сканера"
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296 ../settings_docking_dialog.ui.h:10
-msgid "Settings"
-msgstr "Налаштування"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
 msgstr ""
 
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
 msgstr ""
 
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-msgid "Special characters for interactive Whiteboards, wide"
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
 msgstr ""
 
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
 msgstr ""
 
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
 msgstr ""
 
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
 msgstr ""
 
-#: ../Onboard/WordSuggestions.py:2052
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
-msgstr ""
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "Параметри прикріплення"
 
-#: ../Onboard/WordSuggestions.py:2070
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
-msgstr ""
+#: ../settings_docking_dialog.ui.h:15
+msgid "Shrink workarea"
+msgstr "Зменшити робочий простір"
 
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<Enter label>"
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink the available space for maximized windows."
+msgstr "Зменшити доступний простір для розгорнутих вікон."
 
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<Enter text>"
+#: ../settings_docking_dialog.ui.h:17
+msgid "Expand on landscape screens"
+msgstr "Розширити на екранах з альбомною орієнтацією"
 
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "Номер Кнопки"
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand keyboard to the width of the workarea."
+msgstr "Розширити клавіатуру по ширині робочого простору."
 
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "Позначка Кнопки"
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand on portrait screens"
+msgstr "Розширити на екранах з книжковою орієнтацією"
 
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "Фрагмент тексту"
+#: ../settings_docking_dialog.ui.h:20
+msgid "Dock to screen edge:"
+msgstr "Прикріпити до краю екрану:"
 
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "Має бути ціле число"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Фрагмент %d вже використовується."
-
-#: ../Onboard/KeyboardWidget.py:1400
-msgid "New snippet"
-msgstr "Новий фрагмент"
-
-#: ../Onboard/KeyboardWidget.py:1404
-msgid "_Save snippet"
-msgstr "_Зберегти фрагмент"
-
-#: ../Onboard/KeyboardWidget.py:1416
-msgid "Enter a new snippet for this button:"
-msgstr "Ввести новий фрагмент для цієї кнопки:"
-
-#: ../Onboard/KeyboardWidget.py:1422
-msgid "_Button label:"
-msgstr "_Позначення кнопки:"
-
-#: ../Onboard/KeyboardWidget.py:1426
-msgid "S_nippet:"
-msgstr "Фрагмент:"
-
-#: ../Onboard/KeyboardWidget.py:1508
-msgid " - System Language"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1542
-msgid "Other _Languages"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1544
-msgid "_Languages"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Налаштувати тему"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Колірна Схе_ма"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "Кут:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Напрямок освітлення"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Стиль:"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "О_круглість:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "Р_озмір:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "Ширина межі:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Стиль клавіш"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Ключ:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Рамка:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Градієнти"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Сила:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Тінь"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Клавіші"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Шрифт:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Атрибути:"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Шрифт"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "Н_езалежний розмір"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Клавіша Супер:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Перевизначення мітки"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Позначки"
-
-#: ../Onboard/utils.py:324
-msgid "New Input Device"
-msgstr "Новий пристрій вводу"
-
-#: ../Onboard/utils.py:325
-msgid "Onboard has detected a new input device"
-msgstr "Onboard виявив новий пристрій вводу"
-
-#: ../Onboard/utils.py:334
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-"Ви справді бажаєте використати даний пристрій для сканування клавіатури?"
-
-#: ../Onboard/utils.py:338
-msgid "Use device"
-msgstr "Використовувати пристрій"
-
-#: ../Onboard/utils.py:1669
-msgid "failed to create directory '{}': {}"
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to monitor:"
 msgstr ""
 
 #: ../Onboard/Appearance.py:112
@@ -1939,480 +2112,194 @@ msgstr ""
 "Дублікат ід-кнопки '{}' знайдено у файлі кольорової схеми. Ід-кнопки можуть "
 "зустрічатися один раз."
 
-#: ../Onboard/LayoutLoaderSVG.py:134
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Завантаження застарілої розкладки, формат '{}'. Рекомендується виконати "
-"оновлення до поточного формату '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:374
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "Клавішу '{}' буде проігноровано. Ім’я файлу svg не визначено."
-
-#: ../Onboard/LayoutLoaderSVG.py:593
-msgid "Snippet {}"
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1413
+#, fuzzy
+msgid "Edit snippet #{}"
 msgstr "Фрагмент '{}'"
 
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:597
-msgid ", unassigned"
-msgstr ", не призначено"
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1417
+msgid "New snippet"
+msgstr "Новий фрагмент"
 
-#: ../Onboard/LayoutLoaderSVG.py:906
-msgid "copying layout '{}' to '{}'"
-msgstr "копіювання розташування '{}' в '{}'"
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1419
+#, fuzzy
+msgid "Enter a new snippet for button #{}:"
+msgstr "Ввести новий фрагмент для цієї кнопки:"
 
-#: ../Onboard/LayoutLoaderSVG.py:926
-msgid "copy_layouts failed, unsupported layout format '{}'."
+#: ../Onboard/KeyboardWidget.py:1430
+msgid "_Save snippet"
+msgstr "_Зберегти фрагмент"
+
+#: ../Onboard/KeyboardWidget.py:1450
+msgid "_Button label:"
+msgstr "_Позначення кнопки:"
+
+#: ../Onboard/KeyboardWidget.py:1454
+msgid "S_nippet:"
+msgstr "Фрагмент:"
+
+#: ../Onboard/KeyboardWidget.py:1618
+msgid "Other _Languages"
+msgstr "Інші _мови"
+
+#: ../Onboard/KeyboardWidget.py:1662
+#, fuzzy
+msgid "_Remove suggestion…"
+msgstr "Інші варіанти"
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1716
+#, fuzzy
+msgid "Remove word suggestion"
+msgstr "Інші варіанти"
+
+#: ../Onboard/KeyboardWidget.py:1727
+msgid "Remove '{}' everywhere."
 msgstr ""
-"копіювання_розташування завершилося помилкою, непідтримуваний формат "
-"розташування '{}'."
 
-#: ../Onboard/LayoutLoaderSVG.py:969
-msgid "copying svg file '{}' to '{}'"
-msgstr "копіювання svg файлу '{}' до '{}'"
-
-#: ../Onboard/WPEngine.py:427
-msgid "Failed to load language model '{}': {} ({})"
+#: ../Onboard/KeyboardWidget.py:1737
+msgid "This will only affect learned suggestions."
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Onboard екранна клавіатура"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Зручна екранна клавіатура для середовища GNOME"
-
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr "Верхньому"
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr "Нижньому"
-
-#: ../settings_docking_dialog.ui.h:3
-msgid "Docking settings"
-msgstr "Параметри прикріплення"
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
-msgstr "Зменшити робочий простір"
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
-msgstr "Зменшити доступний простір для розгорнутих вікон."
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
-msgstr "Розширити на екранах з альбомною орієнтацією"
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
-msgstr "Розширити клавіатуру по ширині робочого простору."
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
-msgstr "Розширити на екранах з книжковою орієнтацією"
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr "Прикріпити до краю екрану:"
-
-#~ msgid "Atspi unavailable, auto-hide won't be available"
-#~ msgstr "Atspi недоступний, авто-приховування не буде доступно"
-
-#~ msgid "Enter name for personalised layout"
-#~ msgstr "Введіть назву для власної розкладки"
-
-#~ msgid "Onboard layout files"
-#~ msgstr "Onboard файли розкладок"
-
-#~ msgid "All files"
-#~ msgstr "Усі файли"
-
-#~ msgid "Error loading "
-#~ msgstr "Помилка завантаження "
-
-#~ msgid "_Personalize"
-#~ msgstr "_Персоналізація"
-
-#~ msgid "Show settings"
-#~ msgstr "Показати налаштування"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr "Перемикнути клавіші"
-
-#~ msgid "_Quit"
-#~ msgstr "Вийти"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Показувати onboard при _розблокуванні екрана"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Запустити onboard _згорнутим"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Показувати рухому пі_ктограму, якщо onboard приховано"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Введіть текст для фрагмента"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Змінити параметри onBoard"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Параметри екранної клавіатури onBoard"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "Екранна клавіатура onBoard"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard налаштована так що буде відображатись на екрані розблокування, "
-#~ "наприклад захищеної паролем заставки.\n"
-#~ "\n"
-#~ "Але система більше не використовує для цього Onboard. Можливо інша "
-#~ "програма змінила ці налаштування.\n"
-#~ "\n"
-#~ "Налаштувати систему так, щоб Onboard відображалася на екрані "
-#~ "розблокування?"
-
-#~ msgid "_Show icon in system tray to hide/show onboard"
-#~ msgstr ""
-#~ "_Показувати значок в системному лотку, щоб приховати або показати onboard"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Відкрити теку з розкладками"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "Параметри onBoard"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Режим сканування працює лише з розкладками, розробленими з "
-#~ "відповідною метою.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Інтервал"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Режим сканування"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Налаштувати _поточну розкладку"
-
-#~ msgid "Startup Option"
-#~ msgstr "Параметри старту"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Відкрити теку з особливими розкладками"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib недоступно%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "Розширення XInput недоступно%s\n"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " середня/права кнопка миші відключені"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Висоту та ширину слід задавати у px (пікселях)"
-
-#~ msgid "Scanning"
-#~ msgstr "Сканування"
-
-#~ msgid ""
-#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
-#~ "the icon makes onboard reappear."
-#~ msgstr ""
-#~ "Показувати рухому піктограму на стільниці, якщо вікно onboard приховано. "
-#~ "Наведення вказівника миші на піктограму з наступним клацанням лівою "
-#~ "кнопкою миші призведе до відкриття вікна onboard."
-
-#~ msgid "Start onboard hidden."
-#~ msgstr "Запустити onboard прихованим"
-
-#~ msgid "Snippet"
-#~ msgstr "Snippet"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Down"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Num\n"
-#~ "Lock"
-
-#~ msgid "ESC"
-#~ msgstr "Клавіша \"Escape\""
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s з’являється лише у визначенні сканкоду"
-
-#~ msgid "Show the status item. A click on that icon hides or shows onboard."
-#~ msgstr ""
-#~ "Відображати статус. Натискання на піктограму приховує або відображає "
-#~ "onboard."
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Середній\n"
-#~ "клік"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Правий\n"
-#~ "клік"
-
-#~ msgid ""
-#~ "Show onboard when the dialog to unlock the screen appears; this way "
-#~ "onboard can be used for example to enter the password to dismiss the "
-#~ "screensaver when it is set to ask for it."
-#~ msgstr ""
-#~ "Відображати onboard на екрані зняття блокування, наприклад для уведення "
-#~ "паролю екранної заставки"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Діалоги введення паролю як нормальні вікна"
-
-#~ msgid "Option When Hidden"
-#~ msgstr "У разі приховування вікна"
-
-#~ msgid "Startup Options"
-#~ msgstr "Параметри запуску"
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Деякі діалоги введення паролю блокують решту вікон, у тому числі і "
-#~ "onboard. Цей параметр дозволяе відмінити таку поведінку.\n"
-#~ "Цей параметр можна також налаштувати у програмі допоміжні технології."
-
-#~ msgid "theme '%s' does not exist"
-#~ msgstr "тема '%s' не існує"
-
-#~ msgid "Enable _scanning mode"
-#~ msgstr "Включити_сканування"
-
-#~ msgid ""
-#~ "The theme file already exists.\n"
-#~ "'%s'\n"
-#~ "\n"
-#~ "Overwrite it anyway?"
-#~ msgstr ""
-#~ "Файл теми вже існує.\n"
-#~ "'%s'\n"
-#~ "\n"
-#~ "Всеодно перезаписати?"
-
-#~ msgid "layout '%s' does not exist"
-#~ msgstr "розташування '%s' не існує"
-
-#~ msgid "color scheme '%s' does not exist"
-#~ msgstr "Схема кольорів '%s' не існує"
-
-#~ msgid "Color scheme for theme '%s' not found"
-#~ msgstr "Схема кольорів для теми '%s' не знайдена"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Не вдалося завантажити ікону Onboard."
-
-#~ msgid "Background"
-#~ msgstr "Тло"
-
-#~ msgid "I_nterval:"
-#~ msgstr "І_нтервал"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Налаштування універсального доступу"
-
-#~ msgid "Loading system defaults from %s."
-#~ msgstr "Завантаження системних стандартів з  %s."
-
-#~ msgid "Found system default '{}={}'"
-#~ msgstr "Знайдено системні стандарти '{}={}'"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "встановити прозорість клавіатури {}%"
-
-#~ msgid "Show tool-tips for the keyboard's buttons."
-#~ msgstr "Показувати спливаючі підказки для клавіатурних клавіш"
-
-#~ msgid "Show _tool-tips"
-#~ msgstr "Показувати спливаючі підказки"
-
-#~ msgid "Looking for system defaults in %s"
-#~ msgstr "Пошук системних налаштувань в %s"
-
-#~ msgid "Style"
-#~ msgstr "Стиль"
-
-#~ msgid "launching '{}'"
-#~ msgstr "запускання '{}'"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr "Файл '%s' не знайдено. Спроба доступу до %s."
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "Видалити вибраний файл теми?"
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr "'%s' не завантажено. Буде завантажено %s за замовчанням"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "Будь ласка, уведіть назву нової теми"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "Delete"
-#~ msgstr "Видалити"
-
-#~ msgid "Show Onboard when _unlocking the screen"
-#~ msgstr "Показати Onboard коли розблоковую екран"
-
-#~ msgid "Failed to migrate user directory. "
-#~ msgstr "При переміщенні теки користувача сталася помилка "
-
-#~ msgid ""
-#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
-#~ "format '{}'"
-#~ msgstr ""
-#~ "Завантаження застарілого формату розкладки '{}'. Будь ласка, виконайте "
-#~ "оновлення до поточного формату '{}'"
-
-#~ msgid "Releasing still pressed key '{}'"
-#~ msgstr "Відпускання натиснутої клавіші '{}'"
-
-#~ msgid "Ignoring key '{}'. Not found in '{}'."
-#~ msgstr "Клавішу '{}' буде проігноровано. Не знайдено у '{}'."
-
-#~ msgid "Show/Hide Options"
-#~ msgstr "Показати/Сховати параметри"
-
-#~ msgid "_Hide Hover Click window"
-#~ msgstr "_Приховати вікно наведення кліку"
-
-#~ msgid "_Universal Access Panel"
-#~ msgstr "_Панель спеціальних можливостей"
-
-#~ msgid "Enable Hover Click window on _exit"
-#~ msgstr "Задіяти вікно наведення кліку після _виходу"
-
-#~ msgid "screen changed, supports_alpha={}"
-#~ msgstr "екран змінено, supports_alpha={}"
-
-#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
-#~ msgstr ""
-#~ "Оновлення розкладки pango, нове значення розподільчої здатності шрифту — "
-#~ "'{}' dpi"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Режим сканування працює тільки з макетів, які призначені для цієї мети."
-
-#~ msgid ""
-#~ "The time the scanner rests on a key or group  before moving to the next. "
-#~ "(in seconds)"
-#~ msgstr ""
-#~ "Час, що сканер затримується на клавіші (або сполученні) перед переходом "
-#~ "до наступної. (у секундах)"
-
-#~ msgid ""
-#~ "Swap the scan actions after every key activation. The Step acticon will "
-#~ "become the Activate action and vice versa."
-#~ msgstr ""
-#~ "Змінювати дії сканера після натискання будь-якої клавіші. Крокування буде "
-#~ "чергуватися з активацією."
-
-#~ msgid "Double-click to lock"
-#~ msgstr "Двічі клацніть, щоб зафіксувати"
-
-#~ msgid "Release - hold for long press"
-#~ msgstr "Відпустіть - натисніть та утримуйте клавішу"
-
-#~ msgid "Press & release - hold for key-repeat"
-#~ msgstr "Натиснути й відпустити, утримувати для повтору"
-
-#~ msgid "Multi-touch"
-#~ msgstr "Підтримка багаторазового дотику"
-
-#~ msgid "Single-touch"
-#~ msgstr "Підтримка одного дотику"
-
-#~ msgid "Lock"
-#~ msgstr "Заблокувати"
-
-#~ msgid "Latch"
-#~ msgstr "Зафіксувати"
-
-#~ msgid "Cycle"
-#~ msgstr "Цикл"
-
-#~ msgid "_Docking settings"
-#~ msgstr "Параметри прикріплення"
-
-#~ msgid "Window management"
-#~ msgstr "Керування вікнами"
-
-#~ msgid "Modifier auto-_release delay:"
-#~ msgstr "Автомодифікатор-_затримка вимкнення:"
-
-#~ msgid "Send _key strokes on:"
-#~ msgstr "Послати _код натисненої клавіші у:"
-
-#~ msgid ""
-#~ "Choose between key-repeat or long-press menus. Only affects alpha-numeric "
-#~ "keys."
-#~ msgstr ""
-#~ "Оберіть між меню з повторюваними натисненнями кнопок(key-repeat) та меню "
-#~ "довгого натиснення клавіші(long-press). Впливає лише на літерово-цифрові "
-#~ "клавіші."
-
-#~ msgid "Keyboard options"
-#~ msgstr "Параметри клавіатури"
-
-#~ msgid "Enable docking"
-#~ msgstr "Залучитии можливість прикріплення"
+#: ../Onboard/KeyboardWidget.py:1777
+msgid "Remove '{}' only where it occures at text begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1780
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1783
+msgid "Remove '{}' only where it occures after numbers."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1786
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr ""
+
+#: ../Onboard/Config.py:206
+msgid "Layout file ({}) or name"
+msgstr "Файл розкладки ({}) або назва"
+
+#: ../Onboard/Config.py:209
+msgid "Theme file (.theme) or name"
+msgstr "Файл теми (.theme) або ім'я"
+
+#: ../Onboard/Config.py:211
+msgid "Window size, widthxheight"
+msgstr "Розміри вікна, ширина × висота"
+
+#: ../Onboard/Config.py:212
+msgid "Window x position"
+msgstr "Позиція вікна по горизонталі"
+
+#: ../Onboard/Config.py:213
+msgid "Window y position"
+msgstr "Позиція вікна по вертикалі"
+
+#: ../Onboard/Config.py:218
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Запустити  у режимі XEmbed, наприклад для gnome-screensaver"
+
+#: ../Onboard/Config.py:221
+msgid "Allow multiple Onboard instances"
+msgstr "Дозволити запуск декількох копій Onboard"
+
+#: ../Onboard/Config.py:224
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+"Прихована неполадка при запуску у заданих робочих середовищах. DESKTOPS — це "
+"список назв робочих столів XDG, розділених комами, наприклад GNOME для GNOME "
+"Shell."
+
+#: ../Onboard/Config.py:230
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Зберігати співвідношення при зміні розмірів вікна"
+
+#: ../Onboard/Config.py:232
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+"Не брати до уваги автоматичне визначення і вручну обрати режим сумісності "
+"quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+
+#: ../Onboard/Config.py:320
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Переміщення теки користувача з '{}' до '{}'."
+
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:328
+msgid "failed to migrate user directory. "
+msgstr "не вдалося перенести каталог користувача. "
+
+#: ../Onboard/Config.py:794
+#, python-brace-format
+msgid "layout '{filename}' does not exist"
+msgstr "розкладка «{filename}» не існує"
+
+#: ../Onboard/Config.py:835
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "тема «{filename}» не існує"
+
+#: ../Onboard/Config.py:860
+msgid "Loading theme from '{}'"
+msgstr "Завантаження теми з '{}'"
+
+#: ../Onboard/Config.py:864
+msgid "Unable to read theme '{}'"
+msgstr "Не вдалося прочитати тему '{}'"
+
+#: ../Onboard/Config.py:1047
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
+msgstr ""
+"Активація автоматичного показу вимагає наявності компоненту спеціальних "
+"можливостей Gnome.\n"
+"\n"
+"Onboard може увімкнути більшість можливостей зараз, втім, для застосування "
+"їх усіх, рекомендується завершити сеанс та повторити вхід.\n"
+"\n"
+"Ви справді бажаєте задіяти спеціальні можливості зараз?"
+
+#: ../Onboard/Config.py:1661
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "кольорова тема '{filename}' не існує"
+
+#: ../Onboard/KbdWindow.py:183
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr "прозорість недоступна; екран не підтримує альфа канали"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "_Frame resize handles:"
+#~ msgstr "Рамка зміни розміру"
+
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "_Сенсорний ввід (необхідний перезапуск):"
+
+#~ msgid "No file manager to open layout folder"
+#~ msgstr "Не знайдено файлового менеджера для відкриття теки з розкладкою"
+
+#~ msgid " - System Language"
+#~ msgstr " — мова системи"
+
+#~ msgid "_Languages"
+#~ msgstr "_Мови"

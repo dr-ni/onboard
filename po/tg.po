@@ -1,666 +1,713 @@
 # Tajik translation for onboard
 # Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+# Victor Ibragimov <victor.ibragimov@gmail.com>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-19 19:53+0100\n"
-"PO-Revision-Date: 2013-04-20 11:47+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2015-01-27 11:46+0100\n"
+"PO-Revision-Date: 2014-02-28 02:38+0000\n"
+"Last-Translator: Victor Ibragimov <victor.ibragimov@gmail.com>\n"
 "Language-Team: Tajik <tg@li.org>\n"
 "Language: tg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-19 15:32+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2015-01-27 10:25+0000\n"
+"X-Generator: Launchpad (build 17306)\n"
 
-#: ../Onboard/OnboardGtk.py:345
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Onboard барои пайдо шудан бо равзанаи кушодани экран конфигуратсия карда "
-"шудааст; масалан, барои пӯшидани пардаи экрани бо парол муҳофизатшуда.\n"
-"\n"
-"Аммо система дигар барои истифодаи Onboard барои кушодани экран "
-"конфигуратсия нашудааст. Сабаби эҳтимолӣ метавонад барномаи дигаре бошад, ки "
-"системаро барои истифодаи ягон чизи дигар конфигуратсия кардааст.\n"
-"\n"
-"Шумо мехоҳед, ки системаро барои намоиш додани Onboard ҳангоми кушодани "
-"экран конфигуратсия кунед?"
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
+msgid "Activate Hover Click"
+msgstr "Фаъол кардани зеркунӣ бо боло нигаҳ доштан"
 
-#: ../Onboard/OnboardGtk.py:361
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"Onboard барои пайдо шудан бо равзанаи кушодани экран конфигуратсия карда "
-"шудааст; масалан, барои пӯшидани пардаи экрани бо парол муҳофизатшуда.\n"
-"\n"
-"Аммо, ин функсия дар система ғайрифаъол карда шудааст.\n"
-"\n"
-"Шумо мехоҳед, ки онро фаъол кунед?"
+#: ../data/layoutstrings.py:16
+msgid "Alphanumeric keys"
+msgstr "Тугмаҳои рақамдор"
 
-#: ../settings.ui.h:1
-msgid "key-repeat"
-msgstr ""
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
+msgid "Alt"
+msgstr "Alt"
 
-#: ../settings.ui.h:2
-msgid "international character selection"
-msgstr ""
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
+msgid "Alt Gr"
+msgstr "Alt Gr"
 
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr ""
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
+msgid "CAPS"
+msgstr "CAPS"
 
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr ""
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
+msgid "Ctrl"
+msgstr "Ctrl"
 
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
+msgid "Del"
+msgstr "Del"
 
-#: ../settings.ui.h:6
-msgid "1"
-msgstr "1"
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
+msgid "Double click"
+msgstr "Дубора зер кардан"
 
-#: ../settings.ui.h:7
-msgid "AT-SPI"
-msgstr "AT-SPI"
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
+msgid "Drag click"
+msgstr "Зеркунӣ бо кашдиҳӣ"
 
-#: ../settings.ui.h:8
-msgid "General"
-msgstr "Умумӣ"
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr "End"
 
-#: ../settings.ui.h:9
-msgid "Window"
-msgstr "Равзана"
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
+msgid "Ent"
+msgstr "Ent"
 
-#: ../settings.ui.h:10
-msgid "Layout"
-msgstr "Тарҳбандӣ"
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
+msgid "Esc"
+msgstr "Esc"
 
-#: ../settings.ui.h:11
-msgid "Theme"
-msgstr "Мавзӯъ"
+#: ../data/layoutstrings.py:35
+msgid "Function keys"
+msgstr "Тугмаҳои вазифадор"
+
+#: ../data/layoutstrings.py:36
+msgid "Number block and function keys"
+msgstr "Блоки рақамҳо ва тугмаҳои вазифадор"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
+msgid "Hide Onboard"
+msgstr "Пинҳон кардани Onboard"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
+msgid "Pause learning"
+msgstr "Таваққуфи омузиш"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:40
+msgid "Hm"
+msgstr "Hm"
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:42
+msgid "Ins"
+msgstr "Ins"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
+msgid "Main keyboard"
+msgstr "Клавиатураи асосӣ"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:45
+msgid "Menu"
+msgstr "Меню"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
+msgid "Middle click"
+msgstr "Зеркунии тугмаи мобайни муш"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
+msgid "Move Onboard"
+msgstr "Интиқол додани Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:49
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
+msgid "Number block and snippets"
+msgstr "Блоки рақамҳо ва порчаҳо"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:52
+msgid "Pause"
+msgstr "Таваққуф"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:54
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:56
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
+msgid "Preferences"
+msgstr "Хусусиятҳо"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:60
+msgid "Prnt"
+msgstr "Prnt"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:62
+msgid "Quit"
+msgstr "Хуруҷ"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:64
+msgid "Return"
+msgstr "Бозгашт"
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
+msgid "Right click"
+msgstr "Зеркунии тугмаи рости муш"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:67
+msgid "Scroll"
+msgstr "Scroll"
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:12 ../data/layoutstrings.py:68
-#: ../data/layoutstrings.py:317
+#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
+#: ../settings.ui.h:13
 msgid "Snippets"
 msgstr "Порчаҳо"
 
-#: ../settings.ui.h:13 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "Клавиатура"
+#: ../data/layoutstrings.py:69
+msgid "Space"
+msgstr "Фазо"
 
-#: ../settings.ui.h:14
-msgid "Typing Assistance"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
+msgid "Toggle click helpers"
+msgstr "Иваз кардани ёрдамчиҳои зеркунӣ"
 
-#: ../settings.ui.h:15
-msgid "Universal Access"
-msgstr "Дастрасии универсалӣ"
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:72
+msgid "Tab"
+msgstr "Tab"
 
-#: ../settings.ui.h:16
-msgid "latch, then lock"
-msgstr ""
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:74
+msgid "Win"
+msgstr "Win"
 
-#: ../settings.ui.h:17
-msgid "latch, double-click to lock"
-msgstr ""
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
+msgid "Umbrella"
+msgstr "Чатр"
 
-#: ../settings.ui.h:18
-msgid "latch only"
-msgstr ""
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
+msgid "White star"
+msgstr "Ситораи сафед"
 
-#: ../settings.ui.h:19
-msgid "lock only"
-msgstr ""
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
+msgid "White telephone"
+msgstr "Телефони сафед"
 
-#: ../settings.ui.h:20
-msgid "none"
-msgstr ""
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:82
+msgid "Hot beverage"
+msgstr "Нӯшокии бамаза"
 
-#: ../settings.ui.h:21
-msgid "single-touch"
-msgstr ""
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:84
+msgid "Skull and crossbones"
+msgstr "Косахона бо устухонҳо"
 
-#: ../settings.ui.h:22
-msgid "multi-touch"
-msgstr ""
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
+msgid "Radioactive sign"
+msgstr "Аломати радиоактив"
 
-#: ../settings.ui.h:23
-msgid "column"
-msgstr "сутун"
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
+msgid "Peace symbol"
+msgstr "Аломати сӯлҳ"
 
-#: ../settings.ui.h:24
-msgid "_Auto-show when editing text"
-msgstr "_Ҳангоми таҳрири матн ба таври худкор намоиш диҳед"
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
+msgid "Yin yang"
+msgstr "Юн янг"
 
-#: ../settings.ui.h:25
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
+msgid "Frowning face"
+msgstr "Рӯи пурчиншуда"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
+msgid "Smiling face"
+msgstr "Табассум"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
+msgid "White sun with rays"
+msgstr "Офтоби сафед бо нурҳо"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
+msgid "Last quarter moon"
+msgstr "Моҳи нав"
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
+msgid "Female sign"
+msgstr "Аломати мард"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
+msgid "Male sign"
+msgstr "Аломати зан"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
+msgid "White heart suit"
+msgstr "Дили сафед"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:106
+msgid "White diamond suit"
+msgstr "Алмоси сафед"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:108
+msgid "White spade suit"
+msgstr "Бели сафед"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:110
+msgid "White club suit"
+msgstr "Чӯбдасти сафед"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
+msgid "Beamed eighth note"
+msgstr "Нотаи ҳаштум"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
+msgid "Envelope"
+msgstr "_Лифофа"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:116
+msgid "Victory hand"
+msgstr "Дасти ғалаба"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:118
+msgid "Writing hand"
+msgstr "Дасти нависанда"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "Табассум бо даҳони кушод ва чашмони хандон"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
+msgid "Smiling face with halo"
+msgstr "Табассум бо хиргоҳ"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
+msgid "Smiling face with horns"
+msgstr "Табассум бо шох"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
+msgid "Winking face"
+msgstr "Табассум бо чашмакзанӣ"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
+msgid "Smiling face with smiling eyes"
+msgstr "Табассум бо чашмони хандон"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
+msgid "Face savouring delicious food"
+msgstr "Рӯй бо мазаи ғизои болаззат"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:132
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Табассум бо чашмони дилшакл"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
+msgid "Smiling face with sunglasses"
+msgstr "Табассум бо айнак"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:136
+msgid "Smirking face"
+msgstr "Табаccyми xyдпиcандoна"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:138
+msgid "Neutral face"
+msgstr "Рӯи бетараф"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:140
+msgid "Unamused face"
+msgstr "Рӯи нохуш"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
+msgid "Confounded face"
+msgstr "Рӯи дар хиҷолат"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:144
+msgid "Face throwing a kiss"
+msgstr "Рӯи дар ҳолати бӯса"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
+msgid "Kissing face with closed eyes"
+msgstr "Рӯи бӯсакунони бо чашмони пӯшида"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "Рӯи чашмакзанон бо забони бароварда"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:150
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "Рӯи чашмакзанон бо забони бароварда ва чашмони пӯшида"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:152
+msgid "Disappointed face"
+msgstr "Рӯи дилхунук"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
+msgid "Angry face"
+msgstr "Рӯи ғазабнок"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:156
+msgid "Pouting face"
+msgstr "Рӯи дамкарда"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
+msgid "Crying face"
+msgstr "Рӯи гирён"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:160
+msgid "Persevering face"
+msgstr "Рӯи якрав"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:162
+msgid "Weary face"
+msgstr "Рӯи хаста"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
+msgid "Tired face"
+msgstr "Рӯи мондашуда"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
+msgid "Astonished face"
+msgstr "Рӯи дар тааҷуб"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:168
+msgid "Flushed face"
+msgstr "Рӯи сурхшуда"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:170
+msgid "Dizzy face"
+msgstr "Рӯи дар ҳаяҷон"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:179
+msgid "Arrows"
+msgstr "Самтҳо"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:194
+msgid "Custom"
+msgstr "Фармоишӣ"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:197
+msgid "Desktop keyboard with edit and function keys"
+msgstr "Клавиатураи мизи корӣ бо тугмаҳои вазифаӣ ва таҳриркунӣ"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:221
+msgid "Greek"
+msgstr "Юнонӣ"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:224
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "Тӯри тугмаҳои мувофиқ барои сканкунии клавиатура"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:230
+msgid "Hide keyboard"
+msgstr "Пинҳон кардани клавиатура"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:233
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
 msgstr ""
-"Намоиш додани Onboard ҳангоми дар фокус будани равзанаи ташхисшудаи матнӣ. "
-"\"Қобилияти дастрасии Gnome\" лозим аст."
+"Тарҳбандии клавиатура барои забони юнонӣ, самтҳо ва бештар, барои риёзиёт ва "
+"маълумоти физика дар тахтаи сафеди интерактивӣ."
 
-#: ../settings.ui.h:26
-msgid "Start Onboard _hidden"
-msgstr "Ба таври _пинҳоншуда оғоз кардани Onboard"
-
-#: ../settings.ui.h:27
-msgid "Start Onboard hidden."
-msgstr "Ба таври пинҳоншуда оғоз кардани Onboard."
-
-#: ../settings.ui.h:28
-msgid "Show/Hide options"
-msgstr ""
-
-#: ../settings.ui.h:29
-msgid "_Show status icon"
-msgstr "_Намоиш додани нишонаи вазъият"
-
-#: ../settings.ui.h:30
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Намоиш додани объекти вазъият. Агар шумо ба он нишона зер кунед, Onboard "
-"намоиш дода ё пинҳон карда мешавад."
-
-#: ../settings.ui.h:31
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Намоиш додани _нишонаи шиновар ҳангоми пинҳон будани Onboard"
-
-#: ../settings.ui.h:32
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:236
 msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
 msgstr ""
-"Намоиш додани нишонаи шиновар дар мизи корӣ ҳангоми пинҳон будани Onboard. "
-"Барои намоиш додани Onboard нишонаро зер кунед."
+"Тарҳбандии клавиатура барои забони юнонӣ, самтҳо ва бештар, барои риёзиёт ва "
+"маълумоти физика дар тахтаи сафеди интерактивӣ.\n"
+"Ин тарҳбанди ҳамаи тугмаҳоро бар як тарҳи васеъ дар бар мегирад."
 
-#: ../settings.ui.h:33
-msgid "Show when _unlocking the screen"
-msgstr "Намоиш додан _ҳангоми кушодани экран"
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:251
+msgid "Medium size desktop keyboard"
+msgstr "Клавиатураи мизи корӣ бо андозаи миёна"
 
-#: ../settings.ui.h:34
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Намоиш додани Onboard ҳангоми пайдо шудани равзанаи гуфтугӯи кушодани экран; "
-"ин тавр Onboard метавонад, масалан, барои ворид кардани парол истифода "
-"шавад, ё ки барои баромадан аз пардаи экран, агар он бо парол муҳофизатшуда "
-"бошад, истифода шавад."
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:257
+msgid "Mobile keyboard for small screens"
+msgstr "Клавиатураи мобилӣ барои экранҳои хурд"
 
-#: ../settings.ui.h:35
-msgid "Show _tooltips"
-msgstr "Намоиш додани _луқмаҳо"
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:260
+msgid "More suggestions"
+msgstr "Пешниҳодҳои бештар"
 
-#: ../settings.ui.h:36
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Намоиш додани луқмаҳо барои тугмаҳои клавиатура."
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:266
+msgid "Move keyboard"
+msgstr "Интиқол додани клавиатура"
 
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Намоиш додани луқмаҳо барои тугмаҳои клавиатура."
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:281
+msgid "Quit Keyboard"
+msgstr "Хомӯш кардани клавиатура"
 
-#: ../settings.ui.h:38
-msgid "Desktop Integration"
-msgstr "Ҳамгароии мизи корӣ"
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:284
+msgid "Quit Onboard"
+msgstr "Хомӯш кардани Onboard"
 
-#: ../settings.ui.h:39
-msgid "Dock to screen edge"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:293
+msgid "Set and Settings"
+msgstr "Насб ва танзимот"
 
-#: ../settings.ui.h:40
-msgid "Dock the keyboard to the edge of the screen."
-msgstr "Васл кардани клавиатура ба канори экран."
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:296
+msgid "Settings"
+msgstr "Танзимот"
 
-#: ../settings.ui.h:41
-msgid "_Settings"
-msgstr ""
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:320
+msgid "Space efficient desktop keyboard"
+msgstr "Клавиатураи мизи корӣ барои экранҳои маҳдуд"
 
-#: ../settings.ui.h:42
-msgid "Docking"
-msgstr "Васлкунӣ"
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:323
+msgid "Special Characters"
+msgstr "Аломатҳои махсус"
 
-#: ../settings.ui.h:43
-msgid "Show window _decoration"
-msgstr "Намоиш додани _ороиши равзана"
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:326
+#, fuzzy
+msgid "Special characters for interactive whiteboards, wide"
+msgstr "Аломатҳои махсус барои тахтаҳои сафеди интерактивӣ, васеъ"
 
-#: ../settings.ui.h:44
-msgid "Show window caption and frame."
-msgstr "Намоиш додани сарнавор ва чорчӯбаи равзана."
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:329
+msgid "Special characters for interactive whiteboards"
+msgstr "Аломатҳои махсус барои тахтаҳои сафеди интерактивӣ"
 
-#: ../settings.ui.h:45
-msgid "Show always on visible _workspace"
-msgstr "Намоиш додан ҳамеша танҳо дар фазои кории _намоён"
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:332
+msgid "Spelling suggestion"
+msgstr "Пешниҳодҳои санҷиши имло"
 
-#: ../settings.ui.h:46
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "Ҳолати \"часпак\" барои клавиатура ва нишонаи шиновар."
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:335
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Зер-, Зернигоштҳо; Касрҳо"
 
-#: ../settings.ui.h:47
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "Ҳолати \"часпак\" барои клавиатура ва нишонаи шиновар."
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Фармоиш додани мавзӯъ"
 
-#: ../settings.ui.h:48
-msgid "_Force window to top"
-msgstr "_Нигоҳ доштани равзана дар болои равзанаҳои дигар"
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "Схемаи _рангҳо"
 
-#: ../settings.ui.h:49
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "Кӯшиш кардани нигоҳ доштани Onboard дар болои ҳама чизи экран."
-
-#: ../settings.ui.h:50
-msgid "Keep _aspect ratio"
-msgstr "Нигоҳ доштани _таносуб"
-
-#: ../settings.ui.h:51
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr "Мувофиқ кардани андозаи равзана ба таносуби тарҳбандӣ."
-
-#: ../settings.ui.h:52
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "Мувофиқ кардани андозаи равзана ба таносуби тарҳбандӣ."
-
-#: ../settings.ui.h:53
-msgid "Floating Window Options"
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Window options"
-msgstr ""
-
-#: ../settings.ui.h:55
-msgid "Wind_ow:"
-msgstr "_Равзана:"
-
-#: ../settings.ui.h:56
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-"Шаффофӣ барои тамоми равзанаи клавиатура. Дастгирии мизи кории таркибӣ лозим "
-"аст."
-
-#: ../settings.ui.h:57 ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
 msgid "_Background:"
 msgstr "_Пасзамина:"
 
-#: ../settings.ui.h:58
-msgid "Transparency of the keyboard background"
-msgstr "Шаффофии пасзаминаи клавиатура"
-
-#: ../settings.ui.h:59
-msgid "_No background"
-msgstr "_Бе пасзамина"
-
-#: ../settings.ui.h:60
-msgid "Show the desktop through the gaps between keys."
-msgstr "Намоиш додани мизи корӣ дар фосилаҳои байни тугмаҳо."
-
-#: ../settings.ui.h:61
-msgid "Transparency"
-msgstr "Шаффофӣ"
-
-#: ../settings.ui.h:62
-msgid "Set _transparency to"
-msgstr "Таъин кардани шаффофият _ба"
-
-#: ../settings.ui.h:63
-msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
-"Фаъол кардани шаффофияти ғайрифаъол. Дастгирии мизи кории таркибӣ лозим аст."
-
-#: ../settings.ui.h:64
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
-"Шаффофият ҳангоми аз клавиатура берун рафтани нишондиҳандаи муш. Дастгирии "
-"мизи кории таркибӣ лозим аст."
-
-#: ../settings.ui.h:65
-msgid "after"
-msgstr "баъд аз"
-
-#: ../settings.ui.h:66
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "Таъхир дар сонияҳо то фаъол шудани шаффофияти ғайрифаъол."
-
-#: ../settings.ui.h:67
-msgid "seconds"
-msgstr "сония"
-
-#: ../settings.ui.h:68
-msgid "When Inactive"
-msgstr "Ҳангоми ғайрифаъол будан"
-
-#: ../settings.ui.h:69
-msgid "_Frame resize handles:"
-msgstr "_Чорчӯбаи тағйир додани андоза:"
-
-#: ../settings.ui.h:70
-msgid "Resize Protection"
-msgstr "Муҳофизат аз тағйир додани андоза"
-
-#: ../settings.ui.h:71
-msgid "Name"
-msgstr ""
-
-#: ../settings.ui.h:72
-msgid "Description"
-msgstr ""
-
-#: ../settings.ui.h:73
-msgid "_Open layouts folder"
-msgstr "_Ҷузвдони тарҳбандиҳоро мекушояд"
-
-#: ../settings.ui.h:74
-msgid "C_ustomize theme"
-msgstr "Ш_ахсисозӣ кардани мавзӯъ"
-
-#: ../settings.ui.h:75
-msgid "Follow _system theme"
-msgstr "Пайгирӣ кардани _мавзӯи система"
-
-#: ../settings.ui.h:76
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"Дар ёд доред, ки мавзӯи Onboard маротибаи охирин барои ҳар як мавзӯи система "
-"истифода шуда буд."
-
-#: ../settings.ui.h:77
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Порчаҳо - ин қисмҳои матн мебошанд, ки ҳангоми пахш кардани тугмаи мувофиқ "
-"дар Onboard ворид карда мешаванд."
-
-#: ../settings.ui.h:78
-msgid "Show label popups"
-msgstr ""
-
-#: ../settings.ui.h:79
-msgid "Show label popups above pressed keys."
-msgstr ""
-
-#: ../settings.ui.h:80
-msgid "Play sound"
-msgstr ""
-
-#: ../settings.ui.h:81
-msgid "Play click sound on keypress."
-msgstr ""
-
-#: ../settings.ui.h:82
-msgid "Key-press Feedback"
-msgstr ""
-
-#: ../settings.ui.h:83
-msgid "Show secondary labels"
-msgstr ""
-
-#: ../settings.ui.h:84
-msgid "Show characters reachable with or without the shift key."
-msgstr ""
-
-#: ../settings.ui.h:85
-msgid "Key Labels"
-msgstr ""
-
-#: ../settings.ui.h:86
-msgid "_Long press action:"
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-stroke _generation:"
-msgstr "Эҷодкунии _пахшкуниҳои тугмаҳо:"
-
-#: ../settings.ui.h:89
-msgid "Modifier _behavior:"
-msgstr "Рафтори _тағйирдиҳанда:"
-
-#: ../settings.ui.h:90
-msgid "Behavior of modifier and layer keys."
-msgstr "Рафтори тугмаҳои тағйирдиҳанда ва сатҳҳо."
-
-#: ../settings.ui.h:91
-msgid "Modifier auto-release delay:"
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-"Сонияҳои бефаъолиятӣ то сар додани тугмаҳои тағйирдиҳанда ва сатҳҳо. Барои "
-"ғайрифаъол кардан ба 0 таъин кунед."
-
-#: ../settings.ui.h:93
-msgid "Key Behavior"
-msgstr ""
-
-#: ../settings.ui.h:94
-msgid "_Touch input (requires restart):"
-msgstr "_Вуруди ламсӣ (бозоғозӣ лозим аст):"
-
-#: ../settings.ui.h:95
-msgid "_Input event source:"
-msgstr ""
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-
-#: ../settings.ui.h:97
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-
-#: ../settings.ui.h:98
-msgid "Input Options"
-msgstr ""
-
-#: ../settings.ui.h:99
-msgid "Advanced"
-msgstr "Иловагӣ"
-
-#: ../settings.ui.h:100
-msgid "Show _suggestions"
-msgstr ""
-
-#: ../settings.ui.h:101
-msgid "Enable word completion and prediction."
-msgstr ""
-
-#: ../settings.ui.h:102
-msgid "Show spelling suggestions"
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "Check spelling of the word at or before the cursor."
-msgstr ""
-
-#: ../settings.ui.h:104
-msgid "_Learn from typed text"
-msgstr ""
-
-#: ../settings.ui.h:105
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-
-#: ../settings.ui.h:106
-msgid "Insert word _separators"
-msgstr ""
-
-#: ../settings.ui.h:107
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-
-#: ../settings.ui.h:108
-#, fuzzy
-msgid "Options"
-msgstr "Имконоти равзана"
-
-#: ../settings.ui.h:109
-msgid "Show lan_guage switcher"
-msgstr ""
-
-#: ../settings.ui.h:110
-msgid "Show a button for language selection."
-msgstr ""
-
-#: ../settings.ui.h:111
-msgid "Show button to pause learning"
-msgstr ""
-
-#: ../settings.ui.h:112
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-
-#: ../settings.ui.h:113
-#, fuzzy
-msgid "Buttons"
-msgstr "Тугма"
-
-#: ../settings.ui.h:114
-msgid "Word Suggestions"
-msgstr ""
-
-#: ../settings.ui.h:115
-msgid "Auto-capitalize while typing"
-msgstr ""
-
-#: ../settings.ui.h:116
-msgid "Automatically capitalize sentence begins and name words."
-msgstr ""
-
-#: ../settings.ui.h:117
-msgid "Auto-correct spelling"
-msgstr ""
-
-#: ../settings.ui.h:118
-msgid "Automatically correct the last word."
-msgstr ""
-
-#: ../settings.ui.h:119
-msgid "The spell check engine to use."
-msgstr ""
-
-#: ../settings.ui.h:120
-msgid "Spell-check backend:"
-msgstr ""
-
-#: ../settings.ui.h:121
-msgid "Auto-correction"
-msgstr ""
-
-#: ../settings.ui.h:122
-msgid "_Delay:"
-msgstr "_Таъхир:"
-
-#: ../settings.ui.h:123
-msgid "_Motion threshold:"
-msgstr "_Марзи ҳаракат:"
-
-#: ../settings.ui.h:124
-msgid "Time in seconds before a click is triggered."
-msgstr "Вақт дар сонияҳо пеш аз оне, ки зеркунӣ фаъол карда мешавад."
-
-#: ../settings.ui.h:125
-msgid "Distance in pixels before movement will be recognized."
-msgstr "Масофа дар пикселҳо пеш аз ташхис шудани ҳаракат."
-
-#: ../settings.ui.h:126
-msgid "Hide hover click window"
-msgstr "Пинҳон кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\""
-
-#: ../settings.ui.h:127
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
-"Пинҳон кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\" ҳангоми иҷро "
-"шудани Onboard."
-
-#: ../settings.ui.h:128
-msgid "Enable click type window on exit"
-msgstr "Фаъол кардани равзанаи намудҳои зеркунӣ пеш аз баромад"
-
-#: ../settings.ui.h:129
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Ҳамеша фаъол кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\" пеш аз "
-"баромад аз Onboard."
-
-#: ../settings.ui.h:130
-msgid "Hover Click"
-msgstr "Зеркунӣ дар боло нигаҳ доштан"
-
-#: ../settings.ui.h:131
-msgid "Enable  keyboard _scanning"
-msgstr "Фаъол кардани сканкунии _клавиатура"
-
-#: ../settings.ui.h:132
-msgid "Sc_anner Settings"
-msgstr "_Танзимоти сканер"
-
-#: ../settings.ui.h:133
-msgid "Keyboard Scanning"
-msgstr "Сканкунии клавиатура"
-
-#: ../Onboard/pypredict/tools/filter.py:382 ../Onboard/SpellChecker.py:617
-#: ../Onboard/SpellChecker.py:653 ../Onboard/SpellChecker.py:692
-#: ../Onboard/SpellChecker.py:706 ../Onboard/LanguageSupport.py:168
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/utils.py:1072
-msgid "Failed to execute '{}', {}"
-msgstr "Иҷрои \"{}\", {} бо нокомӣ дучор шуд"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Show Onboard"
-msgstr "_Намоиш додани Onboard"
-
-#: ../Onboard/Indicator.py:69
-msgid "_Hide Onboard"
-msgstr "_Пинҳон кардани Onboard"
-
-#: ../Onboard/Indicator.py:117
-msgid "Onboard on-screen keyboard"
-msgstr "Клавиатураи экрании Onboard"
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
+msgid "Gradient"
+msgstr "Градиент"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "_Кунҷ:"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Самти равшанӣ"
+
+#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "_Сабк:"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "М_удавварӣ:"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "_Андоза:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "П_аҳноии марз:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "Сабки тугма"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "_Калид:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "_Марз:"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "Градиентҳо"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "_Қувва:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "Соя"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Тугмаҳо"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "_Шрифт:"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "_Сифатҳо:"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "Шрифт"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "А_ндозаи мустақил"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "_Тугмаи Super:"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "Аз нав таъин кардани барчасп"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "Барчапспҳо"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Танзимоти Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Танзимоти клавиатураи экрании Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Тағйир додани танзимоти Onboard"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
@@ -681,49 +728,57 @@ msgstr ""
 "\"{filename}\"-ро пайдо кардан нашуд, ба ҷойи он {description}-и пешфарз бор "
 "шуда истодааст"
 
-#: ../Onboard/ConfigUtils.py:436
+#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
 #, python-brace-format
 msgid "failed to find {description} '{filename}'"
 msgstr "{description} \"{filename}\" ёфт нашуд"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
 #, python-brace-format
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' ёфт шудааст."
 
-#: ../Onboard/ConfigUtils.py:531
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:475
+#, fuzzy, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr ""
+"{description} \"{filename}\" ҳоло ёфт нашуд, бо масирҳои пешфарз амал такрор "
+"шуда истодааст"
+
+#: ../Onboard/ConfigUtils.py:568
 #, python-brace-format
 msgid "Looking for system defaults in {paths}"
 msgstr "Ҷустуҷӯи пешфарзҳои система дар {paths} рафта истодааст"
 
-#: ../Onboard/ConfigUtils.py:542
+#: ../Onboard/ConfigUtils.py:579
 msgid "Failed to read system defaults. "
 msgstr "Пешфарзҳои система хонда нашуданд. "
 
-#: ../Onboard/ConfigUtils.py:546
+#: ../Onboard/ConfigUtils.py:583
 msgid "No system defaults found."
 msgstr "Ягон пешфарзи система ёфт нашуд."
 
-#: ../Onboard/ConfigUtils.py:548
+#: ../Onboard/ConfigUtils.py:585
 #, python-brace-format
 msgid "Loading system defaults from {filename}"
 msgstr "Боркунии пешфарзҳои система аз {filename}"
 
-#: ../Onboard/ConfigUtils.py:572
+#: ../Onboard/ConfigUtils.py:609
 msgid "Found system default '[{}] {}={}'"
 msgstr "Пешфарзи системаи \"[{}] {}={}\" ёфт шуд"
 
-#: ../Onboard/ConfigUtils.py:590
+#: ../Onboard/ConfigUtils.py:627
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Пешфарзҳои система: Калиди номаълуми \"{}\" дар қисмати \"{}\""
 
-#: ../Onboard/ConfigUtils.py:597
+#: ../Onboard/ConfigUtils.py:634
 msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
 msgstr ""
 "Пешфарзҳои система: Қимати беэътибори enum барои калиди \"{}\" дар қисмати "
 "\"{}\": {}"
 
-#: ../Onboard/ConfigUtils.py:610
+#: ../Onboard/ConfigUtils.py:647
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -731,7 +786,7 @@ msgstr ""
 "Пешфарзҳои система: Қимати беэътибор барои калиди \"{}\" дар қисмати \"{}\"\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:673
+#: ../Onboard/ConfigUtils.py:710
 msgid "Failed to get gsettings value. "
 msgstr "Қимати gsettings гирифта нашуд. "
 
@@ -858,79 +913,341 @@ msgstr ""
 msgid "Input Device"
 msgstr "Дастгоҳи вуруд"
 
-#. run again
-#: ../Onboard/KbdWindow.py:75 ../data/onboard.desktop.in.h:1
+#: ../Onboard/OnboardGtk.py:357
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard барои пайдо шудан бо равзанаи кушодани экран конфигуратсия карда "
+"шудааст; масалан, барои пӯшидани пардаи экрани бо парол муҳофизатшуда.\n"
+"\n"
+"Аммо система дигар барои истифодаи Onboard барои кушодани экран "
+"конфигуратсия нашудааст. Сабаби эҳтимолӣ метавонад барномаи дигаре бошад, ки "
+"системаро барои истифодаи ягон чизи дигар конфигуратсия кардааст.\n"
+"\n"
+"Шумо мехоҳед, ки системаро барои намоиш додани Onboard ҳангоми кушодани "
+"экран конфигуратсия кунед?"
+
+#: ../Onboard/OnboardGtk.py:376
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard барои пайдо шудан бо равзанаи кушодани экран конфигуратсия карда "
+"шудааст; масалан, барои пӯшидани пардаи экрани бо парол муҳофизатшуда.\n"
+"\n"
+"Аммо, ин функсия дар система ғайрифаъол карда шудааст.\n"
+"\n"
+"Шумо мехоҳед, ки онро фаъол кунед?"
+
+#. Default dialog title: name of the application """
+#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
 msgid "Onboard"
 msgstr "Onboard"
 
-#: ../Onboard/KbdWindow.py:174
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"ягон шаффофии равзана дастрас нест; экран каналҳои алфаро дастгирӣ намекунад"
+#: ../Onboard/utils.py:386
+msgid "New Input Device"
+msgstr "Дастгоҳи нави вуруд"
 
-#: ../Onboard/settings.py:211
+#: ../Onboard/utils.py:387
+msgid "Onboard has detected a new input device"
+msgstr "Onboard дастгоҳи нави вурудро пайдо кард"
+
+#: ../Onboard/utils.py:396
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+"Шумо мехоҳед, ки ин дастгоҳро барои сканкунии клавиатура истифода баред?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/utils.py:403
+msgid "Use device"
+msgstr "Истифодаи дастгоҳ"
+
+#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
+#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
+#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
+msgid "Failed to execute '{}', {}"
+msgstr "Иҷрои \"{}\", {} бо нокомӣ дучор шуд"
+
+#: ../Onboard/utils.py:1808
+msgid "failed to create directory '{}': {}"
+msgstr "қатъи эҷодкунии директорияи '{}': {}"
+
+#: ../Onboard/Indicator.py:31
+msgid "_Show Onboard"
+msgstr "_Намоиш додани Onboard"
+
+#: ../Onboard/Indicator.py:32
+msgid "_Hide Onboard"
+msgstr "_Пинҳон кардани Onboard"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:55
+#, fuzzy
+msgid "_Preferences"
+msgstr "Хусусиятҳо"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:66
+#, fuzzy
+msgid "_Quit"
+msgstr "Хуруҷ"
+
+#: ../Onboard/Indicator.py:160
+msgid "Onboard on-screen keyboard"
+msgstr "Клавиатураи экрании Onboard"
+
+#: ../Onboard/WordSuggestions.py:2102
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>Onboard пешниҳодҳои калимаҳои ҷамъшударо кушода натавонист.</big>\n"
+"\n"
+"Паёми хато:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Пешниҳодҳои калимаҳоро ба нусхаи эҳтиётии охирин бармегардед (тавсия дода "
+"мешавад)?"
+
+#: ../Onboard/WordSuggestions.py:2121
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>Onboard пешниҳодҳои калимаҳои ҷамъшударо кушода натавонист.</big>\n"
+"\n"
+"Паёми хато:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Пешниҳодҳо бояд дубора танзим карда шаванд, вале файли хатогӣ дар макони "
+"зерин мемонад \n"
+"'{}'"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Клавиатураи экрании Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Клавиатураи экрании чандир барои GNOME"
+
+#: ../Onboard/LayoutLoaderSVG.py:139
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"Боркунии тарҳбандии кӯҳна, формати \"{}\". Лутфан, ба формати ҷории \"{}\" "
+"навсозӣ кунед"
+
+#: ../Onboard/LayoutLoaderSVG.py:378
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr ""
+"Тугмаи \"{}\" нодида гирифта шуд. Ягон номи файли svg муайян карда нашуд."
+
+#: ../Onboard/LayoutLoaderSVG.py:606
+msgid "Snippet {}"
+msgstr "Порчаи {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:610
+msgid ", unassigned"
+msgstr ", таъиннашуда"
+
+#: ../Onboard/LayoutLoaderSVG.py:919
+msgid "copying layout '{}' to '{}'"
+msgstr "нусхабардории тарҳбандии \"{}\" ба \"{}\""
+
+#: ../Onboard/LayoutLoaderSVG.py:939
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+"Фармони copy_layouts иҷро нашуд, формати тарҳбандии \"{}\" беэътибор аст."
+
+#: ../Onboard/LayoutLoaderSVG.py:982
+msgid "copying svg file '{}' to '{}'"
+msgstr "нусхабардории файли svg-и \"{}\" ба \"{}\""
+
+#. ##############
+#: ../Onboard/SnippetView.py:19
+msgid "<Enter label>"
+msgstr "<Барчаспро ворид кунед>"
+
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter text>"
+msgstr "<Матнро ворид кунед>"
+
+#: ../Onboard/SnippetView.py:32
+msgid "Button Number"
+msgstr "Рақами тугма"
+
+#: ../Onboard/SnippetView.py:39
+msgid "Button Label"
+msgstr "Барчаспи тугма"
+
+#: ../Onboard/SnippetView.py:48
+msgid "Snippet Text"
+msgstr "Матни порча"
+
+#: ../Onboard/SnippetView.py:93
+msgid "Must be an integer number"
+msgstr "Бояд рақами яклухт бошад"
+
+#: ../Onboard/SnippetView.py:102
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Порчаи %d аллакай истифода мешавад."
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:9
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "_Ҳангоми таҳрири матн ба таври худкор намоиш диҳед"
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "Ба таври пинҳоншуда оғоз кардани Onboard."
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../Onboard/settings.py:237
 msgid "Onboard Preferences"
 msgstr "Бартариҳои Onboard"
 
-#: ../Onboard/settings.py:574
-#, fuzzy
+#: ../Onboard/settings.py:627
 msgid "Copy layout '{}' to this new name:"
-msgstr "нусхабардории тарҳбандии \"{}\" ба \"{}\""
+msgstr "Нусха бардоштани тарҳбандии '{}' ба ин номи нав:"
 
-#: ../Onboard/settings.py:587
+#: ../Onboard/settings.py:640
 msgid "Delete layout '{}'?"
-msgstr ""
+msgstr "Тарҳбандии '{}'-ро нест мекунед?"
 
-#: ../Onboard/settings.py:601
-msgid "No file manager to open layout folder"
-msgstr "Ягон мудири файлҳо барои кушодани ҷузвдони тарҳбандӣ мавҷуд нест"
-
-#: ../Onboard/settings.py:633
+#: ../Onboard/settings.py:688
 msgid "System settings not found ({}): {}"
 msgstr "Танзимоти система ёфт нашуд ({}): {}"
 
-#. Frame resize handles: None
-#: ../Onboard/settings.py:646
+#. Window handles: None
+#: ../Onboard/settings.py:701
 msgid "None"
 msgstr "Ҳеҷ"
 
+#. Window handles: None
+#: ../Onboard/settings.py:703
+msgid "Movement only"
+msgstr ""
+
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:648
-msgid "Corners only"
+#: ../Onboard/settings.py:705
+#, fuzzy
+msgid "Corners"
 msgstr "Танҳо кунҷҳо"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:650
+#: ../Onboard/settings.py:707
 msgid "All corners and edges"
 msgstr "Ҳамаи кунҷҳо ва канорҳо"
 
-#: ../Onboard/settings.py:691
-#, fuzzy
+#: ../Onboard/settings.py:748
 msgid "Core layouts"
-msgstr "Файлҳои тарҳбандии Onboard"
+msgstr "Тарҳбандиҳои асосӣ"
 
-#: ../Onboard/settings.py:692
+#: ../Onboard/settings.py:749
 msgid "Contributions"
-msgstr ""
+msgstr "Саҳмгузорон"
 
-#: ../Onboard/settings.py:693
+#: ../Onboard/settings.py:750
 msgid "User layouts"
-msgstr ""
+msgstr "Тарҳбандиҳои корбар"
 
-#: ../Onboard/settings.py:727
+#: ../Onboard/settings.py:785
 msgid "Author: {}"
-msgstr ""
+msgstr "Муаллиф: {}"
 
-#: ../Onboard/settings.py:730
-#, fuzzy
+#: ../Onboard/settings.py:789
 msgid "About Layout"
-msgstr "Илова кардани тарҳбандӣ"
+msgstr "Дар бораи тарҳбандӣ"
 
-#: ../Onboard/settings.py:836
+#: ../Onboard/settings.py:894
 msgid "Enter a name for the new theme:"
 msgstr "Номеро барои мавзӯи нав ворид кунед:"
 
-#: ../Onboard/settings.py:844
+#: ../Onboard/settings.py:902
 #, python-brace-format
 msgid ""
 "This theme file already exists.\n"
@@ -943,974 +1260,825 @@ msgstr ""
 "\n"
 "Онро рӯйҳамнависӣ мекунед?"
 
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:919
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Мавзӯи интихобшударо ба пешфарзҳои Onboard дубора танзим мекунед?"
 
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:921
 msgid "Delete selected theme?"
 msgstr "Мавзӯи интихобшударо нест мекунед?"
 
-#: ../Onboard/settings.py:991
-msgid "Reset"
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1050
+#, fuzzy
+msgid "_Reset"
 msgstr "Бозсозӣ"
 
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1054
+msgid "_Delete"
+msgstr ""
+
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1242
+#: ../Onboard/settings.py:1359
 msgid "Flat"
 msgstr "Ҳамвор"
 
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1244 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Градиент"
-
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:1246
+#: ../Onboard/settings.py:1363
 msgid "Dish"
 msgstr "Табақ"
 
-#: ../Onboard/settings.py:1295 ../Onboard/settings.py:1352
+#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
 msgid "Default"
 msgstr "Пешфарз"
 
-#: ../Onboard/settings.py:1336
+#: ../Onboard/settings.py:1453
 msgid "Bold"
 msgstr "Пурранг"
 
-#: ../Onboard/settings.py:1338
+#: ../Onboard/settings.py:1455
 msgid "Italic"
 msgstr "Хам"
 
-#: ../Onboard/settings.py:1340
+#: ../Onboard/settings.py:1457
 msgid "Condensed"
 msgstr "Зичшуда"
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:1353
+#: ../Onboard/settings.py:1470
 msgid "Ubuntu Logo"
 msgstr "Тамғаи Ubuntu"
 
-#: ../Onboard/settings.py:1487
+#: ../Onboard/settings.py:1604
 msgid "Step"
 msgstr "Қадам"
 
-#: ../Onboard/settings.py:1488
+#: ../Onboard/settings.py:1605
 msgid "Left"
 msgstr "Чап"
 
-#: ../Onboard/settings.py:1489
+#: ../Onboard/settings.py:1606
 msgid "Right"
 msgstr "Рост"
 
-#: ../Onboard/settings.py:1490
+#: ../Onboard/settings.py:1607
 msgid "Up"
 msgstr "Боло"
 
-#: ../Onboard/settings.py:1491
+#: ../Onboard/settings.py:1608
 msgid "Down"
 msgstr "Поён"
 
-#: ../Onboard/settings.py:1492
+#: ../Onboard/settings.py:1609
 msgid "Activate"
 msgstr "Фаъол кардан"
 
-#: ../Onboard/settings.py:1661
+#: ../Onboard/settings.py:1778
 msgid "Action:"
 msgstr "Амал:"
 
-#: ../Onboard/settings.py:1825
+#: ../Onboard/settings.py:1942
 msgid "Disabled"
 msgstr "Ғайрифаъолшуда"
 
-#: ../Onboard/settings.py:1831
+#: ../Onboard/settings.py:1948
 msgid "Button"
 msgstr "Тугма"
 
-#: ../Onboard/settings.py:1886 ../Onboard/settings.py:1931
+#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
 msgid "Press a button..."
 msgstr "Тугмаеро пахш кунед..."
 
-#: ../Onboard/settings.py:1933
+#: ../Onboard/settings.py:2050
 msgid "Press a key..."
 msgstr "Тугмаеро пахш кунед..."
 
-#: ../Onboard/Config.py:192
-msgid "Layout file ({}) or name"
-msgstr "Файл ({}) ё номи тарҳбандӣ"
-
-#: ../Onboard/Config.py:195
-msgid "Theme file (.theme) or name"
-msgstr "Файл (.theme) ё номи мавзӯъname"
-
-#: ../Onboard/Config.py:196
-msgid "Window x position"
-msgstr "Ҷойгиршавии равзана x"
-
-#: ../Onboard/Config.py:197
-msgid "Window y position"
-msgstr "Ҷойгиршавии равзанаи y"
-
-#: ../Onboard/Config.py:199
-msgid "Window size, widthxheight"
-msgstr "Андозаи равзана, widthxheight"
-
-#: ../Onboard/Config.py:201
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "Оғоз кардан дар ҳолати XEmbed, масалан барои gnome-screensaver"
-
-#: ../Onboard/Config.py:204
-msgid "Keep aspect ratio when resizing the window"
-msgstr "Нигоҳ доштани таносуб ҳангоми тағйир додани андозаи равзана"
-
-#: ../Onboard/Config.py:209
-msgid "Allow multiple Onboard instances"
-msgstr "Иҷозат додани якчанд ҳолати Onboard"
-
-#: ../Onboard/Config.py:211
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
-msgstr ""
-"Бекор кардани ташхиси худкор ва интихоб кардани дастии ҳолати мувофиқат\n"
-"QUIRKS={metacity|compiz|mutter}"
-
-#: ../Onboard/Config.py:215
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-"Нокомии ором ҳангоми оғози муҳитҳои додашудаи мизи корӣ. DESKTOPS - ин "
-"рӯйхати бо вергулҳо ҷудошудаи номҳои мизи кории XDG мебошад, масалан GNOME "
-"барои GNOME Shell."
-
-#: ../Onboard/Config.py:281
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Интиқолдиҳии директорияи корбари \"{}\" ба \"{}\"."
-
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:289
-msgid "failed to migrate user directory. "
-msgstr ""
-
-#: ../Onboard/Config.py:595
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "тарҳбандии \"{filename}\" вуҷуд надорад"
-
-#: ../Onboard/Config.py:637
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "мавзӯи \"{filename}\" вуҷуд надорад"
-
-#: ../Onboard/Config.py:662
-msgid "Loading theme from '{}'"
-msgstr "Боркунии мавзӯъ аз \"{}\""
-
-#: ../Onboard/Config.py:666
-msgid "Unable to read theme '{}'"
-msgstr "Мавзӯи \"{}\" хонда нашуд"
-
-#: ../Onboard/Config.py:793
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"Фаъолкунии намоишдиҳии худкор \"Қобилияти дастрасии Gnome\"-ро талаб "
-"мекунад.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-
-#: ../Onboard/Config.py:1297
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "схемаи рангҳои \"{filename}\" вуҷуд надорад"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Танзимоти Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Танзимоти клавиатураи экрании Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Тағйир додани танзимоти Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "Фаъол кардани зеркунӣ бо боло нигаҳ доштан"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "Тугмаҳои рақамдор"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "Alt"
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "CAPS"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "Ctrl"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "Del"
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "Дубора зер кардан"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "Зеркунӣ бо кашдиҳӣ"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "End"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Esc"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "Тугмаҳои вазифадор"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "Блоки рақамҳо ва тугмаҳои вазифадор"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "Пинҳон кардани Onboard"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
-msgstr ""
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Hm"
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "Ins"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "Клавиатураи асосӣ"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "Меню"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "Зеркунии тугмаи мобайни муш"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "Интиқол додани Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "Блоки рақамҳо ва порчаҳо"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Таваққуф"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "Хусусиятҳо"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Prnt"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "Хуруҷ"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "Бозгашт"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "Зеркунии тугмаи рости муш"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Scroll"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "Фазо"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "Иваз кардани ёрдамчиҳои зеркунӣ"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "Tab"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "Win"
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
-msgstr ""
-
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
-msgstr ""
-
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
-msgstr ""
-
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
-msgstr ""
-
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
-msgstr ""
-
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
-msgstr ""
-
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr ""
-
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr ""
-
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr ""
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr ""
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr ""
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr ""
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr ""
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr ""
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr ""
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr ""
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr ""
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr ""
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr ""
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr ""
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr ""
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr ""
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr ""
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr ""
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr ""
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr ""
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr ""
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr ""
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr ""
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr ""
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr ""
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr ""
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr ""
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr ""
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr ""
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr ""
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr ""
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr ""
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
+#: ../settings.ui.h:1
 #, fuzzy
-msgid "Grid of keys, suitable for keyboard scanning"
-msgstr "Фаъол кардани сканкунии _клавиатура"
+msgid "Key-repeat"
+msgstr "тугмаи такрорӣ"
 
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
+#: ../settings.ui.h:2
 #, fuzzy
-msgid "Hide keyboard"
-msgstr "Пинҳон кардани Onboard"
+msgid "International character selection"
+msgstr "интихоби аломатҳои байналмилалӣ"
 
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr "GTK"
+
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr "XInput"
+
+#: ../settings.ui.h:5
+msgid "XTest"
+msgstr "XTest"
+
+#: ../settings.ui.h:6
+msgid "AT-SPI"
+msgstr "AT-SPI"
+
+#: ../settings.ui.h:7
+msgid "Remember nothing"
+msgstr ""
+
+#: ../settings.ui.h:8
+msgid "Don't remember new words"
+msgstr ""
+
+#: ../settings.ui.h:9
+msgid "General"
+msgstr "Умумӣ"
+
+#: ../settings.ui.h:10
+msgid "Window"
+msgstr "Равзана"
+
+#: ../settings.ui.h:11
+msgid "Layout"
+msgstr "Тарҳбандӣ"
+
+#: ../settings.ui.h:12
+msgid "Theme"
+msgstr "Мавзӯъ"
+
+#: ../settings.ui.h:15
+msgid "Typing Assistance"
+msgstr "Ёвари ҳуруфчинӣ"
+
+#: ../settings.ui.h:16
+msgid "Universal Access"
+msgstr "Дастрасии универсалӣ"
+
+#: ../settings.ui.h:17
+#, fuzzy
+msgid "Latch, then lock"
+msgstr "пӯшонед ва баъд қулф кунед"
+
+#: ../settings.ui.h:18
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "пӯшонед ва барои қулф кардан дубора зер кунед"
+
+#: ../settings.ui.h:19
+#, fuzzy
+msgid "Latch only"
+msgstr "танҳо пӯшонед"
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Lock only"
+msgstr "танҳо қулф кунед"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Push button"
+msgstr "Тугмаеро пахш кунед..."
+
+#: ../settings.ui.h:22
+msgid "none"
+msgstr "ҳеҷ"
+
+#: ../settings.ui.h:23
+msgid "single-touch"
+msgstr "якламсӣ"
+
+#: ../settings.ui.h:24
+msgid "multi-touch"
+msgstr "чандламсӣ"
+
+#: ../settings.ui.h:25
+msgid "column"
+msgstr "сутун"
+
+#: ../settings.ui.h:26
+msgid "_Auto-show when editing text"
+msgstr "_Ҳангоми таҳрири матн ба таври худкор намоиш диҳед"
+
+#: ../settings.ui.h:27
 msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
 msgstr ""
+"Намоиш додани Onboard ҳангоми дар фокус будани равзанаи ташхисшудаи матнӣ. "
+"\"Қобилияти дастрасии Gnome\" лозим аст."
 
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
+#: ../settings.ui.h:28
+msgid "_Settings"
+msgstr "_Танзимот"
+
+#: ../settings.ui.h:29
+msgid "Start Onboard _hidden"
+msgstr "Ба таври _пинҳоншуда оғоз кардани Onboard"
+
+#: ../settings.ui.h:30
+msgid "Start Onboard hidden."
+msgstr "Ба таври пинҳоншуда оғоз кардани Onboard."
+
+#: ../settings.ui.h:31
+msgid "Show/Hide options"
+msgstr "Намоиш додан/Пинҳон кардани имконот"
+
+#: ../settings.ui.h:32
+msgid "_Show status icon"
+msgstr "_Намоиш додани нишонаи вазъият"
+
+#: ../settings.ui.h:33
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr ""
+"Намоиш додани объекти вазъият. Агар шумо ба он нишона зер кунед, Onboard "
+"намоиш дода ё пинҳон карда мешавад."
+
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Намоиш додани _нишонаи шиновар ҳангоми пинҳон будани Onboard"
+
+#: ../settings.ui.h:35
 msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
 msgstr ""
+"Намоиш додани нишонаи шиновар дар мизи корӣ ҳангоми пинҳон будани Onboard. "
+"Барои намоиш додани Onboard нишонаро зер кунед."
 
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr ""
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "Намоиш додан _ҳангоми кушодани экран"
 
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-#, fuzzy
-msgid "Move keyboard"
-msgstr "Интиқол додани Onboard"
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-#, fuzzy
-msgid "Quit Keyboard"
-msgstr "Клавиатура"
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-#, fuzzy
-msgid "Quit Onboard"
-msgstr "Пинҳон кардани Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-#, fuzzy
-msgid "Set and Settings"
-msgstr "Танзимоти сканер"
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296 ../settings_docking_dialog.ui.h:10
-msgid "Settings"
-msgstr "Танзимот"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-msgid "Special characters for interactive Whiteboards, wide"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr ""
-
-#: ../Onboard/WordSuggestions.py:2052
+#: ../settings.ui.h:37
 msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
 msgstr ""
+"Намоиш додани Onboard ҳангоми пайдо шудани равзанаи гуфтугӯи кушодани экран; "
+"ин тавр Onboard метавонад, масалан, барои ворид кардани парол истифода "
+"шавад, ё ки барои баромадан аз пардаи экран, агар он бо парол муҳофизатшуда "
+"бошад, истифода шавад."
 
-#: ../Onboard/WordSuggestions.py:2070
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "Намоиш додани _луқмаҳо"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Намоиш додани луқмаҳо барои тугмаҳои клавиатура."
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Намоиш додани луқмаҳо барои тугмаҳои клавиатура."
+
+#: ../settings.ui.h:41
+msgid "Desktop Integration"
+msgstr "Ҳамгароии мизи корӣ"
+
+#: ../settings.ui.h:42
+msgid "Dock to screen edge"
+msgstr "Мустақар кардан ба канори экран"
+
+#: ../settings.ui.h:43
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "Васл кардани клавиатура ба канори экран."
+
+#: ../settings.ui.h:44
+msgid "Docking"
+msgstr "Васлкунӣ"
+
+#: ../settings.ui.h:45
+msgid "Show window _decoration"
+msgstr "Намоиш додани _ороиши равзана"
+
+#: ../settings.ui.h:46
+msgid "Show window caption and frame."
+msgstr "Намоиш додани сарнавор ва чорчӯбаи равзана."
+
+#: ../settings.ui.h:47
+msgid "Show always on visible _workspace"
+msgstr "Намоиш додан ҳамеша танҳо дар фазои кории _намоён"
+
+#: ../settings.ui.h:48
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "Ҳолати \"часпак\" барои клавиатура ва нишонаи шиновар."
+
+#: ../settings.ui.h:49
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "Ҳолати \"часпак\" барои клавиатура ва нишонаи шиновар."
+
+#: ../settings.ui.h:50
+msgid "_Force window to top"
+msgstr "_Нигоҳ доштани равзана дар болои равзанаҳои дигар"
+
+#: ../settings.ui.h:51
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "Кӯшиш кардани нигоҳ доштани Onboard дар болои ҳама чизи экран."
+
+#: ../settings.ui.h:52
+msgid "Keep _aspect ratio"
+msgstr "Нигоҳ доштани _таносуб"
+
+#: ../settings.ui.h:53
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "Мувофиқ кардани андозаи равзана ба таносуби тарҳбандӣ."
+
+#: ../settings.ui.h:54
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "Мувофиқ кардани андозаи равзана ба таносуби тарҳбандӣ."
+
+#: ../settings.ui.h:55
+msgid "Floating Window Options"
+msgstr "Имконоти равзанаи шиноварӣ"
+
+#: ../settings.ui.h:56
+msgid "Window options"
+msgstr "Имконоти равзанаҳо"
+
+#: ../settings.ui.h:57
+msgid "Wind_ow:"
+msgstr "_Равзана:"
+
+#: ../settings.ui.h:58
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr ""
+"Шаффофӣ барои тамоми равзанаи клавиатура. Дастгирии мизи кории таркибӣ лозим "
+"аст."
+
+#: ../settings.ui.h:60
+msgid "Transparency of the keyboard background"
+msgstr "Шаффофии пасзаминаи клавиатура"
+
+#: ../settings.ui.h:61
+msgid "_No background"
+msgstr "_Бе пасзамина"
+
+#: ../settings.ui.h:62
+msgid "Show the desktop through the gaps between keys."
+msgstr "Намоиш додани мизи корӣ дар фосилаҳои байни тугмаҳо."
+
+#: ../settings.ui.h:63
+msgid "Transparency"
+msgstr "Шаффофӣ"
+
+#: ../settings.ui.h:64
+msgid "Set _transparency to"
+msgstr "Таъин кардани шаффофият _ба"
+
+#: ../settings.ui.h:65
+msgid "Enable inactive transparency. Requires compositing."
+msgstr ""
+"Фаъол кардани шаффофияти ғайрифаъол. Дастгирии мизи кории таркибӣ лозим аст."
+
+#: ../settings.ui.h:66
 msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr ""
+"Шаффофият ҳангоми аз клавиатура берун рафтани нишондиҳандаи муш. Дастгирии "
+"мизи кории таркибӣ лозим аст."
+
+#: ../settings.ui.h:67
+msgid "after"
+msgstr "баъд аз"
+
+#: ../settings.ui.h:68
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "Таъхир дар сонияҳо то фаъол шудани шаффофияти ғайрифаъол."
+
+#: ../settings.ui.h:69
+msgid "seconds"
+msgstr "сония"
+
+#: ../settings.ui.h:70
+msgid "When Inactive"
+msgstr "Ҳангоми ғайрифаъол будан"
+
+#: ../settings.ui.h:71
+#, fuzzy
+msgid "_Window handles:"
+msgstr "Имконоти равзанаҳо"
+
+#: ../settings.ui.h:72
+msgid "Resize Protection"
+msgstr "Муҳофизат аз тағйир додани андоза"
+
+#: ../settings.ui.h:73
+msgid "Name"
+msgstr "Ном"
+
+#: ../settings.ui.h:74
+msgid "Description"
+msgstr "Тавсиф"
+
+#: ../settings.ui.h:75
+msgid "_Open layouts folder"
+msgstr "_Ҷузвдони тарҳбандиҳоро мекушояд"
+
+#: ../settings.ui.h:76
+msgid "C_ustomize theme"
+msgstr "Ш_ахсисозӣ кардани мавзӯъ"
+
+#: ../settings.ui.h:77
+msgid "Follow _system theme"
+msgstr "Пайгирӣ кардани _мавзӯи система"
+
+#: ../settings.ui.h:78
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"Дар ёд доред, ки мавзӯи Onboard маротибаи охирин барои ҳар як мавзӯи система "
+"истифода шуда буд."
+
+#: ../settings.ui.h:79
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Порчаҳо - ин қисмҳои матн мебошанд, ки ҳангоми пахш кардани тугмаи мувофиқ "
+"дар Onboard ворид карда мешаванд."
+
+#: ../settings.ui.h:80
+msgid "Show label popups"
+msgstr "Намоши додани барчаспҳои пайдошаванда"
+
+#: ../settings.ui.h:81
+msgid "Show label popups above pressed keys."
+msgstr "Намоши додани барчаспҳои пайдошаванда дар болои тугмаҳои зершуда."
+
+#: ../settings.ui.h:82
+msgid "Play sound"
+msgstr "Пахш кардани садо"
+
+#: ../settings.ui.h:83
+msgid "Play click sound on keypress."
+msgstr "Пахш кардани садои тугмаи зершуда."
+
+#: ../settings.ui.h:84
+msgid "Key-press Feedback"
+msgstr "Посухи зеркунии тугмаҳо"
+
+#: ../settings.ui.h:85
+msgid "Show secondary labels"
+msgstr "Намоиш додани барчаспҳои иловагӣ"
+
+#: ../settings.ui.h:86
+msgid "Show characters reachable with or without the shift key."
+msgstr "Намоиш додани аломатҳои дастрас бо ё бе тугмаи Shift."
+
+#: ../settings.ui.h:87
+msgid "Key Labels"
+msgstr "Барчаспҳои тугмаҳо"
+
+#: ../settings.ui.h:88
+msgid "_Long press action:"
+msgstr "_Амали пахши дароз:"
+
+#: ../settings.ui.h:89
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+"Интихоб байни менюҳои тугмаи такрорӣ ва пахши дароз. Асосан ба тугмаҳои "
+"алифбоӣ-ададӣ таъсир мерасонад."
+
+#: ../settings.ui.h:90
+msgid "Modifier _behavior:"
+msgstr "Рафтори _тағйирдиҳанда:"
+
+#: ../settings.ui.h:91
+msgid "Behavior of modifier and layer keys."
+msgstr "Рафтори тугмаҳои тағйирдиҳанда ва сатҳҳо."
+
+#: ../settings.ui.h:92
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "Таъхири сардиҳии худкори тағйирдиҳанда:"
+
+#: ../settings.ui.h:93
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"Сонияҳои бефаъолиятӣ то сар додани тугмаҳои тағйирдиҳанда ва сатҳҳо. Барои "
+"ғайрифаъол кардан ба 0 таъин кунед."
+
+#: ../settings.ui.h:94
+msgid "Key Behavior"
+msgstr "Рафтори тугмаҳо"
+
+#: ../settings.ui.h:95
+msgid "_Touch input:"
 msgstr ""
 
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<Барчаспро ворид кунед>"
+#: ../settings.ui.h:96
+msgid "_Input event source:"
+msgstr "_Манбаи рӯйдоди вуруд:"
 
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<Матнро ворид кунед>"
+#: ../settings.ui.h:97
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+"Барои ҳуруфчини устувор дар вурудҳои матнӣ бо интихобҳои зоҳиршаванда, &apos;"
+"XInput&apos;-ро интихоб намоед. Имкони &apos;GTK&apos; мутобиқати беҳтаринро "
+"пешниҳод мекунад, вале ҳуруфчинӣ метавонад ҳангоми доштани курсор, масалан "
+"дар равзанаҳои зоҳиршавандаи кушода, қатъ карда шавад."
 
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "Рақами тугма"
+#: ../settings.ui.h:98
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+"Барои ҳуруфчини устувор дар вурудҳои матнӣ бо интихобҳои зоҳиршаванда, "
+"\"XInput\"-ро интихоб намоед. Имкони \"GTK\" мутобиқати беҳтаринро пешниҳод "
+"мекунад, вале ҳуруфчинӣ метавонад ҳангоми доштани курсор, масалан дар "
+"равзанаҳои зоҳиршавандаи кушода, қатъ карда шавад."
 
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "Барчаспи тугма"
+#: ../settings.ui.h:99
+msgid "Input Options"
+msgstr "Имконоти вуруд"
 
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "Матни порча"
+#: ../settings.ui.h:100
+#, fuzzy
+msgid "Keystroke _generation:"
+msgstr "Эҷодкунии _пахшкуниҳои тугмаҳо:"
 
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "Бояд рақами яклухт бошад"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Порчаи %d аллакай истифода мешавад."
-
-#: ../Onboard/KeyboardWidget.py:1400
-msgid "New snippet"
-msgstr "Порчаи нав"
-
-#: ../Onboard/KeyboardWidget.py:1404
-msgid "_Save snippet"
-msgstr "_Захира кардани порча"
-
-#: ../Onboard/KeyboardWidget.py:1416
-msgid "Enter a new snippet for this button:"
-msgstr "Порчаи навро барои ин тугма ворид кунед:"
-
-#: ../Onboard/KeyboardWidget.py:1422
-msgid "_Button label:"
-msgstr "_Барчаспи тугма:"
-
-#: ../Onboard/KeyboardWidget.py:1426
-msgid "S_nippet:"
-msgstr "П_орча:"
-
-#: ../Onboard/KeyboardWidget.py:1508
-msgid " - System Language"
+#: ../settings.ui.h:101
+msgid "Delay between keystrokes in milliseconds:"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1542
-msgid "Other _Languages"
+#: ../settings.ui.h:102
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1544
-msgid "_Languages"
+#: ../settings.ui.h:103
+msgid "0,00"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Фармоиш додани мавзӯъ"
+#: ../settings.ui.h:104
+#, fuzzy
+msgid "Keystroke Generation"
+msgstr "Эҷодкунии _пахшкуниҳои тугмаҳо:"
 
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Схемаи _рангҳо"
+#: ../settings.ui.h:105
+msgid "Advanced"
+msgstr "Иловагӣ"
 
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Кунҷ:"
+#: ../settings.ui.h:106
+msgid "Show _suggestions"
+msgstr "_Намоиш додани пешниҳодҳо"
 
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Самти равшанӣ"
+#: ../settings.ui.h:107
+msgid "Enable word completion and prediction."
+msgstr "Фаъол кардани анҷомдиҳӣ ва пешгӯии калимаҳо."
 
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Сабк:"
+#: ../settings.ui.h:108
+msgid "Show spelling suggestions"
+msgstr "Намоиш додани пешниҳодҳои санҷиши имло"
 
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "М_удавварӣ:"
+#: ../settings.ui.h:109
+msgid "Check spelling of the word at or before the cursor."
+msgstr "Санҷиши дурустнависии калима пеш ё баъди курсори муш."
 
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "_Андоза:"
+#: ../settings.ui.h:110
+msgid "_Learn from typed text"
+msgstr "_Ёд гирифтан аз матни воридшуда"
 
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "П_аҳноии марз:"
+#: ../settings.ui.h:111
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+"Калимаҳои нав, навӣ ва такронии онҳоро барои беҳтаркунии пешниҳодҳо дар "
+"хотир доред."
 
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Сабки тугма"
+#: ../settings.ui.h:112
+msgid "Insert word _separators"
+msgstr "Дарҷ кардани _тақсимкунандаҳои калима"
 
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Калид:"
+#: ../settings.ui.h:113
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+"Калимаҳоро илова кунед, ва ҳангоми дарҷкунии пешниҳодҳои он бо аломатҳои "
+"нуқтагузорӣ, фосилаҳоро тоза намоед."
 
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Марз:"
+#: ../settings.ui.h:114
+msgid "Options"
+msgstr "Имконот"
 
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Градиентҳо"
+#: ../settings.ui.h:115
+msgid "Show lan_guage switcher"
+msgstr "Намоиш додани ивазкунандаи _забон"
 
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Қувва:"
+#: ../settings.ui.h:116
+msgid "Show a button for language selection."
+msgstr "Намоиш додани тугма барои интихоби забон."
 
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Соя"
+#: ../settings.ui.h:117
+msgid "Show button to pause learning"
+msgstr "Намоиш додани тугма барои таваққуфи омузиш"
 
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
+#: ../settings.ui.h:118
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr ""
+"Калимаҳои воридшуда ба ҳофиза илова намешаванд, агар ин тугма пахш карда "
+"бошад."
+
+#: ../settings.ui.h:119
+msgid "Buttons"
 msgstr "Тугмаҳо"
 
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Шрифт:"
+#: ../settings.ui.h:120
+msgid "Word Suggestions"
+msgstr "Пешниҳодҳои калимаҳо"
 
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Сифатҳо:"
+#: ../settings.ui.h:121
+msgid "Auto-capitalize while typing"
+msgstr "Гузоштани ҳарфи калон ба таври худкор ҳангоми ҳуруфчинӣ"
 
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Шрифт"
+#: ../settings.ui.h:122
+msgid "Automatically capitalize sentence begins and name words."
+msgstr "Гузоштани ҳарфи калон ба таври худкор ба номҳо ва дар оғози ҷумла."
 
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "А_ндозаи мустақил"
+#: ../settings.ui.h:123
+msgid "Auto-correct spelling"
+msgstr "Ислоҳи худкори синҷиши имло"
 
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Тугмаи Super:"
+#: ../settings.ui.h:124
+msgid "Automatically correct the last word."
+msgstr "Ислоҳ кардани калимаи охирин ба таври худкор."
 
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Аз нав таъин кардани барчасп"
+#: ../settings.ui.h:125
+msgid "The spell check engine to use."
+msgstr "Системаи санҷиши имлое, ки истифода мешавад."
 
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Барчапспҳо"
+#: ../settings.ui.h:126
+msgid "Spell-check backend:"
+msgstr "Механизми санҷиши имло:"
 
-#: ../Onboard/utils.py:324
-msgid "New Input Device"
-msgstr "Дастгоҳи нави вуруд"
+#: ../settings.ui.h:127
+msgid "Auto-correction"
+msgstr "Ислоҳи худкор"
 
-#: ../Onboard/utils.py:325
-msgid "Onboard has detected a new input device"
-msgstr "Onboard дастгоҳи нави вурудро пайдо кард"
-
-#: ../Onboard/utils.py:334
-msgid "Do you want to use this device for keyboard scanning?"
+#: ../settings.ui.h:128
+msgid "While  learning is paused:"
 msgstr ""
-"Шумо мехоҳед, ки ин дастгоҳро барои сканкунии клавиатура истифода баред?"
 
-#: ../Onboard/utils.py:338
-msgid "Use device"
-msgstr "Истифодаи дастгоҳ"
+#: ../settings.ui.h:129
+#, fuzzy
+msgid "Learning"
+msgstr "Таваққуфи омузиш"
 
-#: ../Onboard/utils.py:1669
-msgid "failed to create directory '{}': {}"
+#: ../settings.ui.h:130
+msgid "Enable  keyboard _scanning"
+msgstr "Фаъол кардани сканкунии _клавиатура"
+
+#: ../settings.ui.h:131
+msgid "Sc_anner Settings"
+msgstr "_Танзимоти сканер"
+
+#: ../settings.ui.h:132
+msgid "Keyboard Scanning"
+msgstr "Сканкунии клавиатура"
+
+#: ../settings.ui.h:133
+msgid "_Delay:"
+msgstr "_Таъхир:"
+
+#: ../settings.ui.h:134
+msgid "_Motion threshold:"
+msgstr "_Марзи ҳаракат:"
+
+#: ../settings.ui.h:135
+msgid "Time in seconds before a click is triggered."
+msgstr "Вақт дар сонияҳо пеш аз оне, ки зеркунӣ фаъол карда мешавад."
+
+#: ../settings.ui.h:136
+msgid "Distance in pixels before movement will be recognized."
+msgstr "Масофа дар пикселҳо пеш аз ташхис шудани ҳаракат."
+
+#: ../settings.ui.h:137
+msgid "Hide hover click window"
+msgstr "Пинҳон кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\""
+
+#: ../settings.ui.h:138
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr ""
+"Пинҳон кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\" ҳангоми иҷро "
+"шудани Onboard."
+
+#: ../settings.ui.h:139
+msgid "Enable click type window on exit"
+msgstr "Фаъол кардани равзанаи намудҳои зеркунӣ пеш аз баромад"
+
+#: ../settings.ui.h:140
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Ҳамеша фаъол кардани равзанаи \"зеркунӣ дар боло нигаҳ доштан\" пеш аз "
+"баромад аз Onboard."
+
+#: ../settings.ui.h:141
+msgid "Hover Click"
+msgstr "Зеркунӣ дар боло нигаҳ доштан"
+
+#: ../Onboard/WPEngine.py:468
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Боркунии намунаи забони '{}' қатъ шудааст: {} ({})"
+
+#. run again
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "Боло"
+
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "Поён"
+
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "Танзимоти васлкунӣ"
+
+#: ../settings_docking_dialog.ui.h:15
+msgid "Shrink workarea"
+msgstr "Кучак кардани ноҳияи корӣ"
+
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink the available space for maximized windows."
+msgstr "Кучак кардани фазои дастрас барои равзанаҳои густаришдодашуда."
+
+#: ../settings_docking_dialog.ui.h:17
+msgid "Expand on landscape screens"
+msgstr "Густариш додан дар экранҳои уфуқӣ"
+
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand keyboard to the width of the workarea."
+msgstr "Густариш додани клавиатура ба паҳноии ноҳияи корӣ."
+
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand on portrait screens"
+msgstr "Густариш додан дар экранҳои амудӣ"
+
+#: ../settings_docking_dialog.ui.h:20
+msgid "Dock to screen edge:"
+msgstr "Васл кардан ба канори экран:"
+
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to monitor:"
 msgstr ""
 
 #: ../Onboard/Appearance.py:112
@@ -1953,158 +2121,194 @@ msgstr ""
 "Дар файли схемаи рангҳои \"{}\" key_id-и такрорӣ пайдо карда шуд. Key_id-ҳо "
 "бояд танҳо як маротиба ба вуҷуд оянд."
 
-#: ../Onboard/LayoutLoaderSVG.py:134
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Боркунии тарҳбандии кӯҳна, формати \"{}\". Лутфан, ба формати ҷории \"{}\" "
-"навсозӣ кунед"
-
-#: ../Onboard/LayoutLoaderSVG.py:374
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-"Тугмаи \"{}\" нодида гирифта шуд. Ягон номи файли svg муайян карда нашуд."
-
-#: ../Onboard/LayoutLoaderSVG.py:593
-msgid "Snippet {}"
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1413
+#, fuzzy
+msgid "Edit snippet #{}"
 msgstr "Порчаи {}"
 
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:597
-msgid ", unassigned"
-msgstr ", таъиннашуда"
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1417
+msgid "New snippet"
+msgstr "Порчаи нав"
 
-#: ../Onboard/LayoutLoaderSVG.py:906
-msgid "copying layout '{}' to '{}'"
-msgstr "нусхабардории тарҳбандии \"{}\" ба \"{}\""
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1419
+#, fuzzy
+msgid "Enter a new snippet for button #{}:"
+msgstr "Порчаи навро барои ин тугма ворид кунед:"
 
-#: ../Onboard/LayoutLoaderSVG.py:926
-msgid "copy_layouts failed, unsupported layout format '{}'."
+#: ../Onboard/KeyboardWidget.py:1430
+msgid "_Save snippet"
+msgstr "_Захира кардани порча"
+
+#: ../Onboard/KeyboardWidget.py:1450
+msgid "_Button label:"
+msgstr "_Барчаспи тугма:"
+
+#: ../Onboard/KeyboardWidget.py:1454
+msgid "S_nippet:"
+msgstr "П_орча:"
+
+#: ../Onboard/KeyboardWidget.py:1618
+msgid "Other _Languages"
+msgstr "Забонҳои _дигар"
+
+#: ../Onboard/KeyboardWidget.py:1662
+#, fuzzy
+msgid "_Remove suggestion…"
+msgstr "Пешниҳодҳои бештар"
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1716
+#, fuzzy
+msgid "Remove word suggestion"
+msgstr "Пешниҳодҳои бештар"
+
+#: ../Onboard/KeyboardWidget.py:1727
+msgid "Remove '{}' everywhere."
 msgstr ""
-"Фармони copy_layouts иҷро нашуд, формати тарҳбандии \"{}\" беэътибор аст."
 
-#: ../Onboard/LayoutLoaderSVG.py:969
-msgid "copying svg file '{}' to '{}'"
-msgstr "нусхабардории файли svg-и \"{}\" ба \"{}\""
-
-#: ../Onboard/WPEngine.py:427
-msgid "Failed to load language model '{}': {} ({})"
+#: ../Onboard/KeyboardWidget.py:1737
+msgid "This will only affect learned suggestions."
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Клавиатураи экрании Onboard"
+#: ../Onboard/KeyboardWidget.py:1777
+msgid "Remove '{}' only where it occures at text begin."
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Клавиатураи экрании чандир барои GNOME"
+#: ../Onboard/KeyboardWidget.py:1780
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr ""
 
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr "Боло"
+#: ../Onboard/KeyboardWidget.py:1783
+msgid "Remove '{}' only where it occures after numbers."
+msgstr ""
 
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr "Поён"
+#: ../Onboard/KeyboardWidget.py:1786
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr ""
 
-#: ../settings_docking_dialog.ui.h:3
-msgid "Docking settings"
-msgstr "Танзимоти васлкунӣ"
+#: ../Onboard/Config.py:206
+msgid "Layout file ({}) or name"
+msgstr "Файл ({}) ё номи тарҳбандӣ"
 
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
-msgstr "Кучак кардани ноҳияи корӣ"
+#: ../Onboard/Config.py:209
+msgid "Theme file (.theme) or name"
+msgstr "Файл (.theme) ё номи мавзӯъname"
 
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
-msgstr "Кучак кардани фазои дастрас барои равзанаҳои густаришдодашуда."
+#: ../Onboard/Config.py:211
+msgid "Window size, widthxheight"
+msgstr "Андозаи равзана, widthxheight"
 
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
-msgstr "Густариш додан дар экранҳои уфуқӣ"
+#: ../Onboard/Config.py:212
+msgid "Window x position"
+msgstr "Ҷойгиршавии равзана x"
 
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
-msgstr "Густариш додани клавиатура ба паҳноии ноҳияи корӣ."
+#: ../Onboard/Config.py:213
+msgid "Window y position"
+msgstr "Ҷойгиршавии равзанаи y"
 
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
-msgstr "Густариш додан дар экранҳои амудӣ"
+#: ../Onboard/Config.py:218
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Оғоз кардан дар ҳолати XEmbed, масалан барои gnome-screensaver"
 
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr "Васл кардан ба канори экран:"
+#: ../Onboard/Config.py:221
+msgid "Allow multiple Onboard instances"
+msgstr "Иҷозат додани якчанд ҳолати Onboard"
 
-#~ msgid "Enter name for personalised layout"
-#~ msgstr "Номро барои тарҳбандии шахсишуда ворид кунед"
+#: ../Onboard/Config.py:224
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+"Нокомии ором ҳангоми оғози муҳитҳои додашудаи мизи корӣ. DESKTOPS - ин "
+"рӯйхати бо вергулҳо ҷудошудаи номҳои мизи кории XDG мебошад, масалан GNOME "
+"барои GNOME Shell."
 
-#~ msgid "All files"
-#~ msgstr "Ҳамаи файлҳо"
+#: ../Onboard/Config.py:230
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Нигоҳ доштани таносуб ҳангоми тағйир додани андозаи равзана"
 
-#~ msgid "Atspi unavailable, auto-hide won't be available"
-#~ msgstr "Atspi дастнорас аст, пинҳоншавии худкор низ дастнорас мешавад"
+#: ../Onboard/Config.py:232
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+"Бекор кардани ташхиси худкор ва интихоб кардани дастии ҳолати мувофиқат\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#~ msgid "Error loading "
-#~ msgstr "Хатои боркунӣ "
+#: ../Onboard/Config.py:320
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Интиқолдиҳии директорияи корбари \"{}\" ба \"{}\"."
 
-#~ msgid "_Personalize"
-#~ msgstr "_Шахсисозӣ кардан"
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:328
+msgid "failed to migrate user directory. "
+msgstr "интиқолдиҳии директорияи корбарӣ қатъ шудааст. "
 
-#~ msgid "Lock"
-#~ msgstr "Қулф кардан"
+#: ../Onboard/Config.py:794
+#, python-brace-format
+msgid "layout '{filename}' does not exist"
+msgstr "тарҳбандии \"{filename}\" вуҷуд надорад"
 
-#~ msgid "Failed to migrate user directory. "
-#~ msgstr "Директорияи корбар интиқол дода нашуд. "
+#: ../Onboard/Config.py:835
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "мавзӯи \"{filename}\" вуҷуд надорад"
 
-#~ msgid "Press & release - hold for key-repeat"
-#~ msgstr "Пахш кунед ва сар диҳед - барои такрор нигоҳ дошта истед"
+#: ../Onboard/Config.py:860
+msgid "Loading theme from '{}'"
+msgstr "Боркунии мавзӯъ аз \"{}\""
 
-#~ msgid "Release - hold for long press"
-#~ msgstr "Сар диҳед - барои пахшкунии дароз нигоҳ дошта истед"
+#: ../Onboard/Config.py:864
+msgid "Unable to read theme '{}'"
+msgstr "Мавзӯи \"{}\" хонда нашуд"
 
-#~ msgid "Cycle"
-#~ msgstr "Давра"
+#: ../Onboard/Config.py:1047
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
+msgstr ""
+"Фаъолкунии намоишдиҳии худкор \"Қобилияти дастрасии Gnome\"-ро талаб "
+"мекунад.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
 
-#~ msgid "Double-click to lock"
-#~ msgstr "Барои қулф кардан дубора зер кунед"
+#: ../Onboard/Config.py:1661
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "схемаи рангҳои \"{filename}\" вуҷуд надорад"
 
-#~ msgid "Latch"
-#~ msgstr "Қулф кардан"
+#: ../Onboard/KbdWindow.py:183
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"ягон шаффофии равзана дастрас нест; экран каналҳои алфаро дастгирӣ намекунад"
 
-#~ msgid "Single-touch"
-#~ msgstr "Якламсӣ"
+#~ msgid "1"
+#~ msgstr "1"
 
-#~ msgid "Multi-touch"
-#~ msgstr "Чандламсӣ"
+#~ msgid "_Frame resize handles:"
+#~ msgstr "_Чорчӯбаи тағйир додани андоза:"
 
-#~ msgid "Show/Hide Options"
-#~ msgstr "Имконоти пинҳонкунӣ/намоишдиҳӣ"
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "_Вуруди ламсӣ (бозоғозӣ лозим аст):"
 
-#~ msgid "Enable docking"
-#~ msgstr "Фаъол кардани васлкунӣ"
+#~ msgid "No file manager to open layout folder"
+#~ msgstr "Ягон мудири файлҳо барои кушодани ҷузвдони тарҳбандӣ мавҷуд нест"
 
-#~ msgid "_Docking settings"
-#~ msgstr "_Танзимоти васлкунӣ"
+#~ msgid " - System Language"
+#~ msgstr " - Забони система"
 
-#~ msgid "Window management"
-#~ msgstr "Идоракунии равзанаҳо"
-
-#~ msgid "Send _key strokes on:"
-#~ msgstr "Фиристодани _пахшкуниҳо дар:"
-
-#~ msgid ""
-#~ "Choose between key-repeat or long-press menus. Only affects alpha-numeric "
-#~ "keys."
-#~ msgstr ""
-#~ "Дар байни менюҳои такроркунии тугмаҳо ё зеркуниҳои дароз. Танҳо ба "
-#~ "тугмаҳои алифбоӣ-ададӣ таъсир мерасонад."
-
-#~ msgid "Modifier auto-_release delay:"
-#~ msgstr "Таъхири _сардиҳии худкори тағйирдиҳанда:"
-
-#~ msgid "Keyboard options"
-#~ msgstr "Имконоти клавиатура"
-
-#~ msgid "Ignoring key '{}'. Not found in '{}'."
-#~ msgstr "Тугмаи \"{}\" нодида гирифта шуд. Дар \"{}\" ёфт нашуд."
+#~ msgid "_Languages"
+#~ msgstr "_Забонҳо"

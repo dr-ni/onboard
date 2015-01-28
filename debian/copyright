@@ -1,6 +1,6 @@
 This Onboard package was built by:
 
-    Francesco Fumanti <francesco.fumanti@gmx.net> on Wed, 15 Feb 2012 16:42:03 +0100
+    Francesco Fumanti <francesco.fumanti@gmx.net> on Mon, 26 Jan 2015 21:42:11 +0100
     
 The source is hosted at:
 
@@ -8,17 +8,19 @@ The source is hosted at:
 
 Upstream Authors:
 
-    Chris Jones <chris.e.jones@gmail.com>
-    marmuta <marmvta@googlemail.com>
-    Francesco Fumanti <francesco.fumanti@gmx.net>
-    Gerd Kohlberger <gerdko gmail com>
+    Chris Jones <chris DOT e DOT jones AT gmail DOT com>
+    marmuta <marmvta AT googlemail DOT com>
+    Francesco Fumanti <francesco DOT fumanti AT gmx DOT net>
+    Gerd Kohlberger <gerdko AT gmail DOT com>
 
 Copyright:
-    2011, 2012 Chris Jones, marmuta, Francesco Fumanti, Gerd Kohlberger
+
+	2015 marmuta, Francesco Fumanti
+	2011-2014 marmuta, Gerd Kohlberger, Francesco Fumanti
 	2009, 2010 Chris Jones, marmuta, Francesco Fumanti
 	2006, 2007, 2008 Chris Jones
 
-License:
+License: GPL-3
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
