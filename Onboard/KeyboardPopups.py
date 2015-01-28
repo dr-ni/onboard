@@ -111,7 +111,10 @@ class TouchFeedback:
 
                     # scale for hires displays
                     if gdk_win:
-                        default_size_mm *= gdk_win.get_scale_factor()
+                        try:
+                            default_size_mm *= gdk_win.get_scale_factor() # from Gdk 3.10
+                        except AttributeError:
+                            pass
 
                     w = sz[0] * default_size_mm / sz_mm[0]
                 else:
