@@ -1312,6 +1312,15 @@ class Keyboard(WordSuggestions):
         Sync Onboard with modifiers of the given modifier mask.
         Used to sync changes to system modifier state with Onboard.
         """
+        # The special handling of ALT in Onboard confuses the detection of
+        # modifier presses from the outside.
+        # Test case: press ALT, then LSHIFT
+        # Expected:  LSHIFT latched
+        # Result:    LSHIFT locked and RSHIFT latched
+        # -> stop all modifier synchronization while the ALT key is active.
+        if self._alt_locked:
+            return
+
         for mod_bit in (1<<bit for bit in range(8)):
             # Directly redraw locking modifiers only. All other modifiers
             # redraw after a short delay. This is meant to prevents
