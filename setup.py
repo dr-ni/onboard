@@ -99,7 +99,7 @@ def clean_before_build(command):
     if command in ["build", "build_ext", "clean", "sdist"]:
         print("removing __pycache__ directories recursively")
         subprocess.check_call(
-         ['/bin/bash', '-c', 'find . -name __pycache__ -prune | xargs rm -rf'])
+         ['/bin/bash', '-c', "find . -name '__pycache__*' -prune | xargs rm -rf"])
 
     # Symlinked extension libraries trip up "setup.py sdist". Delete them.
     if command in ["clean", "sdist"]:
