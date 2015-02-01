@@ -1,0 +1,76 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2014, marmuta
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import glob
+import optparse
+import subprocess
+
+def main():
+    exit_code = 0
+
+    parser = optparse.OptionParser(usage=
+             "Usage: %prog [options] [files]\n"
+             "List committers for all of Onboard's files.")
+    parser.add_option("-C", "--exclude-committer", dest="exclude_committers",
+                      default=[], action="append",
+                      help="exclude committer (email address)")
+    parser.add_option("-P", "--exclude-path", dest="exclude_paths",
+                      default=[], action="append",
+                      help="exclude (partial) path")
+    options, args = parser.parse_args()
+
+    if args:
+        files = args
+    else:
+        files = glob.glob("**/*")
+    for fn in files:
+        if not os.path.isfile(fn):
+            continue
+        if any(fn.startswith(ep) for ep in options.exclude_paths):
+            continue
+
+        committers = get_committers(fn)
+        committers = [c for c in committers if not c in options.exclude_committers]
+        if committers:
+            print(fn)
+            for committer in committers:
+                print("    " + committer)
+            print()
+
+    sys.exit(0)
+
+def get_committers(fn):
+    cmd = ['/bin/bash', '-c',
+            "bzr annotate --all --long --quiet '" + fn + "'"
+            " | sort -k2 -t' '"
+            " | awk 'k&&k!=$2{print p}{p=$2;k=$2}END{print p}'"
+            ]
+    output = subprocess.check_output(cmd).decode()
+    output = [o for o in output.split("\n") if o]
+    return output
+
+if __name__ == '__main__':
+    main()
+
+
+
+
