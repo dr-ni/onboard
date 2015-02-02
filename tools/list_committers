@@ -36,6 +36,9 @@ def main():
     parser.add_option("-P", "--exclude-path", dest="exclude_paths",
                       default=[], action="append",
                       help="exclude (partial) path")
+    parser.add_option("-s", "--source-code", dest="source_code",
+                      default=False, action="store_true",
+                      help="print source code")
     options, args = parser.parse_args()
 
     if args:
@@ -54,6 +57,10 @@ def main():
             print(fn)
             for committer in committers:
                 print("    " + committer)
+                if options.source_code:
+                    code = get_code(fn, committer)
+                    for line in code:
+                        print(" "*8 + line)
             print()
 
     sys.exit(0)
@@ -63,6 +70,15 @@ def get_committers(fn):
             "bzr annotate --all --long --quiet '" + fn + "'"
             " | sort -k2 -t' '"
             " | awk 'k&&k!=$2{print p}{p=$2;k=$2}END{print p}'"
+            ]
+    output = subprocess.check_output(cmd).decode()
+    output = [o for o in output.split("\n") if o]
+    return output
+
+def get_code(fn, committer):
+    cmd = ['/bin/bash', '-c',
+            "bzr annotate --all --long --quiet '" + fn + "'"
+            " | grep " + committer + ""
             ]
     output = subprocess.check_output(cmd).decode()
     output = [o for o in output.split("\n") if o]
