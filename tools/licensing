@@ -775,12 +775,12 @@ class FileTypeNoHeader(FileType):
         files = ["COPYING", "README", "TODO", "AUTHORS", "HACKING", "NEWS",
                  "CHANGELOG", "MANIFEST.in", ".bzrignore",
                  "attic/Makefile"]
-        extensions = ["po", "lm", "svg", "png", "oga", "ui", "swp"]
+        extensions = [".po", ".lm", ".svg", ".png", ".oga", ".ui", ".swp", "~"]
         for f in files:
             if fn.endswith("/"+f):
                 return True
         for ext in extensions:
-            if fn.endswith("."+ext):
+            if fn.endswith(ext):
                 return True
         return False
 
