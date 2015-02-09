@@ -110,6 +110,13 @@ def clean_before_build(command):
                 try: os.unlink(file)
                 except OSError: pass
 
+
+    # MANIFEST is generated from MANIFEST.in during sbuild
+    if command in ["clean"]:
+        try: os.unlink("MANIFEST")
+        except OSError: pass
+        subprocess.check_call(['rm', '-rf', "dist"])
+
 def symlink_extension_libraries(setup_command):
     """
     Link the extensions back to the project directory
