@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# Copyright © 2015, marmuta
+
+# Copyright © 2015 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -374,7 +375,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
         header = header[1:-1]  # cut off empty lines
-        lines = [line.replace("\n", "") for line in header.split("\n")]
+        lines = [line.replace("\n", "").rstrip() for line in header.split("\n")]
 
         return lines
 
@@ -480,7 +481,7 @@ class FileTypePython(FileType):
         raise NotImplementedError()
 
     def comment_lines(self, lines):
-        return ["# " + line for line in lines]
+        return [("# "+line).rstrip()  for line in lines]
 
     def find_insert_range(self, lines):
         """
@@ -594,7 +595,9 @@ class FileTypeC(FileType):
         return False
 
     def comment_lines(self, lines):
-        return ["/*"] + [" * " + line for line in lines] + [" */"]
+        return ["/*"] + \
+               [(" * " + line).rstrip() for line in lines] + \
+               [" */"]
 
     def find_insert_range(self, lines):
         """
@@ -716,7 +719,9 @@ class FileTypeXML(FileType):
         return False
 
     def comment_lines(self, lines):
-        return ["<!--"] + ["" + line for line in lines] + ["-->"]
+        return ["<!--"] + \
+               ["" + line for line in lines] + \
+               ["-->"]
 
     def find_insert_range(self, lines):
         """
