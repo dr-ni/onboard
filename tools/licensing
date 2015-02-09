@@ -1,0 +1,808 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# Copyright © 2015, marmuta
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+import glob
+import optparse
+import subprocess
+import re
+import operator
+
+def main():
+    args = sys.argv[1:]
+    parser = optparse.OptionParser(usage=
+            "Usage: %prog command [command_options]\n"
+            "\n"
+            "Commands:\n"
+            "   %prog list-committers          list committers per file"
+            "   %prog update-headers           write license headers"
+                                   )
+    parser.disable_interspersed_args()
+    options, args = parser.parse_args(args)
+
+    if not args:
+        parser.print_help()
+        sys.exit(1)
+    else:
+        cmd_str = args.pop(0)
+        command = find_command(cmd_str)
+        if not command:
+            print("error: unknown command '{}'".format(cmd), file=sys.stderr)
+            sys.exit(1)
+
+    command().run(args)
+
+    sys.exit(0)
+
+
+def find_command(cmd_str):
+    commands = [CommandListCommitters,
+                CommandHeaderUpdate]
+    for command in commands:
+        if any(cmd_str == c for c in command.cmd_strings):
+            return command
+    return None
+
+
+class Command:
+    class Committer:
+        def __init__(self, name, emails, ignore=False):
+            self.name = name
+            self.emails = emails
+            self.ignore = ignore
+            assert(type(self.emails) is list or \
+                   type(self.emails) is tuple)
+        def __repr__(self):
+            return type(self).__name__ + "(" + repr(self.name) + ")"
+        def get_main_email(self):
+            return self.emails[0]
+
+    _known_committers = [
+        Committer("Chris Jones",
+                  ["tortoise@tortuga",
+                   "cej@blinkenlights",
+                   "tortoise@chrisjdesktop",
+                   "tortoise@xuanwu"]),
+        Committer("Henrik Nilsen Omma",
+                  ["henrik@ubuntu.com"],
+                  ignore=True),  # according to Chris Jones he only committed files
+        Committer("Luke Yelavitch",
+                  ["luke.yelavich@canonical.com"]),
+        Committer("Francesco Fumanti",
+                  ["francesco.fumanti@gmx.net", "frafu@UbuntuDesktop"]),
+        Committer("marmuta",
+                  ["marmvta@gmail.com", "user@dingsdale"]),
+        Committer("Gerd Kohlberger",
+                  ["lowfi@chello.at", "gerdk@src.gnome.org"]),
+        Committer("Martin Böhme",
+                  ["martin.bohm@kubuntu.org"]),
+        Committer("Alan Bell",
+                  ["alanbell@ubuntu.com"]),
+    ]
+
+    # Additional copyrights per file that can't be found with bzr annotate
+    _extra_copyrights = [
+        ["Onboard/osk/osk_audio.c",
+         "lowfi@chello.at", ['20130101']],
+        ["Onboard/osk/osk_click_mapper.c",
+         "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_devices.c",
+         "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_module.c",
+         "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_module.h",
+         "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_struts.c",
+         "lowfi@chello.at", ['20120101']],
+        ["Onboard/osk/osk_virtkey.c",
+         "tortoise@tortuga", ['20060101', '20070101', '20080101']],
+    ]
+
+    def run(self, *args):
+        raise NotImplementedError()
+
+    @staticmethod
+    def iter_filtered_files(options, args):
+        exclude_paths = options.exclude_paths + [".bzr"]
+        if args:
+            for fn in args:
+                yield fn
+        else:
+            for dirpath, dirnames, filenames in os.walk("."):
+                dirpath = os.path.normpath(dirpath) # remove starting "./"
+                for basename in filenames:
+                    fn = os.path.join(dirpath, basename)
+                    if all(not fn.startswith(ep) \
+                           for ep in exclude_paths):
+                        yield fn
+
+
+    @staticmethod
+    def get_committer_emails(fn, exclude_emails = ()):
+        cmd = ['/bin/bash', '-c',
+                "bzr annotate --all --long --quiet '" + fn + "'"
+                " | sort -k2 -t' '"
+                " | awk 'k&&k!=$2{print p}{p=$2;k=$2}END{print p}'"
+                ]
+        output = subprocess.check_output(cmd).decode()
+        output = [o for o in output.split("\n") if o]
+        emails = [c for c in output if not c in exclude_emails]
+        return emails
+
+    @staticmethod
+    def get_committers(fn, exclude_emails = ()):
+        emails = Command.get_committer_emails(fn, exclude_emails)
+        committers = set(Command.get_committer_from_email(e) for e in emails)
+        return list(committers)
+
+    @staticmethod
+    def get_committer_from_email(email):
+        for committer in Command._known_committers:
+            for em in committer.emails:
+                if em == email:
+                    return committer
+        return None
+
+    @staticmethod
+    def get_committer_name_from_email(email):
+        comm = Command.get_committer_from_email(email)
+        if comm:
+            return comm.name
+        return None
+
+    @staticmethod
+    def get_current_email_from_name(name):
+        for committer in Command._known_committers:
+            if committer.name == name:
+                return committer.emails[0]
+        return ""
+
+    @staticmethod
+    def get_code(fn, emails):
+        """ Get part of fn that was committed by <committer>. """
+        cmd = ['/bin/bash', '-c',
+                "bzr annotate --all --long --quiet '" + fn + "'"
+                ]
+        output = subprocess.check_output(cmd).decode()
+        code = []
+        for line in [o for o in output.split("\n") if o]:
+            fields = line.split()
+            assert(fields[3] == "|")
+            email = fields[1]
+            if email in emails:
+                code.append(fields + [line])
+        return code
+
+    @staticmethod
+    def find_file_type(fn):
+        file_types = [
+                      FileTypeNoHeader,
+                      FileTypePython,
+                      FileTypeC,
+                      FileTypeShell,
+                      FileTypeXML,
+                      FileTypeDesktopShortcut,
+                      FileTypeINI,
+                     ]
+        for ft in file_types:
+            if ft.matches(fn):
+                return ft()
+        return None
+
+
+class CommandListCommitters(Command):
+
+    cmd_strings = ["list-committers", "list"]
+
+    @staticmethod
+    def parse_cmd_line(args):
+        parser = optparse.OptionParser(usage=
+                "Usage: %prog list-committers [options] [file1 file2 ...]\n"
+                "List committers per file. If no individual files are specified\n"
+                "files are found recursively starting from the current directory.")
+        parser.add_option("-C", "--exclude-committer", dest="exclude_committers",
+                        default=[], action="append",
+                        help="exclude committer (email address)")
+        parser.add_option("-P", "--exclude-path", dest="exclude_paths",
+                        default=[], action="append",
+                        help="exclude (partial) path")
+        parser.add_option("-s", "--source-code", dest="source_code",
+                        default=False, action="store_true",
+                        help="print source code")
+        return parser.parse_args(args)
+
+
+    def run(self, args):
+        options, args = self.parse_cmd_line(args)
+        for fn in self.iter_filtered_files(options, args):
+            emails = self.get_committer_emails(fn, options.exclude_committers)
+            if emails:
+                for email in emails:
+                    print(" "*4 + \
+                          self.get_committer_name_from_email(email) + \
+                          " <"  + committer + ">")
+                    if options.source_code:
+                        code = self.get_code(fn, [committer])
+                        for fields in code:
+                            print(" "*8 + fields[-1])
+                print()
+
+
+class CommandHeaderUpdate(Command):
+    cmd_strings = ["update-headers", "update"]
+
+    @staticmethod
+    def parse_cmd_line(args):
+        parser = optparse.OptionParser(usage=
+                "Usage: %prog update-headers [options] [file1 file2 ...]\n"
+                "Rewrite license header per file. If no individual files are specified\n"
+                "files are found recursively starting from the current directory.")
+        parser.add_option("-C", "--exclude-committer", dest="exclude_committers",
+                        default=[], action="append",
+                        help="exclude committer (email address)")
+        parser.add_option("-P", "--exclude-path", dest="exclude_paths",
+                        default=[], action="append",
+                        help="exclude (partial) path")
+        parser.add_option("-v", "--verbose", dest="verbose",
+                        default=False, action="store_true",
+                        help="print more information")
+        return parser.parse_args(args)
+
+
+    def run(self, args):
+        unknown_files = []
+        noheader_files = []
+        options, args = self.parse_cmd_line(args)
+        for fn in self.iter_filtered_files(options, args):
+            ft = self.find_file_type(fn)
+            if not ft:
+                unknown_files.append(fn)
+            else:
+                if ft.needs_license_header():
+                    print("'{}', {}".format(fn, type(ft).__name__))
+                    header = self._create_license_header(fn,
+                                                options.exclude_committers)
+
+                    # read file
+                    try:
+                        with open(fn, encoding="UTF-8") as f:
+                                lines = f.readlines()
+                    except UnicodeDecodeError:  # binary file?
+                        lines = None
+
+                    # insert header
+                    if lines:   # no error, not empty file
+                        lines = ft.insert_license_header(lines, header)
+                        if options.verbose:
+                            for line in lines[:40]:
+                                print(" "*8, repr(line))
+
+                        # write file
+                        with open(fn, mode="w", encoding="UTF-8") as f:
+                            f.writelines(lines)
+
+                else:
+                    noheader_files.append(fn)
+
+        if noheader_files and \
+           options.verbose:
+            print(file=sys.stderr)
+            print("Files not requiring license header:", file=sys.stderr)
+            for fn in noheader_files:
+                print(" "*4, fn, file=sys.stderr)
+
+        if unknown_files:
+            print(file=sys.stderr)
+            print("Unknown files, ignored:", file=sys.stderr)
+            for fn in unknown_files:
+                print(" "*4, fn, file=sys.stderr)
+
+    def _create_license_header(self, fn, exclude_committers):
+        template = \
+"""
+{copyright}
+This file is part of {prog}.
+
+{prog} is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+{prog} is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""
+        # collect committer information from bzr
+        copyrights = {}
+        committers = self.get_committers(fn, exclude_committers)
+        for committer in committers:
+            if not committer.ignore:
+                # find years of contribution
+                code = self.get_code(fn, committer.emails)
+                timestamps = set()
+                for fields in code:
+                    assert(fields[3] == "|")
+                    timestamps.add(fields[2])
+
+                timestamps = sorted(list(timestamps))
+                copyrights[committer] = tuple(timestamps)
+
+        # add additional copyrights that can't be found with bzr annotate
+        for file_pattern, email, timestamps in self._extra_copyrights:
+            if fn.endswith(file_pattern):
+                committer = self.get_committer_from_email(email)
+                copyrights[committer] = \
+                    copyrights.get(committer, ()) + tuple(timestamps)
+
+        # sort by year tuple
+        copyrights = list(copyrights.items())
+        copyrights.sort(key=lambda x: x[1])
+        # sort by last year of commit
+        copyrights.sort(key=lambda x: x[1][-1])
+
+        # build the copyright section
+        copyright = ""
+        for committer, timestamps in copyrights:
+            years = set(int(ts[:4]) for ts in timestamps)
+            years = sorted(list(years))
+            year_str = self._build_year_range_str(years)
+            copyright += "Copyright © " + year_str + " " + \
+                         committer.name + \
+                         " <"  + committer.get_main_email() + ">" + "\n"
+
+        # assemble the final header
+        header = template.format(copyright=copyright, prog="Onboard")
+        header = header[1:-1]  # cut off empty lines
+        lines = [line.replace("\n", "") for line in header.split("\n")]
+
+        return lines
+
+    @staticmethod
+    def _build_year_range_str(years):
+        """
+        Doctests:
+        >>> func = CommandHeaderUpdate._build_year_range_str
+
+        >>> func((1,2,3,4,5,))
+        '1-5'
+        >>> func((1,2,3,5,))
+        '1-3, 5'
+        >>> func((1,3,4,5,))
+        '1, 3-5'
+        >>> func((1,2,4,5,))
+        '1-2, 4-5'
+        >>> func((1,3,5,))
+        '1, 3, 5'
+        """
+        def append_section(year_range):
+            if year_range[0] == year_range[1]:
+                year_sections.append(str(year_range[1]))
+            elif year_range[0] < year_range[1]:
+                year_sections.append(str(year_range[0]) + "-" + \
+                                     str(year_range[1]))
+            else:
+                assert(False) # years must be sorted
+
+        year_sections = []
+        year_range = None
+        for year in years:
+            if not year_range is None:
+                # directly following year? -> extend range
+                if year_range[1] == year - 1:
+                    year_range[1] = year
+                else:  # gap -> format the range and start a new one
+                    append_section(year_range)
+                    year_range = None
+            if year_range is None:
+                year_range = [year, year]
+
+        if not year_range is None:
+            append_section(year_range)
+
+        return ", ".join(str(section) for section in year_sections)
+
+
+class FileType:
+    def matches(fn):
+        raise NotImplementedError()
+
+    def needs_license_header(self):
+        return True
+
+    def read_license_header():
+        raise NotImplementedError()
+
+    def insert_license_header(self, lines, header):
+        begin, end = self.find_insert_range(lines)
+
+        # not an empty file?
+        if not begin is None and \
+           not end is None:
+
+            # remove old range
+            lines = [line for i, line in enumerate(lines) \
+                    if i < begin or i >= end]
+
+            # make sure there will be empty lines before and after the header
+            if lines[begin-1].strip():
+                lines.insert(begin, "\n")
+                begin += 1
+            if lines[begin].strip():
+                lines.insert(begin, "\n")
+
+            # insert header
+            header = self.comment_lines(header)
+            for line in reversed(header):
+                lines.insert(begin, line + "\n")
+
+        return lines
+
+    def comment_lines(lines):
+        raise NotImplementedError()
+
+
+class FileTypePython(FileType):
+    """ Matches python files """
+    def matches(fn):
+        if fn.endswith(".py"):
+            return True
+
+        # has python shebang?
+        lines = read_file(fn)
+        if lines:
+            if re.match("#!.*python.*", lines[0]):
+                return True
+
+        return False
+
+    def read_license_header():
+        raise NotImplementedError()
+
+    def comment_lines(self, lines):
+        return ["# " + line for line in lines]
+
+    def find_insert_range(self, lines):
+        """
+        Find the line range of the existing license comment.
+
+        Doctests:
+        >>> func = FileTypePython().find_insert_range
+
+        >>> func([])
+        (None, None)
+
+        >>> func(["#!/bin/usr/python3",
+        ...       "# -*- coding: utf-8 -*-",
+        ...       "",
+        ...       "import os"])
+        (3, 3)
+
+        >>> func(["#!/bin/usr/python3",
+        ...       "# -*- coding: utf-8 -*-",
+        ...       "import os"])
+        (2, 2)
+
+        >>> func(["# -*- coding: utf-8 -*-",
+        ...       '"\"" doc string "\""',
+        ...       "",
+        ...       "import os"])
+        (1, 1)
+
+        >>> func(["#!/bin/usr/python3",
+        ...       "# -*- coding: utf-8 -*-",
+        ...       "",
+        ...       "# Copyright",
+        ...       "# GPL",
+        ...       "",
+        ...       "import os"])
+        (3, 5)
+
+        >>> fulayouts/Compact.onboardnc(["#!/bin/usr/python3",
+        ...       "# -*- coding: utf-8 -*-",
+        ...       "# Copyright",
+        ...       "# GPL",
+        ...       "",
+        ...       "import os"])
+        (2, 4)
+
+        >>> func(["#!/bin/usr/python3",
+        ...       "",
+        ...       "# Copyright",
+        ...       "# GPL",
+        ...       "",
+        ...       "import os"])
+        (2, 4)
+
+        >>> func(["# -*- coding: utf-8 -*-",
+        ...       "",
+        ...       "# Copyright",
+        ...       "# GPL",
+        ...       "",
+        ...       "import os"])
+        (2, 4)
+
+        >>> func(["#!/bin/usr/python3",
+        ...       "# -*- coding: utf-8 -*-",
+        ...       "",
+        ...       "# Copyright",
+        ...       "# GPL",
+        ...       "",
+        ...       "# Usage:",
+        ...       "# prog options",
+        ...       "",
+        ...       "import os"])
+        (3, 5)
+        """
+
+        begin = None
+        end = None
+        for iline, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                # shebang?
+                if stripped.startswith("#!"):
+                    begin = None
+
+                # encoding line?
+                elif re.match("#.*-\*-.*[Cc]oding", line):
+                    begin = None
+
+                else:
+                    if begin is None:
+                        begin = iline
+                    end = iline + 1
+            elif not stripped:
+                if not begin is None:
+                    break
+            else:
+                if begin is None:
+                    begin = iline
+                    end = iline
+                break
+
+        return begin, end
+
+
+class FileTypeC(FileType):
+    """ Matches python files """
+    def matches(fn):
+        extensions = ["c", "cpp", "h"]
+        for ext in extensions:
+            if fn.endswith("."+ext):
+                return True
+        return False
+
+    def comment_lines(self, lines):
+        return ["/*"] + [" * " + line for line in lines] + [" */"]
+
+    def find_insert_range(self, lines):
+        """
+        Find the line range of the existing license comment.
+
+        Doctests:
+        >>> func = FileTypeC().find_insert_range
+
+        >>> func(["/*",
+        ...       " * Copyright*-",
+        ...       " */",
+        ...
+        ...       "#include"])
+        (0, 3)
+
+        >>> func(["/*",
+        ...       " * Copyright*-",
+        ...       " */",
+        ...       "#include"])
+        (0, 3)
+
+        >>> func(["",
+        ...       "/*",
+        ...       " * Copyright*-",
+        ...       " */",
+        ...
+        ...       "#include"])
+        (1, 4)
+
+        >>> func(["#include"])
+        (0, 0)
+
+        >>> func(["",
+        ...       "#include"])
+        (1, 1)
+        """
+
+        begin = None
+        end = None
+        multiline_comment = False
+
+        for iline, line in enumerate(lines):
+            stripped = line.strip()
+            if multiline_comment:
+                if stripped.endswith("*/"):
+                    multiline_comment = False
+                    end = iline + 1
+
+            else:
+                if stripped.startswith("/*"):
+                    multiline_comment = True
+                    if begin is None:
+                        begin = iline
+                elif not stripped:
+                    if not begin is None:
+                        break
+                else:
+                    if begin is None:
+                        begin = iline
+                        end = iline
+                    break
+
+        return begin, end
+
+
+class FileTypeShell(FileTypePython):
+    """ Matches python files """
+    def matches(fn):
+        if fn.endswith(".sh"):
+            return True
+
+        # has shell shebang?
+        lines = read_file(fn)
+        if lines:
+            if re.match("#!.*(?:/bash|/sh|/dash).*", lines[0]):
+                return True
+
+        return False
+
+
+class FileTypeINI(FileTypePython):
+    """ Matches python files """
+    def matches(fn):
+        if fn.endswith(".ini"):
+            return True
+
+        lines = read_file(fn)
+        for line in lines:
+            line = line.strip()
+            if line and \
+             not line.startswith("#"):
+                if re.match("^\[.*\].*", line):
+                    return True
+                else:
+                    return False
+
+
+class FileTypeDesktopShortcut(FileTypeINI):
+    """ Matches desktop files """
+    def matches(fn):
+        extensions = ["desktop", "desktop.in"]
+        for ext in extensions:
+            if fn.endswith("."+ext):
+                return True
+        return False
+
+    def needs_license_header(self):
+        return False
+
+
+class FileTypeXML(FileType):
+    """ Matches python files """
+    def matches(fn):
+        extensions = ["xml", "html", "colors", "theme", "onboard"]
+        for ext in extensions:
+            if fn.endswith("."+ext):
+                return True
+
+        return False
+
+    def comment_lines(self, lines):
+        return ["<!--"] + ["" + line for line in lines] + ["-->"]
+
+    def find_insert_range(self, lines):
+        """
+        Find the line range of the existing license comment.
+
+        Doctests:
+        >>> func = FileTypeXML().find_insert_range
+
+        >>> func(['<?xml version="1.0" ?>',
+        ...       "<!---",
+        ...       "Copyright",
+        ...       "-->",
+        ...       "",
+        ...       "<keyboard>"])
+        (1, 4)
+        """
+
+        begin = None
+        end = None
+        multiline_comment = False
+
+        for iline, line in enumerate(lines):
+            stripped = line.strip()
+            if multiline_comment:
+                if stripped.endswith("-->"):
+                    multiline_comment = False
+                    end = iline + 1
+            else:
+                # encoding line?
+                if stripped.startswith("<?"):
+                    begin = None
+                elif stripped.startswith("<!--"):
+                    begin = None
+                    multiline_comment = True
+                    begin = iline
+                elif not stripped:
+                    if not begin is None:
+                        break
+                else:
+                    if begin is None:
+                        begin = iline
+                        end = iline
+                    break
+
+        return begin, end
+
+
+class FileTypeNoHeader(FileType):
+    """ Match files that don't need or can't have license headers."""
+    def matches(fn):
+        files = ["COPYING", "README", "TODO", "AUTHORS", "HACKING", "NEWS",
+                 "CHANGELOG", "MANIFEST.in", ".bzrignore",
+                 "attic/Makefile"]
+        extensions = ["po", "lm", "svg", "png", "oga", "ui", "swp"]
+        for f in files:
+            if fn.endswith("/"+f):
+                return True
+        for ext in extensions:
+            if fn.endswith("."+ext):
+                return True
+        return False
+
+    def needs_license_header(self):
+        return False
+
+
+def read_file(fn):
+    with open(fn, encoding="UTF-8") as f:
+        try:
+            lines = f.readlines()
+        except UnicodeDecodeError:  # binary file?
+            lines = []
+    return lines
+
+def write_file(fn, lines):
+    with open(fn, encoding="UTF-8") as f:
+        f.writelines(lines)
+
+
+if __name__ == '__main__':
+    if "--doctest" in sys.argv:
+        import doctest
+        doctest.testmod()
+    else:
+        main()
+
+
+
+
