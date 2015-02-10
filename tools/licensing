@@ -64,16 +64,19 @@ def find_command(cmd_str):
 
 class Command:
     class Committer:
-        def __init__(self, name, emails, ignore=False):
+        def __init__(self, name, emails, ignore=False, hide_email=False):
             self.name = name
             self.emails = emails
             self.ignore = ignore
+            self.hide_email = hide_email
             assert(type(self.emails) is list or \
                    type(self.emails) is tuple)
         def __repr__(self):
             return type(self).__name__ + "(" + repr(self.name) + ")"
         def get_main_email(self):
-            return self.emails[0]
+            if not self.hide_email:
+                return self.emails[0]
+            return None
 
     _known_committers = [
         Committer("Chris Jones",
@@ -96,14 +99,23 @@ class Command:
                   ["martin.bohm@kubuntu.org"]),
         Committer("Alan Bell",
                   ["alanbell@ubuntu.com"]),
+        Committer("Johannes Almer",
+                  ["almer@nomail.com"],
+                  hide_email=True),  # Johannes asked not to publish his email
     ]
 
     # Additional copyrights per file that can't be found with bzr annotate
     _extra_copyrights = [
+        ["Onboard/IconPalette.py",
+         "francesco.fumanti@gmx.net", ['20080101']],
+        ["Onboard/Sound.py",
+         "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_audio.c",
          "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_click_mapper.c",
          "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_click_mapper.c",
+         "marmvta@gmail.com", ['20120101']],
         ["Onboard/osk/osk_devices.c",
          "lowfi@chello.at", ['20110101']],
         ["Onboard/osk/osk_module.c",
@@ -114,6 +126,19 @@ class Command:
          "lowfi@chello.at", ['20120101']],
         ["Onboard/osk/osk_virtkey.c",
          "tortoise@tortuga", ['20060101', '20070101', '20080101']],
+        ["Onboard/osk/osk_virtkey.c",
+         "marmvta@gmail.com", ['20100101']],
+        ["layouts/Whiteboard.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["layouts/Whiteboard_wide.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["themes/Aubergine.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+        ["themes/Typist.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+        ["themes/ModelM.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+
     ]
 
     def run(self, *args):
@@ -368,8 +393,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             years = sorted(list(years))
             year_str = self._build_year_range_str(years)
             copyright += "Copyright © " + year_str + " " + \
-                         committer.name + \
-                         " <"  + committer.get_main_email() + ">" + "\n"
+                         committer.name
+            email = committer.get_main_email()
+            if not email is None:
+                copyright += " <"  + email + ">"
+
+            copyright += "\n"
 
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
