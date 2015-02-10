@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2013, marmuta
+# Copyright © 2013, 2015 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

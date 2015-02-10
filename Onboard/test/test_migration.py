@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright © 2012, marmuta <marmvta@gmail.com>
+# Copyright © 2014 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

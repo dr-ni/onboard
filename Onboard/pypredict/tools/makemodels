@@ -1,5 +1,6 @@
 #!/bin/bash
-# Copyright © 2012, marmuta
+
+# Copyright © 2010, 2012-2014 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -15,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 # Important directories:
 #
 # ./models/raw    - Input directory containing large raw models with only
@@ -31,9 +32,9 @@
 # --------------
 #
 # Various spell checker dictionaries are required to successfully generate
-# the language models. Hunspell and hunspell-compatible dictionaries are 
+# the language models. Hunspell and hunspell-compatible dictionaries are
 # supported.
-
+#
 # - Ubuntu 15.04 Vivid Vervet:
 #     Partial list:
 #     sudo apt-get install hunspell-en-us hunspell-de-de hunspell-de-ch hunspell-de-at myspell-es myspell-pt-pt hunspell-fr hunspell-ru myspell-it 
