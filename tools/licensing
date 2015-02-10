@@ -141,6 +141,11 @@ class Command:
 
     ]
 
+    # bzr commits that should not grant copyright
+    _exclude_revisions = ["1947",   # Auto-generate license headers.
+                         ]
+
+
     def run(self, *args):
         raise NotImplementedError()
 
@@ -160,20 +165,21 @@ class Command:
                         yield fn
 
     @staticmethod
-    def get_committer_emails(fn, exclude_emails = ()):
-        cmd = ['/bin/bash', '-c',
-                "bzr annotate --all --long --quiet '" + fn + "'"
-                " | sort -k2 -t' '"
-                " | awk 'k&&k!=$2{print p}{p=$2;k=$2}END{print p}'"
-                ]
-        output = subprocess.check_output(cmd).decode()
-        output = [o for o in output.split("\n") if o]
-        emails = [c for c in output if not c in exclude_emails]
-        return emails
+    def get_committer_emails(fn, exclude_emails = (), exclude_revisions = ()):
+        code = Command.get_code(fn, None, exclude_revisions)
+        emails = set()
+        for fields in code:
+            assert(fields[3] == "|")
+            email = fields[1]
+            if not email in exclude_emails:
+                emails.add(fields[1])
+        return list(emails)
 
     @staticmethod
-    def get_committers(fn, exclude_emails = ()):
-        emails = Command.get_committer_emails(fn, exclude_emails)
+    def get_committers(fn, exclude_emails = (), exclude_revisions = ()):
+        """ Returns Committer instances """
+        emails = Command.get_committer_emails(fn, exclude_emails,
+                                              exclude_revisions)
         committers = set(Command.get_committer_from_email(e) for e in emails)
         return list(committers)
 
@@ -200,7 +206,7 @@ class Command:
         return ""
 
     @staticmethod
-    def get_code(fn, emails):
+    def get_code(fn, emails, exclude_revisions=()):
         """ Get part of fn that was committed by <committer>. """
         cmd = ['/bin/bash', '-c',
                 "bzr annotate --all --long --quiet '" + fn + "'"
@@ -210,9 +216,12 @@ class Command:
         for line in [o for o in output.split("\n") if o]:
             fields = line.split()
             assert(fields[3] == "|")
+            revision = fields[0]
             email = fields[1]
-            if email in emails:
-                code.append(fields + [line])
+            if not revision in exclude_revisions:
+                if emails is None or \
+                   email in emails:
+                    code.append(fields + [line])
         return code
 
     @staticmethod
@@ -257,14 +266,15 @@ class CommandListCommitters(Command):
     def run(self, args):
         options, args = self.parse_cmd_line(args)
         for fn in self.iter_filtered_files(options, args):
+            print(fn)
             emails = self.get_committer_emails(fn, options.exclude_committers)
             if emails:
                 for email in emails:
                     print(" "*4 + \
                           self.get_committer_name_from_email(email) + \
-                          " <"  + committer + ">")
+                          " <"  + email + ">")
                     if options.source_code:
-                        code = self.get_code(fn, [committer])
+                        code = self.get_code(fn, [email])
                         for fields in code:
                             print(" "*8 + fields[-1])
                 print()
@@ -360,11 +370,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
         # collect committer information from bzr
         copyrights = {}
-        committers = self.get_committers(fn, exclude_committers)
+        committers = self.get_committers(fn, exclude_committers,
+                                         self._exclude_revisions)
         for committer in committers:
             if not committer.ignore:
                 # find years of contribution
-                code = self.get_code(fn, committer.emails)
+                code = self.get_code(fn, committer.emails,
+                                     self._exclude_revisions)
                 timestamps = set()
                 for fields in code:
                     assert(fields[3] == "|")
