@@ -1352,15 +1352,24 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
                     docking_monitor = DockingMonitor.PRIMARY
 
             if docking_monitor == DockingMonitor.ACTIVE:
-                window = screen.get_active_window()
-                if window:
-                    monitor = screen.get_monitor_at_window(window)
-                else:
-                    monitor = screen.get_primary_monitor()
+                monitor = self._get_monitor_at_active_window(screen)
             elif docking_monitor == DockingMonitor.PRIMARY:
                 monitor = screen.get_primary_monitor()
         else:
             monitor = self._current_docking_monitor
+        return monitor
+
+    @staticmethod
+    def _get_monitor_at_active_window(screen):
+        window = screen.get_active_window()
+        if window:
+            # Sometimes causes X error "BadDrawable" in Vivid for Francesco
+            Gdk.error_trap_push()
+            monitor = screen.get_monitor_at_window(window)
+            if Gdk.error_trap_pop():
+                monitor = screen.get_primary_monitor()
+        else:
+            monitor = screen.get_primary_monitor()
         return monitor
 
     def reset_monitor_workarea(self):
