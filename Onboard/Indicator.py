@@ -36,6 +36,9 @@ class ContextMenu(GObject.GObject):
     def set_keyboard(self, keyboard):
         self._keyboard = keyboard
 
+    def get_gtk_menu(self):
+        return self._menu
+
     def create_menu(self):
         menu = Gtk.Menu()
 
@@ -166,7 +169,7 @@ class Indicator():
     def _init_status_icon(self):
         self._status_icon = Gtk.StatusIcon(icon_name="onboard")
         self._status_icon.connect("activate",
-                                  self._menu.on_show_keyboard_toggle)
+                                  lambda x: self._menu.on_show_keyboard_toggle())
         self._status_icon.connect("popup-menu",
                                   self._on_status_icon_popup_menu)
 
@@ -181,7 +184,8 @@ class Indicator():
             status_icon, = args
         elif len(args) == 2:  # in <=Oneiric?
             push_in, status_icon = args
-        return Gtk.StatusIcon.position_menu(self._menu, status_icon)
+        gtk_menu = self._menu.get_gtk_menu()
+        return Gtk.StatusIcon.position_menu(gtk_menu, status_icon)
 
     def set_visible(self, visible):
         if self._status_icon:
