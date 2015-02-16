@@ -20,6 +20,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+import copy
 
 from gi.repository import Gdk
 
@@ -365,10 +366,10 @@ class XIDeviceManager(EventSource):
         event.set_source_device(source_device)
 
         ## debug, simulate touch-screen
-        #if device_id == 13:
-        #    #if not self._disguise_as_touch_event(event, True):
-        #    if not self._disguise_as_touch_event(event, False):
-        #        return
+        if 0 and \
+           device_id == 11:
+            if not self._disguise_as_touch_event(event, False):
+                return
 
         # remember recently used device ids for CSFloatingSlave
         if not source_id in self._last_device_blacklist_ids:
@@ -379,7 +380,10 @@ class XIDeviceManager(EventSource):
                 self._last_click_device_id = source_id
 
         # forward the event to all listeners
-        self.emit("device-event", event)
+        for callback in self._callbacks["device-event"]:
+            # Copy event to isolate callbacks from each other (LP: 1421840)
+            ev = copy.copy(event)
+            callback(ev)
 
     def _disguise_as_touch_event(self, event, wacom_mode=False):
         """

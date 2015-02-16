@@ -66,7 +66,6 @@ typedef struct {
     unsigned int keyval;
     unsigned int sequence;
     unsigned int time;
-    PyObject*    touch;
 
     PyObject*    source_device;
 
@@ -80,7 +79,6 @@ osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
     self->xid_event = None;
     self->device_id = 0;
     self->source_id = 0;
-    self->touch = Py_None;
     self->source_device = Py_None;
     Py_INCREF(self->source_device);
     return 0;
@@ -106,6 +104,34 @@ new_device_event (void)
 }
 
 static PyObject *
+osk_device_event_copy (OskDeviceEvent* self, PyObject *args)
+{
+    OskDeviceEvent *ev = new_device_event();
+    if (ev)
+    {
+        ev->display = self->display;
+        ev->xid_event = self->xid_event;
+        ev->xi_type = self->xi_type;
+        ev->type = self->type;
+        ev->device_id = self->device_id;
+        ev->source_id = self->source_id;
+        ev->x = self->x;
+        ev->y = self->y;
+        ev->x_root = self->x_root;
+        ev->y_root = self->y_root;
+        ev->button = self->button;
+        ev->state = self->state;
+        ev->keyval = self->keyval;
+        ev->sequence = self->sequence;
+        ev->time = self->time;
+
+        ev->source_device = self->source_device;
+        Py_INCREF(self->source_device);
+    }
+    return (PyObject*) ev;
+}
+
+static PyObject *
 osk_device_event_get_time (OskDeviceEvent* self, PyObject *args)
 {
     return PyLong_FromUnsignedLong(self->time);
@@ -128,6 +154,8 @@ osk_device_event_get_source_device (OskDeviceEvent* self, PyObject *args)
 }
 
 static PyMethodDef osk_device_event_methods[] = {
+    { "__copy__",
+      (PyCFunction) osk_device_event_copy, METH_NOARGS,  NULL },
     { "get_time",
       (PyCFunction) osk_device_event_get_time, METH_NOARGS,  NULL },
     { "get_source_device",
@@ -152,7 +180,6 @@ static PyMemberDef osk_device_event_members[] = {
     {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
     {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), RESTRICTED, NULL },
     {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },
-    {"touch", T_OBJECT, offsetof(OskDeviceEvent, touch), READONLY, NULL },
     {NULL}
 };
 
@@ -434,10 +461,6 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
         ev->sequence = sequence;
         ev->time = time;
 
-        // Link event to itself in the touch property for
-        // compatibility with GDK touch events.
-        ev->touch = (PyObject*) ev;
-
         queue_event (dev, ev, type == XI_Motion);
 
         Py_DECREF(ev);
@@ -580,7 +603,7 @@ osk_devices_translate_keycode (int              keycode,
  * slave devices.
  *
  * Why we need aggregate button presses:
- * Francesco uses one pointing device for button presses and different one
+ * Francesco uses one pointing device for button presses and a different one
  * for motion events. The motion slave doesn't know about the button
  * slave's state. We can either aggregate the button state over all slaves
  * ourselves or rely on the master to do it for us.

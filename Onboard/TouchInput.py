@@ -607,7 +607,7 @@ class TouchInput(InputEventSource):
             self.log_event("_on_touch_event2 abort")
             return
 
-        touch = event.touch
+        touch = event.touch if hasattr(event, "touch") else event
         id = str(touch.sequence)
         self._last_event_was_touch = True
 
