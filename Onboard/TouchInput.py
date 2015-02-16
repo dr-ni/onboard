@@ -601,14 +601,7 @@ class TouchInput(InputEventSource):
         # events, the touch event comes first. Else there will be a dangling
         # touch sequence. _discard_stuck_input_sequences would clean that up,
         # but a key might get still get stuck in pressed state.
-        #
-        # Update rev. 1944:
-        # Detect TOUCH_UPDATE too, else drag selection to popups breaks. Each
-        # popup opening resets the touch_active flag in order to allow reacting
-        # to changes of the wacom Gesture mode, i.e. with or without touch.
-        if event_type == Gdk.EventType.TOUCH_BEGIN or \
-           event_type == Gdk.EventType.TOUCH_UPDATE:
-            self._set_touch_active(event, True)
+        self._set_touch_active(event, True)
 
         if not self._can_handle_touch_event(event):
             self.log_event("_on_touch_event2 abort")
