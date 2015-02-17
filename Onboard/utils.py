@@ -110,7 +110,8 @@ funcKeys = (("ESC",65307),
             ("Scroll", 65300),
             ("Pause", 65299))
 
-keysyms = {"space" : 65408,
+keysyms = {"space" : 0x0020,
+           "kp_space" : 65408,
            "insert" : 0xff63,
            "home" : 0xff50,
            "page_up" : 0xff55,
