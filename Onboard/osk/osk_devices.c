@@ -125,8 +125,9 @@ osk_device_event_copy (OskDeviceEvent* self, PyObject *args)
         ev->sequence = self->sequence;
         ev->time = self->time;
 
+        Py_DECREF(ev->source_device);
         ev->source_device = self->source_device;
-        Py_INCREF(self->source_device);
+        Py_INCREF(ev->source_device);
     }
     return (PyObject*) ev;
 }
