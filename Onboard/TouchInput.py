@@ -557,6 +557,8 @@ class TouchInput(InputEventSource):
             self.log_event("_on_button_press_event4")
             self._input_sequence_begin(sequence)
 
+        return True
+
     def _on_button_release_event(self, widget, event):
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
         self.log_event("_on_button_release_event", sequence)
@@ -566,6 +568,8 @@ class TouchInput(InputEventSource):
             sequence.time       = event.get_time()
 
             self._input_sequence_end(sequence)
+
+        return True
 
     def _on_motion_event(self, widget, event):
         if not self._can_handle_pointer_event(event):
@@ -583,11 +587,15 @@ class TouchInput(InputEventSource):
             self._last_event_was_touch = False
             self._input_sequence_update(sequence)
 
+        return True
+
     def _on_enter_notify(self, widget, event):
         self.on_enter_notify(widget, event)
+        return True
 
     def _on_leave_notify(self, widget, event):
         self.on_leave_notify(widget, event)
+        return True
 
     def _on_touch_event(self, widget, event):
         self.log_event("_on_touch_event1 {}", self._get_event_source(event))
@@ -640,6 +648,8 @@ class TouchInput(InputEventSource):
             if not sequence is None:
                 sequence.time = event.get_time()
                 self._input_sequence_end(sequence)
+
+        return True
 
     def _input_sequence_begin(self, sequence):
         """ Button press/touch begin """
