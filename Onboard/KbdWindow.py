@@ -741,6 +741,9 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
                 # cut off any leftover auto-show repositioning
                 self.stop_auto_positioning()
 
+                # keep the window active (LP: #1461823)
+                self.keyboard_widget.touch_inactivity_timer()
+
     def _filter_configure_event(self, rect):
         """
         Returns 0 for detected user positioning/sizing.
