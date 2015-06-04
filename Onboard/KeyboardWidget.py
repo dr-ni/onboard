@@ -119,6 +119,7 @@ class InactivityTimer(Timer):
         self._keyboard.commit_transition()
         return False
 
+
 class HideInputLineTimer(Timer):
     """
     Temporarily hides the input line when the pointer touches it.

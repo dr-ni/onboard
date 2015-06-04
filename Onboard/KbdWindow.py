@@ -731,6 +731,16 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         if result == 0:
             self.update_home_rect()
 
+            # While moving with the title bar...
+            if config.has_window_decoration():
+
+                # stop auto-show from hiding the keyboard
+                keyboard = self.keyboard_widget.keyboard
+                keyboard.freeze_auto_show(1.0)
+
+                # cut off any leftover auto-show repositioning
+                self.stop_auto_positioning()
+
     def _filter_configure_event(self, rect):
         """
         Returns 0 for detected user positioning/sizing.
