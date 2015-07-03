@@ -368,7 +368,13 @@ class DomainGenericText(TextDomain):
 
         begin = max(selection[0] - 256, 0)
         end   = min(selection[0] + 100, count)
-        text = Atspi.Text.get_text(accessible, begin, end)
+        try:
+            text = Atspi.Text.get_text(accessible, begin, end)
+        except Exception as ex: # Private exception gi._glib.GError when
+                                # gedit became unresponsive.
+            _logger.info("DomainGenericText.read_context(), text2: " \
+                         + unicode_str(ex))
+            return None
 
         text = unicode_str(text)
 
