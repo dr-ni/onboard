@@ -81,12 +81,30 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
         self._xi_grab_events_selected = False
         self._xi_event_handled = False
 
+        self._touch_active = set() # set of id(XIDevice/GdkX11DeviceXI2)
+                                   # For devices not contained here only
+                                   # pointer events are considered.
+                                   # Wacom devices with enabled gestures never
+                                   # become touch-active, i.e. they don't
+                                   # generate touch events.
+
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
 
     def cleanup(self):
         self._register_gtk_events(False)
         self._register_xinput_events(False)
+
+    def _clear_touch_active(self):
+        self._touch_active = set()
+
+    def set_device_touch_active(self, device):
+        """ Mark source device as actively receiving touch events """
+        self._touch_active.add(id(device))
+
+    def is_device_touch_active(self, device):
+        """ Mark source device as actively receiving touch events """
+        return id(device) in self._touch_active
 
     def _on_realize_event(self, user_data):
         self.handle_realize_event()
@@ -124,6 +142,7 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
     def register_input_events(self, register, use_gtk = False):
         self._register_gtk_events(False)
         self._register_xinput_events(False)
+        self._clear_touch_active()
 
         if register:
             if use_gtk:
@@ -180,6 +199,8 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
                                              self._on_device_event)
                 self._device_manager.connect("device-grab",
                                              self._on_device_grab)
+                self._device_manager.connect("devices-updated",
+                                             self._on_devices_updated)
                 self.select_xinput_devices()
             else:
                 success = False
@@ -191,6 +212,8 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
                                                 self._on_device_event)
                 self._device_manager.disconnect("device-grab",
                                                 self._on_device_grab)
+                self._device_manager.disconnect("devices-updated",
+                                                self._on_devices_updated)
 
             if self._master_device:
                 device = self._master_device
@@ -291,6 +314,9 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
 
     def _on_device_grab(self, device, event):
         self.select_xinput_devices()
+
+    def _on_devices_updated(self):
+        self._clear_touch_active()
 
     def _on_device_event(self, event):
         """
@@ -507,12 +533,6 @@ class TouchInput(InputEventSource):
         device = event.get_source_device()
         return device.get_source()
 
-    @staticmethod
-    def _set_touch_active(event, active):
-        """ Mark source device as actively receiving touch events """
-        device = event.get_source_device()
-        device.touch_active = active
-
     def _can_handle_pointer_event(self, event):
         """
         Rely on pointer events? True for non-touch devices
@@ -523,7 +543,7 @@ class TouchInput(InputEventSource):
 
         return not self._touch_events_enabled or \
                source != Gdk.InputSource.TOUCHSCREEN or \
-               not device.touch_active
+               not self.is_device_touch_active(device)
 
     def _can_handle_touch_event(self, event):
         """
@@ -609,7 +629,8 @@ class TouchInput(InputEventSource):
         # events, the touch event comes first. Else there will be a dangling
         # touch sequence. _discard_stuck_input_sequences would clean that up,
         # but a key might get still get stuck in pressed state.
-        self._set_touch_active(event, True)
+        device = event.get_source_device()
+        self.set_device_touch_active(device)
 
         if not self._can_handle_touch_event(event):
             self.log_event("_on_touch_event2 abort")

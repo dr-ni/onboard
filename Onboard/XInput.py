@@ -145,7 +145,8 @@ class XIDeviceManager(EventSource):
         """
         Singleton constructor, runs only once.
         """
-        EventSource.__init__(self, ["device-event", "device-grab"])
+        EventSource.__init__(self, ["device-event", "device-grab",
+                                    "devices-updated"])
 
         self._devices = {}
         self._osk_devices = None
@@ -273,6 +274,9 @@ class XIDeviceManager(EventSource):
 
         self._last_click_device_id = None
         self._last_motion_device_id = None
+
+        # notify listeners about the previous devices becoming invalid
+        self.emit("devices-updated")
 
     def select_events(self, window, device, mask):
         if window is None:  # use root window?
@@ -437,11 +441,6 @@ class XIDevice(object):
     product      = None
     source       = None
     touch_mode   = None
-
-    touch_active = False  # If False, only pointer events are considered.
-                          # Wacom devices with enabled gestures never
-                          # become touch-active, i.e. they don't generate
-                          # touch events.
 
     _device_manager = None
 
