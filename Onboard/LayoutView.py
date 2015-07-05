@@ -56,8 +56,8 @@ class LayoutView:
         self.invalidate_shadows()
 
     def handle_realize_event(self):
-        self.update_input_event_source()
         self.update_touch_input_mode()
+        self.update_input_event_source()
 
     def on_layout_loaded(self):
         """ Layout has been loaded. """
