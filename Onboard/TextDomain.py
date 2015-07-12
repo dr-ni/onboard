@@ -757,9 +757,13 @@ class PartialURLParser:
         '.'
         >>> p.get_auto_separator("http://www.domain.org")
         '/'
-        >>> p.get_auto_separator("http://www.domain.co")
-        '.'
+        >>> p.get_auto_separator("http://www.domain.co") # ambiguous co/ or co.uk/
+        '/'
         >>> p.get_auto_separator("http://www.domain.co.uk")
+        '/'
+        >>> p.get_auto_separator("http://www.domain.co.uk/home")
+        '/'
+        >>> p.get_auto_separator("http://www.domain.co/home")
         '/'
         >>> p.get_auto_separator("http://www.domain.org/home")
         '/'
@@ -802,14 +806,18 @@ class PartialURLParser:
         SCHEME, PROTOCOL, DOMAIN, PATH = range(4)
         component = SCHEME
         last_septok = ""
-        matches = self.iter_url(context)
-        for match in matches:
+        matches = tuple(self.iter_url(context))
+        for index, match in enumerate(matches):
             groups = match.groups()
             token  = groups[0]
             septok = groups[1]
 
             if septok:
                 last_septok = septok
+            if index < len(matches)-1:
+                next_septok = matches[index+1].groups()[1]
+            else:
+                next_septok = ""
 
             if component == SCHEME:
                 if token:
@@ -832,8 +840,8 @@ class PartialURLParser:
                 if token:
                     separator = "."
                     if last_septok == "." and \
-                       token in self._TLDs and \
-                       token != "co":  # special case for co.uk TLD
+                       next_septok != "." and \
+                       token in self._TLDs:
                         separator = "/"
                         component = PATH
                         continue
