@@ -747,7 +747,7 @@ class Settings(DialogBuilder):
 
         self._add_layout_section(model, system, _("Core layouts"))
         self._add_layout_section(model, contributed, _("Contributions"))
-        self._add_layout_section(model, user, _("User layouts"))
+        self._add_layout_section(model, user, _("My layouts"))
 
         self.layout_view.expand_all()
         self.update_layout_view_selection()
