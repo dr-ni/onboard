@@ -102,6 +102,8 @@ class Command:
         Committer("Johannes Almer",
                   ["almer@nomail.com"],
                   hide_email=True),  # Johannes asked not to publish his email
+        Committer("Barry Warsaw",
+                  ["barry@ubuntu.com"]),
     ]
 
     # Additional copyrights per file that can't be found with bzr annotate
@@ -138,6 +140,8 @@ class Command:
          "alanbell@ubuntu.com", ['20110101']],
         ["themes/ModelM.colors",
          "alanbell@ubuntu.com", ['20110101']],
+        ["debian/rules",
+         "barry@ubuntu.com", ['20110624']],
 
     ]
 
