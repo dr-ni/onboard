@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2012, Gerd Kohlberger
+# Copyright © 2012 Gerd Kohlberger <lowfi@chello.at>
+# Copyright © 2012-2014 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

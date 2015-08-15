@@ -1,45 +1,44 @@
 /*
-Copyright © 2013, marmuta <marmvta@gmail.com>
+ * Copyright © 2009-2010, 2012-2014 marmuta <marmvta@gmail.com>
+ *
+ * This file is part of Onboard.
+ *
+ * Onboard is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Onboard is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-This file is part of Onboard.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-Examples:
-
-import pypredict
-model = pypredict.DynamicModel()
-
-model.count_ngram([u"we"])
-model.count_ngram([u"we", u"saw"])
-model.count_ngram([u"we", u"saw", u"dolphins"])
-model.count_ngram([u"saw"])
-model.count_ngram([u"saw", u"dolphins"])
-model.count_ngram([u"dolphins"])
-
-for ng in model.iter_ngrams():
-    print ng
-
-model.save("/tmp/dolphins.lm")
-model.predict([u"we", u"saw", u""])
-
-model.load("/tmp/dolphins.lm")
-model.predict([u"we", u"saw", u"dol"], 2)
-
-*/
-
+/*
+ * Examples:
+ *
+ * import pypredict
+ * model = pypredict.DynamicModel()
+ *
+ * model.count_ngram([u"we"])
+ * model.count_ngram([u"we", u"saw"])
+ * model.count_ngram([u"we", u"saw", u"dolphins"])
+ * model.count_ngram([u"saw"])
+ * model.count_ngram([u"saw", u"dolphins"])
+ * model.count_ngram([u"dolphins"])
+ *
+ * for ng in model.iter_ngrams():
+ *     print ng
+ *
+ * model.save("/tmp/dolphins.lm")
+ * model.predict([u"we", u"saw", u""])
+ *
+ * model.load("/tmp/dolphins.lm")
+ * model.predict([u"we", u"saw", u"dol"], 2)
+ */
 
 #include "Python.h"
 #include "structmember.h"

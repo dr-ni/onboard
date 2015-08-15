@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright © 2008 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2008-2009 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2009 Chris Jones <tortoise@tortuga>
+# Copyright © 2011 Gerd Kohlberger <lowfi@chello.at>
+# Copyright © 2011-2014 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

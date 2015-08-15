@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# Copyright © 2015, marmuta
+
+# Copyright © 2015 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -31,8 +32,10 @@ def main():
             "Usage: %prog command [command_options]\n"
             "\n"
             "Commands:\n"
-            "   %prog list-committers          list committers per file"
-            "   %prog update-headers           write license headers"
+            "   %prog list-committers          list committers per file\n"
+            "   %prog update-headers           write license headers\n"
+            "\n"
+            "   (append -h for help with individual commands)\n"
                                    )
     parser.disable_interspersed_args()
     options, args = parser.parse_args(args)
@@ -63,16 +66,19 @@ def find_command(cmd_str):
 
 class Command:
     class Committer:
-        def __init__(self, name, emails, ignore=False):
+        def __init__(self, name, emails, ignore=False, hide_email=False):
             self.name = name
             self.emails = emails
             self.ignore = ignore
+            self.hide_email = hide_email
             assert(type(self.emails) is list or \
                    type(self.emails) is tuple)
         def __repr__(self):
             return type(self).__name__ + "(" + repr(self.name) + ")"
         def get_main_email(self):
-            return self.emails[0]
+            if not self.hide_email:
+                return self.emails[0]
+            return None
 
     _known_committers = [
         Committer("Chris Jones",
@@ -95,14 +101,25 @@ class Command:
                   ["martin.bohm@kubuntu.org"]),
         Committer("Alan Bell",
                   ["alanbell@ubuntu.com"]),
+        Committer("Johannes Almer",
+                  ["almer@nomail.com"],
+                  hide_email=True),  # Johannes asked not to publish his email
+        Committer("Barry Warsaw",
+                  ["barry@ubuntu.com"]),
     ]
 
     # Additional copyrights per file that can't be found with bzr annotate
     _extra_copyrights = [
+        ["Onboard/IconPalette.py",
+         "francesco.fumanti@gmx.net", ['20080101']],
+        ["Onboard/Sound.py",
+         "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_audio.c",
          "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_click_mapper.c",
          "lowfi@chello.at", ['20110101']],
+        ["Onboard/osk/osk_click_mapper.c",
+         "marmvta@gmail.com", ['20120101']],
         ["Onboard/osk/osk_devices.c",
          "lowfi@chello.at", ['20110101']],
         ["Onboard/osk/osk_module.c",
@@ -113,14 +130,37 @@ class Command:
          "lowfi@chello.at", ['20120101']],
         ["Onboard/osk/osk_virtkey.c",
          "tortoise@tortuga", ['20060101', '20070101', '20080101']],
+        ["Onboard/osk/osk_virtkey.c",
+         "marmvta@gmail.com", ['20100101']],
+        ["layouts/Whiteboard.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["layouts/Whiteboard_wide.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["themes/Aubergine.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+        ["themes/Typist.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+        ["themes/ModelM.colors",
+         "alanbell@ubuntu.com", ['20110101']],
+        ["debian/rules",
+         "barry@ubuntu.com", ['20110624']],
+
     ]
+
+    # bzr commits that should not grant copyright
+    _exclude_revisions = ["1947",   # Auto-generate license headers.
+                          "1949",   # Regenerate license headers with revisions 1947, 1949 excluded.
+                          ]
+
+    # paths excluded by default (matched with startswith())
+    _exclude_paths = [".bzr"]
 
     def run(self, *args):
         raise NotImplementedError()
 
     @staticmethod
     def iter_filtered_files(options, args):
-        exclude_paths = options.exclude_paths + [".bzr"]
+        exclude_paths = options.exclude_paths + Command._exclude_paths
         if args:
             for fn in args:
                 yield fn
@@ -129,26 +169,25 @@ class Command:
                 dirpath = os.path.normpath(dirpath) # remove starting "./"
                 for basename in filenames:
                     fn = os.path.join(dirpath, basename)
-                    if all(not fn.startswith(ep) \
-                           for ep in exclude_paths):
+                    if all(not fn.startswith(ep) for ep in exclude_paths):
                         yield fn
 
+    @staticmethod
+    def get_committer_emails(fn, exclude_emails = (), exclude_revisions = ()):
+        code = Command.get_code(fn, None, exclude_revisions)
+        emails = set()
+        for fields in code:
+            assert(fields[3] == "|")
+            email = fields[1]
+            if not email in exclude_emails:
+                emails.add(fields[1])
+        return list(emails)
 
     @staticmethod
-    def get_committer_emails(fn, exclude_emails = ()):
-        cmd = ['/bin/bash', '-c',
-                "bzr annotate --all --long --quiet '" + fn + "'"
-                " | sort -k2 -t' '"
-                " | awk 'k&&k!=$2{print p}{p=$2;k=$2}END{print p}'"
-                ]
-        output = subprocess.check_output(cmd).decode()
-        output = [o for o in output.split("\n") if o]
-        emails = [c for c in output if not c in exclude_emails]
-        return emails
-
-    @staticmethod
-    def get_committers(fn, exclude_emails = ()):
-        emails = Command.get_committer_emails(fn, exclude_emails)
+    def get_committers(fn, exclude_emails = (), exclude_revisions = ()):
+        """ Returns Committer instances """
+        emails = Command.get_committer_emails(fn, exclude_emails,
+                                              exclude_revisions)
         committers = set(Command.get_committer_from_email(e) for e in emails)
         return list(committers)
 
@@ -175,7 +214,7 @@ class Command:
         return ""
 
     @staticmethod
-    def get_code(fn, emails):
+    def get_code(fn, emails, exclude_revisions=()):
         """ Get part of fn that was committed by <committer>. """
         cmd = ['/bin/bash', '-c',
                 "bzr annotate --all --long --quiet '" + fn + "'"
@@ -185,9 +224,12 @@ class Command:
         for line in [o for o in output.split("\n") if o]:
             fields = line.split()
             assert(fields[3] == "|")
+            revision = fields[0]
             email = fields[1]
-            if email in emails:
-                code.append(fields + [line])
+            if not revision in exclude_revisions:
+                if emails is None or \
+                   email in emails:
+                    code.append(fields + [line])
         return code
 
     @staticmethod
@@ -232,14 +274,15 @@ class CommandListCommitters(Command):
     def run(self, args):
         options, args = self.parse_cmd_line(args)
         for fn in self.iter_filtered_files(options, args):
+            print(fn)
             emails = self.get_committer_emails(fn, options.exclude_committers)
             if emails:
                 for email in emails:
                     print(" "*4 + \
                           self.get_committer_name_from_email(email) + \
-                          " <"  + committer + ">")
+                          " <"  + email + ">")
                     if options.source_code:
-                        code = self.get_code(fn, [committer])
+                        code = self.get_code(fn, [email])
                         for fields in code:
                             print(" "*8 + fields[-1])
                 print()
@@ -335,11 +378,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
         # collect committer information from bzr
         copyrights = {}
-        committers = self.get_committers(fn, exclude_committers)
+        committers = self.get_committers(fn, exclude_committers,
+                                         self._exclude_revisions)
         for committer in committers:
             if not committer.ignore:
                 # find years of contribution
-                code = self.get_code(fn, committer.emails)
+                code = self.get_code(fn, committer.emails,
+                                     self._exclude_revisions)
                 timestamps = set()
                 for fields in code:
                     assert(fields[3] == "|")
@@ -368,13 +413,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             years = sorted(list(years))
             year_str = self._build_year_range_str(years)
             copyright += "Copyright © " + year_str + " " + \
-                         committer.name + \
-                         " <"  + committer.get_main_email() + ">" + "\n"
+                         committer.name
+            email = committer.get_main_email()
+            if not email is None:
+                copyright += " <"  + email + ">"
+
+            copyright += "\n"
 
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
         header = header[1:-1]  # cut off empty lines
-        lines = [line.replace("\n", "") for line in header.split("\n")]
+        lines = [line.replace("\n", "").rstrip() for line in header.split("\n")]
 
         return lines
 
@@ -480,7 +529,7 @@ class FileTypePython(FileType):
         raise NotImplementedError()
 
     def comment_lines(self, lines):
-        return ["# " + line for line in lines]
+        return [("# "+line).rstrip()  for line in lines]
 
     def find_insert_range(self, lines):
         """
@@ -509,6 +558,12 @@ class FileTypePython(FileType):
         ...       "import os"])
         (1, 1)
 
+        >>> func([" #!/bin/usr/python3",
+        ...       " # -*- coding: utf-8 -*-",
+        ...       "",
+        ...       "import os"])
+        (3, 3)
+
         >>> func(["#!/bin/usr/python3",
         ...       "# -*- coding: utf-8 -*-",
         ...       "",
@@ -518,7 +573,7 @@ class FileTypePython(FileType):
         ...       "import os"])
         (3, 5)
 
-        >>> fulayouts/Compact.onboardnc(["#!/bin/usr/python3",
+        >>> func(["#!/bin/usr/python3",
         ...       "# -*- coding: utf-8 -*-",
         ...       "# Copyright",
         ...       "# GPL",
@@ -565,7 +620,7 @@ class FileTypePython(FileType):
                     begin = None
 
                 # encoding line?
-                elif re.match("#.*-\*-.*[Cc]oding", line):
+                elif re.match("#.*-\*-.*[Cc]oding", stripped):
                     begin = None
 
                 else:
@@ -594,7 +649,9 @@ class FileTypeC(FileType):
         return False
 
     def comment_lines(self, lines):
-        return ["/*"] + [" * " + line for line in lines] + [" */"]
+        return ["/*"] + \
+               [(" * " + line).rstrip() for line in lines] + \
+               [" */"]
 
     def find_insert_range(self, lines):
         """
@@ -716,7 +773,9 @@ class FileTypeXML(FileType):
         return False
 
     def comment_lines(self, lines):
-        return ["<!--"] + ["" + line for line in lines] + ["-->"]
+        return ["<!--"] + \
+               ["" + line for line in lines] + \
+               ["-->"]
 
     def find_insert_range(self, lines):
         """
@@ -770,12 +829,12 @@ class FileTypeNoHeader(FileType):
         files = ["COPYING", "README", "TODO", "AUTHORS", "HACKING", "NEWS",
                  "CHANGELOG", "MANIFEST.in", ".bzrignore",
                  "attic/Makefile"]
-        extensions = ["po", "lm", "svg", "png", "oga", "ui", "swp"]
+        extensions = [".po", ".lm", ".svg", ".png", ".oga", ".ui", ".swp", "~"]
         for f in files:
             if fn.endswith("/"+f):
                 return True
         for ext in extensions:
-            if fn.endswith("."+ext):
+            if fn.endswith(ext):
                 return True
         return False
 

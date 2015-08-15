@@ -1,7 +1,10 @@
+
 /*
- * Copyright © 2006, 2007, 2008 Chris Jones
- * Copyright © 2010 marmuta
- * Copyright © 2013 Gerd Kohlberger
+ * Copyright © 2006-2008 Chris Jones <tortoise@tortuga>
+ * Copyright © 2010, 2013 marmuta <marmvta@gmail.com>
+ * Copyright © 2013 Gerd Kohlberger <lowfi@chello.at>
+ *
+ * This file is part of Onboard.
  *
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

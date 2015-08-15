@@ -1,6 +1,8 @@
 /*
- * Copyright © 2011 Gerd Kohlberger
- * Copyright © 2012 marmuta
+ * Copyright © 2011-2012 Gerd Kohlberger <lowfi@chello.at>
+ * Copyright © 2011-2015 marmuta <marmvta@gmail.com>
+ *
+ * This file is part of Onboard.
  *
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
