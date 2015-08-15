@@ -152,13 +152,15 @@ class Command:
                           "1949",   # Regenerate license headers with revisions 1947, 1949 excluded.
                           ]
 
+    # paths excluded by default (matched with startswith())
+    _exclude_paths = [".bzr"]
 
     def run(self, *args):
         raise NotImplementedError()
 
     @staticmethod
     def iter_filtered_files(options, args):
-        exclude_paths = options.exclude_paths + [".bzr"]
+        exclude_paths = options.exclude_paths + Command._exclude_paths
         if args:
             for fn in args:
                 yield fn
@@ -167,8 +169,7 @@ class Command:
                 dirpath = os.path.normpath(dirpath) # remove starting "./"
                 for basename in filenames:
                     fn = os.path.join(dirpath, basename)
-                    if all(not fn.startswith(ep) \
-                           for ep in exclude_paths):
+                    if all(not fn.startswith(ep) for ep in exclude_paths):
                         yield fn
 
     @staticmethod
