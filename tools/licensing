@@ -32,8 +32,10 @@ def main():
             "Usage: %prog command [command_options]\n"
             "\n"
             "Commands:\n"
-            "   %prog list-committers          list committers per file"
-            "   %prog update-headers           write license headers"
+            "   %prog list-committers          list committers per file\n"
+            "   %prog update-headers           write license headers\n"
+            "\n"
+            "   (append -h for help with individual commands)\n"
                                    )
     parser.disable_interspersed_args()
     options, args = parser.parse_args(args)
