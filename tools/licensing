@@ -148,8 +148,10 @@ class Command:
     ]
 
     # bzr commits that should not grant copyright
-    _exclude_revisions = ["1947",   # Auto-generate license headers.
-                          "1949",   # Regenerate license headers with revisions 1947, 1949 excluded.
+    _exclude_revisions = ["1941.1.6",   # Auto-generate license headers.
+                          "1941.1.8",   # Regenerate license headers with revisions 1941.1.6, 1941.1.8 excluded.
+                          "1962",       # Merge license-cleanup branch including generated license headers.
+                          "1963",       # Update license headers.
                           ]
 
     # paths excluded by default (matched with startswith())
