@@ -380,11 +380,22 @@ class KbdWindowBase:
                       "visible={}" \
                       .format(opacity, force_set, self.is_visible()))
         if force_set:
-            Gtk.Window.set_opacity(self, opacity)
+            self._do_set_opacity(opacity)
         else:
             if self.is_visible():
-                Gtk.Window.set_opacity(self, opacity)
+                self._do_set_opacity(opacity)
             self._opacity = opacity
+
+    def _do_set_opacity(self, opacity):
+        # In Wily, Gtk moved on from using the _NET_WM_OPACITY X window property
+        # to doing all opacity effects internally with cairo. It just so
+        # happens that as soon our XInput event source calls XISelectEvents()
+        # the opacity is only applied to toplevels anymore, not their child
+        # windows. The reason is unclear.
+        # Workaround: keep the toplevel transparent and apply opacity to
+        # the child only.
+        #Gtk.Window.set_opacity(self, opacity)
+        Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
 
     def get_opacity(self):
         return self._opacity
