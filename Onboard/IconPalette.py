@@ -93,6 +93,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             "opacity" : self.OPACITY,    # no effect on Vivid
             "width_request" : self.MINIMUM_SIZE,
             "height_request" : self.MINIMUM_SIZE,
+            "app_paintable" : True,
         }
         if gtk_has_resize_grip_support():
             args["has_resize_grip"] = False
