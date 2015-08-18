@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright © 2014 marmuta <marmvta@gmail.com>
 #
