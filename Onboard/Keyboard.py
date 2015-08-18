@@ -353,28 +353,28 @@ class TextChanger():
         if not self._delayed_mods is None:
             for mod, count in self._delayed_mods.items():
                 if count:
-                    self._do_lock_mod(mod)
+                    self.do_lock_mod(mod)
                 else:
-                    self._do_unlock_mod(mod)
+                    self.do_unlock_mod(mod)
 
             self._delayed_mods = None
 
     def lock_mod(self, mod):
         if self._delayed_mods is None:
-            self._do_lock_mod(mod)
+            self.do_lock_mod(mod)
         else:
             self._delayed_mods[mod] = True
 
     def unlock_mod(self, mod):
         if self._delayed_mods is None:
-            self._do_unlock_mod(mod)
+            self.do_unlock_mod(mod)
         else:
             self._delayed_mods[mod] = False
 
-    def _do_lock_mod(self, mod):
+    def do_lock_mod(self, mod):
         self._key_synth.lock_mod(mod)
 
-    def _do_unlock_mod(self, mod):
+    def do_unlock_mod(self, mod):
         self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
@@ -459,14 +459,14 @@ class Keyboard(WordSuggestions):
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = 0
-                self._text_changer.unlock_mod(mod)
+                self._text_changer.do_unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
         mods = self._suppress_modifiers_stack.pop()
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = nkeys
-                self._text_changer.lock_mod(mod)
+                self._text_changer.do_lock_mod(mod)
 
     # currently active layer
     def _get_active_layer_index(self):
@@ -1331,7 +1331,7 @@ class Keyboard(WordSuggestions):
     def set_modifiers(self, mod_mask):
         """
         Sync Onboard with modifiers of the given modifier mask.
-        Used to sync changes to system modifier state with Onboard.
+        Used to sync changes of system modifier state with Onboard.
         """
         # The special handling of ALT in Onboard confuses the detection of
         # modifier presses from the outside.
@@ -1344,7 +1344,7 @@ class Keyboard(WordSuggestions):
 
         for mod_bit in (1<<bit for bit in range(8)):
             # Directly redraw locking modifiers only. All other modifiers
-            # redraw after a short delay. This is meant to prevents
+            # redraw after a short delay. This is meant to prevent
             # Onboard from busily flashing keys and using CPU while
             # typing with a hardware keyboard.
             if (mod_bit & (Modifiers.CAPS | Modifiers.NUMLK)):
