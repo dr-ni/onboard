@@ -21,6 +21,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import time
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -74,8 +75,10 @@ class AtspiStateTracker(EventSource):
     _keystroke_listener = None
 
     # asynchronously accessible members
-    _focused_accessible = None   # any currently focused accessible
-    _active_accessible = None    # editable focused accessible
+    _focused_accessible = None   # last focused editable accessible
+    _focused_pid = None          # pid of last focused editable accessible
+    _active_accessible = None    # currently active editable accessible
+    _active_accessible_activation_time = 0.0 # time of activation of _active_accessible
     _last_active_accessible = None
     _state = None                # cache of various accessible properties
 
@@ -173,14 +176,19 @@ class AtspiStateTracker(EventSource):
         if self._text_listeners_registered != register:
             if register:
                 self.atspi_connect("_listener_text_changed",
-                                   "object:text-changed",
+                                   "object:text-changed:insert",
+                                   self._on_atspi_text_changed)
+                self.atspi_connect("_listener_text_changed",
+                                   "object:text-changed:delete",
                                    self._on_atspi_text_changed)
                 self.atspi_connect("_listener_text_caret_moved",
                                    "object:text-caret-moved",
                                    self._on_atspi_text_caret_moved)
             else:
                 self.atspi_disconnect("_listener_text_changed",
-                                      "object:text-changed")
+                                      "object:text-changed:insert")
+                self.atspi_disconnect("_listener_text_changed",
+                                      "object:text-changed:delete")
                 self.atspi_disconnect("_listener_text_caret_moved",
                                       "object:text-caret-moved")
 
@@ -315,36 +323,48 @@ class AtspiStateTracker(EventSource):
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
-        if not self._frozen:
+        if accessible and not self._frozen:
             self._log_accessible(accessible, focused)
 
-            if not accessible is None:
-                try:
-                    self._state = \
-                            self._read_initial_accessible_state(accessible)
-                except Exception as ex: # Private exception gi._glib.GError when
-                                        # gedit became unresponsive.
-                    _logger.atspi("_on_focus_changed(): "
-                                 "invalid accessible, failed to read state: " \
-                                 + unicode_str(ex))
-
-                editable = self._is_accessible_editable(self._state)
-                activate = focused and editable
-
-                if focused:
-                    self._focused_accessible = accessible
-                elif not focused and self._focused_accessible == accessible:
+            # Since Trusty, focus events no longer come reliably in a
+            # predictable order. -> Store the last editable accessible
+            # so we can pick it over later focused non-editable ones.
+            # Helps keeping the keyboard open in presence of popup selections
+            # in GNOME's file dialog and in Unity Dash.
+            state_valid = False
+            if self._focused_accessible is accessible:
+                if not focused:
                     self._focused_accessible = None
-                else:
-                    activate = None
-
-                if not activate is None:
-                    if activate:
-                        active_accessible = self._focused_accessible
+            else:
+                if focused:
+                    self._state = self._read_initial_accessible_state(accessible)
+                    pid = self._state.get("pid")
+                    if self._is_accessible_editable(self._state):
+                        self._focused_accessible = accessible
+                        self._focused_pid = pid
+                        state_valid = True
                     else:
-                        active_accessible = None
+                        # Wily: Hide when unity dash closes (there's no focus
+                        # lost event)
+                        # Check time since last activation to skip out of order
+                        # focus events (firefox ATSPI_ROLE_DOCUMENT_FRAME) for
+                        # a short while after opening dash.
+                        now = time.time()
+                        if now - self._active_accessible_activation_time > .5:
+                            if self._focused_pid != pid:
+                                self._focused_accessible = None
+                                _logger.atspi("Dropping accessible due to "
+                                              "pid change: {} != {} " \
+                                              .format(self._focused_pid, pid))
 
-                    self._set_active_accessible(active_accessible)
+            if not state_valid:
+                self._state = self._read_initial_accessible_state(self._focused_accessible)
+
+            active_accessible = self._focused_accessible
+            if not self._is_accessible_focused(self._state):
+                active_accessible = None
+
+            self._set_active_accessible(active_accessible)
 
     def _set_active_accessible(self, accessible):
         self._active_accessible = accessible
@@ -355,7 +375,7 @@ class AtspiStateTracker(EventSource):
             if not accessible is None:
                 try:
                     self._state.update( \
-                                self._read_remaining_accessible_state(accessible))
+                            self._read_remaining_accessible_state(accessible))
                 except Exception as ex: # Private exception gi._glib.GError when
                                         # gedit became unresponsive.
                     _logger.atspi("_set_active_accessible(): "
@@ -367,6 +387,7 @@ class AtspiStateTracker(EventSource):
                       self._active_accessible)
 
             self._last_active_accessible = self._active_accessible
+            self._active_accessible_activation_time = time.time()
 
     def _on_async_text_changed(self, event):
         if event.accessible is self._active_accessible:
@@ -482,19 +503,41 @@ class AtspiStateTracker(EventSource):
                     return True
         return False
 
+    def _is_accessible_focused(self, state):
+        state_set = state.get("state-set")
+        if state_set:
+            return state_set.contains(Atspi.StateType.FOCUSED)
+        return False
+
     def _read_initial_accessible_state(self, accessible):
         """
-        Read just enough to find out if we are intereseted in this accessible.
+        Read just enough to find out if we are interested in this accessible.
         """
         state = {}
-        state["role"] = accessible.get_role()
-        state["state-set"] = accessible.get_state_set()
+        if not accessible is None:
+            try:
+                state["role"] = accessible.get_role()
+                state["state-set"] = accessible.get_state_set()
+                state["id"] = accessible.get_id()
+            except Exception as ex: # Private exception gi._glib.GError when
+                                    # gedit became unresponsive.
+                _logger.info("_read_initial_accessible_state(): "
+                                "invalid accessible, failed to read state: " \
+                                + unicode_str(ex))
+            try:
+                state["pid"] = accessible.get_process_id()
+            except Exception as ex: # Private exception gi._glib.GError when
+                                    # gedit became unresponsive.
+                state["pid"] = None
+                _logger.info("_read_initial_accessible_state(): "
+                                "failed to read pid: " \
+                                + unicode_str(ex))
         return state
 
     def _read_remaining_accessible_state(self, accessible):
         """
         Read more attributes and find out as much as we
-        can about the accessibles purpose.
+        can about the accessible's purpose.
         """
         state = {}
 
@@ -507,7 +550,7 @@ class AtspiStateTracker(EventSource):
             state["id"] = accessible.get_id()
             state["name"] = accessible.get_name()
             pid = accessible.get_process_id()
-            state["process-id"] = pid
+            state["pid"] = pid
             if pid != -1:
                 state["process-name"] = Process.get_process_name(pid)
 
@@ -515,6 +558,14 @@ class AtspiStateTracker(EventSource):
             if app:
                 state["app-name"] = app.get_name()
                 state["app-description"] = app.get_description()
+
+            state["toolkit-name"] = accessible.get_toolkit_name()
+            state["toolkit-version"] = accessible.get_toolkit_version()
+            #state["summary"] = accessible.get_summary()
+            state["editable_text_iface"] = accessible.get_editable_text_iface()
+            #state["document_attributes"] = accessible.get_document_attributes()
+            state["description"] = accessible.get_description()
+            #state["default_attributes"] = accessible.get_default_attributes() # not implemented by unity dash
 
         return state
 
