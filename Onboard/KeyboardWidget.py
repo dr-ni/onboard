@@ -1564,7 +1564,13 @@ class KeyMenu:
         if self._closure:
             self._closure()
 
-    def _menu_positioning_func(self, menu, key):
+    def _menu_positioning_func(self, *params):
+        # work around change in number of paramters in Wily with Gtk 3.16
+        if len(params) == 4:
+            menu, x, y, key = params  # new in Wily
+        else:
+            menu, key = params
+
         r = self._keyboard_widget.get_key_screen_rect(key)
         menu_size  = (menu.get_allocated_width(),
                       menu.get_allocated_width())
