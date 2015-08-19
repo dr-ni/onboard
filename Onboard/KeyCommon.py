@@ -881,7 +881,7 @@ class KeyPath:
         path._bounds = rect.copy()
         return path
 
-    _svg_path_pattern = re.compile("([+-]?[0-9.]*)")
+    _svg_path_pattern = re.compile("([+-]?[0-9.]+)")
 
     def copy(self):
         result = KeyPath()
