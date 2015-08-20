@@ -811,6 +811,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self.invalidate_for_resize(self._lod)
 
     def on_enter_notify(self, widget, event):
+        self.keyboard.on_activity_detected()
+
         self._update_double_click_time()
 
         # ignore event if a mouse button is held down
@@ -878,6 +880,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
     def on_input_sequence_begin(self, sequence):
         """ Button press/touch begin """
+        self.keyboard.on_activity_detected()
+
         self.stop_click_polling()
         self.stop_dwelling()
         self.close_key_popup()

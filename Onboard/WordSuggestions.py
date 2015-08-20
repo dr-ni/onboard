@@ -237,6 +237,23 @@ class WordSuggestions:
     def get_spellchecker_dicts(self):
         return self._spell_checker.get_supported_dict_ids()
 
+    def on_activity_detected(self):
+        """
+        User interacted with the keyboard.
+        """
+        if self._wpengine:
+            self._wpengine.postpone_autosave()
+
+    def on_before_key_press(self, key):
+        if not key.is_modifier() and not key.is_button():
+            self._punctuator.on_before_press(key)
+        self.text_context.on_onboard_typing(key, self.get_mod_mask())
+
+    def on_after_key_release(self, key):
+        self._punctuator.on_after_release(key)
+        if not key.is_correction_key():
+            self.expand_corrections(False)
+
     def send_key_up(self, key, button, event_type):
         key_type = key.type
         if key_type == KeyCommon.CORRECTION_TYPE:
@@ -250,16 +267,6 @@ class WordSuggestions:
                         KeyCommon.CORRECTION_TYPE,
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
-
-    def on_before_key_press(self, key):
-        if not key.is_modifier() and not key.is_button():
-            self._punctuator.on_before_press(key)
-        self.text_context.on_onboard_typing(key, self.get_mod_mask())
-
-    def on_after_key_release(self, key):
-        self._punctuator.on_after_release(key)
-        if not key.is_correction_key():
-            self.expand_corrections(False)
 
     def enter_caps_mode(self):
         """

@@ -831,6 +831,8 @@ class Keyboard(WordSuggestions):
         This may be either an initial press, or a switch of the active_key
         due to dragging.
         """
+        self.on_activity_detected()
+
         self.stop_raise_attempts()
 
         if sequence:

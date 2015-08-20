@@ -83,6 +83,9 @@ class WPLocalEngine(object):
         """
         self._model_cache.get_models(self.models)
 
+    def postpone_autosave(self):
+        self._auto_save_timer.postpone()
+
     def predict(self, context_line, limit = 20,
                 case_insensitive = False,
                 case_insensitive_smart = False,
@@ -581,16 +584,37 @@ class ModelCache:
 class AutoSaveTimer(utils.Timer):
     """ Auto-save modified language models periodically """
 
-    def __init__(self, mode_cache, interval = 10*60):
+    def __init__(self, mode_cache, interval_min=10*60, interval_max=15*60, postpone_delay=30):
         self._model_cache = mode_cache
-        self._interval = interval  # in seconds
-        self._last_save_time = 0
+        self._interval_min = interval_min  # in seconds
+        self._interval_max = interval_max  # in seconds
+        self._postpone_delay = postpone_delay
+        self._interval = self._interval_min  # in seconds
+        self._last_save_time = time.time()
         self.start(5, self._on_timer)
 
+    def postpone(self):
+        """
+        Postpone saving a little, while the user is still typing.
+        Helps to mask the delay when saving large models, during which
+        Onboard briefly becomes unresponsive.
+        """
+        elapsed = time.time() - self._last_save_time
+        if self._interval < elapsed + self._postpone_delay:
+            self._interval = elapsed + self._postpone_delay
+            if self._interval > self._interval_max:
+                self._interval = self._interval_max
+
     def _on_timer(self):
-        t = time.time()
-        if t - self._last_save_time > self._interval:
-            self._last_save_time = t
+        now = time.time()
+        elapsed = now - self._last_save_time
+        if self._interval < elapsed:
+            self._last_save_time = now
+            self._interval = self._interval_min
+            _logger.debug("auto-saving language models "
+                          "(interval {}, elapsed time {}" \
+                          .format(self._interval, elapsed))
             self._model_cache.save_models()
         return True # run again
+
 
