@@ -492,37 +492,40 @@ class ModelCache:
     def save_model(self, model, lmid):
         type_, class_, name  = lmid.split(":")
         filename = self.get_filename(lmid)
-        backup_filename = self.get_backup_filename(filename)
+        from Onboard.utils import timeit
 
-        if filename and \
-           model.modified:
+        with timeit("save_model '" + filename + "'"):
+            backup_filename = self.get_backup_filename(filename)
 
-            if model.load_error:
-                _logger.warning("Not saving modified language model '{}' "
-                                "due to previous error on load." \
-                                .format(filename))
-            else:
-                _logger.info("Saving language model '{}'".format(filename))
-                try:
-                    # create the path
-                    path = os.path.dirname(filename)
-                    utils.XDGDirs.assure_user_dir_exists(path)
+            if filename and \
+            model.modified:
 
-                    if 1:
-                        # save to temp file
-                        basename, ext = os.path.splitext(filename)
-                        tempfile = basename + ".tmp"
-                        model.save(tempfile)
+                if model.load_error:
+                    _logger.warning("Not saving modified language model '{}' "
+                                    "due to previous error on load." \
+                                    .format(filename))
+                else:
+                    _logger.info("Saving language model '{}'".format(filename))
+                    try:
+                        # create the path
+                        path = os.path.dirname(filename)
+                        utils.XDGDirs.assure_user_dir_exists(path)
 
-                        # rename to final file
-                        if os.path.exists(filename):
-                            os.rename(filename, backup_filename)
-                        os.rename(tempfile, filename)
+                        if 1:
+                            # save to temp file
+                            basename, ext = os.path.splitext(filename)
+                            tempfile = basename + ".tmp"
+                            model.save(tempfile)
 
-                    model.modified = False
-                except (IOError, OSError) as e:
-                    _logger.warning("Failed to save language model '{}': {} ({})" \
-                                    .format(filename, os.strerror(e.errno), e.errno))
+                            # rename to final file
+                            if os.path.exists(filename):
+                                os.rename(filename, backup_filename)
+                            os.rename(tempfile, filename)
+
+                        model.modified = False
+                    except (IOError, OSError) as e:
+                        _logger.warning("Failed to save language model '{}': {} ({})" \
+                                        .format(filename, os.strerror(e.errno), e.errno))
 
     @staticmethod
     def get_filename(lmid):
@@ -584,7 +587,7 @@ class ModelCache:
 class AutoSaveTimer(utils.Timer):
     """ Auto-save modified language models periodically """
 
-    def __init__(self, mode_cache, interval_min=10*60, interval_max=15*60, postpone_delay=30):
+    def __init__(self, mode_cache, interval_min=1*60, interval_max=5*60, postpone_delay=10):
         self._model_cache = mode_cache
         self._interval_min = interval_min  # in seconds
         self._interval_max = interval_max  # in seconds
@@ -604,6 +607,8 @@ class AutoSaveTimer(utils.Timer):
             self._interval = elapsed + self._postpone_delay
             if self._interval > self._interval_max:
                 self._interval = self._interval_max
+        print("postpone(): current interval {}, elapsed since last save {}" \
+              .format(self._interval, elapsed))
 
     def _on_timer(self):
         now = time.time()
@@ -611,9 +616,9 @@ class AutoSaveTimer(utils.Timer):
         if self._interval < elapsed:
             self._last_save_time = now
             self._interval = self._interval_min
-            _logger.debug("auto-saving language models "
-                          "(interval {}, elapsed time {}" \
-                          .format(self._interval, elapsed))
+            _logger.warning("auto-saving language models; "
+                            "interval {}, elapsed time {}" \
+                            .format(self._interval, elapsed))
             self._model_cache.save_models()
         return True # run again
 
