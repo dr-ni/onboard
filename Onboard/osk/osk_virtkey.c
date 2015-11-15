@@ -1409,8 +1409,14 @@ osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
     Py_ssize_t n;
     KeyCode keycode;
     KeySym keysym = 0;
-    unsigned int mods_rtn;
     int i, group;
+    unsigned int mods;
+    unsigned int mods_rtn;
+
+    XKeyPressedEvent ev;
+    const int max_label_size = 128;
+    char label[max_label_size+1];
+    int label_size = 0;
 
     if (!PyArg_ParseTuple (args, "i|O", &keycode, &omod_masks))
         return NULL;
@@ -1429,8 +1435,13 @@ osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
         n = PySequence_Fast_GET_SIZE (seq);
         ret = PyTuple_New (n);
 
+        memset(&ev, 0, sizeof(ev));
+        ev.type = KeyPress;
+        ev.display = vk->display;
+
         for (i = 0; i < n; i++, items++)
         {
+
             if (!PyLong_Check (*items))
             {
                 PyErr_SetString (PyExc_ValueError, "expected integer");
@@ -1439,15 +1450,18 @@ osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
                 return NULL;
             }
 
-            if (XkbTranslateKeyCode (vk->kbd,
-                                     keycode,
-                                     XkbBuildCoreState (PyLong_AsLong (*items), group),
-                                     &mods_rtn,
-                                     &keysym))
+            mods = XkbBuildCoreState (PyLong_AsLong (*items), group);
+
+            ev.state = mods;
+            ev.keycode = keycode;
+            label_size = XLookupString(&ev, label, max_label_size, &keysym, NULL);
+            label[label_size] = '\0';
+
+            if (keysym)
                 PyTuple_SET_ITEM (ret, i, vk_get_label_from_keysym (keysym));
             else
-                PyTuple_SET_ITEM (ret, i, PyString_FromString (""));
-        }
+                PyTuple_SET_ITEM (ret, i, PyString_FromString (label));
+       }
         Py_DECREF (seq);
     }
     else
