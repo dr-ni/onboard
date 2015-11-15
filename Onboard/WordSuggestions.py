@@ -592,7 +592,7 @@ class WordSuggestions:
 
         # mid-sentence, lowercase
         >>> get_options(["<s>", "Word", "prefix"], False)
-        (2, False, False, True)
+        (2, False, False, False)
 
         # mid-sentence, capitalized
         >>> get_options(["<s>", "Word", "Prefix"], False)
@@ -639,17 +639,11 @@ class WordSuggestions:
                               bool(bot_marker) and tokens[-2] == bot_marker)
             capitalized = bool(prefix) and prefix[0].isupper()
             empty_prefix = not bool(prefix)
-            all_lower = prefix.islower()
 
             ignore_non_caps  = not sentence_begin and \
                                (capitalized or empty_prefix and shift)
 
             capitalize       = sentence_begin and (capitalized or shift)
-
-            drop_capitalized = not sentence_begin and \
-                               not capitalized \
-                               and not empty_prefix and \
-                               all_lower
 
             case_insensitive = sentence_begin or not (capitalized or shift)
             if not case_insensitive:
@@ -664,7 +658,8 @@ class WordSuggestions:
             case_insensitive_mode = 0
             ignore_non_caps  = False
             capitalize = False
-            drop_capitalized = False
+
+        drop_capitalized = False
 
         return case_insensitive_mode, ignore_non_caps, capitalize, drop_capitalized
 
