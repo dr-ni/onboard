@@ -598,17 +598,10 @@ class LayoutLoaderSVG:
         if key.type == KeyCommon.KEYCODE_TYPE and \
            not key.id in ["BKSP"]:
             if self._vk: # xkb keyboard found?
-                try:
-                    vkmodmasks = self._label_modifier_masks
-                    if sys.version_info.major == 2:
-                        vkmodmasks = [long(m) for m in vkmodmasks]
-                    vklabels = self._vk.labels_from_keycode(key.code,
-                                                            vkmodmasks)
-                except TypeError:
-                    # virtkey until 0.61.0 didn't have the extra param.
-                    vkmodmasks = (0, 1, 2, 128, 129) # used to be hard-coded
-                    vklabels = self._vk.labels_from_keycode(key.code)
-
+                vkmodmasks = self._label_modifier_masks
+                if sys.version_info.major == 2:
+                    vkmodmasks = [long(m) for m in vkmodmasks]
+                vklabels = self._vk.labels_from_keycode(key.code, vkmodmasks)
                 if sys.version_info.major == 2:
                     vklabels = [x.decode("UTF-8") for x in vklabels]
                 labels = {m : l for m, l in zip(vkmodmasks, vklabels)}
