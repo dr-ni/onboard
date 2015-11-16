@@ -1365,10 +1365,6 @@ vk_get_label_from_keysym (KeySym keyval)
             label = PyString_FromString(".");
             break;
 
-        case GDK_KEY_horizconnector:
-            label = PyString_FromString("horiz\nconn");
-            break;
-
         case GDK_KEY_Mode_switch:
             label = PyString_FromString("AltGr");
             break;
