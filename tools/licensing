@@ -106,6 +106,8 @@ class Command:
                   hide_email=True),  # Johannes asked not to publish his email
         Committer("Barry Warsaw",
                   ["barry@ubuntu.com"]),
+        Committer("Launchpad Code Hosting",
+                  ["codehost@crowberry"]),
     ]
 
     # Additional copyrights per file that can't be found with bzr annotate
@@ -162,11 +164,11 @@ class Command:
 
     @staticmethod
     def iter_filtered_files(options, args):
-        exclude_paths = options.exclude_paths + Command._exclude_paths
         if args:
             for fn in args:
                 yield fn
         else:
+            exclude_paths = options.exclude_paths + Command._exclude_paths
             for dirpath, dirnames, filenames in os.walk("."):
                 dirpath = os.path.normpath(dirpath) # remove starting "./"
                 for basename in filenames:
@@ -199,6 +201,10 @@ class Command:
             for em in committer.emails:
                 if em == email:
                     return committer
+                    
+        raise ValueError("Unknown email address '{}'. Please add it to "
+                         "'_known_committers' in tools/licensing" \
+                         .format(email))
         return None
 
     @staticmethod
@@ -221,9 +227,20 @@ class Command:
         cmd = ['/bin/bash', '-c',
                 "bzr annotate --all --long --quiet '" + fn + "'"
                 ]
-        output = subprocess.check_output(cmd).decode()
+        try:
+            output = subprocess.check_output(cmd).decode()
+            lines = output.split("\n")
+        except UnicodeDecodeError:  # binary file?
+            lines = []
+        except subprocess.CalledProcessError as e:  # file not versioned?
+            msg = "File '{}' might not be versioned. " \
+                  "Please run 'bzr clean-tree' or " \
+                  "update tools/licensing, FileTypeNotVersioned to " \
+                  "include any new unversioned files.".format(fn)
+            raise RuntimeError(msg) from e
+
         code = []
-        for line in [o for o in output.split("\n") if o]:
+        for line in [o for o in lines if o]:
             fields = line.split()
             assert(fields[3] == "|")
             revision = fields[0]
@@ -237,6 +254,8 @@ class Command:
     @staticmethod
     def find_file_type(fn):
         file_types = [
+                      FileTypeNotVersioned,
+                      FileTypeBinary,
                       FileTypeNoHeader,
                       FileTypePython,
                       FileTypeC,
@@ -274,20 +293,40 @@ class CommandListCommitters(Command):
 
 
     def run(self, args):
+        failed_files = []
+        unknown_files = []
         options, args = self.parse_cmd_line(args)
         for fn in self.iter_filtered_files(options, args):
-            print(fn)
-            emails = self.get_committer_emails(fn, options.exclude_committers)
-            if emails:
-                for email in emails:
-                    print(" "*4 + \
-                          self.get_committer_name_from_email(email) + \
-                          " <"  + email + ">")
-                    if options.source_code:
-                        code = self.get_code(fn, [email])
-                        for fields in code:
-                            print(" "*8 + fields[-1])
+            ft = self.find_file_type(fn)
+            if not ft:
+                unknown_files.append(fn)
+            elif not ft.can_list_committers():
+                failed_files.append([fn, ft])
+            else:
+                print(fn)
+                emails = self.get_committer_emails(fn, options.exclude_committers)
+                if emails:
+                     for email in emails:
+                        print(" "*4 + \
+                              self.get_committer_name_from_email(email) + \
+                              " <"  + email + ">")
+                        if options.source_code:
+                            code = self.get_code(fn, [email])
+                            for fields in code:
+                                print(" "*8 + fields[-1])
                 print()
+
+        if failed_files:
+            print(file=sys.stderr)
+            print("Files that were recognized but couldn't be processed:", file=sys.stderr)
+            for fn,ft in failed_files:
+                print(" "*4, fn.ljust(50), ft.__class__.__name__, file=sys.stderr)
+
+        if unknown_files:
+            print(file=sys.stderr)
+            print("Unknown files, ignored:", file=sys.stderr)
+            for fn in unknown_files:
+                print(" "*4, fn, file=sys.stderr)
 
 
 class CommandHeaderUpdate(Command):
@@ -481,8 +520,23 @@ class FileType:
     def needs_license_header(self):
         return True
 
+    def can_list_committers(self):
+        return True
+        
     def read_license_header():
         raise NotImplementedError()
+
+    def match_names(fn, paths, files, extensions):
+        for p in paths:
+            if fn.startswith(p):
+                return True
+        for f in files:
+            if fn.endswith("/"+f):
+                return True
+        for ext in extensions:
+            if fn.endswith(ext):
+                return True
+        return False
 
     def insert_license_header(self, lines, header):
         begin, end = self.find_insert_range(lines)
@@ -825,21 +879,46 @@ class FileTypeXML(FileType):
         return begin, end
 
 
-class FileTypeNoHeader(FileType):
-    """ Match files that don't need or can't have license headers."""
+class FileTypeBinary(FileType):
+    """ Match binary files."""
+    
     def matches(fn):
-        files = ["COPYING", "README", "TODO", "AUTHORS", "HACKING", "NEWS",
-                 "CHANGELOG", "MANIFEST.in", ".bzrignore",
-                 "attic/Makefile"]
-        extensions = [".po", ".lm", ".svg", ".png", ".oga", ".ui", ".swp", "~"]
-        for f in files:
-            if fn.endswith("/"+f):
-                return True
-        for ext in extensions:
-            if fn.endswith(ext):
-                return True
+        return FileType.match_names(fn, [], [], [".png", ".oga"])
+        
+    def needs_license_header(self):
         return False
 
+    def can_list_committers(self):
+        return False
+        
+
+class FileTypeNotVersioned(FileType):
+    """ Match files not under source control. """
+    
+    def matches(fn):
+        return FileType.match_names(fn, ["build/"], [], [".swp", "~"])
+        
+    def needs_license_header(self):
+        return False
+        
+    def can_list_committers(self):
+        return False
+        
+
+class FileTypeNoHeader(FileType):
+    """ 
+    Match files that don't need or can't have license headers
+    and are neither binary nor unversioned files.
+    """
+    files = []
+    def matches(fn):
+        return FileType.match_names(fn, [], 
+                                    ["COPYING", "README", "TODO",
+                                     "AUTHORS", "HACKING",
+                                     "NEWS", "CHANGELOG", "MANIFEST.in",
+                                     ".bzrignore", "attic/Makefile"], 
+                                    [".po", ".lm", ".svg", ".ui"])
+        
     def needs_license_header(self):
         return False
 
