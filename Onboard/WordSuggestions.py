@@ -863,9 +863,9 @@ class WordSuggestions:
         Insert a word/word-remainder and add a separator string as needed.
         """
         added_separator = ""
-        caret_span = self.text_context.get_span_at_caret()
+        selection_span = self.text_context.get_selection_span()
         if auto_separator:
-            caret_text = caret_span.get_text_from_span()
+            caret_text = selection_span.get_text_after_span()
             remaining_line = self.text_context.get_line_past_caret()
 
             # Insert separator if the separator does not exist at the caret
@@ -878,9 +878,9 @@ class WordSuggestions:
 
         with self.suppress_modifiers():
             if insertion:
-                self._replace_text(caret_span.begin() - len(deletion),
-                                   caret_span.begin(),
-                                   caret_span.begin(),
+                self._replace_text(selection_span.begin() - len(deletion),
+                                   selection_span.begin(),
+                                   selection_span.begin(),
                                    insertion)
             if auto_separator:
                 if added_separator:
