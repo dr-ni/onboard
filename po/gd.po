@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-27 11:46+0100\n"
+"POT-Creation-Date: 2015-12-21 15:20+0100\n"
 "PO-Revision-Date: 2014-04-07 16:35+0000\n"
 "Last-Translator: GunChleoc <Unknown>\n"
 "Language-Team: Gaelic; Scottish <gd@li.org>\n"
@@ -15,688 +15,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
-"X-Generator: Launchpad (build 17306)\n"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "Cuir an gnìomh briogadh le bhith a' fantainn os cionn rud"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "Iuchraichean àireamhan is litrichean"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "Alt"
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "CAPS"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "Ctrl"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "Del"
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "Briogadh dùbailte"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "Briogadh slaodach"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "End"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Esc"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "Putanan nam foincseanan"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "Bloca nan àireamhan is putanan nam foincseanan"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "Falaich Onboard"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
-msgstr "Stad air an ionnsachadh"
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Hm"
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "Ins"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "Prìomh mheur-chlàr"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "Clàr-taice"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "Briogadh meadhain"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "Gluais Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "Bloca nan àireamhan agus snippets"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Pause"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "Roghainnean"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Prnt"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "Quit"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "Return"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "Briogadh deas"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Scroll"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
-#: ../settings.ui.h:13
-msgid "Snippets"
-msgstr "Snippets"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "Space"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "Toglaich cuidichean briogaidh"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "Tab"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "Win"
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
-msgstr "Sgàilean"
-
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
-msgstr "Rionnag gheal"
-
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
-msgstr "Fòn geal"
-
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
-msgstr "Deoch theth"
-
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
-msgstr "Claigeann is crois chnàmhan"
-
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
-msgstr "Comharra rèididheachd bheò"
-
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr "Comharra sìthe"
-
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr "Yin Yang"
-
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr "Aodann le drèin"
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr "Aodann le gàire"
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr "Grian gheal le gathan"
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr "Gealach 's a leathach air falbh"
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr "Comharra boireannachd"
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr "Comharra fireannachd"
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr "Sreath geal nan cridheachan"
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr "Sreath geal nan daoimean"
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr "Sreath geal nan spaidean"
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr "Sreath geal nan cluba"
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr "Ochdamh pong le crann"
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr "Cèiseag"
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr "Làmh a thug buaidh"
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr "Làmh a tha a' sgrìobhadh"
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr "Aodann le gàire, beul fosgailte is sùilean air a bheil gàire"
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr "Aodann le gàire 's riomball"
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr "Aodann le gàire 's adharcan"
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr "Aodann le sùil bheag"
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr "Aodann le gàire 's sùilean air a bheil gàire"
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr "Aodann a tha ag ithe biadh blasta"
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr "Aodann le gàire 's sùilean an cruth chridheachan"
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr "Aodann le gàire agus speuclairean-grèine"
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr "Aodann le plìonas"
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr "Aodann gun fhiamh"
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr "Aodann nuair nach eil e èibhinn"
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr "Aodann tro chèile"
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr "Aodann a' caitheamh pòg"
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr "Aodann a' pògadh le sùilean dùinte"
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr "Aodann le teanga ris is sùil bheag"
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr "Aodann le teanga ris is sùilean dlùth-dhùinte"
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr "Aodann a fhuair briseadh-dùil"
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr "Aodann feargach"
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr "Neach le aodann busach"
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr "Aodann a' caoineadh"
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr "Aodann rag"
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr "Aodann air chlaoidh"
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr "Aodann sgìth"
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr "Aodann a ghabh mòr-iongnadh"
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr "Aodann air rudhadh"
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr "Aodann na thuaineal"
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr "Saighdean"
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr "Gnàthaichte"
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr "Meur-chlàir an deasga le iuchraichean deasachaidh 's fhoincseanan"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr "Greugais"
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
-msgid "Grid of keys, suitable for keyboard scanning"
-msgstr "Grioda iuchraichean a bhios iomchaidh airson sganadh a' mheur-chlàir"
-
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-msgid "Hide keyboard"
-msgstr "Falaich am meur-chlàr"
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
-msgstr ""
-"Co-dhealbhachd meur-chlàir le samhlaidhean Greugais, saighdean is eile "
-"airson foghlam matamataig 's fiosaigeachd air bòrd-geal eadar-ghnìomhach."
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
-msgstr ""
-"Co-dhealbhachd meur-chlàir le samhlaidhean Greugais, saighdean is eile "
-"airson foghlam matamataig 's fiosaigeachd air bòrd-geal eadar-ghnìomhach.\n"
-"Cuiridh an co-dhealbhachd seo na h-uile iuchair air an aon bhreath glè "
-"leathann."
-
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr "Meur-chlàr deasga le meud meadhanach"
-
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr "Meur-chlàr-làimhe airson sgrìnichean beaga"
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr "Barrachd mholaidhean"
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-msgid "Move keyboard"
-msgstr "Gluais am meur-chlàr"
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-msgid "Quit Keyboard"
-msgstr "Fàg am meur-chlàr"
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-msgid "Quit Onboard"
-msgstr "Fàg Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-msgid "Set and Settings"
-msgstr "Seata 's roghainnean"
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296
-msgid "Settings"
-msgstr "Roghainnean"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr "Meur-chlàr deasga beag"
-
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr "Caractaran sònraichte"
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-#, fuzzy
-msgid "Special characters for interactive whiteboards, wide"
-msgstr "Caractaran sònraichte airson bùird-gheala eadar-ghnìomhach, leathann"
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr "Caractaran sònraichte airson bùird-gheala eadar-ghnìomhach"
-
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr "Moladh litreachaidh"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr "Fo-, Os-sgrìobhaidhean; Bloighean"
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Gnàthaich an t-ùrlar"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Sgea_ma dhathan"
-
-#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
-msgid "_Background:"
-msgstr "Cùlai_bh:"
-
-#. Key style with simple gradients
-#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
-msgid "Gradient"
-msgstr "Caisead"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Ceàrn:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Comhair an t-solais"
-
-#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
-msgid "Keyboard"
-msgstr "Meur-chlàr"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Stoidhle"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "C_ruinne:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "M_eud:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "Leud an i_omaill:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Stoidhle nan iuchraichean"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Iuchair:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Iomall:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Caiseadan"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Neart:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Sgàil"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Iuchraichean"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Cruth-clò:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Buadhan:"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Cruth-clò"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "Meud n_eo-eisimeileach"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Sàr-iuchair:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Tar-àithne na leubail"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Leubailean"
+"X-Launchpad-Export-Date: 2015-12-21 10:56+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+
+#: ../Onboard/WPEngine.py:471
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Dh'fhàillig le luchdadh modail a' chànain '{}': {} ({})"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -709,90 +33,6 @@ msgstr "Roghainnean a' mheur-chlàir Onboard air sgrìn"
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "Change Onboard settings"
 msgstr "Atharraich roghainnean Onboard"
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "cha deach an sgeama gsettings airson \"{}\" a stàladh"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:418
-#, python-brace-format
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
-"cha deach {description} \"{filename}\" a lorg fhathast, a' feuchainn ris a-"
-"rithist sna slighean bunaiteach"
-
-#: ../Onboard/ConfigUtils.py:427
-#, python-brace-format
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-"chan urrainn dhuinn \"{filename}\", a' luchdadh {description} bunaiteach 'na "
-"àite"
-
-#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
-#, python-brace-format
-msgid "failed to find {description} '{filename}'"
-msgstr "cha b' urrainn dhuinn {description} \"{filename}\" a lorg"
-
-#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
-#, python-brace-format
-msgid "{description} '{filepath}' found."
-msgstr "chaidh {description} \"{filepath}\" a lorg."
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:475
-#, fuzzy, python-brace-format
-msgid "{description} '{filename}' not found yet, searching in paths {paths}"
-msgstr ""
-"cha deach {description} \"{filename}\" a lorg fhathast, a' feuchainn ris a-"
-"rithist sna slighean bunaiteach"
-
-#: ../Onboard/ConfigUtils.py:568
-#, python-brace-format
-msgid "Looking for system defaults in {paths}"
-msgstr "A' lorg bun-roghainnean an t-siostaim ann an: {paths}"
-
-#: ../Onboard/ConfigUtils.py:579
-msgid "Failed to read system defaults. "
-msgstr "Cha b' urrainn dhuinn bun-roghainnean an t-siostaim a leughadh. "
-
-#: ../Onboard/ConfigUtils.py:583
-msgid "No system defaults found."
-msgstr "Cha deach bun-roghainnean an t-siostaim a lorg."
-
-#: ../Onboard/ConfigUtils.py:585
-#, python-brace-format
-msgid "Loading system defaults from {filename}"
-msgstr "Luchdaich bun-roghainnean an t-siostaim o {filename}"
-
-#: ../Onboard/ConfigUtils.py:609
-msgid "Found system default '[{}] {}={}'"
-msgstr "Chaidh bun-roghainn an t-siostaim '[{}] {}={}' a lorg"
-
-#: ../Onboard/ConfigUtils.py:627
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr ""
-"Bun-roghainnean an t-siostaim: Iuchair nach aithne dhuinn ({}) san earrann "
-"\"{}\""
-
-#: ../Onboard/ConfigUtils.py:634
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-"Bun-roghainnean an t-siostaim: Luach enum mì-dhligheach airson na h-iuchrach "
-"\"{}\" san earrann \"{}\": {}"
-
-#: ../Onboard/ConfigUtils.py:647
-msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
-msgstr ""
-"Bun-roghainnean an t-siostaim: Luach mì-dhligheach airson na h-iuchrach "
-"\"{}\" san earrann \"{}\":\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:710
-msgid "Failed to get gsettings value. "
-msgstr "Cha b' urrainn dhuinn an luach gsettings fhaighinn. "
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Automatic scan for 1 switch"
@@ -918,468 +158,13 @@ msgstr ""
 msgid "Input Device"
 msgstr "Uidheam ion-chuir"
 
-#: ../Onboard/OnboardGtk.py:357
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
-"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
-"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
-"\n"
-"Ge-tà chan eil an siostam rèitichte tuilleadh airson a' ghlas a thoirt far "
-"na sgrìn le Onboard. Dh'fhaoidte gun do rèitich aplacaid eile an siostam ach "
-"an cleachd e rudeigin eile.\n"
-"\n"
-"A bheil thu airson am siostam ath-rèiteachadh airson 's gum faicear Onboard "
-"nuair a bheirear a' ghlas far na sgrìn?"
-
-#: ../Onboard/OnboardGtk.py:376
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
-"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
-"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
-"\n"
-"Ge-tà, chaidh am foincsean seo a chur à comas san t-siostam.\n"
-"\n"
-"A bheil thu airson a chur an gnìomh an-dràsta?"
-
-#. Default dialog title: name of the application """
-#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
-#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
-msgid "Onboard"
-msgstr "Onboard"
-
-#: ../Onboard/utils.py:386
-msgid "New Input Device"
-msgstr "Uidheam ion-chuir ùr"
-
-#: ../Onboard/utils.py:387
-msgid "Onboard has detected a new input device"
-msgstr "Mhothaich Onboard do dh'uidheam ion-chuir ùr"
-
-#: ../Onboard/utils.py:396
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-"A bheil thu airson an t-uidheam seo a chleachdadh airson sganadh a' mheur-"
-"chlàir"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
-msgid "_Cancel"
-msgstr ""
-
-#: ../Onboard/utils.py:403
-msgid "Use device"
-msgstr "Cleachd an t-uidheam"
-
-#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
-#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
-#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
-#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
-msgid "Failed to execute '{}', {}"
-msgstr "Cha b' urrainn dhuinn \"{}\", {} a chur an gnìomh"
-
-#: ../Onboard/utils.py:1808
-msgid "failed to create directory '{}': {}"
-msgstr "dh'fhàillig cruthachadh a' phasgain \"{}\": {}"
-
-#: ../Onboard/Indicator.py:31
-msgid "_Show Onboard"
-msgstr "_Seall Onboard"
-
-#: ../Onboard/Indicator.py:32
-msgid "_Hide Onboard"
-msgstr "_Falaich Onboard"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:55
-#, fuzzy
-msgid "_Preferences"
-msgstr "Roghainnean"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:66
-#, fuzzy
-msgid "_Quit"
-msgstr "Quit"
-
-#: ../Onboard/Indicator.py:160
-msgid "Onboard on-screen keyboard"
-msgstr "Meur-chlàr air sgrìn Onboard"
-
-#: ../Onboard/WordSuggestions.py:2102
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
-msgstr ""
-"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
-"big>\n"
-"\n"
-"Seo a' mhearachd:\n"
-"<tt>{}</tt>\n"
-"\n"
-"A bheil thu airson molaidhean nam faclan aiseag gun lethbhreac-glèidhidh mu "
-"dheireadh (mholamaid seo)?"
-
-#: ../Onboard/WordSuggestions.py:2121
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
-msgstr ""
-"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
-"big>\n"
-"\n"
-"Seo a' mhearachd:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Feumaidh sinn na molaidhean ath-shuidheachadh ach mairidh am faidhle "
-"mearachdach aig \n"
-"'{}'"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Meur-chlàr air sgrìn Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Meur-chlàr air sgrìn sùbailte airson GNOME"
-
-#: ../Onboard/LayoutLoaderSVG.py:139
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"A' luchdadh co-dhealbhachd dhìleabach, fòrmat \"{}\". Nach àrdaich thu gun "
-"fhòrmat làithreach \"{}\"?"
-
-#: ../Onboard/LayoutLoaderSVG.py:378
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-"A' leigeil seachad an iuchair \"{}\". Cha deach ainm faidhle svg a "
-"shònrachadh."
-
-#: ../Onboard/LayoutLoaderSVG.py:606
-msgid "Snippet {}"
-msgstr "Snippet {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:610
-msgid ", unassigned"
-msgstr ", gun iomruineadh"
-
-#: ../Onboard/LayoutLoaderSVG.py:919
-msgid "copying layout '{}' to '{}'"
-msgstr "a' dèanamh lethbhreac na co-dhealbhachd \"{}\" gu \"{}\""
-
-#: ../Onboard/LayoutLoaderSVG.py:939
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-"Dh'fhàillig _lethbhreac nan co-dhealbhachdan, chan eil taic ri fòrmat na co-"
-"dhealbhachd \"{}\"."
-
-#: ../Onboard/LayoutLoaderSVG.py:982
-msgid "copying svg file '{}' to '{}'"
-msgstr "a' cur lethbhreach dhen fhaidhle svg \"{}\" gu \"{}\""
-
-#. ##############
-#: ../Onboard/SnippetView.py:19
-msgid "<Enter label>"
-msgstr "<Cuir leubail a-steach>"
-
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter text>"
-msgstr "<Cuir a-steach teacsa>"
-
-#: ../Onboard/SnippetView.py:32
-msgid "Button Number"
-msgstr "Àireamh a' phutain"
-
-#: ../Onboard/SnippetView.py:39
-msgid "Button Label"
-msgstr "Leubail a' phutain"
-
-#: ../Onboard/SnippetView.py:48
-msgid "Snippet Text"
-msgstr "Teacsa an snippet"
-
-#: ../Onboard/SnippetView.py:93
-msgid "Must be an integer number"
-msgstr "Feumaidh seo a bhith 'na àireamh shlàn"
-
-#: ../Onboard/SnippetView.py:102
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Tha an snippet %d 'ga chleachdadh mar thà."
-
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:9
-#, fuzzy
-msgid "Auto-show settings"
-msgstr "Fèin-se_all nuair a dheasaichear teacsa"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "_Hide when using a physical keyboard"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:11
-msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:12
-#, fuzzy
-msgid "Stay hidden:"
-msgstr "Tòisich Onboard am falach."
-
-#: ../settings_auto_show_dialog.ui.h:13
-msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
-msgstr ""
-
-#: ../Onboard/settings.py:237
-msgid "Onboard Preferences"
-msgstr "Roghainnean Onboard"
-
-#: ../Onboard/settings.py:627
-msgid "Copy layout '{}' to this new name:"
-msgstr "Cuir lethbhreac dhen cho-dhealbhachd '{}' gun ainm ùr seo:"
-
-#: ../Onboard/settings.py:640
-msgid "Delete layout '{}'?"
-msgstr "A bheil thu airson an co-dhealbhachd '{}' a sguabadh às?"
-
-#: ../Onboard/settings.py:688
-msgid "System settings not found ({}): {}"
-msgstr "Cha deach roghainnean siostaim a lorg ({}): {}"
-
-#. Window handles: None
-#: ../Onboard/settings.py:701
-msgid "None"
-msgstr "Chan eil gin"
-
-#. Window handles: None
-#: ../Onboard/settings.py:703
-msgid "Movement only"
-msgstr ""
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:705
-#, fuzzy
-msgid "Corners"
-msgstr "Oiseanan a-mhàin"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:707
-msgid "All corners and edges"
-msgstr "Gach oisean is oir"
-
-#: ../Onboard/settings.py:748
-msgid "Core layouts"
-msgstr "Bun-cho-dhelabhachdan"
-
-#: ../Onboard/settings.py:749
-msgid "Contributions"
-msgstr "Tabhartasan"
-
-#: ../Onboard/settings.py:750
-msgid "User layouts"
-msgstr "Co-dhealbhachdan cleachdaiche"
-
-#: ../Onboard/settings.py:785
-msgid "Author: {}"
-msgstr "Ùghdar: {}"
-
-#: ../Onboard/settings.py:789
-msgid "About Layout"
-msgstr "Mun cho-dhealbhachd"
-
-#: ../Onboard/settings.py:894
-msgid "Enter a name for the new theme:"
-msgstr "Cuir a-steach ainm airson an ùrlair ùir:"
-
-#: ../Onboard/settings.py:902
-#, python-brace-format
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"Tha am faidhle ùrlair seo ann mu thràth.\n"
-"\"{filename}\"\n"
-"\n"
-"A bheil thu airson sgrìobhadh thairis air?"
-
-#: ../Onboard/settings.py:919
-msgid "Reset selected theme to Onboard defaults?"
-msgstr ""
-"A bheil thu airson an t-ùrlar a thagh thu aiseag gu bun-roghainnean Onboard?"
-
-#: ../Onboard/settings.py:921
-msgid "Delete selected theme?"
-msgstr "A bheil thu airson an t-ùrlar a thagh thu a sguabadh às?"
-
-#. Translators: reset button of Preferences->Theme.
-#: ../Onboard/settings.py:1050
-#, fuzzy
-msgid "_Reset"
-msgstr "Ath-shuidhich"
-
-#. Translators: delete button of Preferences->Theme. It used to be
-#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
-#: ../Onboard/settings.py:1054
-msgid "_Delete"
-msgstr ""
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1359
-msgid "Flat"
-msgstr "Còmhnard"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:1363
-msgid "Dish"
-msgstr "Soitheach"
-
-#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
-msgid "Default"
-msgstr "Bun-roghainn"
-
-#: ../Onboard/settings.py:1453
-msgid "Bold"
-msgstr "Clò trom"
-
-#: ../Onboard/settings.py:1455
-msgid "Italic"
-msgstr "Clò Eadailteach"
-
-#: ../Onboard/settings.py:1457
-msgid "Condensed"
-msgstr "Co-dhlùthaichte"
-
-#: ../Onboard/settings.py:1470
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:1470
-msgid "Ubuntu Logo"
-msgstr "Suaicheantas Ubuntu"
-
-#: ../Onboard/settings.py:1604
-msgid "Step"
-msgstr "Ceum"
-
-#: ../Onboard/settings.py:1605
-msgid "Left"
-msgstr "Clì"
-
-#: ../Onboard/settings.py:1606
-msgid "Right"
-msgstr "Deas"
-
-#: ../Onboard/settings.py:1607
-msgid "Up"
-msgstr "Suas"
-
-#: ../Onboard/settings.py:1608
-msgid "Down"
-msgstr "Sìos"
-
-#: ../Onboard/settings.py:1609
-msgid "Activate"
-msgstr "Cuir an gnìomh"
-
-#: ../Onboard/settings.py:1778
-msgid "Action:"
-msgstr "Gnìomh:"
-
-#: ../Onboard/settings.py:1942
-msgid "Disabled"
-msgstr "À comas"
-
-#: ../Onboard/settings.py:1948
-msgid "Button"
-msgstr "Putan"
-
-#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
-msgid "Press a button..."
-msgstr "Brùth putan..."
-
-#: ../Onboard/settings.py:2050
-msgid "Press a key..."
-msgstr "Brùth iuchair..."
-
 #: ../settings.ui.h:1
-#, fuzzy
 msgid "Key-repeat"
-msgstr "key-repeat"
+msgstr ""
 
 #: ../settings.ui.h:2
-#, fuzzy
 msgid "International character selection"
-msgstr "taghadh nan caractaran eadar-nàiseanta"
+msgstr ""
 
 #: ../settings.ui.h:3
 msgid "GTK"
@@ -1421,6 +206,15 @@ msgstr "Co-dhealbhachd"
 msgid "Theme"
 msgstr "Ùrlar"
 
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:337
+msgid "Snippets"
+msgstr "Snippets"
+
+#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
+msgid "Keyboard"
+msgstr "Meur-chlàr"
+
 #: ../settings.ui.h:15
 msgid "Typing Assistance"
 msgstr "Taic le sgrìobhadh"
@@ -1430,29 +224,24 @@ msgid "Universal Access"
 msgstr "Inntrigeadh uile-choitcheann"
 
 #: ../settings.ui.h:17
-#, fuzzy
 msgid "Latch, then lock"
-msgstr "snaig is glais an uairsin"
+msgstr ""
 
 #: ../settings.ui.h:18
-#, fuzzy
 msgid "Latch, double-click to lock"
-msgstr "snaig, briogadh dùbailte gus a ghlasadh"
+msgstr ""
 
 #: ../settings.ui.h:19
-#, fuzzy
 msgid "Latch only"
-msgstr "snaig a-mhàin"
+msgstr ""
 
 #: ../settings.ui.h:20
-#, fuzzy
 msgid "Lock only"
-msgstr "glais a-mhàin"
+msgstr ""
 
 #: ../settings.ui.h:21
-#, fuzzy
 msgid "Push button"
-msgstr "Brùth putan..."
+msgstr ""
 
 #: ../settings.ui.h:22
 msgid "none"
@@ -1628,6 +417,10 @@ msgstr ""
 "Trìd-shoilleireachd uinneag shlàn a' mheur-chlàir. Feumaidh seo co-"
 "dhèantachadh."
 
+#: ../settings.ui.h:59 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "Cùlai_bh:"
+
 #: ../settings.ui.h:60
 msgid "Transparency of the keyboard background"
 msgstr "Trìd-shoilleireachd cùlaibh a' mheur-chlàir"
@@ -1679,9 +472,8 @@ msgid "When Inactive"
 msgstr "Nuair a bhios e neo-ghnìomhach"
 
 #: ../settings.ui.h:71
-#, fuzzy
 msgid "_Window handles:"
-msgstr "Roghainnean nan uinneagan"
+msgstr ""
 
 #: ../settings.ui.h:72
 msgid "Resize Protection"
@@ -1775,9 +567,8 @@ msgid "Behavior of modifier and layer keys."
 msgstr "Giùlan nan iuchraichean atharrachaidh 's iuchraichean nam breathan."
 
 #: ../settings.ui.h:92
-#, fuzzy
 msgid "Modifier auto-release delay in seconds:"
-msgstr "Dàil air fèin-fhuasgladh iuchair atharrachaidh:"
+msgstr ""
 
 #: ../settings.ui.h:93
 msgid ""
@@ -1829,9 +620,8 @@ msgid "Input Options"
 msgstr "Roghainnean ion-chuir"
 
 #: ../settings.ui.h:100
-#, fuzzy
 msgid "Keystroke _generation:"
-msgstr "_Gintinn buillean nan iuchraichean:"
+msgstr ""
 
 #: ../settings.ui.h:101
 msgid "Delay between keystrokes in milliseconds:"
@@ -1849,9 +639,8 @@ msgid "0,00"
 msgstr ""
 
 #: ../settings.ui.h:104
-#, fuzzy
 msgid "Keystroke Generation"
-msgstr "_Gintinn buillean nan iuchraichean:"
+msgstr ""
 
 #: ../settings.ui.h:105
 msgid "Advanced"
@@ -1959,9 +748,8 @@ msgid "While  learning is paused:"
 msgstr ""
 
 #: ../settings.ui.h:129
-#, fuzzy
 msgid "Learning"
-msgstr "Stad air an ionnsachadh"
+msgstr ""
 
 #: ../settings.ui.h:130
 msgid "Enable  keyboard _scanning"
@@ -2016,11 +804,106 @@ msgstr ""
 msgid "Hover Click"
 msgstr "Briogadh fantainn"
 
-#: ../Onboard/WPEngine.py:468
-msgid "Failed to load language model '{}': {} ({})"
-msgstr "Dh'fhàillig le luchdadh modail a' chànain '{}': {} ({})"
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Gnàthaich an t-ùrlar"
 
-#. run again
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "Sgea_ma dhathan"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1382
+msgid "Gradient"
+msgstr "Caisead"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "_Ceàrn:"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Comhair an t-solais"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "_Stoidhle"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "C_ruinne:"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "M_eud:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "Leud an i_omaill:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "Stoidhle nan iuchraichean"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "_Iuchair:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "_Iomall:"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "Caiseadan"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "_Neart:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "Sgàil"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Iuchraichean"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "_Cruth-clò:"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "_Buadhan:"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "Cruth-clò"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "Meud n_eo-eisimeileach"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "_Sàr-iuchair:"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "Tar-àithne na leubail"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "Leubailean"
+
+#: ../Onboard/LanguageSupport.py:170 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723 ../Onboard/utils.py:1227
+msgid "Failed to execute '{}', {}"
+msgstr "Cha b' urrainn dhuinn \"{}\", {} a chur an gnìomh"
+
 #: ../settings_docking_dialog.ui.h:1
 msgid "Top"
 msgstr "Barr"
@@ -2105,21 +988,718 @@ msgstr "Docaich ri oir na sgrìn:"
 msgid "Dock to monitor:"
 msgstr ""
 
-#: ../Onboard/Appearance.py:112
+#. Default dialog title: name of the application """
+#: ../Onboard/KbdWindow.py:103 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1738 ../Onboard/utils.py:387
+msgid "Onboard"
+msgstr "Onboard"
+
+#: ../Onboard/KbdWindow.py:203
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"chan eil trìd-shoilleireachd uinneige ri làimh;  chan eil an sgrìn a' cur "
+"taic ri seanailean alpha"
+
+#. ##############
+#: ../Onboard/SnippetView.py:37
+msgid "<Enter label>"
+msgstr "<Cuir leubail a-steach>"
+
+#: ../Onboard/SnippetView.py:38
+msgid "<Enter text>"
+msgstr "<Cuir a-steach teacsa>"
+
+#: ../Onboard/SnippetView.py:50
+msgid "Button Number"
+msgstr "Àireamh a' phutain"
+
+#: ../Onboard/SnippetView.py:57
+msgid "Button Label"
+msgstr "Leubail a' phutain"
+
+#: ../Onboard/SnippetView.py:66
+msgid "Snippet Text"
+msgstr "Teacsa an snippet"
+
+#: ../Onboard/SnippetView.py:111
+msgid "Must be an integer number"
+msgstr "Feumaidh seo a bhith 'na àireamh shlàn"
+
+#: ../Onboard/SnippetView.py:120
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Tha an snippet %d 'ga chleachdadh mar thà."
+
+#: ../Onboard/LayoutLoaderSVG.py:158
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"A' luchdadh co-dhealbhachd dhìleabach, fòrmat \"{}\". Nach àrdaich thu gun "
+"fhòrmat làithreach \"{}\"?"
+
+#: ../Onboard/LayoutLoaderSVG.py:397
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr ""
+"A' leigeil seachad an iuchair \"{}\". Cha deach ainm faidhle svg a "
+"shònrachadh."
+
+#: ../Onboard/LayoutLoaderSVG.py:618
+msgid "Snippet {}"
+msgstr "Snippet {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:622
+msgid ", unassigned"
+msgstr ", gun iomruineadh"
+
+#: ../Onboard/LayoutLoaderSVG.py:931
+msgid "copying layout '{}' to '{}'"
+msgstr "a' dèanamh lethbhreac na co-dhealbhachd \"{}\" gu \"{}\""
+
+#: ../Onboard/LayoutLoaderSVG.py:951
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+"Dh'fhàillig _lethbhreac nan co-dhealbhachdan, chan eil taic ri fòrmat na co-"
+"dhealbhachd \"{}\"."
+
+#: ../Onboard/LayoutLoaderSVG.py:994
+msgid "copying svg file '{}' to '{}'"
+msgstr "a' cur lethbhreach dhen fhaidhle svg \"{}\" gu \"{}\""
+
+#: ../Onboard/WordSuggestions.py:2105
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
+"big>\n"
+"\n"
+"Seo a' mhearachd:\n"
+"<tt>{}</tt>\n"
+"\n"
+"A bheil thu airson molaidhean nam faclan aiseag gun lethbhreac-glèidhidh mu "
+"dheireadh (mholamaid seo)?"
+
+#: ../Onboard/WordSuggestions.py:2124
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
+"big>\n"
+"\n"
+"Seo a' mhearachd:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Feumaidh sinn na molaidhean ath-shuidheachadh ach mairidh am faidhle "
+"mearachdach aig \n"
+"'{}'"
+
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
+msgid "Activate Hover Click"
+msgstr "Cuir an gnìomh briogadh le bhith a' fantainn os cionn rud"
+
+#: ../data/layoutstrings.py:36
+msgid "Alphanumeric keys"
+msgstr "Iuchraichean àireamhan is litrichean"
+
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:38
+msgid "Alt"
+msgstr "Alt"
+
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:40
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:42
+msgid "CAPS"
+msgstr "CAPS"
+
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:44
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:46
+msgid "Del"
+msgstr "Del"
+
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:220
+msgid "Double click"
+msgstr "Briogadh dùbailte"
+
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:48 ../data/layoutstrings.py:223
+msgid "Drag click"
+msgstr "Briogadh slaodach"
+
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:50
+msgid "End"
+msgstr "End"
+
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:52
+msgid "Ent"
+msgstr "Ent"
+
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:54
+msgid "Esc"
+msgstr "Esc"
+
+#: ../data/layoutstrings.py:55
+msgid "Function keys"
+msgstr "Putanan nam foincseanan"
+
+#: ../data/layoutstrings.py:56
+msgid "Number block and function keys"
+msgstr "Bloca nan àireamhan is putanan nam foincseanan"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:57 ../data/layoutstrings.py:247
+msgid "Hide Onboard"
+msgstr "Falaich Onboard"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:292
+msgid "Pause learning"
+msgstr "Stad air an ionnsachadh"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:60
+msgid "Hm"
+msgstr "Hm"
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:62
+msgid "Ins"
+msgstr "Ins"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:63 ../data/layoutstrings.py:265
+msgid "Main keyboard"
+msgstr "Prìomh mheur-chlàr"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:65
+msgid "Menu"
+msgstr "Clàr-taice"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:66 ../data/layoutstrings.py:274
+msgid "Middle click"
+msgstr "Briogadh meadhain"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:67 ../data/layoutstrings.py:283
+msgid "Move Onboard"
+msgstr "Gluais Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:69
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
+msgid "Number block and snippets"
+msgstr "Bloca nan àireamhan agus snippets"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:72
+msgid "Pause"
+msgstr "Pause"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:74
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:76
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:298
+msgid "Preferences"
+msgstr "Roghainnean"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:80
+msgid "Prnt"
+msgstr "Prnt"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:82
+msgid "Quit"
+msgstr "Quit"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:84
+msgid "Return"
+msgstr "Return"
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:85 ../data/layoutstrings.py:310
+msgid "Right click"
+msgstr "Briogadh deas"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:87
+msgid "Scroll"
+msgstr "Scroll"
+
+#: ../data/layoutstrings.py:89
+msgid "Space"
+msgstr "Space"
+
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:361
+msgid "Toggle click helpers"
+msgstr "Toglaich cuidichean briogaidh"
+
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:92
+msgid "Tab"
+msgstr "Tab"
+
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:94
+msgid "Win"
+msgstr "Win"
+
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:364
+msgid "Umbrella"
+msgstr "Sgàilean"
+
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:370
+msgid "White star"
+msgstr "Rionnag gheal"
+
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:376
+msgid "White telephone"
+msgstr "Fòn geal"
+
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:102
+msgid "Hot beverage"
+msgstr "Deoch theth"
+
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:104
+msgid "Skull and crossbones"
+msgstr "Claigeann is crois chnàmhan"
+
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:106 ../data/layoutstrings.py:307
+msgid "Radioactive sign"
+msgstr "Comharra rèididheachd bheò"
+
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
+msgid "Peace symbol"
+msgstr "Comharra sìthe"
+
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:110 ../data/layoutstrings.py:382
+msgid "Yin yang"
+msgstr "Yin Yang"
+
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
+msgid "Frowning face"
+msgstr "Aodann le drèin"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:319
+msgid "Smiling face"
+msgstr "Aodann le gàire"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:116 ../data/layoutstrings.py:373
+msgid "White sun with rays"
+msgstr "Grian gheal le gathan"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
+msgid "Last quarter moon"
+msgstr "Gealach 's a leathach air falbh"
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
+msgid "Female sign"
+msgstr "Comharra boireannachd"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
+msgid "Male sign"
+msgstr "Comharra fireannachd"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:367
+msgid "White heart suit"
+msgstr "Sreath geal nan cridheachan"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:126
+msgid "White diamond suit"
+msgstr "Sreath geal nan daoimean"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:128
+msgid "White spade suit"
+msgstr "Sreath geal nan spaidean"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:130
+msgid "White club suit"
+msgstr "Sreath geal nan cluba"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
+msgid "Beamed eighth note"
+msgstr "Ochdamh pong le crann"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
+msgid "Envelope"
+msgstr "Cèiseag"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:136
+msgid "Victory hand"
+msgstr "Làmh a thug buaidh"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:138
+msgid "Writing hand"
+msgstr "Làmh a tha a' sgrìobhadh"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:140 ../data/layoutstrings.py:328
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "Aodann le gàire, beul fosgailte is sùilean air a bheil gàire"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:322
+msgid "Smiling face with halo"
+msgstr "Aodann le gàire 's riomball"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:144 ../data/layoutstrings.py:325
+msgid "Smiling face with horns"
+msgstr "Aodann le gàire 's adharcan"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:379
+msgid "Winking face"
+msgstr "Aodann le sùil bheag"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:331
+msgid "Smiling face with smiling eyes"
+msgstr "Aodann le gàire 's sùilean air a bheil gàire"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
+msgid "Face savouring delicious food"
+msgstr "Aodann a tha ag ithe biadh blasta"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:152
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Aodann le gàire 's sùilean an cruth chridheachan"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:334
+msgid "Smiling face with sunglasses"
+msgstr "Aodann le gàire agus speuclairean-grèine"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:156
+msgid "Smirking face"
+msgstr "Aodann le plìonas"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:158
+msgid "Neutral face"
+msgstr "Aodann gun fhiamh"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:160
+msgid "Unamused face"
+msgstr "Aodann nuair nach eil e èibhinn"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
+msgid "Confounded face"
+msgstr "Aodann tro chèile"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:164
+msgid "Face throwing a kiss"
+msgstr "Aodann a' caitheamh pòg"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
+msgid "Kissing face with closed eyes"
+msgstr "Aodann a' pògadh le sùilean dùinte"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "Aodann le teanga ris is sùil bheag"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:170
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "Aodann le teanga ris is sùilean dlùth-dhùinte"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:172
+msgid "Disappointed face"
+msgstr "Aodann a fhuair briseadh-dùil"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
+msgid "Angry face"
+msgstr "Aodann feargach"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:176
+msgid "Pouting face"
+msgstr "Neach le aodann busach"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
+msgid "Crying face"
+msgstr "Aodann a' caoineadh"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:180
+msgid "Persevering face"
+msgstr "Aodann rag"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:182
+msgid "Weary face"
+msgstr "Aodann air chlaoidh"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:184 ../data/layoutstrings.py:358
+msgid "Tired face"
+msgstr "Aodann sgìth"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
+msgid "Astonished face"
+msgstr "Aodann a ghabh mòr-iongnadh"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:188
+msgid "Flushed face"
+msgstr "Aodann air rudhadh"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:190
+msgid "Dizzy face"
+msgstr "Aodann na thuaineal"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:199
+msgid "Arrows"
+msgstr "Saighdean"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:214
+msgid "Custom"
+msgstr "Gnàthaichte"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:217
+msgid "Desktop keyboard with edit and function keys"
+msgstr "Meur-chlàir an deasga le iuchraichean deasachaidh 's fhoincseanan"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:241
+msgid "Greek"
+msgstr "Greugais"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:244
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "Grioda iuchraichean a bhios iomchaidh airson sganadh a' mheur-chlàir"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:250
+msgid "Hide keyboard"
+msgstr "Falaich am meur-chlàr"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:253
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
+msgstr ""
+"Co-dhealbhachd meur-chlàir le samhlaidhean Greugais, saighdean is eile "
+"airson foghlam matamataig 's fiosaigeachd air bòrd-geal eadar-ghnìomhach."
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:256
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
+msgstr ""
+"Co-dhealbhachd meur-chlàir le samhlaidhean Greugais, saighdean is eile "
+"airson foghlam matamataig 's fiosaigeachd air bòrd-geal eadar-ghnìomhach.\n"
+"Cuiridh an co-dhealbhachd seo na h-uile iuchair air an aon bhreath glè "
+"leathann."
+
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:271
+msgid "Medium size desktop keyboard"
+msgstr "Meur-chlàr deasga le meud meadhanach"
+
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:277
+msgid "Mobile keyboard for small screens"
+msgstr "Meur-chlàr-làimhe airson sgrìnichean beaga"
+
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:280
+msgid "More suggestions"
+msgstr "Barrachd mholaidhean"
+
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:286
+msgid "Move keyboard"
+msgstr "Gluais am meur-chlàr"
+
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:301
+msgid "Quit Keyboard"
+msgstr "Fàg am meur-chlàr"
+
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:304
+msgid "Quit Onboard"
+msgstr "Fàg Onboard"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:313
+msgid "Set and Settings"
+msgstr "Seata 's roghainnean"
+
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:316
+msgid "Settings"
+msgstr "Roghainnean"
+
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:340
+msgid "Space efficient desktop keyboard"
+msgstr "Meur-chlàr deasga beag"
+
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:343
+msgid "Special Characters"
+msgstr "Caractaran sònraichte"
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:346
+msgid "Special characters for interactive whiteboards, wide"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:349
+msgid "Special characters for interactive whiteboards"
+msgstr "Caractaran sònraichte airson bùird-gheala eadar-ghnìomhach"
+
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:352
+msgid "Spelling suggestion"
+msgstr "Moladh litreachaidh"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:355
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Fo-, Os-sgrìobhaidhean; Bloighean"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Meur-chlàr air sgrìn Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Meur-chlàr air sgrìn sùbailte airson GNOME"
+
+#: ../Onboard/Appearance.py:130
 #, python-brace-format
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "Cha deach an sgeama dhathan airson an ùrlair \"{filename}\" a lorg"
 
-#: ../Onboard/Appearance.py:332
+#: ../Onboard/Appearance.py:350
 #, python-brace-format
 msgid "Error loading theme '{filename}'. {exception}: {cause}"
 msgstr "Mearachd a' luchdadh an ùrlair \"{filename}\". {exception}: {cause}"
 
-#: ../Onboard/Appearance.py:406
+#: ../Onboard/Appearance.py:424
 msgid "Error saving "
 msgstr "Mearachd sàbhalaidh "
 
-#: ../Onboard/Appearance.py:828
+#: ../Onboard/Appearance.py:846
 #, python-brace-format
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
@@ -2128,13 +1708,13 @@ msgstr ""
 "A' luchdadh fòrmat dìleabach \"{old_format}\". Feuch is àrdaich gun fhòrmat "
 "as ùire, \"{new_format}\": \"{filename}\""
 
-#: ../Onboard/Appearance.py:848
+#: ../Onboard/Appearance.py:866
 #, python-brace-format
 msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
 msgstr ""
 "Mearachd a' luchdadh an sgeama dhathan \"{filename}\". {exception}: {cause}"
 
-#: ../Onboard/Appearance.py:925 ../Onboard/Appearance.py:1057
+#: ../Onboard/Appearance.py:943 ../Onboard/Appearance.py:1075
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -2142,105 +1722,59 @@ msgstr ""
 "Lorg sinn key_id \"{}\" dùblaichte ann am faidhle an sgeama dhathan. Chan "
 "fhaod key_id a bhith ann ach aon turas."
 
-#. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1413
-#, fuzzy
-msgid "Edit snippet #{}"
-msgstr "Snippet {}"
+#: ../Onboard/Indicator.py:50
+msgid "_Show Onboard"
+msgstr "_Seall Onboard"
 
-#. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1417
-msgid "New snippet"
-msgstr "Snippet ùr"
+#: ../Onboard/Indicator.py:51
+msgid "_Hide Onboard"
+msgstr "_Falaich Onboard"
 
-#. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1419
-#, fuzzy
-msgid "Enter a new snippet for button #{}:"
-msgstr "Cuir a-steach snippet ùr airson a' phutain seo:"
-
-#: ../Onboard/KeyboardWidget.py:1430
-msgid "_Save snippet"
-msgstr "_Sàbhail an snippet"
-
-#: ../Onboard/KeyboardWidget.py:1450
-msgid "_Button label:"
-msgstr "Leubail a' _phutain:"
-
-#: ../Onboard/KeyboardWidget.py:1454
-msgid "S_nippet:"
-msgstr "S_nippet:"
-
-#: ../Onboard/KeyboardWidget.py:1618
-msgid "Other _Languages"
-msgstr "Cànain ei_le"
-
-#: ../Onboard/KeyboardWidget.py:1662
-#, fuzzy
-msgid "_Remove suggestion…"
-msgstr "Barrachd mholaidhean"
-
-#. Don't hide dialog behind the keyboard in force-to-top mode.
-#. if config.is_force_to_top():
-#. dialog.set_position(Gtk.WindowPosition.CENTER)
-#: ../Onboard/KeyboardWidget.py:1716
-#, fuzzy
-msgid "Remove word suggestion"
-msgstr "Barrachd mholaidhean"
-
-#: ../Onboard/KeyboardWidget.py:1727
-msgid "Remove '{}' everywhere."
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:77
+msgid "_Preferences"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1737
-msgid "This will only affect learned suggestions."
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:88
+msgid "_Quit"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1777
-msgid "Remove '{}' only where it occures at text begin."
-msgstr ""
+#: ../Onboard/Indicator.py:182
+msgid "Onboard on-screen keyboard"
+msgstr "Meur-chlàr air sgrìn Onboard"
 
-#: ../Onboard/KeyboardWidget.py:1780
-msgid "Remove '{}' only where it occures at sentence begin."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1783
-msgid "Remove '{}' only where it occures after numbers."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1786
-msgid "Remove '{}' only where it occures after '{}'."
-msgstr ""
-
-#: ../Onboard/Config.py:206
+#: ../Onboard/Config.py:227
 msgid "Layout file ({}) or name"
 msgstr "Faidhle no ainm co-dhealbhachd ({})"
 
-#: ../Onboard/Config.py:209
+#: ../Onboard/Config.py:230
 msgid "Theme file (.theme) or name"
 msgstr "Faidhle no ainm ùrlair (.theme)"
 
-#: ../Onboard/Config.py:211
+#: ../Onboard/Config.py:232
 msgid "Window size, widthxheight"
 msgstr "Meud na h-uinneige, widthxheight"
 
-#: ../Onboard/Config.py:212
+#: ../Onboard/Config.py:233
 msgid "Window x position"
 msgstr "Ionad x na h-uinneige"
 
-#: ../Onboard/Config.py:213
+#: ../Onboard/Config.py:234
 msgid "Window y position"
 msgstr "Ionad y na h-uinneige"
 
-#: ../Onboard/Config.py:218
+#: ../Onboard/Config.py:239
 msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
 msgstr "Tòisich sa mhodh XEmbed. m.e. airson gnome-screensaver"
 
-#: ../Onboard/Config.py:221
+#: ../Onboard/Config.py:242
 msgid "Allow multiple Onboard instances"
 msgstr "Ceadaich barrachd air aon ionstand de Onboard"
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:245
 msgid ""
 "Silently fail to start in the given desktop environments. DESKTOPS is a "
 "comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
@@ -2249,11 +1783,11 @@ msgstr ""
 "DESKTOPS 'na liosta de dh'ainmean deasga XDG a tha sgaraichte le cromagan, m."
 "e. GNOME airson GNOME Shell."
 
-#: ../Onboard/Config.py:230
+#: ../Onboard/Config.py:251
 msgid "Keep aspect ratio when resizing the window"
 msgstr "Glèidh co-mheas an deilbh nuair a dh'atharraichear meud na h-uinneige"
 
-#: ../Onboard/Config.py:232
+#: ../Onboard/Config.py:253
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
@@ -2261,35 +1795,35 @@ msgstr ""
 "Leig seachad am fèin-lorgadh is tagh quirks a làimh\n"
 "QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Config.py:320
+#: ../Onboard/Config.py:341
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Ag imrich pasgan a' chleachdaiche \"{}\" gu \"{}\"."
 
 #. honor XDG spec
 #. python >2.5
-#: ../Onboard/Config.py:328
+#: ../Onboard/Config.py:349
 msgid "failed to migrate user directory. "
 msgstr "dh'fhàillig imrich pasgan a' chleachdaiche. "
 
-#: ../Onboard/Config.py:794
+#: ../Onboard/Config.py:815
 #, python-brace-format
 msgid "layout '{filename}' does not exist"
 msgstr "chan eil a' cho-dhealbhachd \"{filename}\" ann"
 
-#: ../Onboard/Config.py:835
+#: ../Onboard/Config.py:856
 #, python-brace-format
 msgid "theme '{filename}' does not exist"
 msgstr "chan eil an t-ùrlar \"{filename}\" ann"
 
-#: ../Onboard/Config.py:860
+#: ../Onboard/Config.py:881
 msgid "Loading theme from '{}'"
 msgstr "A' luchdadh an ùrlair o \"{}\""
 
-#: ../Onboard/Config.py:864
+#: ../Onboard/Config.py:885
 msgid "Unable to read theme '{}'"
 msgstr "Cha ghabh an t-ùrlar \"{}\" a leughadh"
 
-#: ../Onboard/Config.py:1047
+#: ../Onboard/Config.py:1068
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -2307,33 +1841,456 @@ msgstr ""
 "\n"
 "A bheil thu airson an t-so-ruigsinneachd a chur an comas an-dràsta?"
 
-#: ../Onboard/Config.py:1661
+#: ../Onboard/Config.py:1682
 #, python-brace-format
 msgid "color scheme '{filename}' does not exist"
 msgstr "chan eil an sgeama dhathan \"{filename}\" ann"
 
-#: ../Onboard/KbdWindow.py:183
-msgid "no window transparency available; screen doesn't support alpha channels"
+#: ../Onboard/settings.py:258
+msgid "Onboard Preferences"
+msgstr "Roghainnean Onboard"
+
+#: ../Onboard/settings.py:648
+msgid "Copy layout '{}' to this new name:"
+msgstr "Cuir lethbhreac dhen cho-dhealbhachd '{}' gun ainm ùr seo:"
+
+#: ../Onboard/settings.py:661
+msgid "Delete layout '{}'?"
+msgstr "A bheil thu airson an co-dhealbhachd '{}' a sguabadh às?"
+
+#: ../Onboard/settings.py:709
+msgid "System settings not found ({}): {}"
+msgstr "Cha deach roghainnean siostaim a lorg ({}): {}"
+
+#. Window handles: None
+#: ../Onboard/settings.py:722
+msgid "None"
+msgstr "Chan eil gin"
+
+#. Window handles: None
+#: ../Onboard/settings.py:724
+msgid "Movement only"
 msgstr ""
-"chan eil trìd-shoilleireachd uinneige ri làimh;  chan eil an sgrìn a' cur "
-"taic ri seanailean alpha"
 
-#~ msgid "1"
-#~ msgstr "1"
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:726
+msgid "Corners"
+msgstr ""
 
-#~ msgid "_Frame resize handles:"
-#~ msgstr "Na làmhrachain airson meud an _fhrèama atharrachadh:"
+#. Frame resize handles: All
+#: ../Onboard/settings.py:728
+msgid "All corners and edges"
+msgstr "Gach oisean is oir"
 
-#~ msgid "_Touch input (requires restart):"
-#~ msgstr "Ion-chur sua_thaidh (feumaidh seo ath-thòiseachadh):"
+#: ../Onboard/settings.py:769
+msgid "Core layouts"
+msgstr "Bun-cho-dhelabhachdan"
 
-#~ msgid "No file manager to open layout folder"
-#~ msgstr ""
-#~ "Chan eil manaidsear fhaidhlichean ann a dh'fhosglas pasgan nan co-"
-#~ "dhealbhachdan"
+#: ../Onboard/settings.py:770
+msgid "Contributions"
+msgstr "Tabhartasan"
 
-#~ msgid " - System Language"
-#~ msgstr " - Cànan an t-siostaim"
+#: ../Onboard/settings.py:771
+#, fuzzy
+msgid "My layouts"
+msgstr "Bun-cho-dhelabhachdan"
 
-#~ msgid "_Languages"
-#~ msgstr "_Cànain"
+#: ../Onboard/settings.py:806
+msgid "Author: {}"
+msgstr "Ùghdar: {}"
+
+#: ../Onboard/settings.py:810
+msgid "About Layout"
+msgstr "Mun cho-dhealbhachd"
+
+#: ../Onboard/settings.py:915
+msgid "Enter a name for the new theme:"
+msgstr "Cuir a-steach ainm airson an ùrlair ùir:"
+
+#: ../Onboard/settings.py:923
+#, python-brace-format
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
+msgstr ""
+"Tha am faidhle ùrlair seo ann mu thràth.\n"
+"\"{filename}\"\n"
+"\n"
+"A bheil thu airson sgrìobhadh thairis air?"
+
+#: ../Onboard/settings.py:940
+msgid "Reset selected theme to Onboard defaults?"
+msgstr ""
+"A bheil thu airson an t-ùrlar a thagh thu aiseag gu bun-roghainnean Onboard?"
+
+#: ../Onboard/settings.py:942
+msgid "Delete selected theme?"
+msgstr "A bheil thu airson an t-ùrlar a thagh thu a sguabadh às?"
+
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1071
+msgid "_Reset"
+msgstr ""
+
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1075
+msgid "_Delete"
+msgstr ""
+
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1380
+msgid "Flat"
+msgstr "Còmhnard"
+
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1384
+msgid "Dish"
+msgstr "Soitheach"
+
+#: ../Onboard/settings.py:1433 ../Onboard/settings.py:1490
+msgid "Default"
+msgstr "Bun-roghainn"
+
+#: ../Onboard/settings.py:1474
+msgid "Bold"
+msgstr "Clò trom"
+
+#: ../Onboard/settings.py:1476
+msgid "Italic"
+msgstr "Clò Eadailteach"
+
+#: ../Onboard/settings.py:1478
+msgid "Condensed"
+msgstr "Co-dhlùthaichte"
+
+#: ../Onboard/settings.py:1491
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1491
+msgid "Ubuntu Logo"
+msgstr "Suaicheantas Ubuntu"
+
+#: ../Onboard/settings.py:1625
+msgid "Step"
+msgstr "Ceum"
+
+#: ../Onboard/settings.py:1626
+msgid "Left"
+msgstr "Clì"
+
+#: ../Onboard/settings.py:1627
+msgid "Right"
+msgstr "Deas"
+
+#: ../Onboard/settings.py:1628
+msgid "Up"
+msgstr "Suas"
+
+#: ../Onboard/settings.py:1629
+msgid "Down"
+msgstr "Sìos"
+
+#: ../Onboard/settings.py:1630
+msgid "Activate"
+msgstr "Cuir an gnìomh"
+
+#: ../Onboard/settings.py:1799
+msgid "Action:"
+msgstr "Gnìomh:"
+
+#: ../Onboard/settings.py:1963
+msgid "Disabled"
+msgstr "À comas"
+
+#: ../Onboard/settings.py:1969
+msgid "Button"
+msgstr "Putan"
+
+#: ../Onboard/settings.py:2024 ../Onboard/settings.py:2069
+msgid "Press a button..."
+msgstr "Brùth putan..."
+
+#: ../Onboard/settings.py:2071
+msgid "Press a key..."
+msgstr "Brùth iuchair..."
+
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1438
+msgid "Edit snippet #{}"
+msgstr ""
+
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1442
+msgid "New snippet"
+msgstr "Snippet ùr"
+
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1444
+msgid "Enter a new snippet for button #{}:"
+msgstr ""
+
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/KeyboardWidget.py:1454 ../Onboard/utils.py:423
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1455
+msgid "_Save snippet"
+msgstr "_Sàbhail an snippet"
+
+#: ../Onboard/KeyboardWidget.py:1475
+msgid "_Button label:"
+msgstr "Leubail a' _phutain:"
+
+#: ../Onboard/KeyboardWidget.py:1479
+msgid "S_nippet:"
+msgstr "S_nippet:"
+
+#: ../Onboard/KeyboardWidget.py:1649
+msgid "Other _Languages"
+msgstr "Cànain ei_le"
+
+#: ../Onboard/KeyboardWidget.py:1693
+msgid "_Remove suggestion…"
+msgstr ""
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1747
+msgid "Remove word suggestion"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1758
+msgid "Remove '{}' everywhere."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1768
+msgid "This will only affect learned suggestions."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1808
+msgid "Remove '{}' only where it occures at text begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1811
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1814
+msgid "Remove '{}' only where it occures after numbers."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1817
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr ""
+
+#: ../Onboard/utils.py:407
+msgid "New Input Device"
+msgstr "Uidheam ion-chuir ùr"
+
+#: ../Onboard/utils.py:408
+msgid "Onboard has detected a new input device"
+msgstr "Mhothaich Onboard do dh'uidheam ion-chuir ùr"
+
+#: ../Onboard/utils.py:417
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+"A bheil thu airson an t-uidheam seo a chleachdadh airson sganadh a' mheur-"
+"chlàir"
+
+#: ../Onboard/utils.py:424
+msgid "Use device"
+msgstr "Cleachd an t-uidheam"
+
+#: ../Onboard/utils.py:1829
+msgid "failed to create directory '{}': {}"
+msgstr "dh'fhàillig cruthachadh a' phasgain \"{}\": {}"
+
+#: ../Onboard/ConfigUtils.py:79
+msgid "gsettings schema for '{}' is not installed"
+msgstr "cha deach an sgeama gsettings airson \"{}\" a stàladh"
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:436
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+"cha deach {description} \"{filename}\" a lorg fhathast, a' feuchainn ris a-"
+"rithist sna slighean bunaiteach"
+
+#: ../Onboard/ConfigUtils.py:445
+#, python-brace-format
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+"chan urrainn dhuinn \"{filename}\", a' luchdadh {description} bunaiteach 'na "
+"àite"
+
+#: ../Onboard/ConfigUtils.py:454 ../Onboard/ConfigUtils.py:510
+#, python-brace-format
+msgid "failed to find {description} '{filename}'"
+msgstr "cha b' urrainn dhuinn {description} \"{filename}\" a lorg"
+
+#: ../Onboard/ConfigUtils.py:458 ../Onboard/ConfigUtils.py:514
+#, python-brace-format
+msgid "{description} '{filepath}' found."
+msgstr "chaidh {description} \"{filepath}\" a lorg."
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:493
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:586
+#, python-brace-format
+msgid "Looking for system defaults in {paths}"
+msgstr "A' lorg bun-roghainnean an t-siostaim ann an: {paths}"
+
+#: ../Onboard/ConfigUtils.py:597
+msgid "Failed to read system defaults. "
+msgstr "Cha b' urrainn dhuinn bun-roghainnean an t-siostaim a leughadh. "
+
+#: ../Onboard/ConfigUtils.py:601
+msgid "No system defaults found."
+msgstr "Cha deach bun-roghainnean an t-siostaim a lorg."
+
+#: ../Onboard/ConfigUtils.py:603
+#, python-brace-format
+msgid "Loading system defaults from {filename}"
+msgstr "Luchdaich bun-roghainnean an t-siostaim o {filename}"
+
+#: ../Onboard/ConfigUtils.py:627
+msgid "Found system default '[{}] {}={}'"
+msgstr "Chaidh bun-roghainn an t-siostaim '[{}] {}={}' a lorg"
+
+#: ../Onboard/ConfigUtils.py:645
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr ""
+"Bun-roghainnean an t-siostaim: Iuchair nach aithne dhuinn ({}) san earrann "
+"\"{}\""
+
+#: ../Onboard/ConfigUtils.py:652
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+"Bun-roghainnean an t-siostaim: Luach enum mì-dhligheach airson na h-iuchrach "
+"\"{}\" san earrann \"{}\": {}"
+
+#: ../Onboard/ConfigUtils.py:665
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"Bun-roghainnean an t-siostaim: Luach mì-dhligheach airson na h-iuchrach "
+"\"{}\" san earrann \"{}\":\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:728
+msgid "Failed to get gsettings value. "
+msgstr "Cha b' urrainn dhuinn an luach gsettings fhaighinn. "
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:9
+msgid "Auto-show settings"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+msgid "Stay hidden:"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:378
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
+"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
+"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"\n"
+"Ge-tà chan eil an siostam rèitichte tuilleadh airson a' ghlas a thoirt far "
+"na sgrìn le Onboard. Dh'fhaoidte gun do rèitich aplacaid eile an siostam ach "
+"an cleachd e rudeigin eile.\n"
+"\n"
+"A bheil thu airson am siostam ath-rèiteachadh airson 's gum faicear Onboard "
+"nuair a bheirear a' ghlas far na sgrìn?"
+
+#: ../Onboard/OnboardGtk.py:397
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
+"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
+"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"\n"
+"Ge-tà, chaidh am foincsean seo a chur à comas san t-siostam.\n"
+"\n"
+"A bheil thu airson a chur an gnìomh an-dràsta?"
+
+#~ msgid "User layouts"
+#~ msgstr "Co-dhealbhachdan cleachdaiche"

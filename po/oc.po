@@ -7,697 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-27 11:46+0100\n"
-"PO-Revision-Date: 2014-09-21 08:29+0000\n"
+"POT-Creation-Date: 2015-12-21 15:20+0100\n"
+"PO-Revision-Date: 2015-04-19 07:49+0000\n"
 "Last-Translator: Cédric VALMARY (Tot en òc) <cvalmary@yahoo.fr>\n"
 "Language-Team: Occitan (post 1500) <oc@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
-"X-Generator: Launchpad (build 17306)\n"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "Activar lo clic per susvòl"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "Tòcas alfanumericas"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "Alt"
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "Varr. Maj"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "Ctrl"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "Supr."
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "Clic doble"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "Clic per lisar"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "Fin"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Escap"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "Tòcas de foncion"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "Pavat numeric e tòcas de foncion"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "Amagar lo clavièr virtual"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
-msgstr "Metre en pausa l'aprendissatge"
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Començ."
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "Ins"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "Clavièr principal"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "Menú"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "Clic del mitan"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "Desplaçar Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Varr&#10;Num"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "Pavat numeric e tòcas personalizadas"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Pausa"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Segu"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Prec"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "Preferéncias"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Imprim."
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "Quitar"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "Retorn"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "Clic drech"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Desfil."
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
-#: ../settings.ui.h:13
-msgid "Snippets"
-msgstr "Fragments de còde"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "Espaci"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "Ajudas al clic de bascuolament"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "Onglet"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "Win"
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
-msgstr "Parapluèja"
-
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
-msgstr "Estela blanca"
-
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
-msgstr "Telefòn blanc"
-
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
-msgstr "Bevenda cauda"
-
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
-msgstr "Cràn de pirata"
-
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
-msgstr "Simbòl radioactiu"
-
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr "Simbòl de patz"
-
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr "Lo Ying e lo Yang"
-
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr "Cara morruda"
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr "Cara sorisenta"
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr "Solelh blanc raionant"
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr "Darrièr quartièr de Luna."
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr "Simbòl femenin"
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr "Simbòl masculin"
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr "Còr blanc"
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr "Diamant blanc"
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr "Pica blanca"
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr "Trèule blanc"
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr "Octavas musicalas"
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr "Envolopa"
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr "Man que fa lo signe de la victòria"
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr "Man a escriure"
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr "Cara sorisenta amb la boca dobèrta e los uèlhs sorisents"
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr "Cara sorisenta amb una aureòla"
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr "Cara sorisenta amb de banas"
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr "Morron clinhada"
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr "Cara sorisenta amb d'uèlhs sorisents"
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr "Cara que sabòra una noiridura deliciosa"
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr "Cara sorisenta amb d'uèlhs en forma de còr"
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr "Cara sorisenta amb de lunetas de solelh"
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr "Cara amb un sorire de superioritat"
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr "Cara neutra"
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr "Cara d'anuèg"
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr "Morron confús"
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr "Cara que manda un poton"
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr "Cara que manda un poton amb los uèlhs clauses"
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr "Morron amb lenga tirada e clinhada"
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr "Morron amb lenga tirada e uèlhs tampats"
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr "Cara decebuda"
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr "Cara en colèra"
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr "Morron que fa lo morre"
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr "Cara en plors"
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr "Cara perseveranta"
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr "Cara lassa"
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr "Cara alassada"
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr "Cara embalausida"
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr "Cara rojassa"
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr "Cara distracha"
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr "Flèchas"
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr "Personalizar"
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr "Clavièr de burèu amb tòcas d'edicion e de foncion"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr "Grèc"
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
-msgid "Grid of keys, suitable for keyboard scanning"
-msgstr "Grasilha de tòcas apropriada pel balejatge de clavièr"
-
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-msgid "Hide keyboard"
-msgstr "Amagar lo clavièr"
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
-msgstr ""
-"Agençament de clavièr amb de letras grègas, de tòcas direccionalas e plan "
-"mai encara, per l'aprendissatge de las matematicas e de la fisica sus un "
-"tablèu blanc interactiu."
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
-msgstr ""
-"Agençament de clavièr amb de letras grègas, de tòcas direccionalas e plan "
-"mai encara, per l'aprendissatge de las matematicas e de la fisica sus un "
-"tablèu blanc interactiu.\n"
-"Aqueste agençament presenta totas las tòcas sus una sola linha fòrça larga."
-
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr "Clavièr de burèu de talha mejana"
-
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr "Clavièr de telefonet pels ecrans pichons"
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr "Mai de suggestions"
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-msgid "Move keyboard"
-msgstr "Desplaçar lo clavièr"
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-msgid "Quit Keyboard"
-msgstr "Quitar lo clavièr"
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-msgid "Quit Onboard"
-msgstr "Quitar Onboard"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-msgid "Set and Settings"
-msgstr "Reglatge e paramètres"
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296
-msgid "Settings"
-msgstr "Configuracion"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr "Clavièr de burèu estalviador en espaci"
-
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr "Caractèrs especials"
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-#, fuzzy
-msgid "Special characters for interactive whiteboards, wide"
-msgstr "Caractèrs especials per tablèus blancs interactius, largs"
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr "Caractèrs especials per tablèus interactius"
-
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr "Suggestion d'ortografia"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr "Indicis, Exponents ; Fraccions"
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Personalizar lo tèma"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "_Jòc de colors"
-
-#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
-msgid "_Background:"
-msgstr "_Rèire plan :"
-
-#. Key style with simple gradients
-#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
-msgid "Gradient"
-msgstr "Degradat"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Angle :"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Direccion del lum"
-
-#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
-msgid "Keyboard"
-msgstr "Clavièr"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Estil :"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "Red_ondor :"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "Tal_ha :"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "Largor de b_ordadura :"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Aparéncia de las tòcas"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Clau :"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Bordadura :"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Degradats"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Fòrça :"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Ombra"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Claus"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Poliça :"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Atributs :"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Poliça de caractèr"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "Talha i_ndependanta"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "Tòca _super :"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Modificacion de las etiquetas"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Etiquetas"
+"X-Launchpad-Export-Date: 2015-12-21 10:56+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+
+#: ../Onboard/WPEngine.py:471
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Fracàs del cargament del modèl de lenga '{}': {} ({})"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -710,89 +33,6 @@ msgstr "Paramètres del clavièr d'ecran Onboard"
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "Change Onboard settings"
 msgstr "Cambiatz los paramètres d'Onboard"
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "l'esquèma gsettings per '{}' es pas installat"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:418
-#, python-brace-format
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
-"{description} '{filename}' es pas estat trobat, novèla temptativa dins los "
-"repertòris per defaut"
-
-#: ../Onboard/ConfigUtils.py:427
-#, python-brace-format
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-"impossible de localizar '{filename}', per defaut cargament de {description}"
-
-#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
-#, python-brace-format
-msgid "failed to find {description} '{filename}'"
-msgstr "{description} '{filename}' pas trobat"
-
-#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
-#, python-brace-format
-msgid "{description} '{filepath}' found."
-msgstr "{description} '{filepath}' trobat."
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:475
-#, fuzzy, python-brace-format
-msgid "{description} '{filename}' not found yet, searching in paths {paths}"
-msgstr ""
-"{description} '{filename}' es pas estat trobat, novèla temptativa dins los "
-"repertòris per defaut"
-
-#: ../Onboard/ConfigUtils.py:568
-#, python-brace-format
-msgid "Looking for system defaults in {paths}"
-msgstr "Recèrca dels paramètres del sistèma per defaut dins {paths}"
-
-#: ../Onboard/ConfigUtils.py:579
-msgid "Failed to read system defaults. "
-msgstr ""
-"Fracàs al moment de la lectura dels paramètres per defaut del sistèma. "
-
-#: ../Onboard/ConfigUtils.py:583
-msgid "No system defaults found."
-msgstr "Los paramètres del sistèma per defaut son pas estats trobats."
-
-#: ../Onboard/ConfigUtils.py:585
-#, python-brace-format
-msgid "Loading system defaults from {filename}"
-msgstr "Cargament dels paramètres del sistèma per defaut dempuèi {filename}"
-
-#: ../Onboard/ConfigUtils.py:609
-msgid "Found system default '[{}] {}={}'"
-msgstr "Trobat los paramètres del sistèma per defaut '[{}] {}={}'"
-
-#: ../Onboard/ConfigUtils.py:627
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr ""
-"Paramètres del sistèma per defaut : tòca desconeguda '{}' dins la seccion "
-"'{}'"
-
-#: ../Onboard/ConfigUtils.py:634
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-"Defauts sistèma : Valor invalida per la clau '{}' dins la seccion '{}' : {}"
-
-#: ../Onboard/ConfigUtils.py:647
-msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
-msgstr ""
-"Paramètres del sistèma per defaut : valor invalida per la tòca '{}' de la "
-"seccion '{}'\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:710
-msgid "Failed to get gsettings value. "
-msgstr "Impossible d'obténer la valor gsettings. "
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Automatic scan for 1 switch"
@@ -915,458 +155,13 @@ msgstr ""
 msgid "Input Device"
 msgstr "Periferic d'entrada"
 
-#: ../Onboard/OnboardGtk.py:357
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Onboard es configurat per aparéisser al moment del desvarrolhatge de "
-"l'ecran; per exemple per sortir d'un ecran de velha protegit per un mot "
-"clau.\n"
-"\n"
-"Çaquelà, lo sistèma es pas mai configurat de faiçon a çò qu'Onboard siá "
-"utilizat per desvarrolhar l'ecran. Una rason possibla poiriá èsser qu'una "
-"autra aplicacion aja configurat lo sistèma de manièra a far quicòm mai.\n"
-"\n"
-"Volètz reconfigurar lo sistèma per tal d'utilizar Onboard?"
-
-#: ../Onboard/OnboardGtk.py:376
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"Onboard es configurat per aparéisser amb lo dialòg de desvarrolhatge de "
-"l'ecran, amb un ecran de velha protegit per un senhal, per exemple.\n"
-"\n"
-"Pr'aquò, aquesta foncion es desactivada dins lo sistèma.\n"
-"\n"
-"La volètz activar ?"
-
-#. Default dialog title: name of the application """
-#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
-#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
-msgid "Onboard"
-msgstr "Onboard"
-
-#: ../Onboard/utils.py:386
-msgid "New Input Device"
-msgstr "Novèl periferic de picada"
-
-#: ../Onboard/utils.py:387
-msgid "Onboard has detected a new input device"
-msgstr "Onboard a detectat un novèl periferic de picada"
-
-#: ../Onboard/utils.py:396
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "Volètz utilizar aqueste periferic pel scan del clavièr ?"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
-msgid "_Cancel"
-msgstr ""
-
-#: ../Onboard/utils.py:403
-msgid "Use device"
-msgstr "Periferic utilizat"
-
-#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
-#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
-#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
-#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
-msgid "Failed to execute '{}', {}"
-msgstr "Fracàs de l'execucion de '{}', {}"
-
-#: ../Onboard/utils.py:1808
-msgid "failed to create directory '{}': {}"
-msgstr "Error al moment de la creacion del dorsièr '{}': {}"
-
-#: ../Onboard/Indicator.py:31
-msgid "_Show Onboard"
-msgstr "_Afichar Onboard"
-
-#: ../Onboard/Indicator.py:32
-msgid "_Hide Onboard"
-msgstr "A_magar Onboard"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:55
-#, fuzzy
-msgid "_Preferences"
-msgstr "Preferéncias"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:66
-#, fuzzy
-msgid "_Quit"
-msgstr "Quitar"
-
-#: ../Onboard/Indicator.py:160
-msgid "Onboard on-screen keyboard"
-msgstr "Clavièr virtual Onboard"
-
-#: ../Onboard/WordSuggestions.py:2102
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
-msgstr ""
-"<big>Onboard a pas capitat de dobrir las suggestions de mots apreses</big>\n"
-"\n"
-"L'error èra :\n"
-"<tt>{}</tt>\n"
-"\n"
-"Restablir las suggestions de mots al darrièr salvament (recomandat) ?"
-
-#: ../Onboard/WordSuggestions.py:2121
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
-msgstr ""
-"<big>Onboard a pas capitat de dobrir las suggestions de mots apreses</big>\n"
-"\n"
-"L'error èra :\n"
-"<tt>{}</tt>\n"
-"\n"
-"Les suggestions devon èsser remesas a zèro, mas lo fichièr erronèu demorarà "
-"jos\n"
-"'{}'"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Clavièr a l'ecran Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Clavièr virtual polivalent per GNOME"
-
-#: ../Onboard/LayoutLoaderSVG.py:139
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Cargament de l'anciana configuracion, format « {} ». Mercé de metre a jorn "
-"al format actual « {} »"
-
-#: ../Onboard/LayoutLoaderSVG.py:378
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "La tòca '{}' es ignorada. Cap de fichièr svg es pas estat definit."
-
-#: ../Onboard/LayoutLoaderSVG.py:606
-msgid "Snippet {}"
-msgstr "Fragment {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:610
-msgid ", unassigned"
-msgstr ", pas assignat"
-
-#: ../Onboard/LayoutLoaderSVG.py:919
-msgid "copying layout '{}' to '{}'"
-msgstr "còpia de la disposicion de '{}' cap a '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:939
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-"la còpia de la mesa en pagina a fracassat, format de mesa en pagina pas "
-"suportat '{}'."
-
-#: ../Onboard/LayoutLoaderSVG.py:982
-msgid "copying svg file '{}' to '{}'"
-msgstr "còpia del fichièr svg de '{}' cap a '{}'"
-
-#. ##############
-#: ../Onboard/SnippetView.py:19
-msgid "<Enter label>"
-msgstr "<Entrar un nom d'etiqueta>"
-
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter text>"
-msgstr "<Picar de tèxte>"
-
-#: ../Onboard/SnippetView.py:32
-msgid "Button Number"
-msgstr "Numèro del boton"
-
-#: ../Onboard/SnippetView.py:39
-msgid "Button Label"
-msgstr "Nom del boton"
-
-#: ../Onboard/SnippetView.py:48
-msgid "Snippet Text"
-msgstr "Tèxte d'inserir"
-
-#: ../Onboard/SnippetView.py:93
-msgid "Must be an integer number"
-msgstr "Un nombre entièr es requesit"
-
-#: ../Onboard/SnippetView.py:102
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Lo tèxte d'inserir %d es ja utilizat."
-
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:9
-#, fuzzy
-msgid "Auto-show settings"
-msgstr "_Afichatge automatic pendent l'edicion d'un tèxte"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "_Hide when using a physical keyboard"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:11
-msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:12
-#, fuzzy
-msgid "Stay hidden:"
-msgstr "Aviar Onboard amagat."
-
-#: ../settings_auto_show_dialog.ui.h:13
-msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
-msgstr ""
-
-#: ../Onboard/settings.py:237
-msgid "Onboard Preferences"
-msgstr "Preferéncias d'Onboard"
-
-#: ../Onboard/settings.py:627
-msgid "Copy layout '{}' to this new name:"
-msgstr "Copiar l'agençament '{}' jos aqueste novèl nom :"
-
-#: ../Onboard/settings.py:640
-msgid "Delete layout '{}'?"
-msgstr "Suprimir l'agençament '{}' ?"
-
-#: ../Onboard/settings.py:688
-msgid "System settings not found ({}): {}"
-msgstr "Paramètres del sistèma pas trobats ({}): {}"
-
-#. Window handles: None
-#: ../Onboard/settings.py:701
-msgid "None"
-msgstr "Pas cap"
-
-#. Window handles: None
-#: ../Onboard/settings.py:703
-msgid "Movement only"
-msgstr ""
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:705
-#, fuzzy
-msgid "Corners"
-msgstr "Caires solament"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:707
-msgid "All corners and edges"
-msgstr "Totes los caires e arestas"
-
-#: ../Onboard/settings.py:748
-msgid "Core layouts"
-msgstr "Agençaments principals"
-
-#: ../Onboard/settings.py:749
-msgid "Contributions"
-msgstr "Contribucions"
-
-#: ../Onboard/settings.py:750
-msgid "User layouts"
-msgstr "Agençaments de l'utilizaire"
-
-#: ../Onboard/settings.py:785
-msgid "Author: {}"
-msgstr "Autor : {}"
-
-#: ../Onboard/settings.py:789
-msgid "About Layout"
-msgstr "A prepaus de l'agençament"
-
-#: ../Onboard/settings.py:894
-msgid "Enter a name for the new theme:"
-msgstr "Entrar un nom pel tèma novèl :"
-
-#: ../Onboard/settings.py:902
-#, python-brace-format
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"Aqueste fichièr de tèma existís ja.\n"
-"'{filename}'\n"
-"\n"
-"Lo volètz remplaçar ?"
-
-#: ../Onboard/settings.py:919
-msgid "Reset selected theme to Onboard defaults?"
-msgstr "Volètz tornar als paramètres per defaut d'aqueste tèma ?"
-
-#: ../Onboard/settings.py:921
-msgid "Delete selected theme?"
-msgstr "Suprimir lo tèma seleccionat ?"
-
-#. Translators: reset button of Preferences->Theme.
-#: ../Onboard/settings.py:1050
-#, fuzzy
-msgid "_Reset"
-msgstr "Reïnicializar"
-
-#. Translators: delete button of Preferences->Theme. It used to be
-#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
-#: ../Onboard/settings.py:1054
-msgid "_Delete"
-msgstr ""
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1359
-msgid "Flat"
-msgstr "Bemòl"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:1363
-msgid "Dish"
-msgstr "Sieta"
-
-#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
-msgid "Default"
-msgstr "Per defaut"
-
-#: ../Onboard/settings.py:1453
-msgid "Bold"
-msgstr "Gras"
-
-#: ../Onboard/settings.py:1455
-msgid "Italic"
-msgstr "Italica"
-
-#: ../Onboard/settings.py:1457
-msgid "Condensed"
-msgstr "Condensat"
-
-#: ../Onboard/settings.py:1470
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:1470
-msgid "Ubuntu Logo"
-msgstr "Lògo d'Ubuntu"
-
-#: ../Onboard/settings.py:1604
-msgid "Step"
-msgstr "Etapa"
-
-#: ../Onboard/settings.py:1605
-msgid "Left"
-msgstr "A esquèrra"
-
-#: ../Onboard/settings.py:1606
-msgid "Right"
-msgstr "A drecha"
-
-#: ../Onboard/settings.py:1607
-msgid "Up"
-msgstr "Montar"
-
-#: ../Onboard/settings.py:1608
-msgid "Down"
-msgstr "Davalar"
-
-#: ../Onboard/settings.py:1609
-msgid "Activate"
-msgstr "Activar"
-
-#: ../Onboard/settings.py:1778
-msgid "Action:"
-msgstr "Accion :"
-
-#: ../Onboard/settings.py:1942
-msgid "Disabled"
-msgstr "Desactivar"
-
-#: ../Onboard/settings.py:1948
-msgid "Button"
-msgstr "Boton"
-
-#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
-msgid "Press a button..."
-msgstr "Quichatz sus un boton..."
-
-#: ../Onboard/settings.py:2050
-msgid "Press a key..."
-msgstr "Quichatz sus una tòca..."
-
 #: ../settings.ui.h:1
-#, fuzzy
 msgid "Key-repeat"
-msgstr "repeticion de tòca"
+msgstr "Repeticion de tòca"
 
 #: ../settings.ui.h:2
-#, fuzzy
 msgid "International character selection"
-msgstr "seleccion de caractèr internacional"
+msgstr "Seleccion de caractèr internacional"
 
 #: ../settings.ui.h:3
 msgid "GTK"
@@ -1386,11 +181,11 @@ msgstr "AT-SPI"
 
 #: ../settings.ui.h:7
 msgid "Remember nothing"
-msgstr ""
+msgstr "Se remembrar pas de res"
 
 #: ../settings.ui.h:8
 msgid "Don't remember new words"
-msgstr ""
+msgstr "Se remembrar pas dels mots novèls"
 
 #: ../settings.ui.h:9
 msgid "General"
@@ -1408,6 +203,15 @@ msgstr "Estructura"
 msgid "Theme"
 msgstr "Tèma"
 
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:337
+msgid "Snippets"
+msgstr "Fragments de còde"
+
+#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
+msgid "Keyboard"
+msgstr "Clavièr"
+
 #: ../settings.ui.h:15
 msgid "Typing Assistance"
 msgstr "Ajuda a la picada"
@@ -1417,29 +221,24 @@ msgid "Universal Access"
 msgstr "Accès universal"
 
 #: ../settings.ui.h:17
-#, fuzzy
 msgid "Latch, then lock"
-msgstr "estacar, puèi varrolhar"
+msgstr "Fixar puèi varrolhar"
 
 #: ../settings.ui.h:18
-#, fuzzy
 msgid "Latch, double-click to lock"
-msgstr "estacar, clic doble per varrolhar"
+msgstr "Fixar, doble-clic per varrolhar"
 
 #: ../settings.ui.h:19
-#, fuzzy
 msgid "Latch only"
-msgstr "estacar unicament"
+msgstr "Solament fixar"
 
 #: ../settings.ui.h:20
-#, fuzzy
 msgid "Lock only"
-msgstr "varrolhar unicament"
+msgstr "Solament varrolhar"
 
 #: ../settings.ui.h:21
-#, fuzzy
 msgid "Push button"
-msgstr "Quichatz sus un boton..."
+msgstr "Quichar lo boton"
 
 #: ../settings.ui.h:22
 msgid "none"
@@ -1604,6 +403,10 @@ msgid "Transparency of the whole keyboard window. Requires compositing."
 msgstr ""
 "Transparéncia de tota la fenèstra del clavièr. Necessita lo mòde composit."
 
+#: ../settings.ui.h:59 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "_Rèire plan :"
+
 #: ../settings.ui.h:60
 msgid "Transparency of the keyboard background"
 msgstr "Transparéncia del rèire plan del clavièr"
@@ -1652,9 +455,8 @@ msgid "When Inactive"
 msgstr "Al moment de l'inactivitat"
 
 #: ../settings.ui.h:71
-#, fuzzy
 msgid "_Window handles:"
-msgstr "Opcions de las fenèstras"
+msgstr "_Indicadors de las fenèstras :"
 
 #: ../settings.ui.h:72
 msgid "Resize Protection"
@@ -1746,9 +548,8 @@ msgid "Behavior of modifier and layer keys."
 msgstr "Comportament de las tòcas de modificacion."
 
 #: ../settings.ui.h:92
-#, fuzzy
 msgid "Modifier auto-release delay in seconds:"
-msgstr "Relanbi de daissar anar automatic"
+msgstr "Modificar lo relambi d'autodaissament en segondas :"
 
 #: ../settings.ui.h:93
 msgid ""
@@ -1764,7 +565,7 @@ msgstr "Compòrtament de la tòca"
 
 #: ../settings.ui.h:95
 msgid "_Touch input:"
-msgstr ""
+msgstr "_Entrada tactila :"
 
 #: ../settings.ui.h:96
 msgid "_Input event source:"
@@ -1799,13 +600,12 @@ msgid "Input Options"
 msgstr "Opcions de picada"
 
 #: ../settings.ui.h:100
-#, fuzzy
 msgid "Keystroke _generation:"
-msgstr "_Generacion de picadas :"
+msgstr "_Generacion de picada :"
 
 #: ../settings.ui.h:101
 msgid "Delay between keystrokes in milliseconds:"
-msgstr ""
+msgstr "Relambi entre las picadas en millisegondas :"
 
 #: ../settings.ui.h:102
 msgid ""
@@ -1813,15 +613,17 @@ msgid ""
 "snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
 "applications."
 msgstr ""
+"Aumentar aquò se las picadas se pèrdon al moment de l'insercion de "
+"suggestions de mots o expressions dins Firefox o tota aplicacion Gtk-2 mai. "
+"Aquò a pas d'efièch sus las aplicacions Gtk-3."
 
 #: ../settings.ui.h:103
 msgid "0,00"
-msgstr ""
+msgstr "0,00"
 
 #: ../settings.ui.h:104
-#, fuzzy
 msgid "Keystroke Generation"
-msgstr "_Generacion de picadas :"
+msgstr "Generacion de picada"
 
 #: ../settings.ui.h:105
 msgid "Advanced"
@@ -1927,12 +729,11 @@ msgstr "Correccion automatica"
 
 #: ../settings.ui.h:128
 msgid "While  learning is paused:"
-msgstr ""
+msgstr "Quand l'aprendissatge es en pausa :"
 
 #: ../settings.ui.h:129
-#, fuzzy
 msgid "Learning"
-msgstr "Metre en pausa l'aprendissatge"
+msgstr "Aprendissatge"
 
 #: ../settings.ui.h:130
 msgid "Enable  keyboard _scanning"
@@ -1987,11 +788,106 @@ msgstr ""
 msgid "Hover Click"
 msgstr "Clic per susvòl"
 
-#: ../Onboard/WPEngine.py:468
-msgid "Failed to load language model '{}': {} ({})"
-msgstr "Fracàs del cargament del modèl de lenga '{}': {} ({})"
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Personalizar lo tèma"
 
-#. run again
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "_Jòc de colors"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1382
+msgid "Gradient"
+msgstr "Degradat"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "_Angle :"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Direccion del lum"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "_Estil :"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "Red_ondor :"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "Tal_ha :"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "Largor de b_ordadura :"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "Aparéncia de las tòcas"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "_Clau :"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "_Bordadura :"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "Degradats"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "_Fòrça :"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "Ombra"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Claus"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "_Poliça :"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "_Atributs :"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "Poliça de caractèr"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "Talha i_ndependanta"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "Tòca _super :"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "Modificacion de las etiquetas"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "Etiquetas"
+
+#: ../Onboard/LanguageSupport.py:170 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723 ../Onboard/utils.py:1227
+msgid "Failed to execute '{}', {}"
+msgstr "Fracàs de l'execucion de '{}', {}"
+
 #: ../settings_docking_dialog.ui.h:1
 msgid "Top"
 msgstr "Amont"
@@ -2002,47 +898,47 @@ msgstr "Aval"
 
 #: ../settings_docking_dialog.ui.h:3
 msgid "Active Monitor"
-msgstr ""
+msgstr "Ecran actiu"
 
 #: ../settings_docking_dialog.ui.h:4
 msgid "Primary Monitor"
-msgstr ""
+msgstr "Ecran Principal"
 
 #: ../settings_docking_dialog.ui.h:5
 msgid "Monitor 0"
-msgstr ""
+msgstr "Ecran 0"
 
 #: ../settings_docking_dialog.ui.h:6
 msgid "Monitor 1"
-msgstr ""
+msgstr "Ecran 1"
 
 #: ../settings_docking_dialog.ui.h:7
 msgid "Monitor 2"
-msgstr ""
+msgstr "Ecran 2"
 
 #: ../settings_docking_dialog.ui.h:8
 msgid "Monitor 3"
-msgstr ""
+msgstr "Ecran 3"
 
 #: ../settings_docking_dialog.ui.h:9
 msgid "Monitor 4"
-msgstr ""
+msgstr "Ecran 4"
 
 #: ../settings_docking_dialog.ui.h:10
 msgid "Monitor 5"
-msgstr ""
+msgstr "Ecran 5"
 
 #: ../settings_docking_dialog.ui.h:11
 msgid "Monitor 6"
-msgstr ""
+msgstr "Ecran 6"
 
 #: ../settings_docking_dialog.ui.h:12
 msgid "Monitor 7"
-msgstr ""
+msgstr "Ecran 7"
 
 #: ../settings_docking_dialog.ui.h:13
 msgid "Monitor 8"
-msgstr ""
+msgstr "Ecran 8"
 
 #: ../settings_docking_dialog.ui.h:14
 msgid "Docking settings"
@@ -2074,23 +970,715 @@ msgstr "Ancorar al bòrd de l'ecran"
 
 #: ../settings_docking_dialog.ui.h:21
 msgid "Dock to monitor:"
-msgstr ""
+msgstr "Estacar a l'ecran :"
 
-#: ../Onboard/Appearance.py:112
+#. Default dialog title: name of the application """
+#: ../Onboard/KbdWindow.py:103 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1738 ../Onboard/utils.py:387
+msgid "Onboard"
+msgstr "Onboard"
+
+#: ../Onboard/KbdWindow.py:203
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"Transparéncia indisponibla; l'ecran prend pas en carga la transparéncia"
+
+#. ##############
+#: ../Onboard/SnippetView.py:37
+msgid "<Enter label>"
+msgstr "<Entrar un nom d'etiqueta>"
+
+#: ../Onboard/SnippetView.py:38
+msgid "<Enter text>"
+msgstr "<Picar de tèxte>"
+
+#: ../Onboard/SnippetView.py:50
+msgid "Button Number"
+msgstr "Numèro del boton"
+
+#: ../Onboard/SnippetView.py:57
+msgid "Button Label"
+msgstr "Nom del boton"
+
+#: ../Onboard/SnippetView.py:66
+msgid "Snippet Text"
+msgstr "Tèxte d'inserir"
+
+#: ../Onboard/SnippetView.py:111
+msgid "Must be an integer number"
+msgstr "Un nombre entièr es requesit"
+
+#: ../Onboard/SnippetView.py:120
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Lo tèxte d'inserir %d es ja utilizat."
+
+#: ../Onboard/LayoutLoaderSVG.py:158
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"Cargament de l'anciana configuracion, format « {} ». Mercé de metre a jorn "
+"al format actual « {} »"
+
+#: ../Onboard/LayoutLoaderSVG.py:397
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "La tòca '{}' es ignorada. Cap de fichièr svg es pas estat definit."
+
+#: ../Onboard/LayoutLoaderSVG.py:618
+msgid "Snippet {}"
+msgstr "Fragment {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:622
+msgid ", unassigned"
+msgstr ", pas assignat"
+
+#: ../Onboard/LayoutLoaderSVG.py:931
+msgid "copying layout '{}' to '{}'"
+msgstr "còpia de la disposicion de '{}' cap a '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:951
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+"la còpia de la mesa en pagina a fracassat, format de mesa en pagina pas "
+"suportat '{}'."
+
+#: ../Onboard/LayoutLoaderSVG.py:994
+msgid "copying svg file '{}' to '{}'"
+msgstr "còpia del fichièr svg de '{}' cap a '{}'"
+
+#: ../Onboard/WordSuggestions.py:2105
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>Onboard a pas capitat de dobrir las suggestions de mots apreses</big>\n"
+"\n"
+"L'error èra :\n"
+"<tt>{}</tt>\n"
+"\n"
+"Restablir las suggestions de mots al darrièr salvament (recomandat) ?"
+
+#: ../Onboard/WordSuggestions.py:2124
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>Onboard a pas capitat de dobrir las suggestions de mots apreses</big>\n"
+"\n"
+"L'error èra :\n"
+"<tt>{}</tt>\n"
+"\n"
+"Les suggestions devon èsser remesas a zèro, mas lo fichièr erronèu demorarà "
+"jos\n"
+"'{}'"
+
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
+msgid "Activate Hover Click"
+msgstr "Activar lo clic per susvòl"
+
+#: ../data/layoutstrings.py:36
+msgid "Alphanumeric keys"
+msgstr "Tòcas alfanumericas"
+
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:38
+msgid "Alt"
+msgstr "Alt"
+
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:40
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:42
+msgid "CAPS"
+msgstr "Varr. Maj"
+
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:44
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:46
+msgid "Del"
+msgstr "Supr."
+
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:220
+msgid "Double click"
+msgstr "Clic doble"
+
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:48 ../data/layoutstrings.py:223
+msgid "Drag click"
+msgstr "Clic per lisar"
+
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:50
+msgid "End"
+msgstr "Fin"
+
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:52
+msgid "Ent"
+msgstr "Ent"
+
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:54
+msgid "Esc"
+msgstr "Escap"
+
+#: ../data/layoutstrings.py:55
+msgid "Function keys"
+msgstr "Tòcas de foncion"
+
+#: ../data/layoutstrings.py:56
+msgid "Number block and function keys"
+msgstr "Pavat numeric e tòcas de foncion"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:57 ../data/layoutstrings.py:247
+msgid "Hide Onboard"
+msgstr "Amagar lo clavièr virtual"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:292
+msgid "Pause learning"
+msgstr "Metre en pausa l'aprendissatge"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:60
+msgid "Hm"
+msgstr "Començ."
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:62
+msgid "Ins"
+msgstr "Ins"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:63 ../data/layoutstrings.py:265
+msgid "Main keyboard"
+msgstr "Clavièr principal"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:65
+msgid "Menu"
+msgstr "Menú"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:66 ../data/layoutstrings.py:274
+msgid "Middle click"
+msgstr "Clic del mitan"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:67 ../data/layoutstrings.py:283
+msgid "Move Onboard"
+msgstr "Desplaçar Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:69
+msgid "Nm&#10;Lk"
+msgstr "Varr&#10;Num"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
+msgid "Number block and snippets"
+msgstr "Pavat numeric e tòcas personalizadas"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:72
+msgid "Pause"
+msgstr "Pausa"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:74
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Segu"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:76
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Prec"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:298
+msgid "Preferences"
+msgstr "Preferéncias"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:80
+msgid "Prnt"
+msgstr "Imprim."
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:82
+msgid "Quit"
+msgstr "Quitar"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:84
+msgid "Return"
+msgstr "Retorn"
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:85 ../data/layoutstrings.py:310
+msgid "Right click"
+msgstr "Clic drech"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:87
+msgid "Scroll"
+msgstr "Desfil."
+
+#: ../data/layoutstrings.py:89
+msgid "Space"
+msgstr "Espaci"
+
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:361
+msgid "Toggle click helpers"
+msgstr "Ajudas al clic de bascuolament"
+
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:92
+msgid "Tab"
+msgstr "Onglet"
+
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:94
+msgid "Win"
+msgstr "Win"
+
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:364
+msgid "Umbrella"
+msgstr "Parapluèja"
+
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:370
+msgid "White star"
+msgstr "Estela blanca"
+
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:376
+msgid "White telephone"
+msgstr "Telefòn blanc"
+
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:102
+msgid "Hot beverage"
+msgstr "Bevenda cauda"
+
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:104
+msgid "Skull and crossbones"
+msgstr "Cràn de pirata"
+
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:106 ../data/layoutstrings.py:307
+msgid "Radioactive sign"
+msgstr "Simbòl radioactiu"
+
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
+msgid "Peace symbol"
+msgstr "Simbòl de patz"
+
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:110 ../data/layoutstrings.py:382
+msgid "Yin yang"
+msgstr "Lo Ying e lo Yang"
+
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
+msgid "Frowning face"
+msgstr "Cara morruda"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:319
+msgid "Smiling face"
+msgstr "Cara sorisenta"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:116 ../data/layoutstrings.py:373
+msgid "White sun with rays"
+msgstr "Solelh blanc raionant"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
+msgid "Last quarter moon"
+msgstr "Darrièr quartièr de Luna."
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
+msgid "Female sign"
+msgstr "Simbòl femenin"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
+msgid "Male sign"
+msgstr "Simbòl masculin"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:367
+msgid "White heart suit"
+msgstr "Còr blanc"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:126
+msgid "White diamond suit"
+msgstr "Diamant blanc"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:128
+msgid "White spade suit"
+msgstr "Pica blanca"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:130
+msgid "White club suit"
+msgstr "Trèule blanc"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
+msgid "Beamed eighth note"
+msgstr "Octavas musicalas"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
+msgid "Envelope"
+msgstr "Envolopa"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:136
+msgid "Victory hand"
+msgstr "Man que fa lo signe de la victòria"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:138
+msgid "Writing hand"
+msgstr "Man a escriure"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:140 ../data/layoutstrings.py:328
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "Cara sorisenta amb la boca dobèrta e los uèlhs sorisents"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:322
+msgid "Smiling face with halo"
+msgstr "Cara sorisenta amb una aureòla"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:144 ../data/layoutstrings.py:325
+msgid "Smiling face with horns"
+msgstr "Cara sorisenta amb de banas"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:379
+msgid "Winking face"
+msgstr "Morron clinhada"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:331
+msgid "Smiling face with smiling eyes"
+msgstr "Cara sorisenta amb d'uèlhs sorisents"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
+msgid "Face savouring delicious food"
+msgstr "Cara que sabòra una noiridura deliciosa"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:152
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Cara sorisenta amb d'uèlhs en forma de còr"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:334
+msgid "Smiling face with sunglasses"
+msgstr "Cara sorisenta amb de lunetas de solelh"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:156
+msgid "Smirking face"
+msgstr "Cara amb un sorire de superioritat"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:158
+msgid "Neutral face"
+msgstr "Cara neutra"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:160
+msgid "Unamused face"
+msgstr "Cara d'anuèg"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
+msgid "Confounded face"
+msgstr "Morron confús"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:164
+msgid "Face throwing a kiss"
+msgstr "Cara que manda un poton"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
+msgid "Kissing face with closed eyes"
+msgstr "Cara que manda un poton amb los uèlhs clauses"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "Morron amb lenga tirada e clinhada"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:170
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "Morron amb lenga tirada e uèlhs tampats"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:172
+msgid "Disappointed face"
+msgstr "Cara decebuda"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
+msgid "Angry face"
+msgstr "Cara en colèra"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:176
+msgid "Pouting face"
+msgstr "Morron que fa lo morre"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
+msgid "Crying face"
+msgstr "Cara en plors"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:180
+msgid "Persevering face"
+msgstr "Cara perseveranta"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:182
+msgid "Weary face"
+msgstr "Cara lassa"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:184 ../data/layoutstrings.py:358
+msgid "Tired face"
+msgstr "Cara alassada"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
+msgid "Astonished face"
+msgstr "Cara embalausida"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:188
+msgid "Flushed face"
+msgstr "Cara rojassa"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:190
+msgid "Dizzy face"
+msgstr "Cara distracha"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:199
+msgid "Arrows"
+msgstr "Flèchas"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:214
+msgid "Custom"
+msgstr "Personalizar"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:217
+msgid "Desktop keyboard with edit and function keys"
+msgstr "Clavièr de burèu amb tòcas d'edicion e de foncion"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:241
+msgid "Greek"
+msgstr "Grèc"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:244
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "Grasilha de tòcas apropriada pel balejatge de clavièr"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:250
+msgid "Hide keyboard"
+msgstr "Amagar lo clavièr"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:253
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
+msgstr ""
+"Agençament de clavièr amb de letras grègas, de tòcas direccionalas e plan "
+"mai encara, per l'aprendissatge de las matematicas e de la fisica sus un "
+"tablèu blanc interactiu."
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:256
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
+msgstr ""
+"Agençament de clavièr amb de letras grègas, de tòcas direccionalas e plan "
+"mai encara, per l'aprendissatge de las matematicas e de la fisica sus un "
+"tablèu blanc interactiu.\n"
+"Aqueste agençament presenta totas las tòcas sus una sola linha fòrça larga."
+
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:271
+msgid "Medium size desktop keyboard"
+msgstr "Clavièr de burèu de talha mejana"
+
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:277
+msgid "Mobile keyboard for small screens"
+msgstr "Clavièr de telefonet pels ecrans pichons"
+
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:280
+msgid "More suggestions"
+msgstr "Mai de suggestions"
+
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:286
+msgid "Move keyboard"
+msgstr "Desplaçar lo clavièr"
+
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:301
+msgid "Quit Keyboard"
+msgstr "Quitar lo clavièr"
+
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:304
+msgid "Quit Onboard"
+msgstr "Quitar Onboard"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:313
+msgid "Set and Settings"
+msgstr "Reglatge e paramètres"
+
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:316
+msgid "Settings"
+msgstr "Configuracion"
+
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:340
+msgid "Space efficient desktop keyboard"
+msgstr "Clavièr de burèu estalviador en espaci"
+
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:343
+msgid "Special Characters"
+msgstr "Caractèrs especials"
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:346
+msgid "Special characters for interactive whiteboards, wide"
+msgstr "Caractèrs especials pels tablèus interactius, larg"
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:349
+msgid "Special characters for interactive whiteboards"
+msgstr "Caractèrs especials per tablèus interactius"
+
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:352
+msgid "Spelling suggestion"
+msgstr "Suggestion d'ortografia"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:355
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Indicis, Exponents ; Fraccions"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Clavièr a l'ecran Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Clavièr virtual polivalent per GNOME"
+
+#: ../Onboard/Appearance.py:130
 #, python-brace-format
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "Jòc de colors pel tèma '{filename}' pas trobat"
 
-#: ../Onboard/Appearance.py:332
+#: ../Onboard/Appearance.py:350
 #, python-brace-format
 msgid "Error loading theme '{filename}'. {exception}: {cause}"
 msgstr "Error al cargament del tèma '{filename}'. {exception} : {cause}"
 
-#: ../Onboard/Appearance.py:406
+#: ../Onboard/Appearance.py:424
 msgid "Error saving "
 msgstr "Error pendent lo salvament de "
 
-#: ../Onboard/Appearance.py:828
+#: ../Onboard/Appearance.py:846
 #, python-brace-format
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
@@ -2099,13 +1687,13 @@ msgstr ""
 "Cargament de l'ancian format de jòc de colors '{old_format}', pensatz a "
 "metre a nivèl cap al format actual '{new_format}': '{filename}'"
 
-#: ../Onboard/Appearance.py:848
+#: ../Onboard/Appearance.py:866
 #, python-brace-format
 msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
 msgstr ""
 "Error al cargament del tèma de colors '{filename}'. {exception} : {cause}"
 
-#: ../Onboard/Appearance.py:925 ../Onboard/Appearance.py:1057
+#: ../Onboard/Appearance.py:943 ../Onboard/Appearance.py:1075
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -2113,105 +1701,59 @@ msgstr ""
 "Doblon de key_id '{}' trobat dins lo fichièr de jòc de colors. Key_ids deu "
 "pas aparéisser qu'un sol còp."
 
-#. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1413
-#, fuzzy
-msgid "Edit snippet #{}"
-msgstr "Fragment {}"
+#: ../Onboard/Indicator.py:50
+msgid "_Show Onboard"
+msgstr "_Afichar Onboard"
 
-#. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1417
-msgid "New snippet"
-msgstr "Tèxte novèl d'inserir"
+#: ../Onboard/Indicator.py:51
+msgid "_Hide Onboard"
+msgstr "A_magar Onboard"
 
-#. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1419
-#, fuzzy
-msgid "Enter a new snippet for button #{}:"
-msgstr "Entratz un novèl tèxte d'inserir per aqueste boton :"
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:77
+msgid "_Preferences"
+msgstr "_Preferéncias"
 
-#: ../Onboard/KeyboardWidget.py:1430
-msgid "_Save snippet"
-msgstr "_Salvar de tèxte d'inserir"
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:88
+msgid "_Quit"
+msgstr "_Quitar"
 
-#: ../Onboard/KeyboardWidget.py:1450
-msgid "_Button label:"
-msgstr "Etiqueta del _boton :"
+#: ../Onboard/Indicator.py:182
+msgid "Onboard on-screen keyboard"
+msgstr "Clavièr virtual Onboard"
 
-#: ../Onboard/KeyboardWidget.py:1454
-msgid "S_nippet:"
-msgstr "Boto_n personalizat :"
-
-#: ../Onboard/KeyboardWidget.py:1618
-msgid "Other _Languages"
-msgstr "Autras _lengas"
-
-#: ../Onboard/KeyboardWidget.py:1662
-#, fuzzy
-msgid "_Remove suggestion…"
-msgstr "Mai de suggestions"
-
-#. Don't hide dialog behind the keyboard in force-to-top mode.
-#. if config.is_force_to_top():
-#. dialog.set_position(Gtk.WindowPosition.CENTER)
-#: ../Onboard/KeyboardWidget.py:1716
-#, fuzzy
-msgid "Remove word suggestion"
-msgstr "Mai de suggestions"
-
-#: ../Onboard/KeyboardWidget.py:1727
-msgid "Remove '{}' everywhere."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1737
-msgid "This will only affect learned suggestions."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1777
-msgid "Remove '{}' only where it occures at text begin."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1780
-msgid "Remove '{}' only where it occures at sentence begin."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1783
-msgid "Remove '{}' only where it occures after numbers."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1786
-msgid "Remove '{}' only where it occures after '{}'."
-msgstr ""
-
-#: ../Onboard/Config.py:206
+#: ../Onboard/Config.py:227
 msgid "Layout file ({}) or name"
 msgstr "Fichièr de disposicion ({}) o nom"
 
-#: ../Onboard/Config.py:209
+#: ../Onboard/Config.py:230
 msgid "Theme file (.theme) or name"
 msgstr "Fichièr de tèma (.theme) o nom"
 
-#: ../Onboard/Config.py:211
+#: ../Onboard/Config.py:232
 msgid "Window size, widthxheight"
 msgstr "Talha de la fenèstra, largorxnautor"
 
-#: ../Onboard/Config.py:212
+#: ../Onboard/Config.py:233
 msgid "Window x position"
 msgstr "Posicion orizontala x de la fenèstra"
 
-#: ../Onboard/Config.py:213
+#: ../Onboard/Config.py:234
 msgid "Window y position"
 msgstr "Posicion verticala y de la fenèstra"
 
-#: ../Onboard/Config.py:218
+#: ../Onboard/Config.py:239
 msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
 msgstr "Aviar en mòde XEmbed, per exemple per gnome-screensaver"
 
-#: ../Onboard/Config.py:221
+#: ../Onboard/Config.py:242
 msgid "Allow multiple Onboard instances"
 msgstr "Autorisar mantuna instància de Onboard"
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:245
 msgid ""
 "Silently fail to start in the given desktop environments. DESKTOPS is a "
 "comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
@@ -2220,11 +1762,11 @@ msgstr ""
 "DESKTOPS es una lista de noms de burèu XDG separats per de virgulas, per "
 "exemple GNOME per GNOME Shell."
 
-#: ../Onboard/Config.py:230
+#: ../Onboard/Config.py:251
 msgid "Keep aspect ratio when resizing the window"
 msgstr "Conservar las proporcions quand la fenèstra es redimensionada"
 
-#: ../Onboard/Config.py:232
+#: ../Onboard/Config.py:253
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
@@ -2232,35 +1774,35 @@ msgstr ""
 "Otrapassar l'autodeteccion e seleccionar manualament quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Config.py:320
+#: ../Onboard/Config.py:341
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Migracion del repertòri de l'utilizaire de '{}' à '{}'."
 
 #. honor XDG spec
 #. python >2.5
-#: ../Onboard/Config.py:328
+#: ../Onboard/Config.py:349
 msgid "failed to migrate user directory. "
 msgstr "Fracàs al moment de la migracion del repertòri de l'utilizaire. "
 
-#: ../Onboard/Config.py:794
+#: ../Onboard/Config.py:815
 #, python-brace-format
 msgid "layout '{filename}' does not exist"
 msgstr "la disposicion '{filename}' existís pas"
 
-#: ../Onboard/Config.py:835
+#: ../Onboard/Config.py:856
 #, python-brace-format
 msgid "theme '{filename}' does not exist"
 msgstr "lo tèma '{filename}' existís pas"
 
-#: ../Onboard/Config.py:860
+#: ../Onboard/Config.py:881
 msgid "Loading theme from '{}'"
 msgstr "Cargament del tèma dempuèi '{}'"
 
-#: ../Onboard/Config.py:864
+#: ../Onboard/Config.py:885
 msgid "Unable to read theme '{}'"
 msgstr "Impossible de legir lo tèma '{}'"
 
-#: ../Onboard/Config.py:1047
+#: ../Onboard/Config.py:1068
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -2276,31 +1818,456 @@ msgstr ""
 "\n"
 "Activar l'accessibilitat ara ?"
 
-#: ../Onboard/Config.py:1661
+#: ../Onboard/Config.py:1682
 #, python-brace-format
 msgid "color scheme '{filename}' does not exist"
 msgstr "lo jòc de colors '{filename}' existís pas"
 
-#: ../Onboard/KbdWindow.py:183
-msgid "no window transparency available; screen doesn't support alpha channels"
+#: ../Onboard/settings.py:258
+msgid "Onboard Preferences"
+msgstr "Preferéncias d'Onboard"
+
+#: ../Onboard/settings.py:648
+msgid "Copy layout '{}' to this new name:"
+msgstr "Copiar l'agençament '{}' jos aqueste novèl nom :"
+
+#: ../Onboard/settings.py:661
+msgid "Delete layout '{}'?"
+msgstr "Suprimir l'agençament '{}' ?"
+
+#: ../Onboard/settings.py:709
+msgid "System settings not found ({}): {}"
+msgstr "Paramètres del sistèma pas trobats ({}): {}"
+
+#. Window handles: None
+#: ../Onboard/settings.py:722
+msgid "None"
+msgstr "Pas cap"
+
+#. Window handles: None
+#: ../Onboard/settings.py:724
+msgid "Movement only"
+msgstr "Movement sol"
+
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:726
+msgid "Corners"
+msgstr "Caires"
+
+#. Frame resize handles: All
+#: ../Onboard/settings.py:728
+msgid "All corners and edges"
+msgstr "Totes los caires e arestas"
+
+#: ../Onboard/settings.py:769
+msgid "Core layouts"
+msgstr "Agençaments principals"
+
+#: ../Onboard/settings.py:770
+msgid "Contributions"
+msgstr "Contribucions"
+
+#: ../Onboard/settings.py:771
+#, fuzzy
+msgid "My layouts"
+msgstr "Agençaments principals"
+
+#: ../Onboard/settings.py:806
+msgid "Author: {}"
+msgstr "Autor : {}"
+
+#: ../Onboard/settings.py:810
+msgid "About Layout"
+msgstr "A prepaus de l'agençament"
+
+#: ../Onboard/settings.py:915
+msgid "Enter a name for the new theme:"
+msgstr "Entrar un nom pel tèma novèl :"
+
+#: ../Onboard/settings.py:923
+#, python-brace-format
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
 msgstr ""
-"Transparéncia indisponibla; l'ecran prend pas en carga la transparéncia"
+"Aqueste fichièr de tèma existís ja.\n"
+"'{filename}'\n"
+"\n"
+"Lo volètz remplaçar ?"
 
-#~ msgid "1"
-#~ msgstr "1"
+#: ../Onboard/settings.py:940
+msgid "Reset selected theme to Onboard defaults?"
+msgstr "Volètz tornar als paramètres per defaut d'aqueste tèma ?"
 
-#~ msgid "_Frame resize handles:"
-#~ msgstr "Ponhadas de redimensionament de _quadre :"
+#: ../Onboard/settings.py:942
+msgid "Delete selected theme?"
+msgstr "Suprimir lo tèma seleccionat ?"
 
-#~ msgid "_Touch input (requires restart):"
-#~ msgstr "Entrada _Tactila (necessita una reaviada) :"
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1071
+msgid "_Reset"
+msgstr "_Reïnicializar"
 
-#~ msgid "No file manager to open layout folder"
-#~ msgstr ""
-#~ "Pas de gestionari de fichièrs per dobrir lo dorsièr de las disposicions"
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1075
+msgid "_Delete"
+msgstr "_Suprimir"
 
-#~ msgid " - System Language"
-#~ msgstr " - Lenga del sistèma"
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1380
+msgid "Flat"
+msgstr "Bemòl"
 
-#~ msgid "_Languages"
-#~ msgstr "_Lengas"
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1384
+msgid "Dish"
+msgstr "Sieta"
+
+#: ../Onboard/settings.py:1433 ../Onboard/settings.py:1490
+msgid "Default"
+msgstr "Per defaut"
+
+#: ../Onboard/settings.py:1474
+msgid "Bold"
+msgstr "Gras"
+
+#: ../Onboard/settings.py:1476
+msgid "Italic"
+msgstr "Italica"
+
+#: ../Onboard/settings.py:1478
+msgid "Condensed"
+msgstr "Condensat"
+
+#: ../Onboard/settings.py:1491
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1491
+msgid "Ubuntu Logo"
+msgstr "Lògo d'Ubuntu"
+
+#: ../Onboard/settings.py:1625
+msgid "Step"
+msgstr "Etapa"
+
+#: ../Onboard/settings.py:1626
+msgid "Left"
+msgstr "A esquèrra"
+
+#: ../Onboard/settings.py:1627
+msgid "Right"
+msgstr "A drecha"
+
+#: ../Onboard/settings.py:1628
+msgid "Up"
+msgstr "Montar"
+
+#: ../Onboard/settings.py:1629
+msgid "Down"
+msgstr "Davalar"
+
+#: ../Onboard/settings.py:1630
+msgid "Activate"
+msgstr "Activar"
+
+#: ../Onboard/settings.py:1799
+msgid "Action:"
+msgstr "Accion :"
+
+#: ../Onboard/settings.py:1963
+msgid "Disabled"
+msgstr "Desactivar"
+
+#: ../Onboard/settings.py:1969
+msgid "Button"
+msgstr "Boton"
+
+#: ../Onboard/settings.py:2024 ../Onboard/settings.py:2069
+msgid "Press a button..."
+msgstr "Quichatz sus un boton..."
+
+#: ../Onboard/settings.py:2071
+msgid "Press a key..."
+msgstr "Quichatz sus una tòca..."
+
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1438
+msgid "Edit snippet #{}"
+msgstr "Modificar lo fragment #{}"
+
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1442
+msgid "New snippet"
+msgstr "Tèxte novèl d'inserir"
+
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1444
+msgid "Enter a new snippet for button #{}:"
+msgstr "Entrar un novèl fragment pel boton #{} :"
+
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/KeyboardWidget.py:1454 ../Onboard/utils.py:423
+msgid "_Cancel"
+msgstr "_Anullar"
+
+#: ../Onboard/KeyboardWidget.py:1455
+msgid "_Save snippet"
+msgstr "_Salvar de tèxte d'inserir"
+
+#: ../Onboard/KeyboardWidget.py:1475
+msgid "_Button label:"
+msgstr "Etiqueta del _boton :"
+
+#: ../Onboard/KeyboardWidget.py:1479
+msgid "S_nippet:"
+msgstr "Boto_n personalizat :"
+
+#: ../Onboard/KeyboardWidget.py:1649
+msgid "Other _Languages"
+msgstr "Autras _lengas"
+
+#: ../Onboard/KeyboardWidget.py:1693
+msgid "_Remove suggestion…"
+msgstr "_Suprimir la suggestion..."
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1747
+msgid "Remove word suggestion"
+msgstr "Suggerir pas de mots"
+
+#: ../Onboard/KeyboardWidget.py:1758
+msgid "Remove '{}' everywhere."
+msgstr "Suprimir '{}' pertot."
+
+#: ../Onboard/KeyboardWidget.py:1768
+msgid "This will only affect learned suggestions."
+msgstr "Aquò afectarà pas que las suggestions apresas."
+
+#: ../Onboard/KeyboardWidget.py:1808
+msgid "Remove '{}' only where it occures at text begin."
+msgstr "Suprimir '{}' sonque en començament de tèxte."
+
+#: ../Onboard/KeyboardWidget.py:1811
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr "Suprimir '{}' sonque en començament de frasa."
+
+#: ../Onboard/KeyboardWidget.py:1814
+msgid "Remove '{}' only where it occures after numbers."
+msgstr "Suprimir pas « {} » qu'aprèp de nombres."
+
+#: ../Onboard/KeyboardWidget.py:1817
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr "Levar pas « {} » que se apareis aprèp « {} »."
+
+#: ../Onboard/utils.py:407
+msgid "New Input Device"
+msgstr "Novèl periferic de picada"
+
+#: ../Onboard/utils.py:408
+msgid "Onboard has detected a new input device"
+msgstr "Onboard a detectat un novèl periferic de picada"
+
+#: ../Onboard/utils.py:417
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "Volètz utilizar aqueste periferic pel scan del clavièr ?"
+
+#: ../Onboard/utils.py:424
+msgid "Use device"
+msgstr "Periferic utilizat"
+
+#: ../Onboard/utils.py:1829
+msgid "failed to create directory '{}': {}"
+msgstr "Error al moment de la creacion del dorsièr '{}': {}"
+
+#: ../Onboard/ConfigUtils.py:79
+msgid "gsettings schema for '{}' is not installed"
+msgstr "l'esquèma gsettings per '{}' es pas installat"
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:436
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+"{description} '{filename}' es pas estat trobat, novèla temptativa dins los "
+"repertòris per defaut"
+
+#: ../Onboard/ConfigUtils.py:445
+#, python-brace-format
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+"impossible de localizar '{filename}', per defaut cargament de {description}"
+
+#: ../Onboard/ConfigUtils.py:454 ../Onboard/ConfigUtils.py:510
+#, python-brace-format
+msgid "failed to find {description} '{filename}'"
+msgstr "{description} '{filename}' pas trobat"
+
+#: ../Onboard/ConfigUtils.py:458 ../Onboard/ConfigUtils.py:514
+#, python-brace-format
+msgid "{description} '{filepath}' found."
+msgstr "{description} '{filepath}' trobat."
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:493
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr ""
+"{description} '{filename}' es pas estat trobat, recèrca dins los camins "
+"{paths}"
+
+#: ../Onboard/ConfigUtils.py:586
+#, python-brace-format
+msgid "Looking for system defaults in {paths}"
+msgstr "Recèrca dels paramètres del sistèma per defaut dins {paths}"
+
+#: ../Onboard/ConfigUtils.py:597
+msgid "Failed to read system defaults. "
+msgstr ""
+"Fracàs al moment de la lectura dels paramètres per defaut del sistèma. "
+
+#: ../Onboard/ConfigUtils.py:601
+msgid "No system defaults found."
+msgstr "Los paramètres del sistèma per defaut son pas estats trobats."
+
+#: ../Onboard/ConfigUtils.py:603
+#, python-brace-format
+msgid "Loading system defaults from {filename}"
+msgstr "Cargament dels paramètres del sistèma per defaut dempuèi {filename}"
+
+#: ../Onboard/ConfigUtils.py:627
+msgid "Found system default '[{}] {}={}'"
+msgstr "Trobat los paramètres del sistèma per defaut '[{}] {}={}'"
+
+#: ../Onboard/ConfigUtils.py:645
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr ""
+"Paramètres del sistèma per defaut : tòca desconeguda '{}' dins la seccion "
+"'{}'"
+
+#: ../Onboard/ConfigUtils.py:652
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+"Defauts sistèma : Valor invalida per la clau '{}' dins la seccion '{}' : {}"
+
+#: ../Onboard/ConfigUtils.py:665
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"Paramètres del sistèma per defaut : valor invalida per la tòca '{}' de la "
+"seccion '{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:728
+msgid "Failed to get gsettings value. "
+msgstr "Impossible d'obténer la valor gsettings. "
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr "pas jamai"
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr "1 minuta"
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr "5 minutas"
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr "10 minutas"
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr "30 minutas"
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr "1 ora"
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr "3 oras"
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr "totjorn"
+
+#: ../settings_auto_show_dialog.ui.h:9
+msgid "Auto-show settings"
+msgstr "Afichar automaticament los paramètres"
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr "A_magar al moment de l'utilizacion d'un clavièr fisic"
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+"Amagar Onboard aprèp l'enfonçament de quina tòca que siá sus un clavièr "
+"fisic. Necessita la font de l'eveniment d'entrada « XInput »."
+
+#: ../settings_auto_show_dialog.ui.h:12
+msgid "Stay hidden:"
+msgstr "Daissar amagat :"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+"Un còp amagat per la picada d'una tòca fisica, l'afichatge automatic es en "
+"pausa. Seleccionatz aicí la durada de pausa."
+
+#: ../Onboard/OnboardGtk.py:378
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard es configurat per aparéisser al moment del desvarrolhatge de "
+"l'ecran; per exemple per sortir d'un ecran de velha protegit per un mot "
+"clau.\n"
+"\n"
+"Çaquelà, lo sistèma es pas mai configurat de faiçon a çò qu'Onboard siá "
+"utilizat per desvarrolhar l'ecran. Una rason possibla poiriá èsser qu'una "
+"autra aplicacion aja configurat lo sistèma de manièra a far quicòm mai.\n"
+"\n"
+"Volètz reconfigurar lo sistèma per tal d'utilizar Onboard?"
+
+#: ../Onboard/OnboardGtk.py:397
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard es configurat per aparéisser amb lo dialòg de desvarrolhatge de "
+"l'ecran, amb un ecran de velha protegit per un senhal, per exemple.\n"
+"\n"
+"Pr'aquò, aquesta foncion es desactivada dins lo sistèma.\n"
+"\n"
+"La volètz activar ?"
+
+#~ msgid "User layouts"
+#~ msgstr "Agençaments de l'utilizaire"

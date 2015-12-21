@@ -7,689 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-27 11:46+0100\n"
-"PO-Revision-Date: 2014-02-20 20:59+0000\n"
-"Last-Translator: Launchpad Translations Administrators <Unknown>\n"
+"POT-Creation-Date: 2015-12-21 15:20+0100\n"
+"PO-Revision-Date: 2015-10-08 15:30+0000\n"
+"Last-Translator: NickTh  <nick-athens30@ubuntu.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
-"X-Generator: Launchpad (build 17306)\n"
-
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "Ενεργοποίηση του μετεωρούμενου κλικ"
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "Αλφαριθμητικά πλήκτρα"
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "Alt"
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "CAPS"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "Ctrl"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "Del"
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "Διπλό κλικ"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "Κλικ για σύρσιμο"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "End"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Esc"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "πλήκτρα Function (F1-F12)"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "Τμήμα αριθμητικών πλήκτρων και πλήκτρων Function (F1-F12)"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "Απόκρυψη του Onboard"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
-msgstr ""
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "Hm"
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "Ins"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "Κύριο πληκτρολόγιο"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "Menu"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "Μεσαίο κλικ"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "Μετακίνηση του Onboard"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "Τμήμα αριθμιτικών πλήκτρων και αποσπασμάτων"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Pause"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "Προτιμήσεις"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Prnt"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "'Εξοδος"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "Return"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "Δεξί κλικ"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Scroll"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
-#: ../settings.ui.h:13
-msgid "Snippets"
-msgstr "Αποσπάσματα"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "Διάστημα"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "Εναλλαγή βοηθητικών λειτουργιών κλικ"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "Tab"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "Win"
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
-msgstr "Ομπρέλα"
-
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
-msgstr "Λευκό αστέρι"
-
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
-msgstr "Λευκό τηλέφωνο"
-
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
-msgstr "Ζεστό ρόφημα"
-
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
-msgstr "Νεκροκεφαλή και σταυρωτά οστά"
-
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
-msgstr "Σήμα ραδιενέργειας"
-
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
-msgstr "Σύμβολο ειρήνης"
-
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr "Yin yang"
-
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr "Κατσούφικο πρόσωπο"
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr "Χαμογελαστό πρόσωπο"
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr "Λευκός ήλιος με ακτίνες"
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr "Τελευταίο τέταρτο του φεγγαριού"
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr "Σύμβολο θηλυκού φύλου"
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr "Σύμβολο αρσενικού φύλου"
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr "Λευκή κούπα"
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr "Λευκό καρό"
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr "Λευκό μπαστούνι"
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr "Λευκό σπαθί"
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr "Ενωμένα όγδοα νότας"
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr "Φάκελος"
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr "Σήμα της νίκης"
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr "Χέρι που γράφει"
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr "Χαμογελαστό πρόσωπο με ανοιχτό στόμα και γελαστά μάτια"
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr "Χαμογελαστό πρόσωπο με φωτοστέφανο"
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr "Χαμογελαστό πρόσωπο με κέρατα"
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr "Πρόσωπο που κλείνει το μάτι"
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr "Χαμογελαστό πρόσωπο με γελαστά μάτια"
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr "Πρόσωπο που απολαμβάνει νόστιμο φαγητό"
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr "Χαμογελαστό πρόσωπο με μάτια σε σχήμα καρδιάς"
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr "Χαμογελαστό πρόσωπο με γυαλιά ηλίου"
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr "Πρόσωπο που γελά πονηρά"
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr "Ανέκφραστο πρόσωπο"
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr "Βαριεστημένο πρόσωπο"
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr "Μπερδεμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr "Πρόσωπο που δίνει φιλί"
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr "Πρόσωπο με κλειστά μάτια που δίνει φιλί"
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr "Πρόσωπο που βγάζει τη γλώσσα και κλείνει το μάτι"
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr "Πρόσωπο με βγαλμένη γλώσσα και σφιχτά κλεισμένα μάτια"
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr "Απογοητευμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr "Θυμωμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr "Συνοφρυωμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr "Πρόσωπο που κλαίει"
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr ""
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr "Σκυθρωπό πρόσωπο"
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr "Κουρασμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr "'Εκπληκτο πρόσωπο"
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr "Κοκκινισμένο πρόσωπο"
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr "Ζαλισμένο πρόσωπο"
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
-msgid "Grid of keys, suitable for keyboard scanning"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-msgid "Hide keyboard"
-msgstr ""
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
-msgstr ""
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-msgid "Move keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-msgid "Quit Keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-msgid "Quit Onboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-msgid "Set and Settings"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296
-msgid "Settings"
-msgstr "Ρυθμίσεις"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-msgid "Special characters for interactive whiteboards, wide"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Προσαρμογή θέματος"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Χρωματικό σχήμα"
-
-#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
-msgid "_Background:"
-msgstr "_Παρασκήνιο:"
-
-#. Key style with simple gradients
-#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
-msgid "Gradient"
-msgstr "Διαβαθμισμένο"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Γωνία:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Κατεύθυνση φωτισμού"
-
-#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
-msgid "Keyboard"
-msgstr "Πληκτρολόγιο"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Στυλ:"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "Σ_τρογγυλότητα:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "Μέ_γεθος:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "Π_λάτος περιγράμματος:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Στυλ πλήκτρων"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Πλήκτρο:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Περίγραμμα:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Διαβαθμίσεις"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "­_Δύναμη:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Σκιά"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Πλήκτρα"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Γραμματοσειρά:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Χαρακτηριστικά:"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Γραμματοσειρά"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "Α_νεξάρτητο μέγεθος"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Πλήκτρο Super:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Παράβλεψη ετικέτας"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Ετικέτες"
+"X-Launchpad-Export-Date: 2015-12-21 10:56+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
+
+#: ../Onboard/WPEngine.py:471
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Αποτυχία φόρτωσης μοντέλου γλώσσας '{}': {} ({})"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -702,88 +33,6 @@ msgstr "Ρυθμίσεις πληκτρολογίου οθόνης Onboard"
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "Change Onboard settings"
 msgstr "Αλλαγή των ρυθμίσεων του Onboard"
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "Δεν υπάρχει εγκαταστημένο σχήμα του gsettings για το '{}'"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:418
-#, python-brace-format
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
-"Δεν έχει βρεθεί ακόμα το {description} '{filename}', γίνεται νέα προσπάθεια "
-"στις προεπιλεγμένες διαδρομές"
-
-#: ../Onboard/ConfigUtils.py:427
-#, python-brace-format
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-"αδυναμία εύρεσης του '{filename}', φόρτωση αντί αυτού της προεπιλογής "
-"{description}"
-
-#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
-#, python-brace-format
-msgid "failed to find {description} '{filename}'"
-msgstr "αδυναμία εύρεσης του {description} '{filename}'"
-
-#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
-#, python-brace-format
-msgid "{description} '{filepath}' found."
-msgstr "Βρέθηκε το {description} '{filepath}'."
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:475
-#, fuzzy, python-brace-format
-msgid "{description} '{filename}' not found yet, searching in paths {paths}"
-msgstr ""
-"Δεν έχει βρεθεί ακόμα το {description} '{filename}', γίνεται νέα προσπάθεια "
-"στις προεπιλεγμένες διαδρομές"
-
-#: ../Onboard/ConfigUtils.py:568
-#, python-brace-format
-msgid "Looking for system defaults in {paths}"
-msgstr "Αναζήτηση για τις προεπιλογές του συστήματος σε {paths}"
-
-#: ../Onboard/ConfigUtils.py:579
-msgid "Failed to read system defaults. "
-msgstr "Αποτυχία κατά την ανάγνωση των προεπιλογών του συστήματος. "
-
-#: ../Onboard/ConfigUtils.py:583
-msgid "No system defaults found."
-msgstr "Δεν βρέθηκαν προεπιλογές του συστήματος."
-
-#: ../Onboard/ConfigUtils.py:585
-#, python-brace-format
-msgid "Loading system defaults from {filename}"
-msgstr "Φόρτωση προεπιλογών συστήματος από το αρχείο {filename}"
-
-#: ../Onboard/ConfigUtils.py:609
-msgid "Found system default '[{}] {}={}'"
-msgstr "Εύρεση προεπιλογών συστήματος '[{}] {}={}'"
-
-#: ../Onboard/ConfigUtils.py:627
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr "Προεπιλογές του συστήματος: Άγνωστο πλήκτρο '{}' στον τομέα '{}'"
-
-#: ../Onboard/ConfigUtils.py:634
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-"Προεπιλογές συστήματος: Μη έγκυρη τιμή enum για το κλειδί '{}' στο τμήμα "
-"'{}': {}"
-
-#: ../Onboard/ConfigUtils.py:647
-msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
-msgstr ""
-"Προεπιλογές του συστήματος: Μη έγκυρη τιμή για το πλήκτρο '{}' στον τομέα "
-"'{}'\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:710
-msgid "Failed to get gsettings value. "
-msgstr "Αποτυχία ανάκτησης της τιμής του gsettings. "
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Automatic scan for 1 switch"
@@ -909,449 +158,13 @@ msgstr ""
 msgid "Input Device"
 msgstr "Συσκευή εισόδου"
 
-#: ../Onboard/OnboardGtk.py:357
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Το Onboard έχει ρυθμιστεί ώστε να εμφανίζεται στον διάλογο ξεκλειδώματος της "
-"οθόνης. Για παράδειγμα για να αποπέμπει την προστατευμένη με κωδικό "
-"προστασία οθόνης.\n"
-"\n"
-"Το σύστημα όμως, δεν είναι πλέον ρυθμισμένο ώστε να χρησιμοποιεί το Onboard "
-"για να ξεκλειδώσει την οθόνη. Ένας πιθανός λόγος μπορεί να είναι το ότι "
-"κάποια άλλη εφαρμογή ρύθμισε το σύστημα έτσι ώστε να χρησιμοποιεί κάτι "
-"άλλο.\n"
-"\n"
-"Θα θέλατε να ρυθμίσετε ξανά το σύστημα ώστε να εμφανίζει το Onboard στο "
-"ξεκλείδωμα της οθόνης;"
-
-#: ../Onboard/OnboardGtk.py:376
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"Το Onboard έχει ρυθμιστεί να εμφανίζεται με το παράθυρο διαλόγου που "
-"ξεκλειδώνει την οθόνη, για παράδειγμα για να αποπεμφθεί η προστατευμένη-με-"
-"κωδικό προστασία οθόνης.\n"
-"\n"
-"Παρόλα αυτά αυτή η λειτουργία έχει απενεργοποιηθεί από το σύστημα.\n"
-"\n"
-"Θα θέλατε να το ενεργοποιήσετε;"
-
-#. Default dialog title: name of the application """
-#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
-#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
-msgid "Onboard"
-msgstr "Onboard"
-
-#: ../Onboard/utils.py:386
-msgid "New Input Device"
-msgstr "Νέα συσκευή εισόδου"
-
-#: ../Onboard/utils.py:387
-msgid "Onboard has detected a new input device"
-msgstr "Το onboard ανίχνευσε μία νέα συσκευή εισόδου"
-
-#: ../Onboard/utils.py:396
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-"Θέλετε να χρησιμοποιήσετε αυτή τη συσκευή για τη σάρωση του πληκτρολογίου;"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
-msgid "_Cancel"
-msgstr ""
-
-#: ../Onboard/utils.py:403
-msgid "Use device"
-msgstr "Χρησιμοποίηση της συσκευής"
-
-#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
-#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
-#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
-#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
-msgid "Failed to execute '{}', {}"
-msgstr "Αποτυχία εκτέλεσης '{}', {}"
-
-#: ../Onboard/utils.py:1808
-msgid "failed to create directory '{}': {}"
-msgstr "αποτυχία δημιουργίας καταλόγου '{}': {}"
-
-#: ../Onboard/Indicator.py:31
-msgid "_Show Onboard"
-msgstr "_Εμφάνιση του Onboard"
-
-#: ../Onboard/Indicator.py:32
-msgid "_Hide Onboard"
-msgstr "_Απόκρυψη του Onboard"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:55
-#, fuzzy
-msgid "_Preferences"
-msgstr "Προτιμήσεις"
-
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:66
-#, fuzzy
-msgid "_Quit"
-msgstr "'Εξοδος"
-
-#: ../Onboard/Indicator.py:160
-msgid "Onboard on-screen keyboard"
-msgstr "Πληκτρολόγιο οθόνης Onboard"
-
-#: ../Onboard/WordSuggestions.py:2102
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
-msgstr ""
-
-#: ../Onboard/WordSuggestions.py:2121
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Πληκτρολόγιο οθόνης Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Ευέλικτο πληκτρολόγιο οθόνης για το GNOME"
-
-#: ../Onboard/LayoutLoaderSVG.py:139
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Φόρτωση παλαιάς διάταξης, μορφής '{}'. Παρακαλώ σκεφθείτε να αναβαθμίσετε "
-"στην τρέχουσα μορφή '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:378
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "Αγνοήθηκε το πλήκτρο '{}'. Δεν έχει καθοριστεί όνομα αρχείου svg."
-
-#: ../Onboard/LayoutLoaderSVG.py:606
-msgid "Snippet {}"
-msgstr "Απόσπασμα {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:610
-msgid ", unassigned"
-msgstr ", δεν έχει ανατεθεί"
-
-#: ../Onboard/LayoutLoaderSVG.py:919
-msgid "copying layout '{}' to '{}'"
-msgstr "αντιγραφή της διάταξης '{}' στο '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:939
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-"απέτυχε το copy_layouts (αντιγραφή διατάξεων), μη υποστηριζόμενη μορφή "
-"διάταξης '{}'."
-
-#: ../Onboard/LayoutLoaderSVG.py:982
-msgid "copying svg file '{}' to '{}'"
-msgstr "αντιγραφή του αρχείου svg '{}' στο '{}'"
-
-#. ##############
-#: ../Onboard/SnippetView.py:19
-msgid "<Enter label>"
-msgstr "<Εισαγωγή ετικέτας>"
-
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter text>"
-msgstr "<Εισαγωγή κειμένου>"
-
-#: ../Onboard/SnippetView.py:32
-msgid "Button Number"
-msgstr "Αριθμός κουμπιού"
-
-#: ../Onboard/SnippetView.py:39
-msgid "Button Label"
-msgstr "Ετικέτα κουμπιού"
-
-#: ../Onboard/SnippetView.py:48
-msgid "Snippet Text"
-msgstr "Κείμενο αποσπάσματος"
-
-#: ../Onboard/SnippetView.py:93
-msgid "Must be an integer number"
-msgstr "Πρέπει να είναι ένας ακέραιος αριθμός"
-
-#: ../Onboard/SnippetView.py:102
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Το απόσπασμα %d ήδη χρησιμοποιείται."
-
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:9
-#, fuzzy
-msgid "Auto-show settings"
-msgstr "_Αυτόματη εμφάνιση κατά την επεξεργασία κειμένου"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "_Hide when using a physical keyboard"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:11
-msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:12
-#, fuzzy
-msgid "Stay hidden:"
-msgstr "Εκκίνηση ενός κρυμμένου Onboard"
-
-#: ../settings_auto_show_dialog.ui.h:13
-msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
-msgstr ""
-
-#: ../Onboard/settings.py:237
-msgid "Onboard Preferences"
-msgstr "Προτιμήσεις του Onboard"
-
-#: ../Onboard/settings.py:627
-msgid "Copy layout '{}' to this new name:"
-msgstr ""
-
-#: ../Onboard/settings.py:640
-msgid "Delete layout '{}'?"
-msgstr ""
-
-#: ../Onboard/settings.py:688
-msgid "System settings not found ({}): {}"
-msgstr "Δεν βρέθηκαν οι ρυθμίσεις συστήματος ({}): {}"
-
-#. Window handles: None
-#: ../Onboard/settings.py:701
-msgid "None"
-msgstr "Κανένα"
-
-#. Window handles: None
-#: ../Onboard/settings.py:703
-msgid "Movement only"
-msgstr ""
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:705
-#, fuzzy
-msgid "Corners"
-msgstr "Μόνο γωνίες"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:707
-msgid "All corners and edges"
-msgstr "Όλες οι γωνίες και ακμές"
-
-#: ../Onboard/settings.py:748
-msgid "Core layouts"
-msgstr ""
-
-#: ../Onboard/settings.py:749
-msgid "Contributions"
-msgstr ""
-
-#: ../Onboard/settings.py:750
-msgid "User layouts"
-msgstr ""
-
-#: ../Onboard/settings.py:785
-msgid "Author: {}"
-msgstr ""
-
-#: ../Onboard/settings.py:789
-msgid "About Layout"
-msgstr ""
-
-#: ../Onboard/settings.py:894
-msgid "Enter a name for the new theme:"
-msgstr "Πληκτρολογήστε ένα όνομα για το νέο θέμα:"
-
-#: ../Onboard/settings.py:902
-#, python-brace-format
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"Αυτό το αρχείο υπάρχει ήδη.\n"
-"'{filename}'\n"
-"\n"
-"Να αντικατασταθεί;"
-
-#: ../Onboard/settings.py:919
-msgid "Reset selected theme to Onboard defaults?"
-msgstr ""
-"Επαναφορά του επιλεγμένου θέματος στις προκαθορισμένες ρυθμίσεις του Onboard;"
-
-#: ../Onboard/settings.py:921
-msgid "Delete selected theme?"
-msgstr "Διαγραφή επιλεγμένου θέματος;"
-
-#. Translators: reset button of Preferences->Theme.
-#: ../Onboard/settings.py:1050
-#, fuzzy
-msgid "_Reset"
-msgstr "Επαναφορά"
-
-#. Translators: delete button of Preferences->Theme. It used to be
-#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
-#: ../Onboard/settings.py:1054
-msgid "_Delete"
-msgstr ""
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1359
-msgid "Flat"
-msgstr "Ενιαίο"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:1363
-msgid "Dish"
-msgstr "Ρεαλιστικό στυλ πλήκτρων"
-
-#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
-msgid "Default"
-msgstr "Προκαθορισμένο"
-
-#: ../Onboard/settings.py:1453
-msgid "Bold"
-msgstr "Έντονα"
-
-#: ../Onboard/settings.py:1455
-msgid "Italic"
-msgstr "Πλάγια"
-
-#: ../Onboard/settings.py:1457
-msgid "Condensed"
-msgstr "Συμπτυγμένα"
-
-#: ../Onboard/settings.py:1470
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:1470
-msgid "Ubuntu Logo"
-msgstr "Λογότυπο του Ubuntu"
-
-#: ../Onboard/settings.py:1604
-msgid "Step"
-msgstr "Βήμα"
-
-#: ../Onboard/settings.py:1605
-msgid "Left"
-msgstr "Αριστερά"
-
-#: ../Onboard/settings.py:1606
-msgid "Right"
-msgstr "Δεξιά"
-
-#: ../Onboard/settings.py:1607
-msgid "Up"
-msgstr "Επάνω"
-
-#: ../Onboard/settings.py:1608
-msgid "Down"
-msgstr "Κάτω"
-
-#: ../Onboard/settings.py:1609
-msgid "Activate"
-msgstr "Ενεργοποίηση"
-
-#: ../Onboard/settings.py:1778
-msgid "Action:"
-msgstr "Ενέργεια:"
-
-#: ../Onboard/settings.py:1942
-msgid "Disabled"
-msgstr "Απενεργοποιημένο"
-
-#: ../Onboard/settings.py:1948
-msgid "Button"
-msgstr "Κουμπί"
-
-#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
-msgid "Press a button..."
-msgstr "πατήστε ένα κουμπί..."
-
-#: ../Onboard/settings.py:2050
-msgid "Press a key..."
-msgstr "Πατήστε ένα πλήκτρο..."
-
 #: ../settings.ui.h:1
-#, fuzzy
 msgid "Key-repeat"
-msgstr "επανάληψη πλήκτρου"
+msgstr "Επανάληψη-πλήκτρου"
 
 #: ../settings.ui.h:2
-#, fuzzy
 msgid "International character selection"
-msgstr "επιλογή διεθνών χαρακτήρων"
+msgstr "Διεθνής επιλογή χαρακτήρων"
 
 #: ../settings.ui.h:3
 msgid "GTK"
@@ -1371,11 +184,11 @@ msgstr "AT-SPI"
 
 #: ../settings.ui.h:7
 msgid "Remember nothing"
-msgstr ""
+msgstr "Καμία απομνημόνευση"
 
 #: ../settings.ui.h:8
 msgid "Don't remember new words"
-msgstr ""
+msgstr "Να μην θυμάσαι καινούριες λέξεις"
 
 #: ../settings.ui.h:9
 msgid "General"
@@ -1393,6 +206,15 @@ msgstr "Διάταξη"
 msgid "Theme"
 msgstr "θέμα"
 
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:337
+msgid "Snippets"
+msgstr "Αποσπάσματα"
+
+#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
+msgid "Keyboard"
+msgstr "Πληκτρολόγιο"
+
 #: ../settings.ui.h:15
 msgid "Typing Assistance"
 msgstr "Βοήθεια πληκτρολόγησης"
@@ -1402,33 +224,28 @@ msgid "Universal Access"
 msgstr "Καθολική πρόσβαση"
 
 #: ../settings.ui.h:17
-#, fuzzy
 msgid "Latch, then lock"
-msgstr "επιλογή και έπειτα κλείδωμα"
+msgstr "Εγκλωβισμός, στη συνέχεια κλειδώστε"
 
 #: ../settings.ui.h:18
-#, fuzzy
 msgid "Latch, double-click to lock"
-msgstr "επιλογή και κλείδωμα με διπλό κλικ"
+msgstr "Εγκλωβισμός, διπλό-κλικ για κλείδωμα"
 
 #: ../settings.ui.h:19
-#, fuzzy
 msgid "Latch only"
-msgstr "μόνο επιλογή"
+msgstr "Μόνο εγκλωβισμός"
 
 #: ../settings.ui.h:20
-#, fuzzy
 msgid "Lock only"
-msgstr "κλείδωμα μόνο"
+msgstr "Μόνο κλείδωμα"
 
 #: ../settings.ui.h:21
-#, fuzzy
 msgid "Push button"
-msgstr "πατήστε ένα κουμπί..."
+msgstr "Κουμπί πίεσης"
 
 #: ../settings.ui.h:22
 msgid "none"
-msgstr ""
+msgstr "κανένα"
 
 #: ../settings.ui.h:23
 msgid "single-touch"
@@ -1451,7 +268,7 @@ msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
-"Εμφάνιση του Onboard όταν εστιάζεται ένα παράθυρο αναγνωρισμένο ως κείμενο. "
+"Εμφάνιση του Onboard όταν εστιάζεται ένα αναγνωρισμένο παράθυρο κειμένου. "
 "Απαιτεί την προσβασιμότητα Gnome."
 
 #: ../settings.ui.h:28
@@ -1598,6 +415,10 @@ msgstr ""
 "Διαφάνεια ολόκληρου του παραθύρου του πληκτρολογίου. Απαιτεί τη λειτουργία "
 "compositing."
 
+#: ../settings.ui.h:59 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "_Παρασκήνιο:"
+
 #: ../settings.ui.h:60
 msgid "Transparency of the keyboard background"
 msgstr "Διαφάνεια του παρασκηνίου του πληκτρολογίου"
@@ -1648,9 +469,8 @@ msgid "When Inactive"
 msgstr "Όταν είναι ανενεργό"
 
 #: ../settings.ui.h:71
-#, fuzzy
 msgid "_Window handles:"
-msgstr "Επιλογές παραθύρου"
+msgstr "_Δείκτες χειρισμού παραθύρου:"
 
 #: ../settings.ui.h:72
 msgid "Resize Protection"
@@ -1658,11 +478,11 @@ msgstr "Προστασία αλλαγής μεγέθους"
 
 #: ../settings.ui.h:73
 msgid "Name"
-msgstr ""
+msgstr "Όνομα"
 
 #: ../settings.ui.h:74
 msgid "Description"
-msgstr ""
+msgstr "Περιγραφή"
 
 #: ../settings.ui.h:75
 msgid "_Open layouts folder"
@@ -1744,7 +564,7 @@ msgstr "Συμπεριφορά πλήκτρων τροποποιητών και 
 
 #: ../settings.ui.h:92
 msgid "Modifier auto-release delay in seconds:"
-msgstr ""
+msgstr "Τροποποιητής αυτόματης-αποδέσμευσης σε δευτερόλεπτα:"
 
 #: ../settings.ui.h:93
 msgid ""
@@ -1760,11 +580,11 @@ msgstr "Συμπεριφορά πλήκτρων"
 
 #: ../settings.ui.h:95
 msgid "_Touch input:"
-msgstr ""
+msgstr "_Εισαγωγή αφής:"
 
 #: ../settings.ui.h:96
 msgid "_Input event source:"
-msgstr ""
+msgstr "_Είσοδος προέλευσης συμβάντων:"
 
 #: ../settings.ui.h:97
 msgid ""
@@ -1795,13 +615,12 @@ msgid "Input Options"
 msgstr "Επιλογές εισαγωγής"
 
 #: ../settings.ui.h:100
-#, fuzzy
 msgid "Keystroke _generation:"
-msgstr "_Γεννήτρια πληκτρολογήσεων:"
+msgstr "Δημιουργία _πληκτρολόγησης:"
 
 #: ../settings.ui.h:101
 msgid "Delay between keystrokes in milliseconds:"
-msgstr ""
+msgstr "Καθυστέρηση μεταξύ πατημάτων πλήκτρων σε χιλιοστά του δευτερολέπτου:"
 
 #: ../settings.ui.h:102
 msgid ""
@@ -1809,15 +628,17 @@ msgid ""
 "snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
 "applications."
 msgstr ""
+"Αυξήστε το αν τα πατήματα-πλήκτρου χαθούν όταν εισάγετε προτάσεις λέξεων ή "
+"τμημάτων στον Firefox ή σε άλλη εφαρμογή Gtk-2. Δεν έχει καμία επίδραση σε "
+"εφαρμογές Gtk-3."
 
 #: ../settings.ui.h:103
 msgid "0,00"
-msgstr ""
+msgstr "0,00"
 
 #: ../settings.ui.h:104
-#, fuzzy
 msgid "Keystroke Generation"
-msgstr "_Γεννήτρια πληκτρολογήσεων:"
+msgstr "Δημιουργία Πληκτρολόγησης"
 
 #: ../settings.ui.h:105
 msgid "Advanced"
@@ -1867,27 +688,28 @@ msgstr ""
 
 #: ../settings.ui.h:114
 msgid "Options"
-msgstr ""
+msgstr "Επιλογές"
 
 #: ../settings.ui.h:115
 msgid "Show lan_guage switcher"
-msgstr ""
+msgstr "Εμφάνισε την επιλογή γλώσσας"
 
 #: ../settings.ui.h:116
 msgid "Show a button for language selection."
-msgstr ""
+msgstr "Εμφάνιση κουμπιού για επιλογή γλώσσας."
 
 #: ../settings.ui.h:117
 msgid "Show button to pause learning"
-msgstr ""
+msgstr "Εμφάνισε το κουμπί παύσης της εκμάθησης"
 
 #: ../settings.ui.h:118
 msgid "Words typed while this button is pressed won't be remembered."
 msgstr ""
+"Οι λέξεις που πληκτρολογούνται ενώ το κουμπί είναι πατημένο θα λησμονιούνται."
 
 #: ../settings.ui.h:119
 msgid "Buttons"
-msgstr ""
+msgstr "Κουμπιά"
 
 #: ../settings.ui.h:120
 msgid "Word Suggestions"
@@ -1924,11 +746,11 @@ msgstr "Αυτόματη διόρθωση"
 
 #: ../settings.ui.h:128
 msgid "While  learning is paused:"
-msgstr ""
+msgstr "Ενώ η εκμάθηση είναι σε παύση:"
 
 #: ../settings.ui.h:129
 msgid "Learning"
-msgstr ""
+msgstr "Εκμάθηση"
 
 #: ../settings.ui.h:130
 msgid "Enable  keyboard _scanning"
@@ -1983,11 +805,106 @@ msgstr ""
 msgid "Hover Click"
 msgstr "Μετεωρούμενο κλικ"
 
-#: ../Onboard/WPEngine.py:468
-msgid "Failed to load language model '{}': {} ({})"
-msgstr ""
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Προσαρμογή θέματος"
 
-#. run again
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "Χρωματικό σχήμα"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1382
+msgid "Gradient"
+msgstr "Διαβαθμισμένο"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr "_Γωνία:"
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr "Κατεύθυνση φωτισμού"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "_Στυλ:"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "Σ_τρογγυλότητα:"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "Μέ_γεθος:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr "Π_λάτος περιγράμματος:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "Στυλ πλήκτρων"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "_Πλήκτρο:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "_Περίγραμμα:"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "Διαβαθμίσεις"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr "­_Δύναμη:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr "Σκιά"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Πλήκτρα"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "_Γραμματοσειρά:"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "_Χαρακτηριστικά:"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "Γραμματοσειρά"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "Α_νεξάρτητο μέγεθος"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "_Πλήκτρο Super:"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "Παράβλεψη ετικέτας"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "Ετικέτες"
+
+#: ../Onboard/LanguageSupport.py:170 ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723 ../Onboard/utils.py:1227
+msgid "Failed to execute '{}', {}"
+msgstr "Αποτυχία εκτέλεσης '{}', {}"
+
 #: ../settings_docking_dialog.ui.h:1
 msgid "Top"
 msgstr "Κορυφή"
@@ -1998,47 +915,47 @@ msgstr "Βάση"
 
 #: ../settings_docking_dialog.ui.h:3
 msgid "Active Monitor"
-msgstr ""
+msgstr "Ενεργή Οθόνη"
 
 #: ../settings_docking_dialog.ui.h:4
 msgid "Primary Monitor"
-msgstr ""
+msgstr "Κύρια Οθόνη"
 
 #: ../settings_docking_dialog.ui.h:5
 msgid "Monitor 0"
-msgstr ""
+msgstr "Οθόνη 0"
 
 #: ../settings_docking_dialog.ui.h:6
 msgid "Monitor 1"
-msgstr ""
+msgstr "Οθόνη 1"
 
 #: ../settings_docking_dialog.ui.h:7
 msgid "Monitor 2"
-msgstr ""
+msgstr "Οθόνη 2"
 
 #: ../settings_docking_dialog.ui.h:8
 msgid "Monitor 3"
-msgstr ""
+msgstr "Οθόνη 3"
 
 #: ../settings_docking_dialog.ui.h:9
 msgid "Monitor 4"
-msgstr ""
+msgstr "Οθόνη 4"
 
 #: ../settings_docking_dialog.ui.h:10
 msgid "Monitor 5"
-msgstr ""
+msgstr "Οθόνη 5"
 
 #: ../settings_docking_dialog.ui.h:11
 msgid "Monitor 6"
-msgstr ""
+msgstr "Οθόνη 6"
 
 #: ../settings_docking_dialog.ui.h:12
 msgid "Monitor 7"
-msgstr ""
+msgstr "Οθόνη 7"
 
 #: ../settings_docking_dialog.ui.h:13
 msgid "Monitor 8"
-msgstr ""
+msgstr "Οθόνη 8"
 
 #: ../settings_docking_dialog.ui.h:14
 msgid "Docking settings"
@@ -2070,23 +987,717 @@ msgstr "Αγκύρωση στην άκρη της οθόνης"
 
 #: ../settings_docking_dialog.ui.h:21
 msgid "Dock to monitor:"
-msgstr ""
+msgstr "Σταθμός βάσης σε οθόνη:"
 
-#: ../Onboard/Appearance.py:112
+#. Default dialog title: name of the application """
+#: ../Onboard/KbdWindow.py:103 ../data/onboard.desktop.in.h:1
+#: ../Onboard/KeyboardWidget.py:1738 ../Onboard/utils.py:387
+msgid "Onboard"
+msgstr "Onboard"
+
+#: ../Onboard/KbdWindow.py:203
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"δεν είναι διαθέσιμη η διαφάνεια του παραθύρου. Η οθόνη δεν υποστηρίζει "
+"κανάλια άλφα."
+
+#. ##############
+#: ../Onboard/SnippetView.py:37
+msgid "<Enter label>"
+msgstr "<Εισαγωγή ετικέτας>"
+
+#: ../Onboard/SnippetView.py:38
+msgid "<Enter text>"
+msgstr "<Εισαγωγή κειμένου>"
+
+#: ../Onboard/SnippetView.py:50
+msgid "Button Number"
+msgstr "Αριθμός κουμπιού"
+
+#: ../Onboard/SnippetView.py:57
+msgid "Button Label"
+msgstr "Ετικέτα κουμπιού"
+
+#: ../Onboard/SnippetView.py:66
+msgid "Snippet Text"
+msgstr "Κείμενο αποσπάσματος"
+
+#: ../Onboard/SnippetView.py:111
+msgid "Must be an integer number"
+msgstr "Πρέπει να είναι ένας ακέραιος αριθμός"
+
+#: ../Onboard/SnippetView.py:120
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Το απόσπασμα %d ήδη χρησιμοποιείται."
+
+#: ../Onboard/LayoutLoaderSVG.py:158
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"Φόρτωση παλαιάς διάταξης, μορφής '{}'. Παρακαλώ σκεφθείτε να αναβαθμίσετε "
+"στην τρέχουσα μορφή '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:397
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "Αγνοήθηκε το πλήκτρο '{}'. Δεν έχει καθοριστεί όνομα αρχείου svg."
+
+#: ../Onboard/LayoutLoaderSVG.py:618
+msgid "Snippet {}"
+msgstr "Απόσπασμα {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:622
+msgid ", unassigned"
+msgstr ", δεν έχει ανατεθεί"
+
+#: ../Onboard/LayoutLoaderSVG.py:931
+msgid "copying layout '{}' to '{}'"
+msgstr "αντιγραφή της διάταξης '{}' στο '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:951
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+"απέτυχε το copy_layouts (αντιγραφή διατάξεων), μη υποστηριζόμενη μορφή "
+"διάταξης '{}'."
+
+#: ../Onboard/LayoutLoaderSVG.py:994
+msgid "copying svg file '{}' to '{}'"
+msgstr "αντιγραφή του αρχείου svg '{}' στο '{}'"
+
+#: ../Onboard/WordSuggestions.py:2105
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+"<big>Το Onboard απέτυχε να ανοίξει τις καταχωρημένες προτάσεις λέξεων.</"
+"big>\n"
+"\n"
+"Το μήνυμα λάθους ήταν:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Επαναφορά των προτάσεων λέξεων στο τελευταίο αντίγραφο ασφαλείας "
+"(προτείνεται);"
+
+#: ../Onboard/WordSuggestions.py:2124
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""
+"<big>Το Onboαrd απέτυχε να ανοίξει τις γνωστές υποδείξεις λέξεων.</big>\n"
+"\n"
+"Το σφάλμα ήταν:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Οι υποδείξεις πρέπει να επαναφερθούν, αλλά το εσφαλμένο αρχείο θα παραμείνει "
+"στο \n"
+"'{}'"
+
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
+msgid "Activate Hover Click"
+msgstr "Ενεργοποίηση του μετεωρούμενου κλικ"
+
+#: ../data/layoutstrings.py:36
+msgid "Alphanumeric keys"
+msgstr "Αλφαριθμητικά πλήκτρα"
+
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:38
+msgid "Alt"
+msgstr "Alt"
+
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:40
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:42
+msgid "CAPS"
+msgstr "CAPS"
+
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:44
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:46
+msgid "Del"
+msgstr "Del"
+
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:220
+msgid "Double click"
+msgstr "Διπλό κλικ"
+
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:48 ../data/layoutstrings.py:223
+msgid "Drag click"
+msgstr "Κλικ για σύρσιμο"
+
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:50
+msgid "End"
+msgstr "End"
+
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:52
+msgid "Ent"
+msgstr "Ent"
+
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:54
+msgid "Esc"
+msgstr "Esc"
+
+#: ../data/layoutstrings.py:55
+msgid "Function keys"
+msgstr "πλήκτρα Function (F1-F12)"
+
+#: ../data/layoutstrings.py:56
+msgid "Number block and function keys"
+msgstr "Τμήμα αριθμητικών πλήκτρων και πλήκτρων Function (F1-F12)"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:57 ../data/layoutstrings.py:247
+msgid "Hide Onboard"
+msgstr "Απόκρυψη του Onboard"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:292
+msgid "Pause learning"
+msgstr "Παύση εκμάθησης"
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:60
+msgid "Hm"
+msgstr "Hm"
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:62
+msgid "Ins"
+msgstr "Ins"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:63 ../data/layoutstrings.py:265
+msgid "Main keyboard"
+msgstr "Κύριο πληκτρολόγιο"
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:65
+msgid "Menu"
+msgstr "Menu"
+
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:66 ../data/layoutstrings.py:274
+msgid "Middle click"
+msgstr "Μεσαίο κλικ"
+
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:67 ../data/layoutstrings.py:283
+msgid "Move Onboard"
+msgstr "Μετακίνηση του Onboard"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:69
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
+msgid "Number block and snippets"
+msgstr "Τμήμα αριθμιτικών πλήκτρων και αποσπασμάτων"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:72
+msgid "Pause"
+msgstr "Pause"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:74
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:76
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:298
+msgid "Preferences"
+msgstr "Προτιμήσεις"
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:80
+msgid "Prnt"
+msgstr "Prnt"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:82
+msgid "Quit"
+msgstr "'Εξοδος"
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:84
+msgid "Return"
+msgstr "Return"
+
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:85 ../data/layoutstrings.py:310
+msgid "Right click"
+msgstr "Δεξί κλικ"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:87
+msgid "Scroll"
+msgstr "Scroll"
+
+#: ../data/layoutstrings.py:89
+msgid "Space"
+msgstr "Διάστημα"
+
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:361
+msgid "Toggle click helpers"
+msgstr "Εναλλαγή βοηθητικών λειτουργιών κλικ"
+
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:92
+msgid "Tab"
+msgstr "Tab"
+
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:94
+msgid "Win"
+msgstr "Win"
+
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:364
+msgid "Umbrella"
+msgstr "Ομπρέλα"
+
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:370
+msgid "White star"
+msgstr "Λευκό αστέρι"
+
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:376
+msgid "White telephone"
+msgstr "Λευκό τηλέφωνο"
+
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:102
+msgid "Hot beverage"
+msgstr "Ζεστό ρόφημα"
+
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:104
+msgid "Skull and crossbones"
+msgstr "Νεκροκεφαλή και σταυρωτά οστά"
+
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:106 ../data/layoutstrings.py:307
+msgid "Radioactive sign"
+msgstr "Σήμα ραδιενέργειας"
+
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
+msgid "Peace symbol"
+msgstr "Σύμβολο ειρήνης"
+
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:110 ../data/layoutstrings.py:382
+msgid "Yin yang"
+msgstr "Yin yang"
+
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
+msgid "Frowning face"
+msgstr "Κατσούφικο πρόσωπο"
+
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:319
+msgid "Smiling face"
+msgstr "Χαμογελαστό πρόσωπο"
+
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:116 ../data/layoutstrings.py:373
+msgid "White sun with rays"
+msgstr "Λευκός ήλιος με ακτίνες"
+
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
+msgid "Last quarter moon"
+msgstr "Τελευταίο τέταρτο του φεγγαριού"
+
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
+msgid "Female sign"
+msgstr "Σύμβολο θηλυκού φύλου"
+
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
+msgid "Male sign"
+msgstr "Σύμβολο αρσενικού φύλου"
+
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:367
+msgid "White heart suit"
+msgstr "Λευκή κούπα"
+
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:126
+msgid "White diamond suit"
+msgstr "Λευκό καρό"
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:128
+msgid "White spade suit"
+msgstr "Λευκό μπαστούνι"
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:130
+msgid "White club suit"
+msgstr "Λευκό σπαθί"
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
+msgid "Beamed eighth note"
+msgstr "Ενωμένα όγδοα νότας"
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
+msgid "Envelope"
+msgstr "Φάκελος"
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:136
+msgid "Victory hand"
+msgstr "Σήμα της νίκης"
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:138
+msgid "Writing hand"
+msgstr "Χέρι που γράφει"
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:140 ../data/layoutstrings.py:328
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr "Χαμογελαστό πρόσωπο με ανοιχτό στόμα και γελαστά μάτια"
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:322
+msgid "Smiling face with halo"
+msgstr "Χαμογελαστό πρόσωπο με φωτοστέφανο"
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:144 ../data/layoutstrings.py:325
+msgid "Smiling face with horns"
+msgstr "Χαμογελαστό πρόσωπο με κέρατα"
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:379
+msgid "Winking face"
+msgstr "Πρόσωπο που κλείνει το μάτι"
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:331
+msgid "Smiling face with smiling eyes"
+msgstr "Χαμογελαστό πρόσωπο με γελαστά μάτια"
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
+msgid "Face savouring delicious food"
+msgstr "Πρόσωπο που απολαμβάνει νόστιμο φαγητό"
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:152
+msgid "Smiling face with heart-shaped eyes"
+msgstr "Χαμογελαστό πρόσωπο με μάτια σε σχήμα καρδιάς"
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:334
+msgid "Smiling face with sunglasses"
+msgstr "Χαμογελαστό πρόσωπο με γυαλιά ηλίου"
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:156
+msgid "Smirking face"
+msgstr "Πρόσωπο που γελά πονηρά"
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:158
+msgid "Neutral face"
+msgstr "Ανέκφραστο πρόσωπο"
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:160
+msgid "Unamused face"
+msgstr "Βαριεστημένο πρόσωπο"
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
+msgid "Confounded face"
+msgstr "Μπερδεμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:164
+msgid "Face throwing a kiss"
+msgstr "Πρόσωπο που δίνει φιλί"
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
+msgid "Kissing face with closed eyes"
+msgstr "Πρόσωπο με κλειστά μάτια που δίνει φιλί"
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
+msgid "Face with stuck-out tongue and winking eye"
+msgstr "Πρόσωπο που βγάζει τη γλώσσα και κλείνει το μάτι"
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:170
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr "Πρόσωπο με βγαλμένη γλώσσα και σφιχτά κλεισμένα μάτια"
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:172
+msgid "Disappointed face"
+msgstr "Απογοητευμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
+msgid "Angry face"
+msgstr "Θυμωμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:176
+msgid "Pouting face"
+msgstr "Συνοφρυωμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
+msgid "Crying face"
+msgstr "Πρόσωπο που κλαίει"
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:180
+msgid "Persevering face"
+msgstr "Eπίμονη όψη"
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:182
+msgid "Weary face"
+msgstr "Σκυθρωπό πρόσωπο"
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:184 ../data/layoutstrings.py:358
+msgid "Tired face"
+msgstr "Κουρασμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
+msgid "Astonished face"
+msgstr "'Εκπληκτο πρόσωπο"
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:188
+msgid "Flushed face"
+msgstr "Κοκκινισμένο πρόσωπο"
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:190
+msgid "Dizzy face"
+msgstr "Ζαλισμένο πρόσωπο"
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:199
+msgid "Arrows"
+msgstr "Βέλη"
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:214
+msgid "Custom"
+msgstr "Προσαρμοσμένο"
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:217
+msgid "Desktop keyboard with edit and function keys"
+msgstr ""
+"Πληκτρολόγιο επιφάνειας εργασίας με πλήκτρα επεξεργασίας και λειτουργιών"
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:241
+msgid "Greek"
+msgstr "Ελληνικά"
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:244
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr "Πλέγμα πλήκτρων, κατάλληλο για σάρωση πληκτρολογίου"
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:250
+msgid "Hide keyboard"
+msgstr "Απόκρυψη πληκτρολογίου"
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:253
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
+msgstr ""
+"Διάταξη πληκτρολογίου με  ελληνικά σύμβολα, βέλη και άλλα, για την εκμάθηση "
+"μαθηματικών και φυσικής σε διαδραστικό πίνακα."
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:256
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
+msgstr ""
+"Διάταξη πληκτρολογίου με  ελληνικά σύμβολα, βέλη και άλλα, για την εκμάθηση "
+"μαθηματικών και φυσική σε διαδραστικό πίνακα. \n"
+"Αυτή η διάταξη τοποθετεί όλα τα πλήκτρα μια ενιαία, πολύ ευρεία στοιβάδα."
+
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:271
+msgid "Medium size desktop keyboard"
+msgstr "Πληκτρολόγιο επιφάνειας εργασίας μεσαίου μεγέθους"
+
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:277
+msgid "Mobile keyboard for small screens"
+msgstr "Φορητό πληκτρολόγιο για μικρές οθόνες"
+
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:280
+msgid "More suggestions"
+msgstr "Περισσότερες προτάσεις"
+
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:286
+msgid "Move keyboard"
+msgstr "Μετακίνηση πληκτρολογίου"
+
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:301
+msgid "Quit Keyboard"
+msgstr "Έξοδος πληκτρολογιου"
+
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:304
+msgid "Quit Onboard"
+msgstr "Έξοδος Onboard"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:313
+msgid "Set and Settings"
+msgstr "Όψη και ρυθμίσεις"
+
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:316
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:340
+msgid "Space efficient desktop keyboard"
+msgstr "Αποδοτικού χώρου επιτραπέζιο πληκτρολόγιο"
+
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:343
+msgid "Special Characters"
+msgstr "Ειδικοί χαρακτήρες"
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:346
+msgid "Special characters for interactive whiteboards, wide"
+msgstr "Ειδικοί χαρακτήρες για διαδραστικούς πίνακες, ευρείς"
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:349
+msgid "Special characters for interactive whiteboards"
+msgstr "Ειδικοί χαρακτήρες για διαδραστικούς πίνακες"
+
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:352
+msgid "Spelling suggestion"
+msgstr "Ορθογραφικές προτάσεις"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:355
+msgid "Sub-, Superscripts; Fractions"
+msgstr "Υπό-, Εκθέτες· Κλάσματα"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Πληκτρολόγιο οθόνης Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Ευέλικτο πληκτρολόγιο οθόνης για το GNOME"
+
+#: ../Onboard/Appearance.py:130
 #, python-brace-format
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "Δεν βρέθηκε χρωματικό σχήμα για το θέμα '{filename}'"
 
-#: ../Onboard/Appearance.py:332
+#: ../Onboard/Appearance.py:350
 #, python-brace-format
 msgid "Error loading theme '{filename}'. {exception}: {cause}"
 msgstr "Σφάλμα στην φόρτωση του θέματος '{filename}'. {exception}: {cause}"
 
-#: ../Onboard/Appearance.py:406
+#: ../Onboard/Appearance.py:424
 msgid "Error saving "
 msgstr "Σφάλμα κατά την αποθήκευση "
 
-#: ../Onboard/Appearance.py:828
+#: ../Onboard/Appearance.py:846
 #, python-brace-format
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
@@ -2096,13 +1707,13 @@ msgstr ""
 "παρακαλώ σκεφθείτε να αναβαθμίσετε στην τρέχουσα μορφοποίηση '{new_format}': "
 "'{filename}'"
 
-#: ../Onboard/Appearance.py:848
+#: ../Onboard/Appearance.py:866
 #, python-brace-format
 msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
 msgstr ""
 "Σφάλμα στην φόρτωση του σχεδίου χρωμάτων '{filename}'. {exception}: {cause}"
 
-#: ../Onboard/Appearance.py:925 ../Onboard/Appearance.py:1057
+#: ../Onboard/Appearance.py:943 ../Onboard/Appearance.py:1075
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -2110,105 +1721,59 @@ msgstr ""
 "Στο αρχείο του χρωματικού σχήματος βρέθηκε διπλότυπο αναγνωριστικό πλήκτρου "
 "(key_id) '{}'. Τα key_id πρέπει να εμφανίζονται μόνο μία φορά."
 
-#. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1413
-#, fuzzy
-msgid "Edit snippet #{}"
-msgstr "Απόσπασμα {}"
+#: ../Onboard/Indicator.py:50
+msgid "_Show Onboard"
+msgstr "_Εμφάνιση του Onboard"
 
-#. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1417
-msgid "New snippet"
-msgstr "Νέο απόσπασμα"
+#: ../Onboard/Indicator.py:51
+msgid "_Hide Onboard"
+msgstr "_Απόκρυψη του Onboard"
 
-#. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1419
-#, fuzzy
-msgid "Enter a new snippet for button #{}:"
-msgstr "Εισάγετε ένα νέα απόσπασμα για αυτό το μπουτόν:"
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:77
+msgid "_Preferences"
+msgstr "_Προτιμήσεις"
 
-#: ../Onboard/KeyboardWidget.py:1430
-msgid "_Save snippet"
-msgstr "_Αποθήκευση αποσπάσματος"
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:88
+msgid "_Quit"
+msgstr "Έ_ξοδος"
 
-#: ../Onboard/KeyboardWidget.py:1450
-msgid "_Button label:"
-msgstr "_Ετικέτα κουμπιού:"
+#: ../Onboard/Indicator.py:182
+msgid "Onboard on-screen keyboard"
+msgstr "Πληκτρολόγιο οθόνης Onboard"
 
-#: ../Onboard/KeyboardWidget.py:1454
-msgid "S_nippet:"
-msgstr "Α_πόσπασμα:"
-
-#: ../Onboard/KeyboardWidget.py:1618
-msgid "Other _Languages"
-msgstr "Ά_λλες γλώσσες"
-
-#: ../Onboard/KeyboardWidget.py:1662
-#, fuzzy
-msgid "_Remove suggestion…"
-msgstr "Εμφάνιση _προτάσεων"
-
-#. Don't hide dialog behind the keyboard in force-to-top mode.
-#. if config.is_force_to_top():
-#. dialog.set_position(Gtk.WindowPosition.CENTER)
-#: ../Onboard/KeyboardWidget.py:1716
-#, fuzzy
-msgid "Remove word suggestion"
-msgstr "Προτάσεις λέξεων"
-
-#: ../Onboard/KeyboardWidget.py:1727
-msgid "Remove '{}' everywhere."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1737
-msgid "This will only affect learned suggestions."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1777
-msgid "Remove '{}' only where it occures at text begin."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1780
-msgid "Remove '{}' only where it occures at sentence begin."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1783
-msgid "Remove '{}' only where it occures after numbers."
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1786
-msgid "Remove '{}' only where it occures after '{}'."
-msgstr ""
-
-#: ../Onboard/Config.py:206
+#: ../Onboard/Config.py:227
 msgid "Layout file ({}) or name"
 msgstr "Αρχείο σχεδίου ({}) ή όνομα"
 
-#: ../Onboard/Config.py:209
+#: ../Onboard/Config.py:230
 msgid "Theme file (.theme) or name"
 msgstr "Αρχείο θέματος (.theme) ή όνομα"
 
-#: ../Onboard/Config.py:211
+#: ../Onboard/Config.py:232
 msgid "Window size, widthxheight"
 msgstr "Μέγεθος παραθύρου, πλάτοςxύψος"
 
-#: ../Onboard/Config.py:212
+#: ../Onboard/Config.py:233
 msgid "Window x position"
 msgstr "Θέση στον άξονα x του παραθύρου"
 
-#: ../Onboard/Config.py:213
+#: ../Onboard/Config.py:234
 msgid "Window y position"
 msgstr "Θέση στον άξονα y του παραθύρου"
 
-#: ../Onboard/Config.py:218
+#: ../Onboard/Config.py:239
 msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
 msgstr "Ξεκινήστε σε λειτουργία XEmbed, π.χ. για το gnome-screensaver"
 
-#: ../Onboard/Config.py:221
+#: ../Onboard/Config.py:242
 msgid "Allow multiple Onboard instances"
 msgstr "Επιτρέψτε να εκτελεστούν πολλαπλά αντίγραφα του Onboard"
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:245
 msgid ""
 "Silently fail to start in the given desktop environments. DESKTOPS is a "
 "comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
@@ -2217,11 +1782,11 @@ msgstr ""
 "λέγεται μια χωρισμένη με κόμματα λίστα ονομάτων περιβαλλόντων εργασίας XDG, "
 "πχ GNOME για το GNOME Shell."
 
-#: ../Onboard/Config.py:230
+#: ../Onboard/Config.py:251
 msgid "Keep aspect ratio when resizing the window"
-msgstr "Διατήρηση αναλογίας όταν αλλάζει μέγεθος το παράθυρο"
+msgstr "Διατήρηση αναλογίας όταν αλλάζετε μέγεθος στο παράθυρο"
 
-#: ../Onboard/Config.py:232
+#: ../Onboard/Config.py:253
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
@@ -2229,35 +1794,35 @@ msgstr ""
 "Παράκαμψη αυτόματης ανίχνευσης και χειροκίνητη επιλογή ιδιομορφιών\n"
 "QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Config.py:320
+#: ../Onboard/Config.py:341
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Μετακίνηση του καταλόγου χρήστη '{}' στο '{}'."
 
 #. honor XDG spec
 #. python >2.5
-#: ../Onboard/Config.py:328
+#: ../Onboard/Config.py:349
 msgid "failed to migrate user directory. "
 msgstr "αποτυχία μεταφοράς καταλόγου χρήστη. "
 
-#: ../Onboard/Config.py:794
+#: ../Onboard/Config.py:815
 #, python-brace-format
 msgid "layout '{filename}' does not exist"
 msgstr "Η διάταξη '{filename}' δεν υπάρχει"
 
-#: ../Onboard/Config.py:835
+#: ../Onboard/Config.py:856
 #, python-brace-format
 msgid "theme '{filename}' does not exist"
 msgstr "Το θέμα '{filename}' δεν υπάρχει"
 
-#: ../Onboard/Config.py:860
+#: ../Onboard/Config.py:881
 msgid "Loading theme from '{}'"
 msgstr "Φόρτωση θέματος από το  '{}'"
 
-#: ../Onboard/Config.py:864
+#: ../Onboard/Config.py:885
 msgid "Unable to read theme '{}'"
 msgstr "Αποτυχία κατά την ανάγνωση του θέματος '{}'"
 
-#: ../Onboard/Config.py:1047
+#: ../Onboard/Config.py:1068
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -2274,30 +1839,460 @@ msgstr ""
 "\n"
 "Ενεργοποίηση της προσβασιμότητας τώρα;"
 
-#: ../Onboard/Config.py:1661
+#: ../Onboard/Config.py:1682
 #, python-brace-format
 msgid "color scheme '{filename}' does not exist"
 msgstr "Το χρωματικό σχήμα '{filename}' δεν υπάρχει"
 
-#: ../Onboard/KbdWindow.py:183
-msgid "no window transparency available; screen doesn't support alpha channels"
+#: ../Onboard/settings.py:258
+msgid "Onboard Preferences"
+msgstr "Προτιμήσεις του Onboard"
+
+#: ../Onboard/settings.py:648
+msgid "Copy layout '{}' to this new name:"
+msgstr "Αντιγραφή διάταξης '{}' σε αυτό το νέο όνομα:"
+
+#: ../Onboard/settings.py:661
+msgid "Delete layout '{}'?"
+msgstr "Διαγραφή διάταξης '{}'?"
+
+#: ../Onboard/settings.py:709
+msgid "System settings not found ({}): {}"
+msgstr "Δεν βρέθηκαν οι ρυθμίσεις συστήματος ({}): {}"
+
+#. Window handles: None
+#: ../Onboard/settings.py:722
+msgid "None"
+msgstr "Κανένα"
+
+#. Window handles: None
+#: ../Onboard/settings.py:724
+msgid "Movement only"
+msgstr "Μόνο κίνηση"
+
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:726
+msgid "Corners"
+msgstr "Γωνίες"
+
+#. Frame resize handles: All
+#: ../Onboard/settings.py:728
+msgid "All corners and edges"
+msgstr "Όλες οι γωνίες και ακμές"
+
+#: ../Onboard/settings.py:769
+msgid "Core layouts"
+msgstr "Διατάξεις πυρήνα"
+
+#: ../Onboard/settings.py:770
+msgid "Contributions"
+msgstr "Συνεισφορές"
+
+#: ../Onboard/settings.py:771
+#, fuzzy
+msgid "My layouts"
+msgstr "Διατάξεις πυρήνα"
+
+#: ../Onboard/settings.py:806
+msgid "Author: {}"
+msgstr "Συγγραφέας: {}"
+
+#: ../Onboard/settings.py:810
+msgid "About Layout"
+msgstr "Περί διάταξης"
+
+#: ../Onboard/settings.py:915
+msgid "Enter a name for the new theme:"
+msgstr "Πληκτρολογήστε ένα όνομα για το νέο θέμα:"
+
+#: ../Onboard/settings.py:923
+#, python-brace-format
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
 msgstr ""
-"δεν είναι διαθέσιμη η διαφάνεια του παραθύρου. Η οθόνη δεν υποστηρίζει "
-"κανάλια άλφα."
+"Αυτό το αρχείο υπάρχει ήδη.\n"
+"'{filename}'\n"
+"\n"
+"Να αντικατασταθεί;"
 
-#~ msgid "1"
-#~ msgstr "1"
+#: ../Onboard/settings.py:940
+msgid "Reset selected theme to Onboard defaults?"
+msgstr ""
+"Επαναφορά του επιλεγμένου θέματος στις προκαθορισμένες ρυθμίσεις του Onboard;"
 
-#~ msgid "_Frame resize handles:"
-#~ msgstr "_Χειρισμός αλλαγής μεγέθους πλαισίου:"
+#: ../Onboard/settings.py:942
+msgid "Delete selected theme?"
+msgstr "Διαγραφή επιλεγμένου θέματος;"
 
-#~ msgid "_Touch input (requires restart):"
-#~ msgstr "Είσοδος α_φής (απαιτεί επανεκκίνηση):"
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1071
+msgid "_Reset"
+msgstr "_Επαναφορά"
 
-#~ msgid "No file manager to open layout folder"
-#~ msgstr ""
-#~ "Δεν υπάρχει διαχειριστής αρχείων για το άνοιγμα του φακέλου με τις "
-#~ "διατάξεις"
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1075
+msgid "_Delete"
+msgstr "_Διαγραφή"
 
-#~ msgid "_Languages"
-#~ msgstr "_Γλώσσες"
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1380
+msgid "Flat"
+msgstr "Ενιαίο"
+
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1384
+msgid "Dish"
+msgstr "Ρεαλιστικό στυλ πλήκτρων"
+
+#: ../Onboard/settings.py:1433 ../Onboard/settings.py:1490
+msgid "Default"
+msgstr "Προκαθορισμένο"
+
+#: ../Onboard/settings.py:1474
+msgid "Bold"
+msgstr "Έντονα"
+
+#: ../Onboard/settings.py:1476
+msgid "Italic"
+msgstr "Πλάγια"
+
+#: ../Onboard/settings.py:1478
+msgid "Condensed"
+msgstr "Συμπτυγμένα"
+
+#: ../Onboard/settings.py:1491
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1491
+msgid "Ubuntu Logo"
+msgstr "Λογότυπο του Ubuntu"
+
+#: ../Onboard/settings.py:1625
+msgid "Step"
+msgstr "Βήμα"
+
+#: ../Onboard/settings.py:1626
+msgid "Left"
+msgstr "Αριστερά"
+
+#: ../Onboard/settings.py:1627
+msgid "Right"
+msgstr "Δεξιά"
+
+#: ../Onboard/settings.py:1628
+msgid "Up"
+msgstr "Επάνω"
+
+#: ../Onboard/settings.py:1629
+msgid "Down"
+msgstr "Κάτω"
+
+#: ../Onboard/settings.py:1630
+msgid "Activate"
+msgstr "Ενεργοποίηση"
+
+#: ../Onboard/settings.py:1799
+msgid "Action:"
+msgstr "Ενέργεια:"
+
+#: ../Onboard/settings.py:1963
+msgid "Disabled"
+msgstr "Απενεργοποιημένο"
+
+#: ../Onboard/settings.py:1969
+msgid "Button"
+msgstr "Κουμπί"
+
+#: ../Onboard/settings.py:2024 ../Onboard/settings.py:2069
+msgid "Press a button..."
+msgstr "πατήστε ένα κουμπί..."
+
+#: ../Onboard/settings.py:2071
+msgid "Press a key..."
+msgstr "Πατήστε ένα πλήκτρο..."
+
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1438
+msgid "Edit snippet #{}"
+msgstr "Επεξεργασία τμήματος #{}"
+
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1442
+msgid "New snippet"
+msgstr "Νέο απόσπασμα"
+
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1444
+msgid "Enter a new snippet for button #{}:"
+msgstr "Εισάγετε ένα νέο τμήμα για το πλήκτρο #{}:"
+
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/KeyboardWidget.py:1454 ../Onboard/utils.py:423
+msgid "_Cancel"
+msgstr "_Ακύρωση"
+
+#: ../Onboard/KeyboardWidget.py:1455
+msgid "_Save snippet"
+msgstr "_Αποθήκευση αποσπάσματος"
+
+#: ../Onboard/KeyboardWidget.py:1475
+msgid "_Button label:"
+msgstr "_Ετικέτα κουμπιού:"
+
+#: ../Onboard/KeyboardWidget.py:1479
+msgid "S_nippet:"
+msgstr "Α_πόσπασμα:"
+
+#: ../Onboard/KeyboardWidget.py:1649
+msgid "Other _Languages"
+msgstr "Ά_λλες γλώσσες"
+
+#: ../Onboard/KeyboardWidget.py:1693
+msgid "_Remove suggestion…"
+msgstr "_Αφαίρεση υπόδειξης..."
+
+#. Don't hide dialog behind the keyboard in force-to-top mode.
+#. if config.is_force_to_top():
+#. dialog.set_position(Gtk.WindowPosition.CENTER)
+#: ../Onboard/KeyboardWidget.py:1747
+msgid "Remove word suggestion"
+msgstr "Αφαίρεση υπόδειξης λεξιλογίου"
+
+#: ../Onboard/KeyboardWidget.py:1758
+msgid "Remove '{}' everywhere."
+msgstr "Αφαίρεση '{}' παντού."
+
+#: ../Onboard/KeyboardWidget.py:1768
+msgid "This will only affect learned suggestions."
+msgstr "Αυτό θα επηρεάσει μόνο τις υποδείξεις που έχουν αποθηκευτεί."
+
+#: ../Onboard/KeyboardWidget.py:1808
+msgid "Remove '{}' only where it occures at text begin."
+msgstr "Αφαίρεση '{}' μόνο όταν είναι σε αρχή κειμένου."
+
+#: ../Onboard/KeyboardWidget.py:1811
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr "Αφαίρεση '{}' μόνο όταν είναι σε αρχή πρότασης."
+
+#: ../Onboard/KeyboardWidget.py:1814
+msgid "Remove '{}' only where it occures after numbers."
+msgstr "Αφαίρεση '{}' μόνο όταν είναι μετά από αριθμούς."
+
+#: ../Onboard/KeyboardWidget.py:1817
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr "Αφαίρεση '{}' όταν είναι μετά από '{}'."
+
+#: ../Onboard/utils.py:407
+msgid "New Input Device"
+msgstr "Νέα συσκευή εισαγωγής"
+
+#: ../Onboard/utils.py:408
+msgid "Onboard has detected a new input device"
+msgstr "Το onboard ανίχνευσε μία νέα συσκευή εισαγωγής"
+
+#: ../Onboard/utils.py:417
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+"Θέλετε να χρησιμοποιήσετε αυτή τη συσκευή για τη σάρωση του πληκτρολογίου;"
+
+#: ../Onboard/utils.py:424
+msgid "Use device"
+msgstr "Χρήση της συσκευής"
+
+#: ../Onboard/utils.py:1829
+msgid "failed to create directory '{}': {}"
+msgstr "αποτυχία δημιουργίας καταλόγου '{}': {}"
+
+#: ../Onboard/ConfigUtils.py:79
+msgid "gsettings schema for '{}' is not installed"
+msgstr "Δεν υπάρχει εγκαταστημένο σχήμα του gsettings για το '{}'"
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:436
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+"Δεν έχει βρεθεί ακόμα το {description} '{filename}', γίνεται νέα προσπάθεια "
+"στις προεπιλεγμένες διαδρομές"
+
+#: ../Onboard/ConfigUtils.py:445
+#, python-brace-format
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+"αδυναμία εύρεσης του '{filename}', φόρτωση αντί αυτού της προεπιλογής "
+"{description}"
+
+#: ../Onboard/ConfigUtils.py:454 ../Onboard/ConfigUtils.py:510
+#, python-brace-format
+msgid "failed to find {description} '{filename}'"
+msgstr "αδυναμία εύρεσης του {description} '{filename}'"
+
+#: ../Onboard/ConfigUtils.py:458 ../Onboard/ConfigUtils.py:514
+#, python-brace-format
+msgid "{description} '{filepath}' found."
+msgstr "Βρέθηκε το {description} '{filepath}'."
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:493
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
+msgstr ""
+"{description} '{filename}' δεν βρέθηκε ακόμη, γίνεται αναζήτηση στις "
+"διαδρομές {paths}"
+
+#: ../Onboard/ConfigUtils.py:586
+#, python-brace-format
+msgid "Looking for system defaults in {paths}"
+msgstr "Αναζήτηση για τις προεπιλογές του συστήματος σε {paths}"
+
+#: ../Onboard/ConfigUtils.py:597
+msgid "Failed to read system defaults. "
+msgstr "Αποτυχία κατά την ανάγνωση των προεπιλογών του συστήματος. "
+
+#: ../Onboard/ConfigUtils.py:601
+msgid "No system defaults found."
+msgstr "Δεν βρέθηκαν προεπιλογές του συστήματος."
+
+#: ../Onboard/ConfigUtils.py:603
+#, python-brace-format
+msgid "Loading system defaults from {filename}"
+msgstr "Φόρτωση προεπιλογών συστήματος από το αρχείο {filename}"
+
+#: ../Onboard/ConfigUtils.py:627
+msgid "Found system default '[{}] {}={}'"
+msgstr "Εύρεση προεπιλογών συστήματος '[{}] {}={}'"
+
+#: ../Onboard/ConfigUtils.py:645
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr "Προεπιλογές του συστήματος: Άγνωστο πλήκτρο '{}' στον τομέα '{}'"
+
+#: ../Onboard/ConfigUtils.py:652
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+"Προεπιλογές συστήματος: Μη έγκυρη τιμή enum για το κλειδί '{}' στο τμήμα "
+"'{}': {}"
+
+#: ../Onboard/ConfigUtils.py:665
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"Προεπιλογές του συστήματος: Μη έγκυρη τιμή για το πλήκτρο '{}' στον τομέα "
+"'{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:728
+msgid "Failed to get gsettings value. "
+msgstr "Αποτυχία ανάκτησης της τιμής του gsettings. "
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr "ποτέ"
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr "1 λεπτό"
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr "5 λεπτά"
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr "10 λεπτά"
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr "30 λεπτά"
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr "1 ώρα"
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr "3 ώρες"
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr "για πάντα"
+
+#: ../settings_auto_show_dialog.ui.h:9
+msgid "Auto-show settings"
+msgstr "Αυτόματη-εμφάνιση ρυθμίσεων"
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "_Hide when using a physical keyboard"
+msgstr "_Απόκρυψη όταν χρησιμοποιείται ένα πραγματικό πληκτρολόγιο"
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+"Απόκρυψη του Onboard όταν ένα πλήκτρο πατιέται σε πραγματικό πληκτρολόγιο. "
+"Απαιτείται προέλευση συμβάντων εισόδου XInput\"."
+
+#: ../settings_auto_show_dialog.ui.h:12
+msgid "Stay hidden:"
+msgstr "Παραμονή σε θέση απόκρυψης:"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+"Όταν γίνει απόκρυψη από πάτημα φυσικού-πλήκτρου, η αυτόματη-εμφάνιση είναι "
+"σε παύση. Επιλέξτε εδώ την διάρκεια παύσης."
+
+#: ../Onboard/OnboardGtk.py:378
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Το Onboard έχει ρυθμιστεί ώστε να εμφανίζεται στον διάλογο ξεκλειδώματος της "
+"οθόνης. Για παράδειγμα για να αποπέμπει την προστατευμένη με κωδικό "
+"προστασία οθόνης.\n"
+"\n"
+"Το σύστημα όμως, δεν είναι πλέον ρυθμισμένο ώστε να χρησιμοποιεί το Onboard "
+"για να ξεκλειδώσει την οθόνη. Ένας πιθανός λόγος μπορεί να είναι το ότι "
+"κάποια άλλη εφαρμογή ρύθμισε το σύστημα έτσι ώστε να χρησιμοποιεί κάτι "
+"άλλο.\n"
+"\n"
+"Θα θέλατε να ρυθμίσετε ξανά το σύστημα ώστε να εμφανίζει το Onboard στο "
+"ξεκλείδωμα της οθόνης;"
+
+#: ../Onboard/OnboardGtk.py:397
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Το Onboard έχει ρυθμιστεί να εμφανίζεται με το παράθυρο διαλόγου που "
+"ξεκλειδώνει την οθόνη, για παράδειγμα για να αποπεμφθεί η προστατευμένη-με-"
+"κωδικό προστασία οθόνης.\n"
+"\n"
+"Παρόλα αυτά αυτή η λειτουργία έχει απενεργοποιηθεί από το σύστημα.\n"
+"\n"
+"Θα θέλατε να το ενεργοποιήσετε;"
+
+#~ msgid "User layouts"
+#~ msgstr "Διατάξεις χρήστη"
