@@ -1780,9 +1780,12 @@ class Keyboard(WordSuggestions):
             # audio feedback
             if action and \
                config.keyboard.audio_feedback_enabled:
-                point = sequence.root_point \
+                pt = sequence.root_point \
                         if allowed else (-1, -1) # keep passwords privat
-                Sound().play(Sound.key_feedback, *point)
+                pts = pt \
+                      if config.keyboard.audio_feedback_place_in_space \
+                      else (-1, -1)
+                Sound().play(Sound.key_feedback, pt[0], pt[1], pts[0], pts[1])
 
             # key label popup
             if not config.xid_mode and \

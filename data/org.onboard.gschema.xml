@@ -232,6 +232,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Audio feedback</summary>
             <description>Play a sound when a key is pressed.</description>
         </key>
+        <key name="audio-feedback-place-in-space" type="b">
+            <default>false</default>
+            <summary>Place audio feedback in space</summary>
+            <description>Place audio feedback in space between speakers.</description>
+        </key>
         <key name="show-secondary-labels" type="b">
             <default>false</default>
             <summary>Show secondary labels</summary>

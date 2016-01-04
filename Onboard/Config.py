@@ -1403,6 +1403,7 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("touch-feedback-enabled", False)
         self.add_key("touch-feedback-size", 0)
         self.add_key("audio-feedback-enabled", False)
+        self.add_key("audio-feedback-place-in-space", False)
         self.add_key("show-secondary-labels", False)
 
         self.add_key("inter-key-stroke-delay", 0.0)
