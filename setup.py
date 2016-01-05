@@ -92,7 +92,8 @@ def pkgconfig(*packages, **kw):
         else:
             kw.setdefault('extra_link_args', []).append(token)
     for k, v in kw.items():
-        kw[k] = list(set(v))
+        # keep sorted for reproducible builds in Debian (LP: #1530519)
+        kw[k] = sorted(list(set(v)))
 
     return kw
 
