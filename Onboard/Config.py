@@ -625,12 +625,11 @@ class Config(ConfigObject):
 
         # moustweaks
         for _class in [CSMousetweaks1, CSMousetweaks0]:
-            _class.MOUSETWEAKS_SCHEMA_ID
             try:
                 self.mousetweaks = _class()
                 self.children.append(self.mousetweaks)
                 break
-            except (SchemaError, ImportError) as e:
+            except (SchemaError, ImportError, RuntimeError) as e:
                 _logger.info(unicode_str(e))
                 self.mousetweaks = None
         if self.mousetweaks is None:

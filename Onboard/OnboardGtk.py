@@ -32,7 +32,6 @@ import sys
 import time
 import signal
 import os.path
-import re
 
 try:
     import dbus
@@ -40,7 +39,6 @@ try:
     import dbus.mainloop.glib
 except ImportError:
     pass
-
 
 from gi.repository import GLib, Gdk, Gtk
 
@@ -85,23 +83,35 @@ class OnboardGtk(object):
         Gdk.set_program_class(app[0].upper() + app[1:])
 
         # no python3-dbus on Fedora17
+        bus = None
+        err_msg = ""
         if not "dbus" in globals():
-            _logger.warning("D-Bus bindings unavailable. "
-                            "Onboard will start with reduced functionality. "
-                            "Single-instance check, "
-                            "D-Bus service and "
-                            "hover click are disabled.")
+            err_msg = "D-Bus bindings unavailable"
         else:
             # Use D-bus main loop by default
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-            # Yield to GNOME Shell's keyboard before any other D-Bus activity
-            # to reduce the chance for D-Bus timeouts when enabling a11y keboard.
-            if not self._can_show_in_current_desktop():
-                sys.exit(0)
+            # Don't fail to start in Xenial's lightdm due to D-Bus not available
+            try:
+                bus = dbus.SessionBus()
+            except dbus.exceptions.DBusException as e:
+                err_msg = "D-Bus session bus unavailable"
+                bus = None
 
-            # Check if there is already a Onboard instance running
-            bus = dbus.SessionBus()
+        if not bus:
+            _logger.warning(err_msg + \
+                            "Onboard will start with reduced functionality. "
+                            "Single-instance check, "
+                            "D-Bus service and "
+                            "hover click are disabled.")
+
+        # Yield to GNOME Shell's keyboard before any other D-Bus activity
+        # to reduce the chance for D-Bus timeouts when enabling a11y keboard.
+        if not self._can_show_in_current_desktop(bus):
+            sys.exit(0)
+
+        if bus:
+            # Check if there is already an Onboard instance running
             has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
 
             # Onboard in Ubuntu on first start silently embeds itself into
@@ -732,7 +742,7 @@ class OnboardGtk(object):
         config.final_cleanup()
 
     @staticmethod
-    def _can_show_in_current_desktop():
+    def _can_show_in_current_desktop(bus):
         """
         When GNOME's "Typing Assistent" is enabled in GNOME Shell, Onboard
         starts simultaneously with the Shell's built-in screen keyboard.
@@ -755,7 +765,6 @@ class OnboardGtk(object):
         #               GNOME Classic: GNOME-Classic:GNOME
 
         if config.options.not_show_in:
-            bus = dbus.SessionBus()
             current = os.environ.get("XDG_CURRENT_DESKTOP", "")
             names = config.options.not_show_in.split(",")
             for name in names:
@@ -764,7 +773,7 @@ class OnboardGtk(object):
                     # desktop name "GNOME". Use the D-BUS name to decide if we
                     # are in the Shell.
                     if name == "GNOME":
-                        if bus.name_has_owner("org.gnome.Shell"):
+                        if bus and bus.name_has_owner("org.gnome.Shell"):
                             result = False
                     else:
                         result  = False
