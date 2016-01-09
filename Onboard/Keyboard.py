@@ -1052,10 +1052,10 @@ class Keyboard(WordSuggestions):
                           .format(key.id))
             return
 
-        key_type = key.type
         modifier = key.modifier
 
-        if modifier == 8: # Alt
+        if modifier == Modifiers.ALT and \
+           self._is_alt_special():
             self._last_alt_key = key
         else:
             action = self.get_key_action(key)
@@ -1074,7 +1074,8 @@ class Keyboard(WordSuggestions):
             self.mods[modifier] += 1
 
             # Alt is special because it activates the window manager's move mode.
-            if modifier != 8: # not Alt?
+            if modifier != Modifiers.ALT or \
+               not self._is_alt_special(): # not Alt?
                 self._text_changer.lock_mod(modifier)
 
             # Update word suggestions on shift press.
@@ -1093,7 +1094,8 @@ class Keyboard(WordSuggestions):
         key_type = key.type
         modifier = key.modifier
 
-        if modifier == 8: # Alt
+        if modifier == Modifiers.ALT and \
+           self._is_alt_special():
             pass
         else:
             action = self.get_key_action(key)
@@ -1118,7 +1120,8 @@ class Keyboard(WordSuggestions):
             self.mods[modifier] -= 1
 
             # Alt is special because it activates window manager's move mode.
-            if modifier != 8: # not Alt?
+            if modifier != Modifiers.ALT or \
+               not self._is_alt_special(): # not Alt?
                 self._text_changer.unlock_mod(modifier)
 
             # Update word suggestions on shift unlatch or release.
@@ -1143,12 +1146,19 @@ class Keyboard(WordSuggestions):
                 # Reset this too, else unlatching won't happen until restart.
                 self._external_mod_changes[mod] = 0
 
+    def _is_alt_special(self):
+        """
+        Does the ALT key need special treatment due to it
+        """
+        return not config.is_override_redirect()
+
     def maybe_send_alt_press_for_key(self, key, view, button, event_type):
         """ handle delayed Alt press """
         if self.mods[8] and \
+           self._is_alt_special() and \
            not key.active and \
-           not self.is_key_disabled(key) and \
-           not key.type == KeyCommon.BUTTON_TYPE:
+           not self.is_key_disabled(key):
+           not key.type == KeyCommon.BUTTON_TYPE and \
             self.maybe_send_alt_press(view, button, event_type)
 
     def maybe_send_alt_release_for_key(self, key, view, button, event_type):
