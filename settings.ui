@@ -1859,9 +1859,9 @@
                                             <child>
                                               <object class="GtkCheckButton" id="audio_feedback_place_in_space_toggle">
                                                 <property name="label" translatable="yes">Place sound in space</property>
-                                                <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
+                                                <property name="no_show_all">True</property>
                                                 <property name="tooltip_text" translatable="yes">Place sound in space between speakers depending on the key's position on screen</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="xalign">0</property>
