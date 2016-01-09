@@ -38,7 +38,6 @@ except ImportError:
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
-# install translation function _() for all modules
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
