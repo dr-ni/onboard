@@ -378,6 +378,7 @@ class WordSuggestions:
         """ spelling correction clicked """
         span = self._correction_span # span to correct
         with self.suppress_modifiers():
+            self._delete_selected_text()
             self._replace_text(span.begin(), span.end(),
                                self.text_context.get_span_at_caret().begin(),
                                self._correction_choices[choice_index])
@@ -811,6 +812,21 @@ class WordSuggestions:
 
         return word_span
 
+
+    def _delete_selected_text(self):
+        """
+        Delete the current selection.
+        """
+        if self.text_context.can_insert_text():
+            # delete any selected text first
+            selection_span = self.text_context.get_selection_span()
+            if not selection_span.is_empty():
+                self.text_context.delete_text(selection_span.pos,
+                                              selection_span.length)
+        else:
+            # keystrokes delete the selection on their own.
+            pass
+
     def _replace_text(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
@@ -824,12 +840,6 @@ class WordSuggestions:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
-        # delete any selected text first
-        selection_span = self.text_context.get_selection_span()
-        if not selection_span.is_empty():
-            self.text_context.delete_text(selection_span.pos,
-                                          selection_span.length)
-
         self.text_context.delete_text(begin, end - begin)
         self.text_context.insert_text(begin, new_text)
 
@@ -862,7 +872,8 @@ class WordSuggestions:
         """
         Insert a word/word-remainder and add a separator string as needed.
         """
-        added_separator = ""
+        delete_existing_separator = False
+
         selection_span = self.text_context.get_selection_span()
         if auto_separator:
             caret_text = selection_span.get_text_after_span()
@@ -872,25 +883,28 @@ class WordSuggestions:
             # yet. For space characters also check if the caret is at the
             # end of the line. The end of the line in the terminal
             # (e.g. in vim) may mean lots of spaces until the final new line.
+            delete_existing_separator = True
             if not caret_text.startswith(auto_separator) or \
                auto_separator.isspace() and remaining_line.isspace():
-                added_separator = auto_separator
+                delete_existing_separator = False
 
         with self.suppress_modifiers():
             if insertion:
+                self._delete_selected_text()
                 self._replace_text(selection_span.begin() - len(deletion),
                                    selection_span.begin(),
                                    selection_span.begin(),
                                    insertion)
             if auto_separator:
-                if added_separator:
-                    self._text_changer.insert_string_at_caret(auto_separator)
-                else:
-                     # just skip over the existing separator
-                    self._text_changer.press_keysyms("right",
-                                                     len(auto_separator))
+                self._text_changer.insert_string_at_caret(auto_separator)
+                if delete_existing_separator:
+                    pos = selection_span.begin() - len(deletion) + len(insertion) + len(auto_separator)
+                    self._replace_text(pos,
+                                       pos + len(auto_separator),
+                                       pos,
+                                       "") # delete, replace with nothing
 
-        return added_separator
+        return auto_separator
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
