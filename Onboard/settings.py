@@ -384,6 +384,9 @@ class Settings(DialogBuilder):
         self.bind_spin("sticky_key_release_delay_spinbutton",
                             config.keyboard, "sticky_key_release_delay")
 
+        self.bind_spin("sticky_key_release_on_hide_delay_spinbutton",
+                            config.keyboard, "sticky_key_release_on_hide_delay")
+
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")
 
