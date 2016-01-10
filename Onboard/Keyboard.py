@@ -1049,12 +1049,20 @@ class Keyboard(WordSuggestions):
 
         key_type = key.type
         modifier = key.modifier
+        action = self.get_key_action(key)
 
+        # Unlock most modifiers before key release, otherwise Compiz wall
+        # plugin's viewport switcher window doesn't close after
+        # Alt+Ctrl+Up/Down (LP: #1532254).
+        if modifier and \
+           action != KeyCommon.DOUBLE_STROKE_ACTION: # not NumLock, CAPS
+            self._do_unlock_modifier(modifier)
+
+        # generate key event(s)
         if modifier == Modifiers.ALT and \
            self._is_alt_special():
             pass
         else:
-            action = self.get_key_action(key)
             if action == KeyCommon.DOUBLE_STROKE_ACTION or \
                action == KeyCommon.DELAYED_STROKE_ACTION:
 
@@ -1062,7 +1070,7 @@ class Keyboard(WordSuggestions):
                 self.maybe_send_alt_press_for_key(key, view, button, event_type)
 
                 if key_type == KeyCommon.CHAR_TYPE:
-                    # allow to use AT-SPI direct text insertion for char keys
+                    # allow  direct text insertion by AT-SPI for char keys
                     self._text_changer.insert_string_at_caret(key.code)
                 else:
                     self.send_key_press(key, view, button, event_type)
@@ -1070,18 +1078,11 @@ class Keyboard(WordSuggestions):
             else:
                 self.send_key_release(key, view, button, event_type)
 
-        if modifier:
-            # Decrement before unlock_mod() to skip updating
-            # keys a second time in set_modifiers().
-            self.mods[modifier] -= 1
-
-            # Alt is special because it activates window manager's move mode.
-            if modifier != Modifiers.ALT or \
-               not self._is_alt_special(): # not Alt?
-                self._text_changer.unlock_mod(modifier)
-
-            # Update word suggestions on shift unlatch or release.
-            self.invalidate_context_ui()
+        # Unlock NumLock, CAPS, etc. after key events are sent,
+        # else they are toggled right back on.
+        if modifier and \
+           action == KeyCommon.DOUBLE_STROKE_ACTION:
+            self._do_unlock_modifier(modifier)
 
         self.maybe_send_alt_release_for_key(key, view, button, event_type)
 
@@ -1101,6 +1102,19 @@ class Keyboard(WordSuggestions):
 
                 # Reset this too, else unlatching won't happen until restart.
                 self._external_mod_changes[mod] = 0
+
+    def _do_unlock_modifier(self, modifier):
+        # Decrement before unlock_mod() to skip updating
+        # keys a second time in set_modifiers().
+        self.mods[modifier] -= 1
+
+        # Alt is special because it activates window manager's move mode.
+        if modifier != Modifiers.ALT or \
+            not self._is_alt_special(): # not Alt?
+            self._text_changer.unlock_mod(modifier)
+
+        # Update word suggestions on shift unlatch or release.
+        self.invalidate_context_ui()
 
     def _is_alt_special(self):
         """
