@@ -51,7 +51,7 @@ from Onboard.utils                 import Timer, ProgressiveDelayTimer, \
                                           Modifiers, LABEL_MODIFIERS, \
                                           parse_key_combination, \
                                           unicode_str
-from Onboard.definitions           import Handle
+from Onboard.definitions           import Handle, UIMask
 from Onboard.AutoShow              import AutoShow
 from Onboard.AutoHide              import AutoHide
 from Onboard.WordSuggestions       import WordSuggestions
@@ -68,34 +68,22 @@ config = Config()
 ########################
 
 
-# enum of event types for key press/release
 class EventType:
+    """ enum of event types for key press/release """
     (
         CLICK,
         DOUBLE_CLICK,
         DWELL,
     ) = range(3)
 
-# enum dock mode
+
 class DockMode:
+    """ enum dock mode """
     (
         FLOATING,
         BOTTOM,
         TOP,
     ) = range(3)
-
-
-class UIMask:
-    (
-        CONTROLLERS,
-        SUGGESTIONS,
-        LAYOUT,
-        LAYERS,
-        SIZE,
-        REDRAW,
-    ) = (1<<bit for bit in range(6))
-
-    ALL = -1
 
 
 class UnpressTimers:

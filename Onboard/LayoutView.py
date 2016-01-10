@@ -34,8 +34,8 @@ from Onboard.utils         import Rect, \
 from Onboard.WindowUtils   import get_monitor_dimensions
 from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
+from Onboard.definitions   import UIMask
 
-import Onboard.Keyboard
 
 ### Logging ###
 import logging
@@ -221,7 +221,7 @@ class LayoutView:
         pass
 
     def apply_ui_updates(self, mask):
-        if mask & Onboard.Keyboard.UIMask.SIZE:
+        if mask & UIMask.SIZE:
             self.invalidate_for_resize()
 
     def update_layout(self):
