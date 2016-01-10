@@ -268,38 +268,6 @@ class WordSuggestions:
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
-    def enter_caps_mode(self):
-        """
-        Do what has to be done so that the next pressed
-        character will be capitalized.
-        """
-        lfsh_keys = self.find_items_from_ids(["LFSH"])
-        rtsh_keys = self.find_items_from_ids(["RTSH"])
-
-        # unlatch all shift keys
-        for key in rtsh_keys + lfsh_keys:
-            if key.active:
-                key.active = False
-                key.locked = False
-                if key in self._latched_sticky_keys:
-                    self._latched_sticky_keys.remove(key)
-                if key in self._locked_sticky_keys:
-                    self._locked_sticky_keys.remove(key)
-            self.redraw([key])
-
-        # Latch right shift for capitalization,
-        # if there is no right shift latch left shift instead.
-        shift_keys = rtsh_keys if rtsh_keys else lfsh_keys
-        for key in shift_keys:
-            if not key.active:
-                key.active = True
-                if not key in self._latched_sticky_keys:
-                    self._latched_sticky_keys.append(key)
-                self.redraw([key])
-
-        self.mods[Modifiers.SHIFT] = 1
-        self._text_changer.lock_mod(1)
-        self.redraw_labels(False)
 
     def on_spell_checker_changed(self):
         self.update_spell_checker()
@@ -1591,7 +1559,6 @@ class Punctuator:
     def reset(self):
         self._added_separator_span = None
         self._separator_removed = False
-        self._capitalize = False
 
     def set_added_separator(self, separator_span = None):
         """ Notify punctuator of an actually added word separator. """
@@ -1618,7 +1585,7 @@ class Punctuator:
                     self._delete_at_caret()
                     self._separator_removed = True
                     if config.is_auto_capitalization_enabled():
-                        self._capitalize = True
+                        self._wp.request_capitalization(True)
 
             self._added_separator_span = None
 
@@ -1633,10 +1600,6 @@ class Punctuator:
                 # No direct insertion here. Space must always arrive last,
                 # i.e. after the released key was generated.
                 self._wp._text_changer.press_keysyms("space")
-
-            if self._capitalize:
-                self._capitalize = False
-                self._wp.enter_caps_mode()
 
     def _delete_at_caret(self):
         self._wp._text_changer.delete_at_caret()

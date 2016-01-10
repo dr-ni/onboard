@@ -282,8 +282,6 @@ class TextChanger():
         self._key_synth_virtkey = KeySynthVirtkey(vk)
         self._key_synth_atspi = KeySynthAtspi(vk)
 
-        self._delayed_mods = None
-
         if config.keyboard.key_synth: # == KeySynth.ATSPI:
             self._key_synth = self._key_synth_atspi
         else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
@@ -328,41 +326,10 @@ class TextChanger():
     def release_keysym(self, keysym):
         self._key_synth.release_keysym(keysym)
 
-    def delay_modifier_changes(self):
-        """
-        Delay changing modifiers until apply_modifier_changes().
-        """
-        self._delayed_mods = {}
-
-    def apply_modifier_changes(self):
-        """
-        Apply accumulated modifiers changes.
-        """
-        if not self._delayed_mods is None:
-            for mod, count in self._delayed_mods.items():
-                if count:
-                    self.do_lock_mod(mod)
-                else:
-                    self.do_unlock_mod(mod)
-
-            self._delayed_mods = None
-
     def lock_mod(self, mod):
-        if self._delayed_mods is None:
-            self.do_lock_mod(mod)
-        else:
-            self._delayed_mods[mod] = True
-
-    def unlock_mod(self, mod):
-        if self._delayed_mods is None:
-            self.do_unlock_mod(mod)
-        else:
-            self._delayed_mods[mod] = False
-
-    def do_lock_mod(self, mod):
         self._key_synth.lock_mod(mod)
 
-    def do_unlock_mod(self, mod):
+    def unlock_mod(self, mod):
         self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
@@ -447,14 +414,14 @@ class Keyboard(WordSuggestions):
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = 0
-                self._text_changer.do_unlock_mod(mod)
+                self._text_changer.unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
         mods = self._suppress_modifiers_stack.pop()
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = nkeys
-                self._text_changer.do_lock_mod(mod)
+                self._text_changer.lock_mod(mod)
 
     # currently active layer
     def _get_active_layer_index(self):
@@ -499,6 +466,7 @@ class Keyboard(WordSuggestions):
         self._pressed_key = None
         self._last_typing_time = 0
         self._suppress_modifiers_stack = []
+        self._capitalization_requested = False
 
         self.layout = None
         self.scanner = None
@@ -1000,7 +968,7 @@ class Keyboard(WordSuggestions):
 
         # Modifier keys may change multiple keys
         # -> redraw all dependent keys
-        # no danger of key repeats plus more work to do
+        # no danger of key repeats due to delays
         # -> redraw asynchronously
         if can_send_key and key.is_modifier():
             self.redraw_labels(False)
@@ -1024,7 +992,7 @@ class Keyboard(WordSuggestions):
                 if key.is_modifier():
                     self.redraw_labels(False)
         else:
-            self.release_non_sticky_key(key, view, button, event_type)
+            self._release_non_sticky_key(key, view, button, event_type)
 
         # Multi-touch: temporarily stop cycling modifiers if
         # a non-modifier key was pressed. This way we get both,
@@ -1258,14 +1226,7 @@ class Keyboard(WordSuggestions):
             return True
         return False
 
-    def release_non_sticky_key(self, key, view, button, event_type):
-        # Delay locking/unlockign modifiers. Multiple locks and unlocks
-        # of SHIFT may happen when the punctuator is active. Make sure
-        # we set the final resulting modifier state only once, else we can't
-        # distinguish our changes from physical keyboard actions in
-        # set_modifiers.
-        self._text_changer.delay_modifier_changes()
-
+    def _release_non_sticky_key(self, key, view, button, event_type):
         # release key
         self.send_key_up(key, view, button, event_type)
 
@@ -1294,8 +1255,53 @@ class Keyboard(WordSuggestions):
         # punctuation assistance and collapse corrections
         WordSuggestions.on_after_key_release(self, key)
 
-        # lock/unlock modifiers
-        self._text_changer.apply_modifier_changes()
+        # capitalization requested by punctuator?
+        if self._capitalization_requested:
+            self._capitalization_requested = False
+            if not self.mods[Modifiers.SHIFT]: # SHIFT not active yet?
+                self._enter_caps_mode()
+
+    def request_capitalization(self, capitalize):
+        """
+        Request entering upper-caps mode after next key-release.
+        """
+        self._capitalization_requested = capitalize
+
+    def _enter_caps_mode(self):
+        """
+        Do what has to be done so that the next pressed
+        character will be capitalized.
+
+        Don't call key_down+up for this, because modifiers may be
+        configured not to latch.
+        """
+        lfsh_keys = self.find_items_from_ids(["LFSH"])
+        rtsh_keys = self.find_items_from_ids(["RTSH"])
+
+        # unlatch all shift keys
+        for key in rtsh_keys + lfsh_keys:
+            if key.active:
+                key.active = False
+                key.locked = False
+                if key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.remove(key)
+                if key in self._locked_sticky_keys:
+                    self._locked_sticky_keys.remove(key)
+            self.redraw([key])
+
+        # Latch right shift for capitalization,
+        # if there is no right shift latch left shift instead.
+        shift_keys = rtsh_keys if rtsh_keys else lfsh_keys
+        for key in shift_keys:
+            if not key.active:
+                key.active = True
+                if not key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.append(key)
+                self.redraw([key])
+
+        self.mods[Modifiers.SHIFT] = 1
+        self._text_changer.lock_mod(1)
+        self.redraw_labels(False)
 
     def maybe_switch_to_first_layer(self, key):
         """
@@ -1628,10 +1634,21 @@ class Keyboard(WordSuggestions):
                         if not skip_externally_set_modifiers or \
                            not key.is_modifier() or \
                            not self._external_mod_changes[key.modifier]:
-                            self.send_key_up(key)
-                            self._latched_sticky_keys.remove(key)
-                            key.active = False
-                            self.redraw([key])
+
+                            # Keep shift pressed if we're going to continue
+                            # upper-case anyway. Else multiple locks and
+                            # unlocks of SHIFT may happen when the punctuator
+                            # is active. We can change the modifier state at
+                            # most once per key release, else we can't
+                            # distinguish our changes from physical
+                            # keyboard actions in set_modifiers.
+                            if not key.modifier == Modifiers.SHIFT or \
+                               not self._capitalization_requested:
+
+                                self.send_key_up(key)
+                                self._latched_sticky_keys.remove(key)
+                                key.active = False
+                                self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)
