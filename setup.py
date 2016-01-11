@@ -3,6 +3,7 @@
 
 # Copyright © 2007 Martin Böhme <martin.bohm@kubuntu.org>
 # Copyright © 2012-2013 Gerd Kohlberger <lowfi@chello.at>
+# Copyright © 2015 Reiner Herrmann <reiner@reiner-h.de>
 # Copyright © 2009-2015 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2011-2015 marmuta <marmvta@gmail.com>
 #
