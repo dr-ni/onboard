@@ -1,433 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created for Onboard -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   id="svg2"
-   height="96"
-   width="318"
-   version="1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Small-Emoji.svg">
-  <defs
-     id="defs49" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="15"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1215"
-     inkscape:window-height="1000"
-     id="namedview47"
-     showgrid="false"
-     inkscape:zoom="2.96"
-     inkscape:cx="137.55696"
-     inkscape:cy="48.485501"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg2"
-     inkscape:snap-grids="true"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:snap-nodes="true"
-     inkscape:snap-bbox="true"
-     inkscape:bbox-paths="true"
-     inkscape:bbox-nodes="true" />
-  <metadata
-     id="metadata43">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Small-Emoji.svg</dc:title>
-        <cc:license
-           rdf:resource="https://www.gnu.org/licenses/gpl.txt" />
-        <dc:creator>
-          <cc:Agent>
-            <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
-          </cc:Agent>
-        </dc:creator>
-        <dc:rights>
-          <cc:Agent>
-            <dc:title>GPL-3+ license</dc:title>
-          </cc:Agent>
-        </dc:rights>
-        <dc:publisher>
-          <cc:Agent>
-            <dc:title>Onboard Devel Team</dc:title>
-          </cc:Agent>
-        </dc:publisher>
-        <dc:source>https://launchpad.net/onboard</dc:source>
-        <dc:relation>This file is part of Onboard</dc:relation>
-        <dc:contributor>
-          <cc:Agent>
-            <dc:title>Copyright © 2013, 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="96" width="318" version="1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata43">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Small-Emoji.svg</dc:title>
+    <cc:license rdf:resource="https://www.gnu.org/licenses/gpl.txt"/>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <dc:rights>
+     <cc:Agent>
+      <dc:title>GPL-3+ license</dc:title>
+     </cc:Agent>
+    </dc:rights>
+    <dc:publisher>
+     <cc:Agent>
+      <dc:title>Onboard Devel Team</dc:title>
+     </cc:Agent>
+    </dc:publisher>
+    <dc:source>https://launchpad.net/onboard</dc:source>
+    <dc:relation>This file is part of Onboard</dc:relation>
+    <dc:contributor>
+     <cc:Agent>
+      <dc:title>Copyright © 2013, 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
 Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
-          </cc:Agent>
-        </dc:contributor>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <rect
-     id="DB08"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26314688"
-     height="22.736814"
-     width="22.736477"
-     y="48.631989"
-     x="207.63229"
-     inkscape:label="" />
-  <rect
-     id="DB09"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315665"
-     height="22.736803"
-     width="22.736843"
-     y="48.631996"
-     x="231.63193"
-     inkscape:label="" />
-  <rect
-     id="BKSP"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:1.37605524"
-     height="22.623945"
-     width="28.623945"
-     y="0.68764377"
-     x="264.68878" />
-  <rect
-     id="RTRN"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.60758305"
-     height="22.392799"
-     width="37.392418"
-     y="48.803787"
-     x="255.80414"
-     inkscape:label="#RTRN" />
-  <rect
-     id="DELE"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:0.84223956"
-     height="23.157761"
-     width="23.157761"
-     y="24.420736"
-     x="270.42111" />
-  <rect
-     id="DB01"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="39.631561"
-     inkscape:label="" />
-  <rect
-     id="DB05"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="135.6312"
-     inkscape:label="" />
-  <rect
-     id="DB04"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="111.63119"
-     inkscape:label="" />
-  <rect
-     id="DB06"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="159.6312"
-     inkscape:label="" />
-  <rect
-     id="DB03"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="87.631195"
-     inkscape:label="" />
-  <rect
-     id="DB02"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="63.631176"
-     inkscape:label="" />
-  <rect
-     id="DB07"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="48.631577"
-     x="183.63118"
-     inkscape:label="" />
-  <rect
-     id="DC04"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="102.63158"
-     inkscape:label="" />
-  <rect
-     id="DC05"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="126.63158"
-     inkscape:label="" />
-  <rect
-     id="DC06"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="150.63159"
-     inkscape:label="" />
-  <rect
-     id="DC07"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="174.63159"
-     inkscape:label="" />
-  <rect
-     id="DC01"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="30.631578"
-     inkscape:label="" />
-  <rect
-     id="DC02"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="54.631584"
-     inkscape:label="" />
-  <rect
-     id="DC03"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="78.631577"
-     inkscape:label="" />
-  <rect
-     id="DC08"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="198.63159"
-     inkscape:label="" />
-  <rect
-     id="DC09"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="222.63159"
-     inkscape:label="" />
-  <rect
-     id="DC10"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="24.631578"
-     x="246.63158"
-     inkscape:label="" />
-  <rect
-     id="DD09"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="216.63158"
-     inkscape:label="" />
-  <rect
-     id="DD03"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="72.631577"
-     inkscape:label="" />
-  <rect
-     id="DD02"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="48.63158"
-     inkscape:label="" />
-  <rect
-     id="DD01"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="24.631578"
-     inkscape:label="" />
-  <rect
-     id="DD07"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="168.63158"
-     inkscape:label="" />
-  <rect
-     id="DD06"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="144.63158"
-     inkscape:label="" />
-  <rect
-     id="DD05"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="120.63158"
-     inkscape:label="" />
-  <rect
-     id="DD04"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="96.631577"
-     inkscape:label="" />
-  <rect
-     id="DD10"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="240.63158"
-     inkscape:label="" />
-  <rect
-     id="DD08"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="0.63157821"
-     x="192.63158"
-     inkscape:label="" />
-  <rect
-     id="LEFT"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
-     height="22.737215"
-     width="22.736832"
-     y="72.631638"
-     x="198.63228"
-     inkscape:label="" />
-  <rect
-     id="UP"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315773"
-     height="22.736843"
-     width="22.736843"
-     y="72.632011"
-     x="246.63228"
-     inkscape:label="" />
-  <rect
-     id="DOWN"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315773"
-     height="22.736843"
-     width="22.736843"
-     y="72.631958"
-     x="270.63193"
-     inkscape:label="" />
-  <rect
-     id="RGHT"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315773"
-     height="22.736843"
-     width="22.736843"
-     y="72.632011"
-     x="222.63228"
-     inkscape:label="" />
-  <rect
-     id="layer2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.04142213"
-     height="22.958578"
-     width="22.958578"
-     y="72.520721"
-     x="48.520344"
-     inkscape:label="" />
-  <rect
-     height="22.624437"
-     id="layer3"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.37556171"
-     width="22.624437"
-     x="24.687416"
-     y="72.68779"
-     inkscape:label="" />
-  <rect
-     y="72.68779"
-     x="0.68741775"
-     width="22.624437"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.37556171"
-     id="layer4"
-     height="22.624437"
-     inkscape:label="" />
-  <rect
-     id="layer1"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.14833903"
-     height="22.851662"
-     width="22.851662"
-     y="72.574181"
-     x="72.573807"
-     inkscape:label="" />
-  <rect
-     id="SPCE"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.13816726"
-     height="22.861832"
-     width="100.86292"
-     y="72.569519"
-     x="96.568718" />
-  <rect
-     id="layer5"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:1.30293679"
-     height="22.697063"
-     width="37.697063"
-     y="48.651466"
-     x="0.65145051"
-     inkscape:label="" />
-  <rect
-     id="TAB"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.28348005"
-     height="22.71652"
-     width="28.71652"
-     y="24.641739"
-     x="0.64173919"
-     inkscape:label="" />
-  <rect
-     id="ESC"
-     style="fill:#d8cca5;stroke:#000000;stroke-width:1.02345657"
-     height="22.976543"
-     width="22.976543"
-     y="0.51172757"
-     x="0.51172781"
-     inkscape:label="" />
+     </cc:Agent>
+    </dc:contributor>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect id="DB08" style="stroke:#000;stroke-width:1.2631;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="207.63"/>
+ <rect id="DB09" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.737" y="48.632" x="231.63"/>
+ <rect id="BKSP" style="stroke:#000;stroke-width:1.3761;fill:#d8cca5" height="22.624" width="28.624" y=".68764" x="264.69"/>
+ <rect id="RTRN" style="stroke:#000;stroke-width:1.6076;fill:#e5d8b2" height="22.393" width="37.392" y="48.804" x="255.8"/>
+ <rect id="DELE" style="stroke:#000;stroke-width:.84224;fill:#d8cca5" height="23.158" width="23.158" y="24.421" x="270.42"/>
+ <rect id="DB01" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="39.632"/>
+ <rect id="DB05" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="135.63"/>
+ <rect id="DB04" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="111.63"/>
+ <rect id="DB06" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="159.63"/>
+ <rect id="DB03" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="87.631"/>
+ <rect id="DB02" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="63.631"/>
+ <rect id="DB07" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="48.632" x="183.63"/>
+ <rect id="DC04" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="102.63"/>
+ <rect id="DC05" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="126.63"/>
+ <rect id="DC06" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="150.63"/>
+ <rect id="DC07" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="174.63"/>
+ <rect id="DC01" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="30.632"/>
+ <rect id="DC02" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="54.632"/>
+ <rect id="DC03" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="78.632"/>
+ <rect id="DC08" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="198.63"/>
+ <rect id="DC09" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="222.63"/>
+ <rect id="DC10" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y="24.632" x="246.63"/>
+ <rect id="DD09" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="216.63"/>
+ <rect id="DD03" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="72.632"/>
+ <rect id="DD02" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="48.632"/>
+ <rect id="DD01" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="24.632"/>
+ <rect id="DD07" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="168.63"/>
+ <rect id="DD06" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="144.63"/>
+ <rect id="DD05" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="120.63"/>
+ <rect id="DD04" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="96.632"/>
+ <rect id="DD10" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="240.63"/>
+ <rect id="DD08" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.736" y=".63158" x="192.63"/>
+ <rect id="LEFT" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.737" y="72.632" x="198.63"/>
+ <rect id="UP" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.737" y="72.632" x="246.63"/>
+ <rect id="DOWN" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.737" y="72.632" x="270.63"/>
+ <rect id="RGHT" style="stroke:#000;stroke-width:1.2632;fill:#e5d8b2" height="22.737" width="22.737" y="72.632" x="222.63"/>
+ <rect id="layer2" style="stroke:#000;stroke-width:1.0414;fill:#f2e5d8" height="22.959" width="22.959" y="72.521" x="48.52"/>
+ <rect id="layer3" style="stroke:#000;stroke-width:1.3756;fill:#f2e5d8" height="22.624" width="22.624" y="72.688" x="24.687"/>
+ <rect id="layer4" style="stroke:#000;stroke-width:1.3756;fill:#f2e5d8" height="22.624" width="22.624" y="72.688" x=".68742"/>
+ <rect id="layer1" style="stroke:#000;stroke-width:1.1483;fill:#f2e5d8" height="22.852" width="22.852" y="72.574" x="72.574"/>
+ <rect id="SPCE" style="stroke:#000;stroke-width:1.1382;fill:#e5d8b2" height="22.862" width="100.86" y="72.57" x="96.569"/>
+ <rect id="layer5" style="stroke:#000;stroke-width:1.3029;fill:#d8cca5" height="22.697" width="37.697" y="48.651" x=".65145"/>
+ <rect id="TAB" style="stroke:#000;stroke-width:1.2835;fill:#f2e5d8" height="22.717" width="28.717" y="24.642" x=".64174"/>
+ <rect id="ESC" style="stroke:#000;stroke-width:1.0235;fill:#d8cca5" height="22.977" width="22.977" y=".51173" x=".51173"/>
 </svg>
