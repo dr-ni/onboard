@@ -396,7 +396,6 @@
                                     <property name="tooltip_markup" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
                                     <property name="tooltip_text" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
                                     <property name="use_underline">True</property>
-                                    <property name="xalign">0.5</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_auto_show_toggled" swapped="no"/>
                                   </object>
@@ -677,7 +676,6 @@
                                             <property name="tooltip_markup" translatable="yes">Dock the keyboard to the edge of the screen.</property>
                                             <property name="tooltip_text" translatable="yes">Dock the keyboard to the edge of the screen.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -762,7 +760,6 @@
                                         <property name="tooltip_markup" translatable="yes">Show window caption and frame.</property>
                                         <property name="tooltip_text" translatable="yes">Show window caption and frame.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="on_window_decoration_toggled" swapped="no"/>
                                       </object>
@@ -782,7 +779,6 @@
                                         <property name="tooltip_markup" translatable="yes">&amp;quot;Sticky&amp;quot; mode for keyboard and floating icon.</property>
                                         <property name="tooltip_text" translatable="yes">"Sticky" mode for keyboard and floating icon.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="on_window_state_sticky_toggled" swapped="no"/>
                                       </object>
@@ -802,7 +798,6 @@
                                         <property name="tooltip_markup" translatable="yes">Try harder to keep Onboard above anything on-screen.</property>
                                         <property name="tooltip_text" translatable="yes">Try harder to keep Onboard above anything on-screen.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="on_force_to_top_toggled" swapped="no"/>
                                       </object>
@@ -822,7 +817,6 @@
                                         <property name="tooltip_markup" translatable="yes">Constrain window size to the layout&amp;apos;s aspect ratio.</property>
                                         <property name="tooltip_text" translatable="yes">Constrain window size to the layout's aspect ratio.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="on_keep_aspect_ratio_toggled" swapped="no"/>
                                       </object>
@@ -969,7 +963,6 @@
                                             <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
                                             <property name="margin_left">20</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                             <signal name="toggled" handler="on_transparent_background_toggled" swapped="no"/>
                                           </object>
@@ -1037,7 +1030,6 @@
                                             <property name="tooltip_markup" translatable="yes">Enable inactive transparency. Requires compositing.</property>
                                             <property name="tooltip_text" translatable="yes">Enable inactive transparency. Requires compositing.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                             <signal name="toggled" handler="on_enable_inactive_transparency_toggled" swapped="no"/>
                                           </object>
@@ -1588,7 +1580,6 @@
                             <property name="has_tooltip">True</property>
                             <property name="tooltip_text" translatable="yes">Remember what Onboard theme was last used for every system theme.</property>
                             <property name="use_underline">True</property>
-                            <property name="xalign">0.5</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_system_theme_tracking_enabled_toggled" swapped="no"/>
                           </object>
@@ -1813,7 +1804,6 @@
                                         <property name="tooltip_markup" translatable="yes">Show label popups above pressed keys.</property>
                                         <property name="tooltip_text" translatable="yes">Show label popups above pressed keys.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
@@ -1933,7 +1923,6 @@
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Show characters reachable with or without the shift key.</property>
                                         <property name="use_underline">True</property>
-                                        <property name="xalign">0.5</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
@@ -2575,7 +2564,6 @@
                                 <property name="tooltip_markup" translatable="yes">Enable word completion and prediction.</property>
                                 <property name="tooltip_text" translatable="yes">Enable word completion and prediction.</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
@@ -2615,7 +2603,6 @@
                                             <property name="tooltip_markup" translatable="yes">Check spelling of the word at or before the cursor.</property>
                                             <property name="tooltip_text" translatable="yes">Check spelling of the word at or before the cursor.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -2633,7 +2620,6 @@
                                             <property name="has_tooltip">True</property>
                                             <property name="tooltip_text" translatable="yes">Remember new words, their recency and frequency to improve the suggestions over time.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -2652,7 +2638,6 @@
                                             <property name="tooltip_markup" translatable="yes">Add and remove spaces when inserting word suggestions followed by punctuation characters.</property>
                                             <property name="tooltip_text" translatable="yes">Add and remove spaces when inserting word suggestions followed by punctuation characters.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -2703,7 +2688,6 @@
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Show a button for language selection.</property>
                                             <property name="use_underline">True</property>
-                                            <property name="xalign">0.5</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -2726,7 +2710,6 @@
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Words typed while this button is pressed won't be remembered.</property>
                                                 <property name="use_underline">True</property>
-                                                <property name="xalign">0.5</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -2797,7 +2780,6 @@
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Automatically capitalize sentence begins and name words.</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
@@ -2815,7 +2797,6 @@
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Automatically correct the last word.</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
@@ -3091,7 +3072,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_underline">True</property>
-                                    <property name="xalign">0.5</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_scanner_enabled_toggled" swapped="no"/>
                                   </object>
@@ -3246,7 +3226,6 @@
                                     <property name="tooltip_text" translatable="yes">Hide the system-provided hover click window while Onboard is running.</property>
                                     <property name="margin_top">4</property>
                                     <property name="use_underline">True</property>
-                                    <property name="xalign">0.5</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_hide_click_type_window_toggled" swapped="no"/>
                                   </object>
@@ -3266,7 +3245,6 @@
                                     <property name="tooltip_markup" translatable="yes">Always enable the system-provided hover click window when exiting Onboard.</property>
                                     <property name="tooltip_text" translatable="yes">Always enable the system-provided hover click window when exiting Onboard.</property>
                                     <property name="use_underline">True</property>
-                                    <property name="xalign">0.5</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_enable_click_type_window_on_exit_toggle" swapped="no"/>
                                   </object>
