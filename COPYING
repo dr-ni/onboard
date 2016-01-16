@@ -174,7 +174,9 @@ License: GPL-3+
 Files: po/*
 Copyright: 2007-2015, Rosetta Contributors
 License: BSD-3-clause
-Comment: The translation strings are under the BSD-3-clause license, while the original strings remain under the license of the file they were extracted from.
+Comment: The BSD-3-clause license applies to the translation strings,
+ while the original strings remain under the license of the file they
+ were extracted from.
 
 Files: scripts/*
 Copyright: 2011-2014, marmuta <marmvta@gmail.com>
