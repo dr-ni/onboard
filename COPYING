@@ -135,7 +135,7 @@ Copyright: 2016, Francesco Fumanti <francesco.fumanti@gmx.net>
 License: GPL-3+
 
 Files: layouts/*
-Copyright: 2010, 2013, Francesco Fumanti <francesco.fumanti@gmx.net>
+Copyright: 2010, 2013, 2016, Francesco Fumanti <francesco.fumanti@gmx.net>
   2009, 2011-2014, marmuta <marmvta@gmail.com>
 License: GPL-3+
 
@@ -148,6 +148,12 @@ License: GPL-3+
 Files: layouts/Whiteboard.onboard
   layouts/Whiteboard_wide.onboard
 Copyright: 2014, Johannes Almer
+License: GPL-3+
+
+Files: layouts/Whiteboard-*.svg
+  layouts/Whiteboard_wide-*.svg
+Copyright: 2014, Johannes Almer
+  2016, Francesco Fumanti <francesco.fumanti@gmx.net>
 License: GPL-3+
 
 Files: layouts/key_defs.xml
