@@ -465,6 +465,8 @@ class Keyboard(WordSuggestions):
         self._application = weakref.ref(application)
         self._pressed_key = None
         self._last_typing_time = 0
+
+        self._locked_temporary_modifier = None
         self._suppress_modifiers_stack = []
         self._capitalization_requested = False
 
@@ -1014,6 +1016,10 @@ class Keyboard(WordSuggestions):
            self._is_alt_special():
             self._last_alt_key = key
         else:
+
+            if button == 3:
+               self._maybe_lock_temporary_modifier(key, Modifiers.SHIFT)
+
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
                 WordSuggestions.on_before_key_press(self, key)
@@ -1025,14 +1031,7 @@ class Keyboard(WordSuggestions):
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:
-            # Increment this before lock_mod() to skip
-            # updating keys a second time in set_modifiers().
-            self.mods[modifier] += 1
-
-            # Alt is special because it activates the window manager's move mode.
-            if modifier != Modifiers.ALT or \
-               not self._is_alt_special(): # not Alt?
-                self._text_changer.lock_mod(modifier)
+            self._do_lock_modifier(modifier)
 
             # Update word suggestions on shift press.
             self.invalidate_context_ui()
@@ -1057,6 +1056,9 @@ class Keyboard(WordSuggestions):
         if modifier and \
            action != KeyCommon.DOUBLE_STROKE_ACTION: # not NumLock, CAPS
             self._do_unlock_modifier(modifier)
+
+            # Update word suggestions on shift unlatch or release.
+            self.invalidate_context_ui()
 
         # generate key event(s)
         if modifier == Modifiers.ALT and \
@@ -1084,7 +1086,11 @@ class Keyboard(WordSuggestions):
            action == KeyCommon.DOUBLE_STROKE_ACTION:
             self._do_unlock_modifier(modifier)
 
-        self.maybe_send_alt_release_for_key(key, view, button, event_type)
+            # Update word suggestions on shift unlatch or release.
+            self.invalidate_context_ui()
+
+        self._maybe_unlock_temporary_modifier()
+        self._maybe_send_alt_release_for_key(key, view, button, event_type)
 
         # Check modifier counts for plausibility.
         # There might be a bug lurking that gets certain modifers stuck
@@ -1103,7 +1109,33 @@ class Keyboard(WordSuggestions):
                 # Reset this too, else unlatching won't happen until restart.
                 self._external_mod_changes[mod] = 0
 
+    def _maybe_lock_temporary_modifier(self, key, modifier):
+        """ Lock modifier for a single key-press """
+        if not self.mods[Modifiers.SHIFT] and \
+           not key.modifier == Modifiers.SHIFT and \
+           not key.is_button():
+            self._locked_temporary_modifier = modifier
+            self._do_lock_modifier(Modifiers.SHIFT)
+
+    def _maybe_unlock_temporary_modifier(self):
+        """ Lock modifier for a single key-press """
+        if self._locked_temporary_modifier:
+            self._do_unlock_modifier(self._locked_temporary_modifier)
+            self._locked_temporary_modifier = None
+
+    def _do_lock_modifier(self, modifier):
+        """ Lock modifier in response to modifier presses. """
+        # Increment this before lock_mod() to skip
+        # updating keys a second time in set_modifiers().
+        self.mods[modifier] += 1
+
+        # Alt is special because it activates the window manager's move mode.
+        if modifier != Modifiers.ALT or \
+            not self._is_alt_special(): # not Alt?
+            self._text_changer.lock_mod(modifier)
+
     def _do_unlock_modifier(self, modifier):
+        """ Unlock modifier in response to modifier releases. """
         # Decrement before unlock_mod() to skip updating
         # keys a second time in set_modifiers().
         self.mods[modifier] -= 1
@@ -1112,9 +1144,6 @@ class Keyboard(WordSuggestions):
         if modifier != Modifiers.ALT or \
             not self._is_alt_special(): # not Alt?
             self._text_changer.unlock_mod(modifier)
-
-        # Update word suggestions on shift unlatch or release.
-        self.invalidate_context_ui()
 
     def _is_alt_special(self):
         """
@@ -1131,7 +1160,7 @@ class Keyboard(WordSuggestions):
            not key.type == KeyCommon.BUTTON_TYPE and \
             self.maybe_send_alt_press(view, button, event_type)
 
-    def maybe_send_alt_release_for_key(self, key, view, button, event_type):
+    def _maybe_send_alt_release_for_key(self, key, view, button, event_type):
         """ handle delayed Alt release """
         if self._alt_locked:
             self.maybe_send_alt_release(view, button, event_type)
@@ -1804,13 +1833,13 @@ class Keyboard(WordSuggestions):
     def on_key_pressed(self, key, view, sequence, action):
         """ pressed state of a key instance was set """
         if sequence: # Not a simulated key press, scanner?
-            allowed = self.can_give_keypress_feedback()
+            feedback = self.can_give_keypress_feedback()
 
             # audio feedback
             if action and \
                config.keyboard.audio_feedback_enabled:
                 pt = sequence.root_point \
-                        if allowed else (-1, -1) # keep passwords privat
+                     if feedback else (-1, -1) # keep passwords privat
                 pts = pt \
                       if config.keyboard.audio_feedback_place_in_space \
                       else (-1, -1)
@@ -1821,7 +1850,7 @@ class Keyboard(WordSuggestions):
                config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
                key.can_show_label_popup() and \
-               allowed:
+               feedback:
                 self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):
