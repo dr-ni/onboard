@@ -393,8 +393,10 @@ class KbdWindowBase:
         # windows. The reason is unclear.
         # Workaround: keep the toplevel transparent and apply opacity to
         # the child only.
-        #Gtk.Window.set_opacity(self, opacity)
-        Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
+        if hasattr(Gtk.Widget, "set_opacity"): # doesn't exist on Precise
+            Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
+        else:
+            Gtk.Window.set_opacity(self, opacity)
 
     def get_opacity(self):
         return self._opacity
