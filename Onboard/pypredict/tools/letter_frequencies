@@ -50,9 +50,10 @@ def main():
         ngram = ng[0]
         if len(ngram) == 1: # we're only interested in unigrams
             word = ngram[0]
-            for char in word:
-                char = char.lower()
-                frequencies[char] = frequencies.get(char, 0) + 1
+            if not word.startswith("<"):
+                for char in word:
+                    char = char.lower()
+                    frequencies[char] = frequencies.get(char, 0) + 1
 
     sorted_freqs = list(reversed(sorted(frequencies.items(), key=operator.itemgetter(0))))
     sorted_freqs = list(reversed(sorted(sorted_freqs, key=operator.itemgetter(1))))
