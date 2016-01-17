@@ -81,14 +81,14 @@
           <key group="bottomrow" id="TAB"/>
           <key char="#" group="alphanumeric" id="BC01" label="#"/>
           <key char="%" group="alphanumeric" id="BC02" label="%"/>
-          <key char="&amp;" group="alphanumeric" id="BC03" label="&amp;"/>
-          <key char="+" group="alphanumeric" id="BC04" label="+"/>
-          <key char="-" group="alphanumeric" id="BC05" label="-"/>
-          <key char="*" group="alphanumeric" id="BC06" label="*"/>
-          <key char="/" group="alphanumeric" id="BC07" label="/"/>
-          <key char="\" group="alphanumeric" id="BC08" label="\"/>
-          <key char="(" group="alphanumeric" id="BC09" label="("/>
-          <key char=")" group="alphanumeric" id="BC10" label=")"/>
+          <key char="+" group="alphanumeric" id="BC03" label="+"/>
+          <key char="-" group="alphanumeric" id="BC04" label="-"/>
+          <key char="*" group="alphanumeric" id="BC05" label="*"/>
+          <key char="/" group="alphanumeric" id="BC06" label="/"/>
+          <key char="\" group="alphanumeric" id="BC07" label="\"/>
+          <key char="(" group="alphanumeric" id="BC08" label="("/>
+          <key char=")" group="alphanumeric" id="BC09" label=")"/>
+          <key char="'" group="alphanumeric" id="BC10" label="'"/>
           <key group="bottomrow" id="DELE"/>
           <!-- row 2, numbers layer -->
           <key group="bottomrow" id="layer5"/>
@@ -125,7 +125,7 @@
           <key char="£" group="alphanumeric" id="CC03" label="£"/>
           <key char="¥" group="alphanumeric" id="CC04" label="¥"/>
           <key group="alphanumeric" id="CC05" label="₽" char="₽"/>
-          <key group="alphanumeric" id="CC06" label="¢" char="¢"/>
+          <key group="alphanumeric" id="CC06" label="&amp;" char="&amp;"/>
           <key char="§" group="alphanumeric" id="CC07" label="§"/>
           <key char="^" group="alphanumeric" id="CC08" label="^"/>
           <key char="°" group="alphanumeric" id="CC09" label="°"/>
