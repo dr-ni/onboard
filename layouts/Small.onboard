@@ -1,47 +1,17 @@
 <?xml version="1.0" ?>
-
-<!--
-Copyright © 2013 Francesco Fumanti <francesco.fumanti@gmx.net>
-Copyright © 2013-2014 marmuta <marmvta@gmail.com>
-
-This file is part of Onboard.
-
-Onboard is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
-
-Onboard is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
--->
-
-<keyboard
-    id="Small"
-    format="3.2"
-    section="system"
-    summary="Space efficient desktop keyboard" >
-
-    <include file="key_defs.xml"/>
- 
-    <box border="0.5" orientation="vertical" spacing="1.5">
-
+<keyboard format="3.2" id="Small" section="system" summary="Space efficient desktop keyboard">
+  <include file="key_defs.xml"/>
+  <box border="0.5" orientation="vertical" spacing="1.5">
     <!--- word suggestions -->
     <panel filename="Small-Alpha.svg">
       <include file="word_suggestions.xml"/>
     </panel>
-
     <key_template button="true" id="layer0" show_active="false"/>
     <key_template button="true" id="layer1" label="12?"/>
     <key_template button="true" id="layer2" label="Sym"/>
-    <key_template button="true" id="layer3" label="Fn" image="" />
-    <key_template button="true" id="layer4" label=""   image="snippets.svg"/>
+    <key_template button="true" id="layer3" image="" label="Fn"/>
+    <key_template button="true" id="layer4" image="snippets.svg" label=""/>
     <key_template button="true" id="layer5" label="☺"/>
-
     <box>
       <panel>
         <!-- layer0 -->
@@ -70,8 +40,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key group="alphanumeric" id="AC07"/>
           <key group="alphanumeric" id="AC08"/>
           <key group="alphanumeric" id="AC09"/>
-          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty)"/>
-          <key char="'" group="alphanumeric" id="AC10" label="'"/>
+          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty),ru"/>
+          <key group="alphanumeric" id="AC10" label="'" char="'" />
           <key group="bottomrow" id="DELE"/>
           <!-- row 2 -->
           <key group="shifts" id="LFSH"/>
@@ -83,12 +53,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key group="alphanumeric" id="AB06"/>
           <key char="'" group="alphanumeric" id="AB07" label="'" layout="be,fr,cm(azerty)"/>
           <key group="alphanumeric" id="AB07"/>
-          <key char="," group="alphanumeric" id="AB08" label=","/>
-          <key char="." group="alphanumeric" id="AB09" label="."/>
+          <key group="alphanumeric" id="AB08" layout="ru"/>
+          <key group="alphanumeric" id="AB08" label="," char=","/>
+          <key group="alphanumeric" id="AB09" layout="ru"/>
+          <key group="alphanumeric" id="AB09" label="." char="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
           <key group="shifts" id="RTSH"/>
         </panel>
-
         <!-- layer1 -->
         <panel filename="Small-Numbers.svg" layer="numbers">
           <!-- row 4, numbers layer -->
@@ -104,7 +75,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key group="alphanumeric" id="BD09" keysym="0x39" label="9"/>
           <key group="alphanumeric" id="BD10" keysym="0x30" label="0"/>
           <key group="bottomrow" id="BKSP"/>
-
           <!-- row 3, numbers layer -->
           <key group="bottomrow" id="TAB"/>
           <key char="#" group="alphanumeric" id="BC01" label="#"/>
@@ -118,7 +88,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key char="(" group="alphanumeric" id="BC09" label="("/>
           <key char=")" group="alphanumeric" id="BC10" label=")"/>
           <key group="bottomrow" id="DELE"/>
-
           <!-- row 2, numbers layer -->
           <key group="bottomrow" id="layer5"/>
           <key char="@" group="alphanumeric" id="BB01" label="@"/>
@@ -132,7 +101,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key char="." group="alphanumeric" id="BB09" label="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
-
         <!-- layer2 -->
         <panel filename="Small-Syms.svg" layer="syms">
           <!-- row 4 -->
@@ -155,7 +123,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key char="£" group="alphanumeric" id="CC03" label="£"/>
           <key char="¥" group="alphanumeric" id="CC04" label="¥"/>
           <key char="¢" group="alphanumeric" id="CC05" label="¢"/>
-          <key char="₩" group="alphanumeric" id="CC06" label="₩"/>
+          <key group="alphanumeric" id="CC06" label="₽" char="₽" layout="ru"/>
+          <key group="alphanumeric" id="CC06" label="₩" char="₩" />
           <key char="§" group="alphanumeric" id="CC07" label="§"/>
           <key char="^" group="alphanumeric" id="CC08" label="^"/>
           <key char="°" group="alphanumeric" id="CC09" label="°"/>
@@ -174,7 +143,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key char="©" group="alphanumeric" id="CB09" label="©"/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
-
         <!-- layer3 -->
         <panel filename="Small-Fn.svg" layer="functionkeys">
           <key group="bottomrow" id="ESC"/>
@@ -202,7 +170,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key group="bottomrow" id="TAB"/>
           <key group="bottomrow" id="layer5"/>
         </panel>
-
         <!-- layer4 -->
         <panel filename="Small-Snippets.svg" layer="snippets">
           <key group="snippets" id="m0"/>
@@ -223,7 +190,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <key group="bottomrow" id="layer5" label="☺"/>
           <key group="bottomrow" id="layer0"/>
         </panel>
-
         <!-- layer5 -->
         <panel filename="Small-Emoji.svg" layer="emoji">
           <!-- row 4 -->
@@ -294,7 +260,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           <!-- U+2622 -->
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
         </panel>
-
         <panel>
           <panel>
             <panel filename="Small-Alpha.svg" layer="alpha">
@@ -329,7 +294,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
               <key group="bottomrow" id="layer2"/>
             </panel>
           </panel>
-
           <panel filename="Small-Alpha.svg">
             <key group="bottomrow" id="layer1"/>
           </panel>
@@ -377,7 +341,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
           </panel>
         </panel>
       </panel>
-
       <!-- Panel with the click buttons -->
       <panel filename="Small-Alpha.svg" id="click">
         <key group="click" id="middleclick"/>
@@ -387,16 +350,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       </panel>
     </box>
   </box>
-
-
   <!-- popup definition -->
   <layout filename="Small-Alpha.svg" id="RTRN_popup">
     <box compact="true">
       <key id="settings"/>
       <key id="move"/>
       <key id="showclick"/>
-      <key id="hide" image="close.svg" svg_id="hide.popup" group="nowordlist" />
+      <key group="nowordlist" id="hide" image="close.svg" svg_id="hide.popup"/>
     </box>
   </layout>
-
 </keyboard>
+
