@@ -22,6 +22,7 @@ import sys
 import os
 import operator
 import optparse
+import re
 
 try:
     import pypredict
@@ -32,15 +33,23 @@ except ImportError:
 def main():
 
     parser = optparse.OptionParser(usage=
-             "Usage: %prog [options] language_id")
+             "Usage: %prog [options] language_id|filename")
     options, args = parser.parse_args()
 
     if not args:
-        print("language_id required.", file=sys.stderr)
+        print("Language ID, e.g. en_US, or filename of a language model required.", file=sys.stderr)
         sys.exit(1)
 
     lang_id = args[0]
-    fn = os.path.join("models", lang_id + ".lm")
+    if os.path.exists(lang_id) or \
+        not re.match("[a-z]{2}_[A-Z]{2}", lang_id):
+        fn = lang_id
+    else:
+        fn = os.path.join("models", lang_id + ".lm")
+
+    if not os.path.exists(fn):
+        print("Invalid filename '{}'.".format(fn), file=sys.stderr)
+        sys.exit(1)
 
     model = pypredict.DynamicModel()
     model.load(fn)
