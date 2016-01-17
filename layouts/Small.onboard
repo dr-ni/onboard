@@ -40,7 +40,7 @@
           <key group="alphanumeric" id="AC07"/>
           <key group="alphanumeric" id="AC08"/>
           <key group="alphanumeric" id="AC09"/>
-          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty),ru"/>
+          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty),ru,ua,by,bg,tj,ge,az(cyrillic),mn,mk"/>
           <key group="alphanumeric" id="AC10" label="'" char="'" />
           <key group="bottomrow" id="DELE"/>
           <!-- row 2 -->
@@ -51,11 +51,13 @@
           <key group="alphanumeric" id="AB04"/>
           <key group="alphanumeric" id="AB05"/>
           <key group="alphanumeric" id="AB06"/>
-          <key char="'" group="alphanumeric" id="AB07" label="'" layout="be,fr,cm(azerty)"/>
+          <key group="alphanumeric" id="AB07" label="'" char="'" layout="be,fr,cm(azerty)"/>
           <key group="alphanumeric" id="AB07"/>
-          <key group="alphanumeric" id="AB08" layout="ru"/>
+          <key group="alphanumeric" id="AB08" layout="ru,ua,by,bg,tj,ge,az(cyrillic),mn"/>
+          <key group="alphanumeric" id="AB08" keycode="48" layout="mk"/>
           <key group="alphanumeric" id="AB08" label="," char=","/>
-          <key group="alphanumeric" id="AB09" layout="ru"/>
+          <key group="alphanumeric" id="AB09" layout="ru,ua,by,bg,tj,ge,az(cyrillic),mn"/>
+          <key group="alphanumeric" id="AB09" keycode="51" layout="mk"/>
           <key group="alphanumeric" id="AB09" label="." char="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
           <key group="shifts" id="RTSH"/>
@@ -122,9 +124,8 @@
           <key group="alphanumeric" id="CC02" keysym="8364" label="€"/>
           <key char="£" group="alphanumeric" id="CC03" label="£"/>
           <key char="¥" group="alphanumeric" id="CC04" label="¥"/>
-          <key char="¢" group="alphanumeric" id="CC05" label="¢"/>
-          <key group="alphanumeric" id="CC06" label="₽" char="₽" layout="ru"/>
-          <key group="alphanumeric" id="CC06" label="₩" char="₩" />
+          <key group="alphanumeric" id="CC05" label="₽" char="₽"/>
+          <key group="alphanumeric" id="CC06" label="¢" char="¢"/>
           <key char="§" group="alphanumeric" id="CC07" label="§"/>
           <key char="^" group="alphanumeric" id="CC08" label="^"/>
           <key char="°" group="alphanumeric" id="CC09" label="°"/>
