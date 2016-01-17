@@ -123,30 +123,36 @@ canonical_equivalents = {
                 'І' : ['Ї'],
                 'А' : ['Ӑ', 'Ӓ'],
                 'Г' : ['Ѓ'],
-                'Е' : ['Ѐ', 'Ё', 'Ӗ', 'Э', 'Ӭ'],  # 'Э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'Е' : ['Ѐ', 'Ё', 'Ӗ', 'Э', 'Ӭ'],    # 'Э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'Ё' : ['Е', 'Ѐ', 'Ӗ'],              # 'Е' for Mongolian
                 'Ж' : ['Ӂ', 'Ӝ'],
                 'З' : ['Ӟ'],
                 'И' : ['Ѝ', 'Й', 'Ӣ', 'Ӥ'],
-                'К' : ['Ќ', 'Ҝ'],  # 'Ҝ' for Azerbaijani(Cyrillic)
+                'Ѝ' : ['И', 'Й', 'Ӣ', 'Ӥ'],
+                'Й' : ['И', 'Ѝ', 'Ӣ', 'Ӥ'],         # 'Ѝ' for Bulgarian
+                'К' : ['Ќ', 'Ҝ'],                   # 'Ҝ' for Azerbaijani(Cyrillic)
                 'О' : ['Ӧ'],
                 'У' : ['Ў', 'Ӯ', 'Ӱ', 'Ӳ'],
-                'Ч' : ['Ӵ', 'Ҹ'],  # 'Ҹ' for Azerbaijani(Cyrillic)
-                'Ш' : ['Щ'],       # 'Щ' for Mongolian
-                'Ь' : ['Ъ'],       # 'Ъ' for Mongolian
+                'Ч' : ['Ӵ', 'Ҹ'],                   # 'Ҹ' for Azerbaijani(Cyrillic)
+                'Ш' : ['Щ'],                        # 'Щ' for Mongolian
+                'Ь' : ['Ъ'],                        # 'Ъ' for Mongolian
                 'Ы' : ['Ӹ'],
                 'Э' : ['Ӭ'],
                 'а' : ['ӑ', 'ӓ'],
                 'г' : ['ѓ'],
-                'е' : ['ѐ', 'ё', 'ӗ', 'э', 'ӭ'],  # 'э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'е' : ['ѐ', 'ё', 'ӗ', 'э', 'ӭ'],    # 'э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'ё' : ['е', 'ѐ', 'ӗ'],              # 'е' for Mongolian
                 'ж' : ['ӂ', 'ӝ'],
                 'з' : ['ӟ'],
                 'и' : ['й', 'ѝ', 'ӣ', 'ӥ'],
-                'к' : ['ќ', 'ҝ'],  # 'ҝ' for Azerbaijani(Cyrillic)
+                'ѝ' : ['и', 'й', 'ӣ', 'ӥ'],
+                'й' : ['и', 'ѝ', 'ӣ', 'ӥ'],         # 'ѝ' for Bulgarian
+                'к' : ['ќ', 'ҝ'],                   # 'ҝ' for Azerbaijani(Cyrillic)
                 'о' : ['ӧ'],
                 'у' : ['ў', 'ӯ', 'ӱ', 'ӳ'],
-                'ч' : ['ӵ', 'ҹ'],  # 'ҹ' for Azerbaijani(Cyrillic)
-                'ш' : ['щ'],       # 'щ' for Mongolian
-                'ь' : ['ъ'],       # 'ъ' for Mongolian
+                'ч' : ['ӵ', 'ҹ'],                   # 'ҹ' for Azerbaijani(Cyrillic)
+                'ш' : ['щ'],                        # 'щ' for Mongolian
+                'ь' : ['ъ'],                        # 'ъ' for Mongolian
                 'ы' : ['ӹ'],
                 'э' : ['ӭ'],
                 'і' : ['ї'],

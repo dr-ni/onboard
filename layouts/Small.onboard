@@ -15,7 +15,61 @@
     <box>
       <panel>
         <!-- layer0 -->
-        <panel filename="Small-Alpha.svg" layer="alpha">
+
+        <!-- Cyrillic keymaps-->
+        <panel id="alpha-keys" filename="Small-Alpha.svg" layer="alpha" layout="ru,ua,by,bg,tj,ge(os),az(cyrillic),mn,mk">
+          <!-- row 4 -->
+          <key group="bottomrow" id="ESC" label_margin=", 2"/>
+          <key group="alphanumeric" id="AD01" svg_id="AD01-cyr"/>
+          <key group="alphanumeric" id="AD02" svg_id="AD02-cyr"/>
+          <key group="alphanumeric" id="AD03" svg_id="AD03-cyr"/>
+          <key group="alphanumeric" id="AD04" svg_id="AD04-cyr"/>
+          <key group="alphanumeric" id="AD05" svg_id="AD05-cyr"/>
+          <key group="alphanumeric" id="AD06" svg_id="AD06-cyr"/>
+          <key group="alphanumeric" id="AD07" svg_id="AD07-cyr"/>
+          <key group="alphanumeric" id="AD08" svg_id="AD08-cyr"/>
+          <key group="alphanumeric" id="AD09" svg_id="AD09-cyr"/>
+          <key group="alphanumeric" id="AD10" svg_id="AD10-cyr"/>
+          <key group="alphanumeric" id="AD11" svg_id="AD11-cyr"/>
+          <key group="bottomrow" id="BKSP"/>
+          <!-- row 3 -->
+          <key group="bottomrow" id="TAB"/>
+          <key group="alphanumeric" id="AC01" svg_id="AC01-cyr"/>
+          <key group="alphanumeric" id="AC02" svg_id="AC02-cyr"/>
+          <key group="alphanumeric" id="AC03" svg_id="AC03-cyr"/>
+          <key group="alphanumeric" id="AC04" svg_id="AC04-cyr"/>
+          <key group="alphanumeric" id="AC05" svg_id="AC05-cyr"/>
+          <key group="alphanumeric" id="AC06" svg_id="AC06-cyr"/>
+          <key group="alphanumeric" id="AC07" svg_id="AC07-cyr"/>
+          <key group="alphanumeric" id="AC08" svg_id="AC08-cyr"/>
+          <key group="alphanumeric" id="AC09" svg_id="AC09-cyr"/>
+          <key group="alphanumeric" id="AC10" svg_id="AC10-cyr"/>
+          <key group="alphanumeric" id="AC11" svg_id="AC11-cyr" keycode="35" layout="ru,tj,az(cyrillic)"/>
+          <key group="alphanumeric" id="AC11" svg_id="AC11-cyr" keycode="51" layout="ua"/>
+          <key group="alphanumeric" id="AC11" svg_id="AC11-cyr"/>
+          <key group="bottomrow" id="DELE"/>
+          <!-- row 2 -->
+          <key group="shifts" id="LFSH"/>
+          <key group="alphanumeric" id="AB01" svg_id="AB01-cyr"/>
+          <key group="alphanumeric" id="AB02" svg_id="AB02-cyr"/>
+          <key group="alphanumeric" id="AB03" svg_id="AB03-cyr"/>
+          <key group="alphanumeric" id="AB04" svg_id="AB04-cyr"/>
+          <key group="alphanumeric" id="AB05" svg_id="AB05-cyr"/>
+          <key group="alphanumeric" id="AB06" svg_id="AB06-cyr"/>
+          <key group="alphanumeric" id="AB07" svg_id="AB07-cyr"/>
+          <key group="alphanumeric" id="AB08" svg_id="AB08-cyr"/>
+          <key group="alphanumeric" id="AB09" svg_id="AB09-cyr"/>
+          <key group="alphanumeric" id="AB09" svg_id="AB09-cyr"/>
+          <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="48" layout="ru,ua,tj,az(cyrillic)"/>
+          <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="49" layout="ge(os)"/> <!-- not ideal, but sacrifice ESC instead? -->
+          <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="51" layout="mk"/>
+          <key group="alphanumeric" id="AB10" svg_id="AB10-cyr"/>
+          <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
+          <key group="shifts" id="RTSH"/>
+        </panel>
+
+        <!-- Latin and others keymaps-->
+        <panel id="alpha-keys" filename="Small-Alpha.svg" layer="alpha">
           <!-- row 4 -->
           <key group="bottomrow" id="ESC" label_margin=", 2"/>
           <key group="alphanumeric" id="AD01"/>
@@ -40,7 +94,7 @@
           <key group="alphanumeric" id="AC07"/>
           <key group="alphanumeric" id="AC08"/>
           <key group="alphanumeric" id="AC09"/>
-          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty),ru,ua,by,bg,tj,ge,az(cyrillic),mn,mk"/>
+          <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty)"/>
           <key group="alphanumeric" id="AC10" label="'" char="'" />
           <key group="bottomrow" id="DELE"/>
           <!-- row 2 -->
@@ -53,15 +107,12 @@
           <key group="alphanumeric" id="AB06"/>
           <key group="alphanumeric" id="AB07" label="'" char="'" layout="be,fr,cm(azerty)"/>
           <key group="alphanumeric" id="AB07"/>
-          <key group="alphanumeric" id="AB08" layout="ru,ua,by,bg,tj,ge,az(cyrillic),mn"/>
-          <key group="alphanumeric" id="AB08" keycode="48" layout="mk"/>
           <key group="alphanumeric" id="AB08" label="," char=","/>
-          <key group="alphanumeric" id="AB09" layout="ru,ua,by,bg,tj,ge,az(cyrillic),mn"/>
-          <key group="alphanumeric" id="AB09" keycode="51" layout="mk"/>
           <key group="alphanumeric" id="AB09" label="." char="."/>
           <key group="misc" id="RTRN" popup_id="RTRN_popup"/>
           <key group="shifts" id="RTSH"/>
         </panel>
+
         <!-- layer1 -->
         <panel filename="Small-Numbers.svg" layer="numbers">
           <!-- row 4, numbers layer -->
@@ -121,10 +172,11 @@
           <!-- row 3 -->
           <key group="bottomrow" id="TAB"/>
           <key char="$" group="alphanumeric" id="CC01" label="$"/>
-          <key group="alphanumeric" id="CC02" keysym="8364" label="€"/>
-          <key char="£" group="alphanumeric" id="CC03" label="£"/>
-          <key char="¥" group="alphanumeric" id="CC04" label="¥"/>
-          <key group="alphanumeric" id="CC05" label="₽" char="₽"/>
+          <key group="alphanumeric" id="CC02" label="€" keysym="8364"/>
+          <key group="alphanumeric" id="CC03" label="¥" char="¥"/>
+          <key group="alphanumeric" id="CC04" label="₽" char="₽"/>
+          <key group="alphanumeric" id="CC05" label="₮" char="₮" layout="mn"/>  <!-- Mongolian tögrög -->
+          <key group="alphanumeric" id="CC05" label="£" char="£"/>
           <key group="alphanumeric" id="CC06" label="&amp;" char="&amp;"/>
           <key char="§" group="alphanumeric" id="CC07" label="§"/>
           <key char="^" group="alphanumeric" id="CC08" label="^"/>
