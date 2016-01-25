@@ -268,38 +268,6 @@ class WordSuggestions:
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
-    def enter_caps_mode(self):
-        """
-        Do what has to be done so that the next pressed
-        character will be capitalized.
-        """
-        lfsh_keys = self.find_items_from_ids(["LFSH"])
-        rtsh_keys = self.find_items_from_ids(["RTSH"])
-
-        # unlatch all shift keys
-        for key in rtsh_keys + lfsh_keys:
-            if key.active:
-                key.active = False
-                key.locked = False
-                if key in self._latched_sticky_keys:
-                    self._latched_sticky_keys.remove(key)
-                if key in self._locked_sticky_keys:
-                    self._locked_sticky_keys.remove(key)
-            self.redraw([key])
-
-        # Latch right shift for capitalization,
-        # if there is no right shift latch left shift instead.
-        shift_keys = rtsh_keys if rtsh_keys else lfsh_keys
-        for key in shift_keys:
-            if not key.active:
-                key.active = True
-                if not key in self._latched_sticky_keys:
-                    self._latched_sticky_keys.append(key)
-                self.redraw([key])
-
-        self.mods[Modifiers.SHIFT] = 1
-        self._text_changer.lock_mod(1)
-        self.redraw_labels(False)
 
     def on_spell_checker_changed(self):
         self.update_spell_checker()
@@ -378,6 +346,7 @@ class WordSuggestions:
         """ spelling correction clicked """
         span = self._correction_span # span to correct
         with self.suppress_modifiers():
+            self._delete_selected_text()
             self._replace_text(span.begin(), span.end(),
                                self.text_context.get_span_at_caret().begin(),
                                self._correction_choices[choice_index])
@@ -811,6 +780,21 @@ class WordSuggestions:
 
         return word_span
 
+
+    def _delete_selected_text(self):
+        """
+        Delete the current selection.
+        """
+        if self.text_context.can_insert_text():
+            # delete any selected text first
+            selection_span = self.text_context.get_selection_span()
+            if not selection_span.is_empty():
+                self.text_context.delete_text(selection_span.pos,
+                                              selection_span.length)
+        else:
+            # keystrokes delete the selection on their own.
+            pass
+
     def _replace_text(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
@@ -824,12 +808,6 @@ class WordSuggestions:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
-        # delete any selected text first
-        selection_span = self.text_context.get_selection_span()
-        if not selection_span.is_empty():
-            self.text_context.delete_text(selection_span.pos,
-                                          selection_span.length)
-
         self.text_context.delete_text(begin, end - begin)
         self.text_context.insert_text(begin, new_text)
 
@@ -862,35 +840,39 @@ class WordSuggestions:
         """
         Insert a word/word-remainder and add a separator string as needed.
         """
-        added_separator = ""
-        caret_span = self.text_context.get_span_at_caret()
+        delete_existing_separator = False
+
+        selection_span = self.text_context.get_selection_span()
         if auto_separator:
-            caret_text = caret_span.get_text_from_span()
+            caret_text = selection_span.get_text_after_span()
             remaining_line = self.text_context.get_line_past_caret()
 
             # Insert separator if the separator does not exist at the caret
             # yet. For space characters also check if the caret is at the
             # end of the line. The end of the line in the terminal
             # (e.g. in vim) may mean lots of spaces until the final new line.
+            delete_existing_separator = True
             if not caret_text.startswith(auto_separator) or \
                auto_separator.isspace() and remaining_line.isspace():
-                added_separator = auto_separator
+                delete_existing_separator = False
 
         with self.suppress_modifiers():
             if insertion:
-                self._replace_text(caret_span.begin() - len(deletion),
-                                   caret_span.begin(),
-                                   caret_span.begin(),
+                self._delete_selected_text()
+                self._replace_text(selection_span.begin() - len(deletion),
+                                   selection_span.begin(),
+                                   selection_span.begin(),
                                    insertion)
             if auto_separator:
-                if added_separator:
-                    self._text_changer.insert_string_at_caret(auto_separator)
-                else:
-                     # just skip over the existing separator
-                    self._text_changer.press_keysyms("right",
-                                                     len(auto_separator))
+                self._text_changer.insert_string_at_caret(auto_separator)
+                if delete_existing_separator:
+                    pos = selection_span.begin() - len(deletion) + len(insertion) + len(auto_separator)
+                    self._replace_text(pos,
+                                       pos + len(auto_separator),
+                                       pos,
+                                       "") # delete, replace with nothing
 
-        return added_separator
+        return auto_separator
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -1577,7 +1559,6 @@ class Punctuator:
     def reset(self):
         self._added_separator_span = None
         self._separator_removed = False
-        self._capitalize = False
 
     def set_added_separator(self, separator_span = None):
         """ Notify punctuator of an actually added word separator. """
@@ -1604,7 +1585,7 @@ class Punctuator:
                     self._delete_at_caret()
                     self._separator_removed = True
                     if config.is_auto_capitalization_enabled():
-                        self._capitalize = True
+                        self._wp.request_capitalization(True)
 
             self._added_separator_span = None
 
@@ -1619,10 +1600,6 @@ class Punctuator:
                 # No direct insertion here. Space must always arrive last,
                 # i.e. after the released key was generated.
                 self._wp._text_changer.press_keysyms("space")
-
-            if self._capitalize:
-                self._capitalize = False
-                self._wp.enter_caps_mode()
 
     def _delete_at_caret(self):
         self._wp._text_changer.delete_at_caret()

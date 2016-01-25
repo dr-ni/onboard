@@ -67,11 +67,11 @@ class Sound(object):
         """ Check initialization of the audio backend """
         return self._osk_audio is not None
 
-    def play(self, event_id, x, y):
+    def play(self, event_id, x, y, xs, ys):
         """ Play a sound """
         try:
             if self.is_valid():
-                self._osk_audio.play(event_id, x, y)
+                self._osk_audio.play(event_id, x, y, xs, ys)
         except Exception as ex:
             _logger.warning("Failed to play sound: " + unicode_str(ex))
 

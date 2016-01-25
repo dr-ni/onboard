@@ -91,9 +91,10 @@ osk_audio_play(PyObject* self, PyObject* args)
     ca_proplist* props;
     const char* event_id;
     float x, y;
+    float xs, ys;
     int sw, sh, ret;
 
-    if (!PyArg_ParseTuple(args, "sff", &event_id, &x, &y))
+    if (!PyArg_ParseTuple(args, "sffff", &event_id, &x, &y, &xs, &ys))
         return NULL;
 
     screen = gdk_screen_get_default();
@@ -103,11 +104,16 @@ osk_audio_play(PyObject* self, PyObject* args)
     ca_proplist_create(&props);
     ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
 
+    /* report mouse position for accessibility */
     if (x != -1 && y != -1)
     {
         ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_X, "%0.0f", x);
         ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_Y, "%0.0f", y);
+    }
 
+    /* place in space between speakers */
+    if (xs != -1 && ys != -1)
+    {
         /* comment from canberra-gtk.c:
          * We use these strange format strings here to avoid that libc
          * applies locale information on the formatting of floating numbers. */
@@ -116,6 +122,7 @@ osk_audio_play(PyObject* self, PyObject* args)
         ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_VPOS, "%i.%03i",
                          (int) y / (sh - 1), (int) (1000.0 * y / (sh - 1)) % 1000);
     }
+
     ret = ca_context_play_full(audio->ca, DEFAULT_SOUND_ID, props, NULL, NULL);
 
     ca_proplist_destroy(props);

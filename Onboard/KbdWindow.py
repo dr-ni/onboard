@@ -88,7 +88,6 @@ class KbdWindowBase:
         self._known_window_rects = []
         self._written_window_rects = {}
         self._written_dock_sizes = {}
-        self._wm_quirks = None
         self._auto_position_started = False
 
         self._desktop_switch_count = 0
@@ -153,25 +152,25 @@ class KbdWindowBase:
         >>> len(osk_util.get_current_wm_name().lower()) > 0
         True
         """
-        wm = config.quirks
+        wm = config.quirks_name
         if not wm:
             # Returns None on X error BadWindow (LP: 1016980)
             # Keep the same quirks as before in that case.
             wm = self._osk_util.get_current_wm_name()
 
         if wm:
-            self._wm_quirks = None
+            config.quirks = None
             for cls in [WMQuirksCompiz, WMQuirksMetacity, WMQuirksMutter]:
                 if  wm.lower() in cls.wms:
-                    self._wm_quirks = cls()
+                    config.quirks = cls()
                     break
 
-        if not self._wm_quirks:
-            self._wm_quirks = WMQuirksDefault()
+        if not config.quirks:
+            config.quirks = WMQuirksDefault()
 
         _logger.debug("window manager: {}".format(wm))
         _logger.debug("quirks selected: {}" \
-                                       .format(str(self._wm_quirks.__class__)))
+                                       .format(str(config.quirks.__class__)))
         return True
 
     def check_alpha_support(self):
@@ -231,7 +230,7 @@ class KbdWindowBase:
         set_unity_property(self)
 
         if not config.xid_mode:   # not when embedding
-            ord = self.is_override_redirect_mode()
+            ord = config.is_override_redirect()
             if ord:
                 self.set_override_redirect(True)
 
@@ -252,7 +251,7 @@ class KbdWindowBase:
         if not config.xid_mode:   # not when embedding
             self.set_decorated(config.window.window_decoration)
 
-            type_hint = self._wm_quirks.get_window_type_hint(self)
+            type_hint = config.quirks.get_window_type_hint(self)
             self.set_type_hint(type_hint)
             self._type_hint = type_hint
 
@@ -267,12 +266,12 @@ class KbdWindowBase:
                 recreate = True
 
             # Override redirect toggled?
-            ord = self.is_override_redirect_mode()
+            ord = config.is_override_redirect()
             if ord != self.get_override_redirect():
                 recreate = True
 
             # Window type hint changed?
-            type_hint = self._wm_quirks.get_window_type_hint(self)
+            type_hint = config.quirks.get_window_type_hint(self)
             if type_hint != self._type_hint:
                 recreate = True
 
@@ -318,7 +317,7 @@ class KbdWindowBase:
                 self.icp.update_sticky_state()
 
     def update_taskbar_hint(self):
-        self._wm_quirks.update_taskbar_hint(self)
+        config.quirks.update_taskbar_hint(self)
 
     def is_visible(self):
         if not self.get_mapped():
@@ -338,7 +337,7 @@ class KbdWindowBase:
            self.can_move_into_view():
             self.move_home_rect_into_view()
 
-        self._wm_quirks.set_visible(self, visible)
+        config.quirks.set_visible(self, visible)
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
@@ -394,8 +393,10 @@ class KbdWindowBase:
         # windows. The reason is unclear.
         # Workaround: keep the toplevel transparent and apply opacity to
         # the child only.
-        #Gtk.Window.set_opacity(self, opacity)
-        Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
+        if hasattr(Gtk.Widget, "set_opacity"): # doesn't exist on Precise
+            Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
+        else:
+            Gtk.Window.set_opacity(self, opacity)
 
     def get_opacity(self):
         return self._opacity
@@ -726,7 +727,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
             # In override redirect mode the window gets stuck with
             # the old scale -> recreate it
-            if self.is_override_redirect_mode() and \
+            if config.is_override_redirect() and \
                not startup and \
                not config.xid_mode:
                 self._recreate_window()
@@ -1053,7 +1054,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         #             correct configure-events
         if self._auto_position_started:
             self._auto_position_started = False
-            if self._wm_quirks.must_fix_configure_event():
+            if config.quirks.must_fix_configure_event():
                 self.move(x-1, y)
 
         self.move(x, y)
@@ -1439,9 +1440,6 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         rootwin = Gdk.get_default_root_window()
         return Rect.from_position_size(rootwin.get_position(),
                                 (rootwin.get_width(), rootwin.get_height()))
-    def is_override_redirect_mode(self):
-        return config.is_force_to_top() and \
-               self._wm_quirks.can_set_override_redirect(self)
 
     def assure_on_current_desktop(self):
         """

@@ -157,3 +157,17 @@ class DockingMonitor:
     MONITOR7 = 7
     MONITOR8 = 8
 
+
+class UIMask:
+    """ enum of keyboard UI update flags """
+    (
+        CONTROLLERS,
+        SUGGESTIONS,
+        LAYOUT,
+        LAYERS,
+        SIZE,
+        REDRAW,
+    ) = (1<<bit for bit in range(6))
+
+    ALL = -1
+

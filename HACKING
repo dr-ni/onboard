@@ -8,7 +8,7 @@
 
 * Docstrings on class members.
 
-* Don't let gconf leak out of the Config singleton. Don't use gconf directly in
-any other class.
+* Don't let gsettings leak out of the Config singleton. Don't use gsettings
+directly in any other class.
 
 * Call "./setup.py build_i18n -m" to merge code changes into .po files.

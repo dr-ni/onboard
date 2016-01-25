@@ -33,6 +33,16 @@ import subprocess
 from math import pi, sin, cos, sqrt, log
 from contextlib import contextmanager
 
+# Make this the location for gi version requirements.
+# utils are mostly imported first in both onboard
+# and onboard-settings.
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('GdkX11', '3.0')
+gi.require_version('Atspi', '2.0')
+gi.require_version('PangoCairo', '1.0')
+gi.require_version('AppIndicator3', '0.1')
+
 from gi.repository import GLib, Gtk
 
 ### Logging ###

@@ -1395,6 +1395,11 @@ vk_get_label_from_keysym (KeySym keyval)
     return label;
 }
 
+// Don't use const int for the max label size, else stack smashing error
+// with -fstack-protector and GCC 4.6.3 on Precise. Later versions
+// are unaffected.
+#define max_label_size 128
+
 static PyObject *
 osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
 {
@@ -1410,7 +1415,6 @@ osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
     unsigned int mods_rtn;
 
     XKeyPressedEvent ev;
-    const int max_label_size = 128;
     char label[max_label_size+1];
     int label_size = 0;
 
@@ -1479,6 +1483,8 @@ osk_virtkey_labels_from_keycode (PyObject *self, PyObject *args)
     }
     return ret;
 }
+
+#undef max_label_size
 
 static PyObject *
 osk_virtkey_keysyms_from_keycode (PyObject *self, PyObject *args)

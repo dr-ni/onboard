@@ -440,7 +440,10 @@ class CSMousetweaks(ConfigObject, ClickSimulator):
         self.mousetweaks = ConfigObject(None, self.MOUSETWEAKS_SCHEMA_ID)
 
         # connect to session bus
-        self._bus = dbus.SessionBus()
+        try:
+            self._bus = dbus.SessionBus()
+        except dbus.exceptions.DBusException:
+            raise RuntimeError("D-Bus session bus unavailable")
         self._bus.add_signal_receiver(self._on_name_owner_changed,
                                       "NameOwnerChanged",
                                       dbus.BUS_DAEMON_IFACE,

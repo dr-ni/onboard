@@ -38,7 +38,6 @@ except ImportError:
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
-# install translation function _() for all modules
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
@@ -360,6 +359,8 @@ class Settings(DialogBuilder):
                         config.keyboard, "touch_feedback_enabled")
         self.bind_check("audio_feedback_enabled_toggle",
                         config.keyboard, "audio_feedback_enabled")
+        self.bind_check("audio_feedback_place_in_space_toggle",
+                        config.keyboard, "audio_feedback_place_in_space")
         self.bind_check("show_secondary_labels_toggle",
                         config.keyboard, "show_secondary_labels")
 
@@ -382,6 +383,9 @@ class Settings(DialogBuilder):
 
         self.bind_spin("sticky_key_release_delay_spinbutton",
                             config.keyboard, "sticky_key_release_delay")
+
+        self.bind_spin("sticky_key_release_on_hide_delay_spinbutton",
+                            config.keyboard, "sticky_key_release_on_hide_delay")
 
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")

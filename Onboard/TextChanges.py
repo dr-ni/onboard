@@ -35,10 +35,6 @@ class TextSpan:
     >>> span = TextSpan(3, 2, "0123456789")
     >>> span.get_span_text()
     '34'
-    >>> span.get_text_until_span()
-    '01234'
-    >>> span.get_text_from_span()
-    '3456789'
     """
 
     def __init__(self, pos = 0, length = 0, text = "", text_pos = 0):
@@ -130,6 +126,11 @@ class TextSpan:
         """
         Return the beginning of the whole available text,
         ending with and including the span.
+
+        Doctests:
+        >>> span = TextSpan(3, 2, "0123456789")
+        >>> span.get_text_until_span()
+        '01234'
         """
         return self.text[:self.end() - self.text_pos]
 
@@ -137,8 +138,24 @@ class TextSpan:
         """
         Return the end of the whole available text,
         starting from and including the span.
+
+        Doctests:
+        >>> span = TextSpan(3, 2, "0123456789")
+        >>> span.get_text_from_span()
+        '3456789'
         """
         return self.text[self.pos - self.text_pos:]
+
+    def get_text_after_span(self):
+        """
+        Return the remaining available text after the span.
+
+        Doctests:
+        >>> span = TextSpan(3, 2, "0123456789")
+        >>> span.get_text_after_span()
+        '56789'
+        """
+        return self.text[self.end() - self.text_pos:]
 
     def get_char_before_span(self):
         """

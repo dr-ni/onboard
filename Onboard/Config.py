@@ -249,7 +249,7 @@ class Config(ConfigObject):
         group.add_option("-a", "--keep-aspect", action="store_true",
                 dest="keep_aspect_ratio",
                 help=_("Keep aspect ratio when resizing the window"))
-        group.add_option("-q", "--quirks", dest="quirks",
+        group.add_option("-q", "--quirks", dest="quirks_name",
                 help=_("Override auto-detection and manually select quirks\n"
                        "QUIRKS={metacity|compiz|mutter}"))
         parser.add_option_group(group)
@@ -279,8 +279,9 @@ class Config(ConfigObject):
         self.options = options
 
         self.xid_mode = options.xid_mode
-        self.quirks = options.quirks
         self.log_learn = options.log_learn
+        self.quirks_name = options.quirks_name
+        self.quirks = None  # WMQuirks instance, provided by KbdWindow for now
 
         # setup logging
         min_level_name = None
@@ -625,12 +626,11 @@ class Config(ConfigObject):
 
         # moustweaks
         for _class in [CSMousetweaks1, CSMousetweaks0]:
-            _class.MOUSETWEAKS_SCHEMA_ID
             try:
                 self.mousetweaks = _class()
                 self.children.append(self.mousetweaks)
                 break
-            except (SchemaError, ImportError) as e:
+            except (SchemaError, ImportError, RuntimeError) as e:
                 _logger.info(unicode_str(e))
                 self.mousetweaks = None
         if self.mousetweaks is None:
@@ -1031,6 +1031,10 @@ class Config(ConfigObject):
     def is_force_to_top(self):
         return self.window.force_to_top or self.is_docking_enabled()
 
+    def is_override_redirect(self):
+        return self.is_force_to_top() and \
+               self.quirks.can_set_override_redirect(self)
+
     def is_docking_enabled(self):
         return self.window.docking_enabled
 
@@ -1403,6 +1407,7 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("touch-feedback-enabled", False)
         self.add_key("touch-feedback-size", 0)
         self.add_key("audio-feedback-enabled", False)
+        self.add_key("audio-feedback-place-in-space", False)
         self.add_key("show-secondary-labels", False)
 
         self.add_key("inter-key-stroke-delay", 0.0)
