@@ -241,6 +241,12 @@ Files: COPYING
 Copyright: 2016, Francesco Fumanti <francesco.fumanti@gmx.net>
 License: GPL-3+
 
+Files: HACKING
+Copyright: 2016, marmuta <marmvta@gmail.com>
+  2009, Francesco Fumanti <francesco.fumanti@gmx.net>
+  2009, Chris Jones <tortoise@tortuga>
+License: GPL-3+
+
 Files: NEWS
 Copyright: 2010-2015, Francesco Fumanti <francesco.fumanti@gmx.net>
   2014-2015, marmuta <marmvta@gmail.com>
