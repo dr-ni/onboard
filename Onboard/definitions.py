@@ -56,8 +56,11 @@ class LearningBehavior:
 class RepositionMethodEnum:
     (
         NONE,
-        PREVENT_OCCLUSION,
-    ) = range(2)
+        PREVENT_OCCLUSION,          # Stay put at the user selected home
+                                    # position, only move when really necessary.
+        REDUCE_POINTER_TRAVEL,      # Move closer to the accessible, but try
+                                    # to stay out of top level windows.
+    ) = range(3)
 
 # window corners
 class Handle:

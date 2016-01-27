@@ -185,12 +185,12 @@ class DialogBuilder(object):
             config_set_callback = self.bind_combobox_config_set
 
         w.set_active_id(id)
-        w.connect("changed", self.bind_combobox_callback,
+        w.connect("changed", self._bind_combobox_callback,
                   config_object, key, config_set_callback)
         getattr(config_object, key + '_notify_add')( \
-             lambda x: self.notify_combobox_callback(w, config_object, key,
+             lambda x: self._notify_combobox_callback(w, config_object, key,
                                                      config_get_callback))
-    def notify_combobox_callback(self, widget,
+    def _notify_combobox_callback(self, widget,
                                  config_object, key, config_get_callback):
         if config_get_callback:
             id = config_get_callback(config_object, key)
@@ -198,7 +198,7 @@ class DialogBuilder(object):
             id = str(getattr(config_object, key))
         widget.set_active_id(id)
 
-    def bind_combobox_callback(self, widget,
+    def _bind_combobox_callback(self, widget,
                                config_object, key, config_set_callback):
         id = widget.get_active_id()
         config_set_callback(config_object, key, id)
@@ -1190,6 +1190,16 @@ class AutoShowDialog(DialogBuilder):
         DialogBuilder.__init__(self, builder)
 
         def set_config(config_object, key, value):
+            self.bind_combobox_config_set(config_object, key, value)
+            self._update_ui()
+        self.bind_combobox_id("reposition_method_floating_combobox",
+                        config.auto_show, "reposition_method_floating",
+                        config_set_callback = set_config)
+        self.bind_combobox_id("reposition_method_docked_combobox",
+                        config.auto_show, "reposition_method_docked",
+                        config_set_callback = set_config)
+
+        def set_config(config_object, key, value):
             setattr(config_object, key, value)
             self._update_ui()
         self.bind_check("hide_on_key_press_toggle",
@@ -1220,6 +1230,11 @@ class AutoShowDialog(DialogBuilder):
         w = self.wid("hide_on_key_press_box")
         w.set_sensitive(config.is_auto_hide_enabled())
 
+        docked = config.is_docking_enabled()
+        w = self.wid("reposition_method_floating_box")
+        w.set_visible(not docked)
+        w = self.wid("reposition_method_docked_box")
+        w.set_visible(docked)
 
 class DockingDialog(DialogBuilder):
     """ Dialog "Docking Settings" """

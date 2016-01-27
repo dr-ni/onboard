@@ -116,6 +116,7 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
     <enum id="org.onboard.auto-show.RepositionMethod">
         <value nick="none" value="0"/>
         <value nick="prevent-occlusion" value="1"/>
+        <value nick="reduce-travel" value="2"/>
     </enum>
 
     <schema id="org.onboard.auto-show" path="/org/onboard/auto-show/">
@@ -124,10 +125,15 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <summary>Auto-show enabled</summary>
             <description>Auto-show Onboard for editable widgets. Requires gnome-accessibility (at-spi2).</description>
         </key>
-        <key name="reposition-method"  enum="org.onboard.auto-show.RepositionMethod">
+        <key name="reposition-method-floating"  enum="org.onboard.auto-show.RepositionMethod">
             <default>"prevent-occlusion"</default>
-            <summary>Method of auto-repositioning</summary>
-            <description>Method for auto-repositioning the keyboard. The default method "prevent-occlusion" only moves the keyboard when it would otherwise cover the currently focused text entry. Set to "none" to disable repositioning.</description>
+            <summary>Auto-repositioning when keyboard is floating</summary>
+            <description>The default method "prevent-occlusion" only moves the keyboard when it would otherwise cover the currently focused text entry. Set to "none" to disable repositioning.</description>
+        </key>
+        <key name="reposition-method-docked"  enum="org.onboard.auto-show.RepositionMethod">
+            <default>"prevent-occlusion"</default>
+            <summary>Auto-repositioning when keyboard is docked</summary>
+            <description>The default method "prevent-occlusion" only moves the keyboard when it would otherwise cover the currently focused text entry. Set to "none" to disable repositioning.</description>
         </key>
         <key name="widget-clearance" type="(dddd)">
             <default>(25.0, 55.0, 25.0, 40.0)</default>

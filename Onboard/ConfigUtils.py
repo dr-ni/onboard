@@ -329,7 +329,7 @@ class ConfigObject(object):
            child.migrate_dconf_tree(old_root, current_root)
 
     def migrate_dconf_value(self, dconf_key, gskey):
-        """ Copy the value of dconf_key into the given gskey """
+        """ Copy the value of dconf_key to the given gskey """
         if not self._osk_dconf:
             self._osk_dconf = osk.DConf()
         try:

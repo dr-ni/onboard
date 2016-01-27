@@ -22,6 +22,9 @@ from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.utils             import Rect, TimerOnce
+from Onboard.definitions       import RepositionMethodEnum
+
+from gi.repository import Atspi
 
 ### Logging ###
 import logging
@@ -222,43 +225,17 @@ class AutoShow(object):
         no repositioning is required.
         """
         accessible = self._active_accessible
-        if accessible:
-            rect = self._state_tracker.get_accessible_extents(accessible)
-            if not rect.is_empty() and \
-               not self._lock_visible:
-                return self._get_window_rect_for_accessible_rect( \
-                                            view, home,
-                                            rect, limit_rects,
-                                            test_clearance, move_clearance,
-                                            horizontal, vertical)
-        return None
-
-    def _get_window_rect_for_accessible_rect(self, view, home,
-                                             rect, limit_rects,
-                                             test_clearance, move_clearance,
-                                             horizontal = True, vertical = True):
-        """
-        Find new window position based on the screen rect of the accessible.
-        """
-        mode = "nooverlap"
-        x = y = None
-
-        if mode == "closest":
-            x, y = rect.left(), rect.bottom()
-        if mode == "nooverlap":
-            x, y = self._find_non_occluding_position(view, home,
-                                                rect, limit_rects,
-                                                test_clearance, move_clearance,
-                                                horizontal, vertical)
-        if not x is None:
-            return Rect(x, y, home.w, home.h)
-        else:
+        if not accessible:
             return None
 
-    def _find_non_occluding_position(self, view, home,
-                                     acc_rect, limit_rects,
-                                     test_clearance, move_clearance,
-                                     horizontal = True, vertical = True):
+        acc_rect = self._state_tracker.get_accessible_extents(accessible)
+        if acc_rect.is_empty() or \
+           self._lock_visible:
+            return None
+
+        method = config.get_auto_show_reposition_method()
+        x = None
+        y = None
 
         # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
@@ -269,13 +246,98 @@ class AutoShow(object):
             rh.w += offset[0]
             rh.h += offset[1]
 
+        # "Follow active window" method
+        if method == RepositionMethodEnum.REDUCE_POINTER_TRAVEL:
+            frame = self._state_tracker.get_frame()
+            app_rect = self._state_tracker.get_accessible_extents(frame) \
+                        if frame else Rect()
+            x, y = self._find_close_position(view, rh,
+                                                app_rect, acc_rect, limit_rects,
+                                                test_clearance, move_clearance,
+                                                horizontal, vertical)
+
+        # "Only move when necessary" method
+        if method == RepositionMethodEnum.PREVENT_OCCLUSION:
+            x, y = self._find_non_occluding_position(view, rh,
+                                                acc_rect, limit_rects,
+                                                test_clearance, move_clearance,
+                                                horizontal, vertical)
+        if not x is None:
+            return Rect(x, y, home.w, home.h)
+        else:
+            return None
+
+    def _find_close_position(self, view, home,
+                             app_rect, acc_rect, limit_rects,
+                             test_clearance, move_clearance,
+                             horizontal = True, vertical = True):
+        rh = home
+        move_clearance = Rect(10, 10, 10, 10)
+
+        # Leave a different clearance for the new, yet to be found, positions.
+        ra = acc_rect.apply_border(*move_clearance)
+        rp = app_rect.apply_border(*move_clearance)
+
+        # candidate positions
+        vp = []
+        if vertical:
+            xc = acc_rect.get_center()[0] - rh.w / 2
+            if app_rect.w > rh.w:
+                xc = max(xc, app_rect.left())
+                xc = min(xc, app_rect.right() - rh.w)
+
+            # below window
+            vp.append([xc, rp.bottom(), app_rect])
+
+            # above window
+            vp.append([xc, rp.top() - rh.h, app_rect])
+
+            # inside maximized window, y at home.y
+            vp.append([xc, home.y, acc_rect])
+            # vp.append([xc, rp.bottom()-ymargin, app_rect.deflate(rh.h+move_clearance[3]+ymargin)])
+
+            # below text entry
+            vp.append([xc, ra.bottom(), acc_rect])
+
+            # above text entry
+            vp.append([xc, ra.top() - rh.h, acc_rect])
+
+        # limited, non-intersecting candidate rectangles
+        rresult = None
+        for p in vp:
+            pl = view.limit_position(p[0], p[1],
+                                     view.canvas_rect,
+                                     limit_rects)
+            r = Rect(pl[0], pl[1], rh.w, rh.h)
+            ri = p[2]
+            rcs = [ri, acc_rect] # collision rects
+            if not any(r.intersects(rc) for rc in rcs):
+                rresult = r
+                break
+
+        if rresult is None:
+            # try again, this time horizontally and vertically
+            rhtmp = Rect(vp[0][0], vp[0][1], home.w, home.h)
+            return self._find_non_occluding_position(view, home,
+                                                acc_rect, limit_rects,
+                                                test_clearance, move_clearance,
+                                                horizontal, vertical)
+        else:
+            return rresult.get_position()
+
+    def _find_non_occluding_position(self, view, home,
+                                     acc_rect, limit_rects,
+                                     test_clearance, move_clearance,
+                                     horizontal = True, vertical = True):
+        rh = home
+
         # Leave some clearance around the accessible to account for
         # window frames and position errors of firefox entries.
         ra = acc_rect.apply_border(*test_clearance)
 
         if rh.intersects(ra):
 
-            # Leave a different clearance for the new to be found positions.
+            # Leave a different clearance for the new, yet to be found, positions.
             ra = acc_rect.apply_border(*move_clearance)
             x, y = rh.get_position()
 

@@ -443,6 +443,28 @@ class AtspiStateTracker(EventSource):
         """ Screen rect of the active accessible """
         return self._state.get("extents", Rect())
 
+    def get_frame(self):
+        if not self._active_accessible:
+            return None
+
+        frame = self._state.get("frame")
+        if not frame:
+            frame = self._get_accessible_frame(self._active_accessible)
+            self._state["frame"] = frame   # may be None
+        return frame
+
+    @staticmethod
+    def get_accessible_extents(accessible):
+        """ Screen rect of the given accessible, no caching """
+        try:
+            rect = AtspiStateTracker._get_accessible_extents(accessible)
+        except Exception as ex: # private exception gi._glib.GError when
+                # right clicking onboards unity2d launcher (Precise)
+            _logger.atspi("Invalid accessible,"
+                         " failed to get extents: " + unicode_str(ex))
+            rect = Rect()
+        return rect
+
     @staticmethod
     def _get_accessible_extents(accessible):
         """
@@ -465,18 +487,6 @@ class AtspiStateTracker(EventSource):
                     ext.width * scale, ext.height * scale)
 
     @staticmethod
-    def get_accessible_extents(accessible):
-        """ Screen rect of the given accessible, no caching """
-        try:
-            rect = AtspiStateTracker._get_accessible_extents(accessible)
-        except Exception as ex: # private exception gi._glib.GError when
-                # right clicking onboards unity2d launcher (Precise)
-            _logger.atspi("Invalid accessible,"
-                         " failed to get extents: " + unicode_str(ex))
-            rect = Rect()
-        return rect
-
-    @staticmethod
     def get_accessible_text(accessible, begin, end):
         """ Text of the given accessible, no caching """
         try:
@@ -489,6 +499,32 @@ class AtspiStateTracker(EventSource):
             return None
 
         return text
+
+    @staticmethod
+    def _get_accessible_frame(accessible):
+        """ Accessible of the top level window to which accessible belongs. """
+        frame = None
+        _logger.atspi("_get_accessible_frame(): searching for top level:")
+        try:
+            parent = accessible
+            while True:
+                parent = parent.get_parent()
+                if not parent:
+                    break
+                role = parent.get_role()
+                _logger.atspi("parent: {}".format(role))
+                if role == Atspi.Role.FRAME or \
+                    role == Atspi.Role.DIALOG or \
+                    role == Atspi.Role.WINDOW or \
+                    role == Atspi.Role.NOTIFICATION:
+                    frame = parent
+                    break
+
+        except Exception as ex: # private exception gi._glib.GError when
+                # right clicking onboards unity2d launcher (Precise)
+            _logger.atspi("Invalid accessible,"
+                         " failed to get top level accessible: " + unicode_str(ex))
+        return frame
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
@@ -567,7 +603,7 @@ class AtspiStateTracker(EventSource):
         state["interfaces"] = accessible.get_interfaces()
         state["extents"] = self._get_accessible_extents(accessible)
 
-        # These are currently used only in debug output
+        # These are currently used for debug output only
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             state["id"] = accessible.get_id()
             state["name"] = accessible.get_name()
@@ -588,6 +624,10 @@ class AtspiStateTracker(EventSource):
             #state["document_attributes"] = accessible.get_document_attributes()
             state["description"] = accessible.get_description()
             #state["default_attributes"] = accessible.get_default_attributes() # not implemented by unity dash
+
+            frame = self._get_accessible_frame(accessible)
+            state["frame"] = frame
+            state["frame_extents"] = self._get_accessible_extents(frame) if frame else None
 
         return state
 

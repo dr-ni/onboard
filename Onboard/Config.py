@@ -110,8 +110,9 @@ DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
 SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
 SCHEMA_VERSION_0_99         = Version(2, 1)   # Onboard 0.99.0
-SCHEMA_VERSION_1_10         = Version(2, 2)   # Onboard 0.99.0
-SCHEMA_VERSION              = SCHEMA_VERSION_1_10
+SCHEMA_VERSION_1_1          = Version(2, 2)
+SCHEMA_VERSION_1_2          = Version(2, 3)
+SCHEMA_VERSION              = SCHEMA_VERSION_1_2
 
 
 # enum for simplified number of window_handles
@@ -668,13 +669,32 @@ class Config(ConfigObject):
 
         # --- onboard 1.0.0 -> 1.1.0-------------------------------------------
         format = Version.from_string(self.schema_version)
-        if format < SCHEMA_VERSION_1_10:
+        if format < SCHEMA_VERSION_1_1:
             _logger.info("Migrating dconf values from before v1.1.0 ")
-            self._migrate_to_1_10()
+            self._migrate_to_1_1()
+
+        # --- onboard 1.1.0 -> 1.2.0-------------------------------------------
+        format = Version.from_string(self.schema_version)
+        if format < SCHEMA_VERSION_1_2:
+            _logger.info("Migrating dconf values from before v1.2.0 ")
+            self._migrate_to_1_2()
 
         self.schema_version = SCHEMA_VERSION.to_string()
 
-    def _migrate_to_1_10(self):
+    def _migrate_to_1_2(self):
+        """
+        reposition-method split into reposition-method-floating
+        and reposition-method-docked
+        """
+        co = self.auto_show
+        co.delay()
+        co.migrate_dconf_key("/org/onboard/auto-show/reposition-method",
+                             "reposition-method-floating")
+        co.migrate_dconf_key("/org/onboard/auto-show/reposition-method",
+                             "reposition-method-docked")
+        co.apply()
+
+    def _migrate_to_1_1(self):
         """ resize_handles renamed to window_handles and movement added """
 
         def migrate_resize_handles(co, dconf_path, key):
@@ -1021,7 +1041,13 @@ class Config(ConfigObject):
 
     def can_auto_show_reposition(self):
         return self.is_auto_show_enabled() and \
-            self.auto_show.reposition_method != RepositionMethodEnum.NONE
+            self.get_auto_show_reposition_method() != RepositionMethodEnum.NONE
+
+    def get_auto_show_reposition_method(self):
+        if self.is_docking_enabled():
+            return self.auto_show.reposition_method_docked
+        else:
+            return self.auto_show.reposition_method_floating
 
     def can_set_auto_hide(self):
         """ Allowed to change auto hide on key-press? """
@@ -1613,10 +1639,15 @@ class ConfigAutoShow(ConfigObject):
 
         self.add_key("enabled", False)
 
-        self.add_key("reposition-method", self.DEFAULT_REPOSITION_METHOD,
-                      enum={"none" : 0,
-                            "prevent-occlusion" : 1,
-                           })
+        enum = {
+            "none" : 0,
+            "prevent-occlusion" : RepositionMethodEnum.PREVENT_OCCLUSION,
+            "reduce-travel"   : RepositionMethodEnum.REDUCE_POINTER_TRAVEL,
+        }
+        self.add_key("reposition-method-floating", self.DEFAULT_REPOSITION_METHOD,
+                      enum=enum)
+        self.add_key("reposition-method-docked", self.DEFAULT_REPOSITION_METHOD,
+                      enum=enum)
         self.add_key("widget-clearance", (25.0, 55.0, 25.0, 40.0), '(dddd)')
 
         self.add_key("hide-on-key-press", True)
