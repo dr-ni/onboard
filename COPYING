@@ -182,11 +182,15 @@ Copyright: 2011-2014, 2016, marmuta <marmvta@gmail.com>
   2009, Chris Jones <tortoise@tortuga>
 License: GPL-3+
 
-Files: man/*
+Files: man/man1/onboard.1
 Copyright: 2015, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
   2011-2014, marmuta <marmvta@gmail.com>
   2012, Gerd Kohlberger <lowfi@chello.at>
   2008, Chris Jones <tortoise@tortuga>
+License: GPL-3+
+
+Files: man/man1/onboard-settings.1
+Copyright: 2015, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
 License: GPL-3+
 
 Files: models/*
