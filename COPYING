@@ -182,6 +182,13 @@ Copyright: 2011-2014, 2016, marmuta <marmvta@gmail.com>
   2009, Chris Jones <tortoise@tortuga>
 License: GPL-3+
 
+Files: man/*
+Copyright: 2015, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
+  2011-2014, marmuta <marmvta@gmail.com>
+  2012, Gerd Kohlberger <lowfi@chello.at>
+  2008, Chris Jones <tortoise@tortuga>
+License: GPL-3+
+
 Files: models/*
 Copyright: 2013, 2014, marmuta <marmvta@gmail.com>
   2011, 2012, Francesco Fumanti <francesco.fumanti@gmx.net>
@@ -217,7 +224,7 @@ License: GPL-3+
 
 Files: setup.py
 Copyright: 2011-2016, marmuta <marmvta@gmail.com>
-  2009-2015, Francesco Fumanti <francesco.fumanti@gmx.net>
+  2009-2016, Francesco Fumanti <francesco.fumanti@gmx.net>
   2012, 2013, Gerd Kohlberger <lowfi@chello.at>
   2015, Reiner Herrmann <reiner@reiner-h.de>
   2007, Martin Böhme <martin.bohm@kubuntu.org>

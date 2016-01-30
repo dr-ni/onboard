@@ -4,7 +4,7 @@
 # Copyright © 2007 Martin Böhme <martin.bohm@kubuntu.org>
 # Copyright © 2012-2013 Gerd Kohlberger <lowfi@chello.at>
 # Copyright © 2015 Reiner Herrmann <reiner@reiner-h.de>
-# Copyright © 2009-2015 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2009-2016 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2011-2015 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
@@ -332,10 +332,10 @@ class TestCommand(Command):
 DistUtilsExtra.auto.setup(
     name = 'onboard',
     version = '1.1.0',
-    author = 'Onboard devel team',
+    author = 'Onboard Devel Team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
-    license = 'gpl',
+    license = 'GPL-3+',
     description = 'Simple On-screen Keyboard',
 
     packages = ['Onboard', 'Onboard.pypredict'],
@@ -352,6 +352,7 @@ DistUtilsExtra.auto.setup(
                   ('share/icons/HighContrast/scalable/apps', glob.glob('icons/HighContrast/*')),
                   ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
+                  ('share/man/man1', glob.glob('man/*')),
                   ('share/sounds/freedesktop/stereo', glob.glob('sounds/*')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
