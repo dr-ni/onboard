@@ -399,10 +399,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         rect = self.canvas_rect.deflate(self.get_frame_width())
 
-        layout.update_log_rect() # update logical tree to base aspect ratio
+        layout.update_log_rect()  # update logical tree to base aspect ratio
         rect = self._get_aspect_corrected_layout_rect(rect,
                                                       layout.context.log_rect)
-        layout.do_fit_inside_canvas(rect) # update contexts to final aspect
+        layout.do_fit_inside_canvas(rect)  # update contexts to final aspect
 
         # update the aspect ratio of the main window
         self.on_layout_updated()

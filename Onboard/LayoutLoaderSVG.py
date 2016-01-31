@@ -385,7 +385,7 @@ class LayoutLoaderSVG:
 
         # handle common layout-item attributes
         key = self._init_item(attributes, item_class)
-        key.parent = parent # assign early to have get_filename() work
+        key.parent = parent  # assign early to have get_filename() work
 
         # handle key-specific attributes
         self._init_key(key, attributes)
@@ -393,7 +393,7 @@ class LayoutLoaderSVG:
         # get key geometry from the closest svg file
         filename = key.get_filename()
         if not filename:
-            if not attribute.get("group") == "wsbutton":
+            if not attributes.get("group") == "wsbutton":
                 _logger.warning(_format("Ignoring key '{}'."
                                         " No svg filename defined.",
                                         key.id))
@@ -507,7 +507,7 @@ class LayoutLoaderSVG:
         if override:
             olabel, ogroup = override
             if olabel:
-                labels = { 0 : olabel[:]}
+                labels = {0 : olabel[:]}
                 if ogroup:
                     group_name = ogroup[:]
 

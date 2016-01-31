@@ -352,6 +352,10 @@ class LayoutItem(TreeItem):
     # group string of the item, label size group for keys
     group = None
 
+    # take this item out of the size group when updating the layout.
+    # Instead chose the best label size for this item alone.
+    ignore_group = None
+
     # name of the layer the item is to be shown on, None for all layers
     layer_id = None
 

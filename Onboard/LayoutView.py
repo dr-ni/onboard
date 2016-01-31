@@ -691,7 +691,7 @@ class LayoutView:
 
     def update_labels(self, lod = LOD.FULL):
         """
-        Iterates through all key groups and set each key's
+        Iterate through all key groups and set each key's
         label font size to the maximum possible for that group.
         """
         changed_keys = set()
@@ -700,7 +700,7 @@ class LayoutView:
         mod_mask = self.keyboard.get_mod_mask()
 
         if layout:
-            if lod == LOD.FULL: # no label changes necessary while dragging
+            if lod == LOD.FULL:  # no label changes necessary while dragging
 
                 for key in layout.iter_keys():
                     old_label = key.get_label()
@@ -713,11 +713,17 @@ class LayoutView:
                 for key in keys:
                     best_size = key.get_best_font_size(mod_mask)
                     if best_size:
-                        if not max_size or best_size < max_size:
-                            max_size = best_size
+                        if key.ignore_group:
+                            if key.font_size != best_size:
+                                key.font_size = best_size
+                                changed_keys.add(key)
+                        else:
+                            if not max_size or best_size < max_size:
+                                max_size = best_size
 
                 for key in keys:
-                    if key.font_size != max_size:
+                    if key.font_size != max_size and \
+                       not key.ignore_group:
                         key.font_size = max_size
                         changed_keys.add(key)
 

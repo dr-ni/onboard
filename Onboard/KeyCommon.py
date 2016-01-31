@@ -316,6 +316,9 @@ class KeyCommon(LayoutItem):
         self.label = label
         self.secondary_label = secondary_label
 
+        # Don't let erroneous labels shrink their whole size group.
+        self.ignore_group = label.startswith("0x")
+
     def draw_label(self, context = None):
         raise NotImplementedError()
 

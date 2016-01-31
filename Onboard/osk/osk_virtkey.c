@@ -1385,10 +1385,24 @@ vk_get_label_from_keysym (KeySym keyval)
             else
             {
                 const char *name = gdk_keyval_name (keyval);
-                if (name)
-                    label = PyString_FromStringAndSize(name, 2);
+                size_t l = strlen(name);
+                if (l > 2 && name[0] == '0' && name[1] == 'x') // hex number?
+                {
+                    // Most likely an erroneous keysym and not Onboard's fault.
+                    // Show the hex number fully as label for easier debugging.
+                    // Happend with Belgian CapsLock+keycode 51,
+                    // keysym 0x039c on Xenial.
+                    label = PyString_FromStringAndSize(name, 10);
+                }
                 else
+                if (name)
+                {
+                    label = PyString_FromStringAndSize(name, 2);
+                }
+                else
+                {
                     label = PyString_FromString("");
+                }
             }
         }
     }
