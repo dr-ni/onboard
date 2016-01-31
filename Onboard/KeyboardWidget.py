@@ -27,6 +27,8 @@ import sys
 import time
 from math import sin, pi
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository          import GLib, Gdk, Gtk
 
 from Onboard.TouchInput     import TouchInput, InputSequence
@@ -38,7 +40,8 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.utils          import Rect, Timer, FadeTimer, escape_markup
+from Onboard.utils          import Rect, escape_markup
+from Onboard.Timer          import Timer, FadeTimer
 from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \

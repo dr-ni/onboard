@@ -29,9 +29,12 @@ try:
 except ImportError:
     pass
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository       import GObject
 
-from Onboard.utils       import DelayedLauncher, EventSource, unicode_str
+from Onboard.utils       import EventSource, unicode_str
+from Onboard.Timer       import DelayedLauncher
 from Onboard.ConfigUtils import ConfigObject
 from Onboard.XInput      import XIDeviceManager, XIEventType, XIEventMask
 

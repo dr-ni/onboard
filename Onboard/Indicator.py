@@ -21,10 +21,12 @@
 
 from __future__ import division, print_function, unicode_literals
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GObject, Gtk
 
 from Onboard.definitions import StatusIconProviderEnum
-import Onboard.utils as utils
+from Onboard.utils import unicode_str, run_script
 
 ### Logging ###
 import logging
@@ -111,7 +113,7 @@ class ContextMenu(GObject.GObject):
                 self._menu.get_children()[0].set_label(self._show_label)
 
     def _on_settings_clicked(self, widget):
-        utils.run_script("sokSettings")
+        run_script("sokSettings")
 
     def on_show_keyboard_toggle(self):
         self._keyboard.toggle_visible()
@@ -162,7 +164,7 @@ class Indicator():
                 self._init_indicator()
             except ImportError as ex:
                 _logger.info("AppIndicator not available, falling back on"
-                             " GtkStatusIcon:" + utils.unicode_str(ex))
+                             " GtkStatusIcon:" + unicode_str(ex))
                 self._init_status_icon()
         self.set_visible(False)
 

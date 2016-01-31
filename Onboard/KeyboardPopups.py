@@ -23,15 +23,18 @@ from __future__ import division, print_function, unicode_literals
 
 import cairo
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository          import Gdk, Gtk, Pango, PangoCairo
 
-from Onboard.utils          import Rect, Timer, roundrect_arc, \
-                                   gtk_has_resize_grip_support
+from Onboard.utils          import Rect, roundrect_arc
+from Onboard.Timer          import Timer
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
                                    canvas_to_root_window_rect, \
                                    get_monitor_dimensions, \
-                                   WindowRectTracker
+                                   WindowRectTracker, \
+                                   gtk_has_resize_grip_support
 from Onboard.TouchInput     import TouchInput
 from Onboard                import KeyCommon
 from Onboard.Layout         import LayoutRoot, LayoutPanel

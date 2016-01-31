@@ -23,15 +23,17 @@
 
 from __future__ import division, print_function, unicode_literals
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils       import CallOnce, Rect, roundrect_arc, \
-                                Timer, Fade, gtk_has_resize_grip_support
+from Onboard.utils       import Rect, roundrect_arc, Fade
+from Onboard.Timer       import CallOnce, Timer
 from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
                                 Orientation, set_unity_property, \
-                                DwellProgress
+                                DwellProgress, gtk_has_resize_grip_support
 from Onboard.TouchInput  import InputSequence
 from Onboard.KeyGtk      import RectKey
 from Onboard.Indicator   import ContextMenu

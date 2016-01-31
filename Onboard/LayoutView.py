@@ -25,6 +25,8 @@ import time
 from math import pi
 
 import cairo
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository         import Gtk, Gdk, GdkPixbuf
 
 from Onboard.utils         import Rect, \
@@ -163,7 +165,7 @@ class LayoutView:
     def raise_to_top(self):
         pass
 
-    def redraw(self, items = None, invalidate = True):
+    def redraw(self, items=None, invalidate=True):
         """
         Queue redrawing for individual keys or the whole keyboard.
         """
@@ -192,7 +194,7 @@ class LayoutView:
 
             self.queue_draw_area(*area)
 
-    def redraw_labels(self, invalidate = True):
+    def redraw_labels(self, invalidate=True):
         self.redraw(self.update_labels(), invalidate)
 
     def update_transparency(self):

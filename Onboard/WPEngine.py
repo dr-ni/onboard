@@ -21,15 +21,16 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
+import logging
+
+from Onboard.utils import unicode_str, XDGDirs
+from Onboard.Timer import Timer
+from Onboard.Config import Config
 
 import Onboard.pypredict as pypredict
 
-import Onboard.utils as utils
-
-from Onboard.Config import Config
 config = Config()
 
-import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -471,7 +472,7 @@ class ModelCache:
                             "Failed to load language model '{}': {} ({})", \
                             filename, errstr, errno)
                 else:
-                    msg = utils.unicode_str(ex)
+                    msg = unicode_str(ex)
                 _logger.error(msg)
                 model.load_error_msg = msg
 
@@ -507,7 +508,7 @@ class ModelCache:
                 try:
                     # create the path
                     path = os.path.dirname(filename)
-                    utils.XDGDirs.assure_user_dir_exists(path)
+                    XDGDirs.assure_user_dir_exists(path)
 
                     if 1:
                         # save to temp file
@@ -582,7 +583,7 @@ class ModelCache:
         return fn
 
 
-class AutoSaveTimer(utils.Timer):
+class AutoSaveTimer(Timer):
     """ Auto-save modified language models periodically """
 
     def __init__(self, mode_cache, interval_min=10*60, interval_max=15*60, postpone_delay=10):

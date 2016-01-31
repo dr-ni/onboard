@@ -22,6 +22,8 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import copy
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import Gdk
 
 from Onboard.utils import EventSource, unicode_str

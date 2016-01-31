@@ -335,6 +335,9 @@ class KeyCommon(LayoutItem):
     def get_id(self):
         return ""
 
+    def get_svg_id(self):
+        return ""
+
     def set_id(self, id, theme_id = None, svg_id = None):
         self.theme_id, self.id = self.parse_id(id)
         if theme_id:
@@ -486,6 +489,19 @@ class RectKeyCommon(KeyCommon):
 
     def get_id(self):
         return self.id
+
+    def get_svg_id(self):
+        return self.svg_id
+
+    def get_state(self):
+        state = {}
+        state["prelight"]  = self.prelight
+        state["pressed"]   = self.pressed
+        state["active"]    = self.active
+        state["locked"]    = self.locked
+        state["scanned"]   = self.scanned
+        state["sensitive"] = self.sensitive
+        return state
 
     def draw(self, context = None):
         pass

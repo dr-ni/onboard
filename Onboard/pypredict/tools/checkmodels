@@ -23,10 +23,6 @@ import sys
 import glob
 import re
 import optparse
-try:
-    import pypredict
-except ImportError:
-    import Onboard.pypredict
 
 
 def main():

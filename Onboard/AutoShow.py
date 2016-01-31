@@ -21,10 +21,9 @@
 from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.utils             import Rect, TimerOnce
+from Onboard.utils             import Rect
+from Onboard.Timer             import TimerOnce
 from Onboard.definitions       import RepositionMethodEnum
-
-from gi.repository import Atspi
 
 ### Logging ###
 import logging

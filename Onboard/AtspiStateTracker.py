@@ -25,6 +25,8 @@ import time
 import logging
 _logger = logging.getLogger(__name__)
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:

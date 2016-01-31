@@ -26,30 +26,18 @@ import sys
 import os
 import time
 import re
-import traceback
 import colorsys
 import gettext
 import subprocess
 from math import pi, sin, cos, sqrt, log
 from contextlib import contextmanager
 
-# Make this the location for gi version requirements.
-# utils are mostly imported first in both onboard
-# and onboard-settings.
-import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('GdkX11', '3.0')
-gi.require_version('Atspi', '2.0')
-gi.require_version('PangoCairo', '1.0')
-gi.require_version('AppIndicator3', '0.1')
-
-from gi.repository import GLib, Gtk
-
-### Logging ###
 import logging
 from functools import reduce
+
+from gi.repository import GLib
+
 _logger = logging.getLogger("utils")
-###############
 
 
 # keycodes
@@ -57,6 +45,7 @@ class KeyCode:
     Return   = 36
     KP_Enter = 104
     C        = 54
+
 
 class Modifiers:
     # 1      2     4    8    16     32    64     128
@@ -363,85 +352,6 @@ class dictproperty(object):
             return self
         return self._proxy(obj, self._fget, self._fset, self._fdel)
 
-def show_error_dialog(error_string):
-    """ Show an error dialog """
-
-    error_dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.ERROR,
-                                  message_format=error_string,
-                                  buttons=Gtk.ButtonsType.OK)
-    error_dlg.run()
-    error_dlg.destroy()
-
-def show_ask_string_dialog(question, parent=None):
-    question_dialog = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
-                                        buttons=Gtk.ButtonsType.OK_CANCEL)
-    if parent:
-        question_dialog.set_transient_for(parent)
-    question_dialog.set_markup(question)
-    entry = Gtk.Entry()
-    entry.connect("activate", lambda event:
-        question_dialog.response(Gtk.ResponseType.OK))
-    question_dialog.get_message_area().add(entry)
-    question_dialog.show_all()
-    response = question_dialog.run()
-    text = entry.get_text() if response == Gtk.ResponseType.OK else None
-    question_dialog.destroy()
-    return text
-
-def show_confirmation_dialog(question, parent=None, center=False, title=None):
-    """
-    Show this dialog to ask confirmation before executing a task.
-    """
-    if title is None:
-        # Default dialog title: name of the application """
-        title = _("Onboard")
-    dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
-                            text=question,
-                            title = title,
-                            buttons=Gtk.ButtonsType.YES_NO)
-    if parent:
-        dlg.set_transient_for(parent)
-
-    if center:
-        dlg.set_position(Gtk.WindowPosition.CENTER)
-
-    response = dlg.run()
-    dlg.destroy()
-    return response == Gtk.ResponseType.YES
-
-def show_new_device_dialog(name, config_string, is_pointer, callback):
-    """
-    Show a "New Input Device" dialog.
-    """
-    dialog = Gtk.MessageDialog(message_type  = Gtk.MessageType.OTHER,
-                               title = _("New Input Device"),
-                               text  = _("Onboard has detected a new input device"))
-    if is_pointer:
-        dialog.set_image(Gtk.Image(icon_name = "input-mouse",
-                                   icon_size = Gtk.IconSize.DIALOG))
-    else:
-        dialog.set_image(Gtk.Image(icon_name = "input-keyboard",
-                                   icon_size = Gtk.IconSize.DIALOG))
-
-    secondary  = "<i>{}</i>\n\n".format(name)
-    secondary += _("Do you want to use this device for keyboard scanning?")
-
-    dialog.format_secondary_markup(secondary)
-
-    # Translators: cancel button of "New Input Device" dialog. It used to be
-    # stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-    dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
-    dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
-    dialog.connect("response", _show_new_device_dialog_response,
-                   callback, config_string)
-    dialog.show_all()
-
-def _show_new_device_dialog_response(dialog, response, callback, config_string):
-    """ Callback for the "New Input Device" dialog. """
-    if response == Gtk.ResponseType.ACCEPT:
-        callback(config_string)
-    dialog.destroy()
-
 def unpack_name_value_list(_list, num_values=2, key_type = str):
     """
     Converts a list of strings into a dict of tuples.
@@ -510,53 +420,6 @@ def merge_tuple_strings(text1, text2):
     for key,values in list(tuples2.items()):
         tuples1[key] = values
     return pack_name_value_tuples(tuples1)
-
-
-class CallOnce(object):
-    """
-    Call each <callback> during <delay> only once
-    Useful to reduce a storm of config notifications
-    to just a single (or a few) update(s) of onboards state.
-    """
-
-    def __init__(self, delay=20, delay_forever=False):
-        self.callbacks = {}
-        self.timer = None
-        self.delay = delay
-        self.delay_forever = delay_forever
-
-    def is_running(self):
-        return not self.timer is None
-
-    def enqueue(self, callback, *args):
-        if not callback in self.callbacks:
-            self.callbacks[callback] = args
-        else:
-            #print "CallOnce: ignored ", callback, args
-            pass
-
-        if self.delay_forever and self.timer:
-            GLib.source_remove(self.timer)
-            self.timer = None
-
-        if not self.timer and self.callbacks:
-            self.timer = GLib.timeout_add(self.delay, self.cb_timer)
-
-    def stop(self):
-        if self.timer:
-            GLib.source_remove(self.timer)
-            self.timer = None
-        self.callbacks.clear()
-
-    def cb_timer(self):
-        for callback, args in list(self.callbacks.items()):
-            try:
-                callback(*args)
-            except:
-                traceback.print_exc()
-
-        self.stop()
-        return False
 
 
 class Rect:
@@ -1109,183 +972,6 @@ def timeit(s, out=sys.stdout):
         out.write("%10.3fms\n" % ((time.time() - t)*1000))
     else:
         yield None
-
-
-class Timer(object):
-    """
-    Simple wrapper around GLib's timer API
-    Overload on_timer in derived classes.
-    For one-shot timers return False there.
-    """
-    _timer = None
-    _callback = None
-    _callback_args = None
-
-    def __init__(self, delay = None, callback = None, *callback_args):
-        self._callback = callback
-        self._callback_args = callback_args
-
-        if not delay is None:
-            self.start(delay)
-
-    def start(self, delay, callback = None, *callback_args):
-        """
-        Delay in seconds.
-        Uses second granularity if delay is of type int.
-        Uses medium resolution timer if delay is of type float.
-        """
-        if callback:
-            self._callback = callback
-            self._callback_args = callback_args
-
-        self.stop()
-
-        if type(delay) == int:
-            self._timer = GLib.timeout_add_seconds(delay, self._cb_timer)
-        else:
-            ms = int(delay * 1000.0)
-            self._timer = GLib.timeout_add(ms, self._cb_timer)
-
-    def finish(self):
-        """
-        Run one last time and stop.
-        """
-        if self.is_running():
-            self.stop()
-            self.on_timer()
-
-    def stop(self):
-        if self.is_running():
-            GLib.source_remove(self._timer)
-            self._timer = None
-
-    def is_running(self):
-        return self._timer is not None
-
-    def _cb_timer(self):
-        if not self.on_timer():
-            self.stop()
-            return False
-        return True
-
-    def on_timer(self):
-        """
-        Overload this.
-        For one-shot timers return False.
-        """
-        if self._callback:
-            return self._callback(*self._callback_args)
-        return True
-
-
-class TimerOnce(Timer):
-    def on_timer(self):
-        """
-        Overload this.
-        """
-        if self._callback:
-            return self._callback(*self._callback_args)
-        return False
-
-
-class ProgressiveDelayTimer(Timer):
-    """
-    Timer that increases the delay for each iteration
-    until max_duration is reached.
-    """
-    growth = 2.0
-    max_duration = 3.0
-    max_delay = 1.0
-
-    _start_time = 0
-    _current_delay = 0
-
-    def start(self, delay, callback = None, *callback_args):
-        self._start_time = time.time()
-        self._current_delay = delay
-        Timer.start(self, delay, callback, *callback_args)
-
-    def on_timer(self):
-        if not Timer.on_timer(self):
-            return False
-
-        # start another timer for progressively longer intervals
-        self._current_delay = min(self._current_delay * self.growth,
-                                  self.max_delay)
-        if time.time() + self._current_delay < \
-           self._start_time + self.max_duration:
-            Timer.start(self, self._current_delay,
-                        self._callback, *self._callback_args)
-            return True
-        else:
-            return False
-
-
-class DelayedLauncher(Timer):
-    """
-    Launches a process after a certain delay.
-    Used for launching mousetweaks.
-    """
-    args = None
-
-    def launch_delayed(self, args, delay):
-        self.args = args
-        self.start(delay)
-
-    def on_timer(self):
-        _logger.debug("launching '{}'".format(" ".join(self.args)))
-        try:
-            subprocess.Popen(self.args)
-        except OSError as e:
-            _logger.warning(_format("Failed to execute '{}', {}", \
-                            " ".join(self.args), e))
-        return False
-
-
-class FadeTimer(Timer):
-    """
-    Sine-interpolated fade between two values, e.g. opacities.
-    """
-    value = None
-    start_value = None
-    target_value = None
-    iteration = 0   # just a counter of on_timer calls since start
-    time_step = 0.05
-
-    def fade_to(self, start_value, target_value, duration,
-                callback = None, *callback_args):
-        """
-        Start value fade.
-        duration: fade time in seconds, 0 for immediate value change
-        """
-        self.value = start_value
-        self.start_value = start_value
-        self._start_time = time.time()
-        self._duration = duration
-        self._callback = callback
-        self._callback_args = callback_args
-
-        self.start(self.time_step)
-
-        self.target_value = target_value
-
-    def start(self, delay):
-        self.iteration = 0
-        Timer.start(self, delay)
-
-    def stop(self):
-        self.target_value = None
-        Timer.stop(self)
-
-    def on_timer(self):
-        self.value, done = Fade.sin_fade(self._start_time, self._duration,
-                                         self.start_value, self.target_value)
-
-        if self._callback:
-            self._callback(self.value, done, *self._callback_args)
-
-        self.iteration += 1
-        return not done
 
 class Fade:
     """ Helper for opacity fading """
@@ -1983,10 +1669,5 @@ class TermColors(object):
         except subprocess.CalledProcessError:
             return ""
 
-
-def gtk_has_resize_grip_support():
-    """ Gtk from 3.14 removes resize grips. """
-    gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
-    return gtk_version < Version(3, 14)
 
 

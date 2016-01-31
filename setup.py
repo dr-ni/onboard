@@ -302,7 +302,11 @@ class TestCommand(Command):
         subprocess.call(["killall", "onboard"])
 
         import nose
-        if nose.run(argv=[__file__, "--with-doctest", "--logging-level=WARNING"]):
+        if nose.run(argv=[__file__,
+                          "--with-doctest",
+                          "--logging-level=WARNING",
+                          "--verbosity=1",
+                          ]):
             sys.exit(0)
         else:
             sys.exit(1)

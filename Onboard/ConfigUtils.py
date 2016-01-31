@@ -37,6 +37,8 @@ except ImportError:
     # python2 fallback
     import ConfigParser as configparser
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GLib, Gio
 
 from Onboard.Exceptions import SchemaError

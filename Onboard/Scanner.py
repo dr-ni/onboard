@@ -24,9 +24,10 @@ import sys
 import logging
 from functools import cmp_to_key
 
-from Onboard.Config    import Config
-from Onboard.XInput    import XIDeviceManager, XIEventType, XIEventMask
-from Onboard.utils     import Timer, show_new_device_dialog
+from Onboard.Config      import Config
+from Onboard.XInput      import XIDeviceManager, XIEventType, XIEventMask
+from Onboard.WindowUtils import show_new_device_dialog
+from Onboard.Timer       import Timer
 
 logger = logging.getLogger(__name__)
 config = Config()

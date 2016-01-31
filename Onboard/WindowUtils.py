@@ -24,9 +24,12 @@ from __future__ import division, print_function, unicode_literals
 import time
 from math import sqrt, pi
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GLib, Gtk, Gdk
 
-from Onboard.utils import Rect, Timer
+from Onboard.utils import Rect, Version
+from Onboard.Timer import Timer
 from Onboard.definitions import Handle
 
 import Onboard.osk as osk
@@ -36,8 +39,6 @@ import logging
 _logger = logging.getLogger("WindowUtils")
 ###############
 
-from Onboard.Config import Config
-config = Config()
 
 class WindowManipulator(object):
     """
@@ -772,7 +773,7 @@ class WindowRectPersist(WindowRectTracker):
     def on_restore_window_rect(self, rect):
         return rect
 
-    def save_window_rect(self, orientation = None, rect = None):
+    def save_window_rect(self, orientation=None, rect=None):
         """
         Save window size and position.
         """
@@ -788,7 +789,7 @@ class WindowRectPersist(WindowRectTracker):
         self.write_window_rect(orientation, rect)
 
         _logger.debug("save_window_rect {rect}, {orientation}" \
-                      .format(rect = rect, orientation = orientation))
+                      .format(rect=rect, orientation=orientation))
 
     def on_save_window_rect(self, rect):
         return rect
@@ -815,9 +816,10 @@ class WindowRectPersist(WindowRectTracker):
         Remember the current rect and rotation as the screen may have been
         rotated when the saving happens.
         """
-        self._save_position_timer.start(5, self.save_window_rect,
-                                           self.get_screen_orientation(),
-                                           self.get_rect())
+        self._save_position_timer.start(5,
+                                        self.save_window_rect,
+                                        self.get_screen_orientation(),
+                                        self.get_rect())
 
     def stop_save_position_timer(self):
         self._save_position_timer.stop()
@@ -832,7 +834,7 @@ def set_unity_property(window):
     """
     gdk_win = window.get_window()
     if gdk_win:
-        if hasattr(gdk_win, "get_xid"): # not on wayland
+        if hasattr(gdk_win, "get_xid"):  # not on wayland
             xid = gdk_win.get_xid()
             osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
 
@@ -848,7 +850,7 @@ class DwellProgress(object):
     opacity = 1.0
 
     def is_dwelling(self):
-        return not self.dwell_start_time is None
+        return self.dwell_start_time is not None
 
     def is_done(self):
         return time.time() > self.dwell_start_time + self.dwell_delay
@@ -859,7 +861,7 @@ class DwellProgress(object):
     def stop_dwelling(self):
         self.dwell_start_time = None
 
-    def draw(self, context, rect, rgba = (1, 0, 0, .75), rgba_bg = None):
+    def draw(self, context, rect, rgba=(1, 0, 0, .75), rgba_bg = None):
         if self.is_dwelling():
             if self.opacity <= 0.0:
                 pass
@@ -874,7 +876,7 @@ class DwellProgress(object):
                 self._draw_dwell_progress(context, rect, rgba, rgba_bg)
 
                 context.pop_group_to_source()
-                context.paint_with_alpha(self.opacity);
+                context.paint_with_alpha(self.opacity)
                 context.restore()
 
     def _draw_dwell_progress(self, context, rect, rgba, rgba_bg):
@@ -901,7 +903,7 @@ class DwellProgress(object):
             context.set_source_rgba(*rgba)
             context.fill_preserve()
 
-            context.set_source_rgba(0,0,0,1)
+            context.set_source_rgba(0, 0, 0, 1)
             context.set_line_width(0)
             context.stroke()
 
@@ -914,8 +916,8 @@ def limit_window_position(x, y, always_visible_rect, limit_rects = None):
     # rect to stay always visible, in canvas coordinates
     r = always_visible_rect
 
-    if not r is None:
-        r = r.int() # avoid rounding errors
+    if r is not None:
+        r = r.int()  # avoid rounding errors
 
         # transform always visible rect to screen coordinates,
         # take window decoration into account.
@@ -986,7 +988,7 @@ def canvas_to_root_window_point(window, point):
     if gdk_win:
         point = gdk_win.get_root_coords(*point)
     else:
-        point (0, 0)
+        point(0, 0)
     return point
 
 def get_monitor_dimensions(window):
@@ -1002,7 +1004,7 @@ def get_monitor_dimensions(window):
 
         # Nexus7 simulation
         device = None       # keep this at None
-        #device = 1
+        # device = 1
         if device == 0:     # dimension unavailable
             size_mm = 0, 0
         elif device == 1:     # Nexus 7, as it should report
@@ -1026,4 +1028,89 @@ def physical_to_monitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
     else:
         w = h = 0
     return w, h
+
+def show_error_dialog(error_string):
+    """ Show an error dialog """
+
+    error_dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.ERROR,
+                                  message_format=error_string,
+                                  buttons=Gtk.ButtonsType.OK)
+    error_dlg.run()
+    error_dlg.destroy()
+
+def show_ask_string_dialog(question, parent=None):
+    question_dialog = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
+                                        buttons=Gtk.ButtonsType.OK_CANCEL)
+    if parent:
+        question_dialog.set_transient_for(parent)
+    question_dialog.set_markup(question)
+    entry = Gtk.Entry()
+    entry.connect("activate", lambda event:
+        question_dialog.response(Gtk.ResponseType.OK))
+    question_dialog.get_message_area().add(entry)
+    question_dialog.show_all()
+    response = question_dialog.run()
+    text = entry.get_text() if response == Gtk.ResponseType.OK else None
+    question_dialog.destroy()
+    return text
+
+def show_confirmation_dialog(question, parent=None, center=False, title=None):
+    """
+    Show this dialog to ask confirmation before executing a task.
+    """
+    if title is None:
+        # Default dialog title: name of the application
+        title = _("Onboard")
+    dlg = Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,
+                            text=question,
+                            title=title,
+                            buttons=Gtk.ButtonsType.YES_NO)
+    if parent:
+        dlg.set_transient_for(parent)
+
+    if center:
+        dlg.set_position(Gtk.WindowPosition.CENTER)
+
+    response = dlg.run()
+    dlg.destroy()
+    return response == Gtk.ResponseType.YES
+
+def show_new_device_dialog(name, config_string, is_pointer, callback):
+    """
+    Show a "New Input Device" dialog.
+    """
+    dialog = Gtk.MessageDialog(message_type=Gtk.MessageType.OTHER,
+                               title=_("New Input Device"),
+                               text=_("Onboard has detected a new input device"))
+    if is_pointer:
+        dialog.set_image(Gtk.Image(icon_name="input-mouse",
+                                   icon_size=Gtk.IconSize.DIALOG))
+    else:
+        dialog.set_image(Gtk.Image(icon_name="input-keyboard",
+                                   icon_size=Gtk.IconSize.DIALOG))
+
+    secondary  = "<i>{}</i>\n\n".format(name)
+    secondary += _("Do you want to use this device for keyboard scanning?")
+
+    dialog.format_secondary_markup(secondary)
+
+    # Translators: cancel button of "New Input Device" dialog. It used to be
+    # stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+    dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
+    dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
+    dialog.connect("response", _show_new_device_dialog_response,
+                   callback, config_string)
+    dialog.show_all()
+
+def _show_new_device_dialog_response(dialog, response, callback, config_string):
+    """ Callback for the "New Input Device" dialog. """
+    if response == Gtk.ResponseType.ACCEPT:
+        callback(config_string)
+    dialog.destroy()
+
+def gtk_has_resize_grip_support():
+    """ Gtk from 3.14 removes resize grips. """
+    gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
+    return gtk_version < Version(3, 14)
+
 

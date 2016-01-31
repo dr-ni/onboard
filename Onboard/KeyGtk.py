@@ -27,6 +27,8 @@ from __future__ import division, print_function, unicode_literals
 from math import pi, sin, cos, sqrt
 
 import cairo
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import *

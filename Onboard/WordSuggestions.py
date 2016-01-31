@@ -21,12 +21,13 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
-import locale
 import re
 import shutil
 import weakref
 
-from gi.repository import Gtk
+from Onboard.Version import require_gi_versions
+require_gi_versions()
+from gi.repository import Gtk, Gdk, Pango
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -41,10 +42,10 @@ from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine, ModelCache
-from Onboard.utils             import CallOnce, unicode_str, \
-                                      Timer, TimerOnce, escape_markup, \
+from Onboard.utils             import Rect, unicode_str, escape_markup, \
                                       Modifiers
-import Onboard.utils as utils
+from Onboard.Timer             import CallOnce, Timer, TimerOnce
+from Onboard.KeyGtk            import FullSizeKey, WordKey
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -1632,10 +1633,6 @@ class WordInfo:
                                             self.spelling_errors)
 
 
-from gi.repository        import Gdk, Pango
-from Onboard.KeyGtk       import FullSizeKey, WordKey
-from Onboard.utils        import Rect
-
 class WordListPanel(LayoutPanel):
     """ Panel populated with correction and prediction keys at run-time """
 
@@ -2094,7 +2091,7 @@ class ModelErrorRecovery:
                     shutil.copy(backup_filename, filename)
                 except OSError as ex:
                     _logger.error("Failed to revert to backup model: {}" \
-                                    .format(utils.unicode_str(ex)))
+                                    .format(unicode_str(ex)))
                 retry = True
         else:
             markup = _format(
@@ -2111,7 +2108,7 @@ class ModelErrorRecovery:
                 os.rename(filename, broken_filename)
             except OSError as ex:
                 _logger.error("Failed to rename broken model: {}" \
-                                .format(utils.unicode_str(ex)))
+                                .format(unicode_str(ex)))
         return retry
 
     def _show_dialog(self, markup, parent=None, message_type = "error", buttons="ok"):

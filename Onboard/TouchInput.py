@@ -29,9 +29,12 @@ from __future__ import division, print_function, unicode_literals
 import time
 import copy
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository         import Gdk
 
-from Onboard.utils         import Timer, EventSource
+from Onboard.utils         import EventSource
+from Onboard.Timer         import Timer
 from Onboard.definitions   import TouchInputEnum
 from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask, \
                                   XIDeviceEventLogger

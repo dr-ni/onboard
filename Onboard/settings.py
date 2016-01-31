@@ -36,6 +36,8 @@ try:
 except ImportError:
     pass
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GObject, Pango, Gdk, Gtk
 
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
@@ -43,10 +45,10 @@ from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.XInput          import XIDeviceManager, XIEventType
-from Onboard.utils           import show_ask_string_dialog, \
-                                    show_confirmation_dialog, \
-                                    unicode_str, open_utf8, escape_markup, \
+from Onboard.utils           import unicode_str, open_utf8, escape_markup, \
                                     XDGDirs
+from Onboard.WindowUtils     import show_ask_string_dialog, \
+                                    show_confirmation_dialog
 
 
 app = "onboard"

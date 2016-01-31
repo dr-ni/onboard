@@ -24,6 +24,8 @@ import unicodedata
 import logging
 _logger = logging.getLogger(__name__)
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:
@@ -32,7 +34,8 @@ except ImportError as e:
 from Onboard.AtspiStateTracker import AtspiStateTracker, AtspiStateType
 from Onboard.TextDomain        import TextDomains
 from Onboard.TextChanges       import TextChanges, TextSpan
-from Onboard.utils             import Timer, KeyCode
+from Onboard.utils             import KeyCode
+from Onboard.Timer             import Timer
 from Onboard                   import KeyCommon
 
 ### Config Singleton ###

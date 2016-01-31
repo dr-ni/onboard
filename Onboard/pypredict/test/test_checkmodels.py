@@ -23,6 +23,12 @@ import shutil
 import unittest
 import tempfile
 import subprocess
+
+# allow absolute imports from the source tree
+from os.path import dirname, abspath
+package_root = dirname(dirname(dirname(dirname(abspath(__file__)))))
+sys.path.insert(0, package_root)
+
 import Onboard.pypredict as pypredict
 
 
@@ -60,6 +66,9 @@ class TestCheckModels(unittest.TestCase):
             self._models.append(model)
             self._model_contents.append([fn, lines])
 
+    def tearDown(self):
+        self._tmp_dir.cleanup()
+
     def test_can_run_outside_source_tree(self):
         tool_name = os.path.basename(self.TOOL)
         fn = os.path.join(self._dir, "not-there.lm")
@@ -76,6 +85,7 @@ class TestCheckModels(unittest.TestCase):
                 shutil.copyfile(self.TOOL, tool)
                 os.chmod(tool, 0o544) # make it executable
                 ret, out, err = self._run_tool(fn, tool)
+                tmp_dir.cleanup()
                 break
             except PermissionError as e:
                 error = "cannot execute '{}': {}" \

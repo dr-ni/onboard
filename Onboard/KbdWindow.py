@@ -23,12 +23,17 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
+
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
 from Onboard.definitions import DockingMonitor
-from Onboard.utils       import Rect, CallOnce, Timer, gtk_has_resize_grip_support
+from Onboard.utils       import Rect
+from Onboard.Timer       import CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
-                                set_unity_property
+                                set_unity_property, \
+                                gtk_has_resize_grip_support
 import Onboard.osk as osk
 
 ### Logging ###

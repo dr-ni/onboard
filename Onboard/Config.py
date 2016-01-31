@@ -32,9 +32,12 @@ import locale
 from shutil import copytree
 from optparse import OptionParser, OptionGroup
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import Gtk, Gio, GLib
 
-from Onboard.utils          import show_confirmation_dialog, Version, \
+from Onboard.WindowUtils    import show_confirmation_dialog
+from Onboard.utils          import Version, \
                                    unicode_str, XDGDirs, chmodtree, \
                                    Process, hexcolor_to_rgba, TermColors
 from Onboard.definitions    import StatusIconProviderEnum, \
@@ -218,7 +221,7 @@ class Config(ConfigObject):
     def construct(self):
         """
         Singleton constructor, runs only once.
-        First intialization stage to runs before the
+        First intialization stage that runs before the
         single instance check. Only do the bare minimum here.
         """
         # parse command line
@@ -315,6 +318,8 @@ class Config(ConfigObject):
                     self.launched_by = self.LAUNCHER_GSS
                 elif "UNITY_GREETER_DBUS_NAME" in os.environ:
                     self.launched_by = self.LAUNCHER_UNITY_GREETER
+
+        self.is_running_from_source = self._is_running_from_source()
 
     def init(self):
         """
@@ -1362,15 +1367,23 @@ class Config(ConfigObject):
         value = self.system_defaults.get("xembed_background_image_enabled")
         self._xembed_background_image_enabled = value == "True" \
                                                 if not value is None else None
+    def _is_running_from_source(self):
+        src_path = self._get_source_path()
+        src_data_path = os.path.join(src_path, "data")
+        fn = os.path.join(src_data_path, "org.onboard.gschema.xml")
+        return os.path.isfile(fn)
+
+    def _get_source_path(self):
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     def _get_install_dir(self):
         result = None
 
         # when run from source
-        src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        src_data_path = os.path.join(src_path, "data")
-        if os.path.isfile(os.path.join(src_data_path, "org.onboard.gschema.xml")):
+        if self._is_running_from_source():
             # Add the data directory to the icon search path
             icon_theme = Gtk.IconTheme.get_default()
+            src_path = self._get_source_path()
             src_icon_path = os.path.join(src_path, "icons")
             icon_theme.append_search_path(src_icon_path)
             result = src_path

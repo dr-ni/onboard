@@ -474,13 +474,9 @@ class ColorScheme(object):
         """
 
         if state is None:
-            state = {}
-            state["prelight"]    =  key.prelight
-            state["pressed"]     =  key.pressed
-            state["active"]      =  key.active
-            state["locked"]      =  key.locked
-            state["scanned"]     =  key.scanned
-            state["insensitive"] =  not key.sensitive
+            state = key.get_state()
+            state["insensitive"] = not key.sensitive
+            del state["sensitive"]
 
         rgb = None
         opacity = None

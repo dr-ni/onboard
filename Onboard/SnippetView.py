@@ -20,9 +20,11 @@
 
 from __future__ import division, print_function, unicode_literals
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 from gi.repository import Gtk
 
-from Onboard.utils import show_error_dialog
+from Onboard.WindowUtils import show_error_dialog
 
 ### Config Singleton ###
 from Onboard.Config import Config

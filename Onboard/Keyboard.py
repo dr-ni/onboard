@@ -34,6 +34,8 @@ from gi.repository import Gdk
 import logging
 _logger = logging.getLogger(__name__)
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:
@@ -47,8 +49,8 @@ from Onboard.Sound                 import Sound
 from Onboard.ClickSimulator        import ClickSimulator, \
                                           CSButtonMapper, CSFloatingSlave
 from Onboard.Scanner               import Scanner
-from Onboard.utils                 import Timer, ProgressiveDelayTimer, \
-                                          Modifiers, LABEL_MODIFIERS, \
+from Onboard.Timer                 import Timer, ProgressiveDelayTimer
+from Onboard.utils                 import Modifiers, LABEL_MODIFIERS, \
                                           parse_key_combination, \
                                           unicode_str
 from Onboard.definitions           import Handle, UIMask
