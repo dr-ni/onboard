@@ -2,7 +2,6 @@ etc
 usr/bin
 usr/lib
 usr/share/applications
-usr/share/dbus-1
 usr/share/glib-2.0
 usr/share/icons
 usr/share/locale
@@ -14,6 +13,7 @@ usr/share/onboard/themes
 usr/share/onboard/AUTHORS
 usr/share/onboard/CHANGELOG
 usr/share/onboard/COPYING
+usr/share/onboard/HACKING
 usr/share/onboard/layoutstrings.py
 usr/share/onboard/NEWS
 usr/share/onboard/onboard-defaults.conf*
