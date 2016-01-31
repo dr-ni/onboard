@@ -276,14 +276,11 @@ class Settings(DialogBuilder):
         self.icon_palette_toggle.set_active(config.icp.in_use)
         config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
 
-        #self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
-        #self.modeless_gksu_toggle.set_active(config.modeless_gksu)
-        #config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
-
-        self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
+        self.onboard_xembed_toggle = \
+            builder.get_object("onboard_xembed_toggle")
         self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
-        config.onboard_xembed_enabled_notify_add( \
-                self.onboard_xembed_toggle.set_active)
+        config.onboard_xembed_enabled_notify_add(
+            self.onboard_xembed_toggle.set_active)
 
         self.show_tooltips_toggle = builder.get_object("show_tooltips_toggle")
         self.show_tooltips_toggle.set_active(config.show_tooltips)
@@ -293,20 +290,23 @@ class Settings(DialogBuilder):
         self.auto_show_toggle.set_active(config.auto_show.enabled)
         config.auto_show.enabled_notify_add(self.auto_show_toggle.set_active)
 
+        self.bind_combobox_id("status_icon_provider_combobox",
+                              config, "status_icon_provider")
         # window tab
         self.window_decoration_toggle = \
-                              builder.get_object("window_decoration_toggle")
-        self.window_decoration_toggle.set_active(config.window.window_decoration)
-        config.window.window_decoration_notify_add(lambda x:
-                                    [self.window_decoration_toggle.set_active(x),
-                                     self.update_window_widgets()])
+            builder.get_object("window_decoration_toggle")
+        self.window_decoration_toggle.set_active(
+            config.window.window_decoration)
+        config.window.window_decoration_notify_add(
+            lambda x: [self.window_decoration_toggle.set_active(x),
+                       self.update_window_widgets()])
 
         self.window_state_sticky_toggle = \
-                             builder.get_object("window_state_sticky_toggle")
-        self.window_state_sticky_toggle.set_active( \
-                                             config.window.window_state_sticky)
-        config.window.window_state_sticky_notify_add( \
-                                    self.window_state_sticky_toggle.set_active)
+            builder.get_object("window_state_sticky_toggle")
+        self.window_state_sticky_toggle.set_active(
+            config.window.window_state_sticky)
+        config.window.window_state_sticky_notify_add(
+            self.window_state_sticky_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
         self.force_to_top_toggle.set_active(config.is_force_to_top())
@@ -581,17 +581,20 @@ class Settings(DialogBuilder):
             config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
 
-    def on_keep_aspect_ratio_toggled(self,widget):
+    def on_keep_aspect_ratio_toggled(self, widget):
         config.window.keep_aspect_ratio = widget.get_active()
 
     def update_window_widgets(self):
-        force_to_top =  config.is_force_to_top()
+        force_to_top = config.is_force_to_top()
 
         w = self.wid("auto_show_settings_button")
         w.set_sensitive(config.is_auto_show_enabled())
 
-        self.icon_palette_toggle.set_sensitive( \
-                             not config.is_icon_palette_last_unhide_option())
+        w = self.wid("status_icon_provider_box")
+        w.set_sensitive(config.show_status_icon)
+
+        self.icon_palette_toggle.set_sensitive(
+            not config.is_icon_palette_last_unhide_option())
         active = config.is_icon_palette_in_use()
         if self.icon_palette_toggle.get_active() != active:
             self.icon_palette_toggle.set_active(active)
@@ -622,6 +625,8 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
+
+        self.auto_show_toggle.set_active(config.auto_show.enabled)
 
     def update_all_widgets(self):
         pass
