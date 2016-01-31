@@ -24,8 +24,9 @@ import re
 import glob
 
 import logging
-_logger = logging.getLogger("TextDomain")
 
+from Onboard.Version import require_gi_versions
+require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:
@@ -34,6 +35,7 @@ except ImportError as e:
 from Onboard.TextChanges  import TextSpan
 from Onboard.utils        import KeyCode, Modifiers, unicode_str
 
+_logger = logging.getLogger("TextDomain")
 
 class TextDomains:
     """ Collection of all recognized text domains. """
@@ -99,17 +101,25 @@ class TextDomain:
         ''
 
         # filename
+        >>> import tempfile
+        >>> from os.path import abspath, dirname, join
+        >>> def touch(fn):
+        ...     with open(fn, mode="w") as f: n = f.write("")
+        >>> td = tempfile.TemporaryDirectory(prefix="test_onboard _")
+        >>> dir = td.name
+
+        >>> touch(join(dir, "onboard-defaults.conf.example"))
+        >>> touch(join(dir, "onboard-defaults.conf.example.another"))
+        >>>
         >>> d.get_auto_separator("/etc")
         '/'
-        >>> from os.path import abspath, dirname
-        >>> path = dirname(abspath("./onboard-defaults.conf.example"))
-        >>> d.get_auto_separator(join(path, "onboard-defaults"))
+        >>> d.get_auto_separator(join(dir, "onboard-defaults"))
         '.'
-        >>> d.get_auto_separator(join(path, "onboard-defaults.conf"))
+        >>> d.get_auto_separator(join(dir, "onboard-defaults.conf"))
         '.'
-        >>> d.get_auto_separator(join(path, "onboard-defaults.conf.example"))
+        >>> d.get_auto_separator(join(dir, "onboard-defaults.conf.example"))
         ''
-        >>> d.get_auto_separator(join(path, "onboard-defaults.conf.example.nexus7"))
+        >>> d.get_auto_separator(join(dir, "onboard-defaults.conf.example.another"))
         ' '
 
         # filename in directory with spaces
@@ -117,12 +127,12 @@ class TextDomain:
         >>> td = tempfile.TemporaryDirectory(prefix="test onboard _")
         >>> dir = td.name
         >>> fn = os.path.join(dir, "onboard-defaults.conf.example")
-        >>> with open(fn, mode="w") as f: n = f.write("")
+        >>> touch(fn)
         >>> d.get_auto_separator(join(dir, "onboard-defaults"))
         '.'
 
         # no false positives for valid filenames before the current token
-        >>> d.get_auto_separator(path + "/onboard-defaults no-file")
+        >>> d.get_auto_separator(dir + "/onboard-defaults no-file")
         ' '
         """
         separator = " "
@@ -774,26 +784,36 @@ class PartialURLParser:
         ':'
 
         # local files
+        >>> import tempfile
+        >>> from os.path import abspath, dirname, join
+        >>> def touch(fn):
+        ...     with open(fn, mode="w") as f: n = f.write("")
+        >>> td = tempfile.TemporaryDirectory(prefix="test onboard _")
+        >>> dir = td.name
+
+        >>> touch(join(dir, "onboard-defaults.conf.example"))
+        >>> touch(join(dir, "onboard-defaults.conf.example.another"))
+        >>>
+        >>> import glob
+        >>> #glob.glob(dir+"/**")
         >>> p.get_auto_separator("file")
         ':///'
         >>> p.get_auto_separator("file:///home")
         '/'
-        >>> from os.path import abspath, dirname
-        >>> url = "file://" + dirname(abspath("./onboard-defaults.conf.example"))
-        >>> p.get_auto_separator(url + "/onboard-defaults")
+        >>> p.get_auto_separator("file://"+join(dir, "onboard-defaults"))
         '.'
-        >>> p.get_auto_separator(url + "/onboard-defaults.conf")
+        >>> p.get_auto_separator("file://"+join(dir, "onboard-defaults.conf"))
         '.'
-        >>> p.get_auto_separator(url + "/onboard-defaults.conf.example")
+        >>> p.get_auto_separator("file://"+join(dir, "onboard-defaults.conf.example"))
         ''
-        >>> p.get_auto_separator(url + "/onboard-defaults.conf.example.nexus7")
+        >>> p.get_auto_separator("file://"+join(dir, "onboard-defaults.conf.example.another"))
         ' '
 
         # Non-existing filename: we don't know, don't guess a separator
         >>> p.get_auto_separator("file:///tmp/onboard1234")
         ''
 
-        # Non-existing filename: if basename has an extension assumes we're done
+        # Non-existing filename: if basename has an extension assume we're done
         >>> p.get_auto_separator("file:///tmp/onboard1234.txt")
         ' '
 
@@ -875,7 +895,7 @@ class PartialURLParser:
 
         if os.path.isabs(filename):
             files  = glob.glob(filename + "*")
-            files += glob.glob(filename + "/*") # look inside directories too
+            files += glob.glob(filename + "/*")  # look inside directories too
             separator = self._get_separator_from_file_list(filename, files)
 
         if separator is None:
@@ -927,6 +947,14 @@ class PartialURLParser:
         >>> p._get_separator_from_file_list("/dir/dir/file.ext1", files)
         '.'
         >>> p._get_separator_from_file_list("/dir/dir/file.ext1.ext2", files)
+        ' '
+
+        # partial path match
+        >>> files = ["/dir/dir/file", "/dir/dir/file.ext1",
+        ...          "/dir/dir/file.ext2"]
+        >>> p._get_separator_from_file_list("/dir/dir/file", files)
+        ''
+        >>> p._get_separator_from_file_list("/dir/dir/file.ext1", files)
         ' '
         """
         separator = None
