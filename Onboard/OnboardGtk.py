@@ -23,15 +23,17 @@
 
 from __future__ import division, print_function, unicode_literals
 
-### Logging ###
 import logging
 _logger = logging.getLogger("OnboardGtk")
-###############
 
 import sys
 import time
 import signal
 import os.path
+
+from Onboard.Version import require_gi_versions
+require_gi_versions()
+from gi.repository import GLib, Gdk, Gtk
 
 try:
     import dbus
@@ -39,8 +41,6 @@ try:
     import dbus.mainloop.glib
 except ImportError:
     pass
-
-from gi.repository import GLib, Gdk, Gtk
 
 from Onboard.KbdWindow       import KbdWindow, KbdPlugWindow
 from Onboard.Keyboard        import Keyboard
@@ -50,8 +50,9 @@ from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.Appearance      import ColorScheme
 from Onboard.IconPalette     import IconPalette
 from Onboard.Exceptions      import LayoutFileError
-from Onboard.utils           import show_confirmation_dialog, CallOnce, \
-                                    unicode_str, Timer
+from Onboard.utils           import unicode_str
+from Onboard.Timer           import CallOnce, Timer
+from Onboard.WindowUtils     import show_confirmation_dialog
 import Onboard.osk as osk
 
 ### Config Singleton ###
@@ -240,7 +241,7 @@ class OnboardGtk(object):
         # export dbus service
         if not config.xid_mode and \
            "dbus" in globals():
-            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
+            self.service_keyboard = ServiceOnboardKeyboard(self)
 
         # show/hide the window
         self.keyboard_widget.set_startup_visibility()
@@ -798,9 +799,10 @@ if "dbus" in globals():
             _dbus_error_name = 'org.onboard.Exception'
 
 
-        def __init__(self, keyboard):
+        def __init__(self, app):
             super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
-            self._keyboard = keyboard
+            self._keyboard = app.keyboard
+            self._keyboard_widget = app.keyboard_widget
 
         @dbus.service.method(dbus_interface=IFACE)
         def Show(self):
@@ -813,6 +815,22 @@ if "dbus" in globals():
         @dbus.service.method(dbus_interface=IFACE)
         def ToggleVisible(self):
             self._keyboard.toggle_visible()
+
+        # private method, for unit-testing only
+        if config.is_running_from_source:
+            @dbus.service.method(dbus_interface=IFACE,
+                                 out_signature='a(sada{is}a{sb})')
+            def GetKeyState(self):
+                result = []
+                for key in self._keyboard.iter_keys():
+                    r = self._keyboard_widget.get_key_screen_rect(key)
+                    if not r.is_empty() and key.is_path_visible():
+                        labels = {m:l for m, l in key.labels.items() if l}  # -None
+                        result.append([key.get_id(),
+                                    list(r),
+                                    labels,
+                                    key.get_state()])
+                return result
 
         @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                              in_signature='ss', out_signature='v')
