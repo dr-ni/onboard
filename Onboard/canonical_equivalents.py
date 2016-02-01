@@ -123,7 +123,7 @@ canonical_equivalents = {
                 'І' : ['Ї'],
                 'А' : ['Ӑ', 'Ӓ'],
                 'Г' : ['Ѓ'],
-                'Е' : ['Ѐ', 'Ё', 'Ӗ', 'Э', 'Ӭ'],    # 'Э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'Е' : ['Ѐ', 'Ё', 'Ӗ'],
                 'Ё' : ['Е', 'Ѐ', 'Ӗ'],              # 'Е' for Mongolian
                 'Ж' : ['Ӂ', 'Ӝ'],
                 'З' : ['Ӟ'],
@@ -140,7 +140,7 @@ canonical_equivalents = {
                 'Э' : ['Ӭ'],
                 'а' : ['ӑ', 'ӓ'],
                 'г' : ['ѓ'],
-                'е' : ['ѐ', 'ё', 'ӗ', 'э', 'ӭ'],    # 'э' for Small and Phone layouts which lack a dedicated key for Russian, Belarusian
+                'е' : ['ѐ', 'ё', 'ӗ'],
                 'ё' : ['е', 'ѐ', 'ӗ'],              # 'е' for Mongolian
                 'ж' : ['ӂ', 'ӝ'],
                 'з' : ['ӟ'],
