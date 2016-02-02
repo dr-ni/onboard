@@ -61,7 +61,9 @@ class TextDomains:
 
 
 class TextDomain:
-    """ Abstract base class as a catch-all for domain specific functionalty. """
+    """
+    Abstract base class as a catch-all for domain specific functionalty.
+    """
 
     def __init__(self):
         self._url_parser = PartialURLParser()
@@ -214,19 +216,19 @@ class TextDomain:
         Doctests:
         >>> d = DomainGenericText()
 
-        # Span doesn't change for simple words
+        # Span doesn't grow for simple words
         >>> d.grow_learning_span(TextSpan(8, 1, "word1 word2 word3"))
         (8, 1, 'r')
 
-        # Span growing to cover a complete URL
+        # Span grows to include a complete URL
         >>> d.grow_learning_span(TextSpan(13, 1, "http://www.domain.org"))
         (0, 21, 'http://www.domain.org')
 
-        # Span growing to cover multiple complete URLs
+        # Span grows to include multiple complete URLs
         >>> d.grow_learning_span(TextSpan(19, 13, "http://www.domain.org word http://slashdot.org"))
         (0, 46, 'http://www.domain.org word http://slashdot.org')
 
-        # Span growing to cover a complete filename
+        # Span grows to include a complete filename
         >>> d.grow_learning_span(TextSpan(10, 1, "word1 /usr/bin/bash word2"))
         (6, 13, '/usr/bin/bash')
 
@@ -240,8 +242,9 @@ class TextDomain:
         >>> d.grow_learning_span(TextSpan(18, 1, "word1 /usr/bin/bash word2"))
         (6, 13, '/usr/bin/bash')
 
-        # Large text with text offset > 0: returned position must be offset too.
-        >>> d.grow_learning_span(TextSpan(116, 1, "word1 /usr/bin/bash word2", 100))
+        # Large text with text offset>0: returned position must be offset too
+        >>> d.grow_learning_span(TextSpan(116, 1,
+        ...     "word1 /usr/bin/bash word2", 100))
         (106, 13, '/usr/bin/bash')
         """
         text   = text_span.get_text()
@@ -249,30 +252,29 @@ class TextDomain:
         begin  = text_span.begin() - offset
         end    = text_span.end() - offset
 
-        tokens, spans = self._split_growth_sections(text)
+        sections, spans = self._split_growth_sections(text)
 
         for i, s in enumerate(spans):
-            if begin < s[1] and end > s[0]: # intersects?
+            if begin < s[1] and end > s[0]:  # intersects?
 
-                token = tokens[i]
+                section = sections[i]
                 span = spans[i]
-                if self._url_parser.is_maybe_url(token) or \
-                   self._url_parser._is_maybe_filename(token):
+                if self._url_parser.is_maybe_url(section) or \
+                   self._url_parser._is_maybe_filename(section):
                     begin = min(begin, span[0])
                     end = max(end, span[1])
 
-        return begin+offset, end - begin, text[begin:end]
-
+        return begin + offset, end - begin, text[begin:end]
     def can_record_insertion(self, accessible, pos, length):
         return True
 
     def can_give_keypress_feedback(self):
         return True
 
-    def can_spell_check(self):
+    def can_spell_check(self, section_span):
         return False
 
-    def can_auto_correct(self):
+    def can_auto_correct(self, section_span):
         return False
 
     def can_suggest_before_typing(self):
@@ -282,7 +284,7 @@ class TextDomain:
     def handle_key_press(self, keycode, mod_mask):
         return True, None  # entering_text, end_of_editing
 
-    _growth_tokens_pattern = re.compile("[^\s?#@]+", re.DOTALL)
+    _growth_sections_pattern = re.compile("[^\s?#@]+", re.DOTALL)
 
     def _split_growth_sections(self, text):
         """
@@ -300,7 +302,7 @@ class TextDomain:
         >>> d._split_growth_sections("http://user:pass@www.domain.org")
         (['http://user:pass', 'www.domain.org'], [(0, 16), (17, 31)])
         """
-        matches = self._growth_tokens_pattern.finditer(text)
+        matches = self._growth_sections_pattern.finditer(text)
         tokens = []
         spans = []
         for m in matches:
@@ -400,11 +402,25 @@ class DomainGenericText(TextDomain):
         return (context, line, line_caret, selection_span,
                 begin_of_text, begin_of_text_offset)
 
-    def can_spell_check(self):
+    def can_spell_check(self, section_span):
         return True
 
-    def can_auto_correct(self):
-        return True
+    def can_auto_correct(self, section_span):
+        """
+        Can we auto-correct this span?.
+
+        Doctests:
+        >>> d = DomainGenericText()
+        >>> d.can_auto_correct(TextSpan(0, 3, "abc"))
+        True
+        >>> d.can_auto_correct(TextSpan(4, 3, "abc def"))
+        True
+        >>> d.can_auto_correct(TextSpan(0, 20, "http://www.domain.org"))
+        False
+        """
+        section = section_span.get_span_text()
+        return not self._url_parser.is_maybe_url(section) and \
+               not self._url_parser._is_maybe_filename(section)
 
     def get_text_begin_marker(self):
         return "<bot:txt>"
@@ -413,22 +429,23 @@ class DomainGenericText(TextDomain):
 class DomainTerminal(TextDomain):
     """ Terminal entry, in particular gnome-terminal """
 
-    _prompt_patterns = tuple(re.compile(p, re.UNICODE) for p in \
-                             ("^gdb$ ",
-                              "^>>> ", # python
-                              "^In \[[0-9]*\]: ",   # ipython
-                              "^:",    # vi command mode
-                              "^/",    # vi search
-                              "^\?",   # vi reverse search
-                              "\$ ",   # generic prompt
-                              "# ",    # root prompt
-                             )
+    _prompt_patterns = tuple(re.compile(p, re.UNICODE) for p in
+                                (
+                                    "^gdb$ ",
+                                    "^>>> ",              # python
+                                    "^In \[[0-9]*\]: ",   # ipython
+                                    "^:",                 # vi command mode
+                                    "^/",                 # vi search
+                                    "^\?",                # vi reverse search
+                                    "\$ ",                # generic prompt
+                                    "# ",                 # root prompt
+                                )
                             )
 
-    _prompt_blacklist_patterns = tuple(re.compile(p, re.UNICODE) for p in \
-                             (
-                              "^\(.*\)`.*': ", # bash incremental search
-                             )
+    _prompt_blacklist_patterns = tuple(re.compile(p, re.UNICODE) for p in
+                                (
+                                    "^\(.*\)`.*': ",  # bash incremental search
+                                )
                             )
 
     def matches(self, **kwargs):
@@ -438,21 +455,21 @@ class DomainTerminal(TextDomain):
     def init_domain(self):
         pass
 
-    def read_context(self, accessible, offset = None):
+    def read_context(self, accessible, offset=None):
         """
         Extract prediction context from the accessible
         """
         if offset is None:
             try:
                 offset = accessible.get_caret_offset()
-            except Exception as ex: # Private exception gi._glib.GError when
-                                    # gedit became unresponsive.
-                _logger.info("DomainTerminal.read_context(): " \
-                             + unicode_str(ex))
+            except Exception as ex:     # Private exception gi._glib.GError
+                                        # when gedit became unresponsive.
+                _logger.info("DomainTerminal.read_context(): " +
+                             unicode_str(ex))
                 return None
 
         context_lines, prompt_length, line, line_start, line_caret = \
-                             self._get_text_after_prompt(accessible, offset)
+            self._get_text_after_prompt(accessible, offset)
 
         if prompt_length:
             begin_of_text = True
@@ -465,7 +482,7 @@ class DomainTerminal(TextDomain):
         before_line = "".join(context_lines[:-1])
         selection_span = TextSpan(offset, 0,
                                   before_line + line,
-                                  line_start-len(before_line))
+                                  line_start - len(before_line))
 
         result = (context, line, line_caret, selection_span,
                   begin_of_text, begin_of_text_offset)
@@ -629,7 +646,7 @@ class DomainURL(DomainGenericText):
     def get_text_begin_marker(self):
         return "<bot:url>"
 
-    def can_spell_check(self):
+    def can_spell_check(self, section_span):
         return False
 
 

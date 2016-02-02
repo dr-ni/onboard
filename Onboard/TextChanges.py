@@ -177,6 +177,26 @@ class TextSpan:
         pos = self.pos - self.text_pos
         return self.text[pos - 1 : pos]
 
+    def get_last_char_in_span(self):
+        """
+        Character right before the span.
+
+        Doctests:
+        >>> span = TextSpan(0, 0, "0123456789", 0)
+        >>> span.get_last_char_in_span()
+        ''
+
+        >>> span = TextSpan(9, 1, "0123456789", 0)
+        >>> span.get_last_char_in_span()
+        '9'
+
+        >>> span = TextSpan(5, 2, "3456789", 3)
+        >>> span.get_last_char_in_span()
+        '6'
+        """
+        pos = self.end() - self.text_pos
+        return self.text[pos - 1 : pos]
+
     def _escape(self, text):
         return text.replace("\n", "\\n")
 

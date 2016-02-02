@@ -132,7 +132,7 @@ class WordSuggestions:
         # Keep track in and write to both contexts in parallel,
         # but read only from the active one.
         self.text_context = self.atspi_text_context
-        self.text_context.enable(enable) # register AT-SPI listerners
+        self.text_context.enable(enable)  # register AT-SPI listerners
 
     def on_word_suggestions_enabled(self, enabled):
         """ Config callback for word_suggestions.enabled changes. """
@@ -151,11 +151,11 @@ class WordSuggestions:
             scratch_models = ["lm:mem"]
 
             persistent_models = system_models + user_models
-            models = system_models + user_models + scratch_models
+            # models = system_models + user_models + scratch_models
             auto_learn_models = user_models
 
             _logger.info("selecting language models: "
-                         "system={} user={} auto_learn={}" \
+                         "system={} user={} auto_learn={}"
                         .format(repr(system_models),
                                 repr(user_models),
                                 repr(auto_learn_models)))
@@ -269,7 +269,6 @@ class WordSuggestions:
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
-
     def on_spell_checker_changed(self):
         self.update_spell_checker()
         self.commit_ui_updates()
@@ -281,7 +280,7 @@ class WordSuggestions:
                   else None
         self._spell_checker.set_backend(backend)
 
-        if not backend is None:
+        if backend is not None:
             # chose dicts
             lang_id = self.get_lang_id()
             dict_ids = [lang_id] if lang_id else []
@@ -345,7 +344,7 @@ class WordSuggestions:
 
     def _insert_correction_choice(self, key, choice_index):
         """ spelling correction clicked """
-        span = self._correction_span # span to correct
+        span = self._correction_span  # span to correct
         with self.suppress_modifiers():
             self._delete_selected_text()
             self._replace_text(span.begin(), span.end(),
@@ -355,7 +354,7 @@ class WordSuggestions:
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
         deletion, insertion = \
-                self._get_prediction_choice_changes(choice_index)
+            self._get_prediction_choice_changes(choice_index)
 
         separator = ""
         insert_result_span = None
@@ -367,8 +366,9 @@ class WordSuggestions:
             insert_result_span = self._simulate_insertion(caret_span,
                                                          deletion, insertion)
             # Should we add an auto-separator after the inserted word?
-            domain = self.text_context.get_text_domain()
-            separator = domain.get_auto_separator(insert_result_span.get_text())
+            domain = self.get_text_domain()
+            separator = domain.get_auto_separator(
+                insert_result_span.get_text())
 
         # Type remainder/replace word and possibly add separator.
         added_separator = self._replace_text_at_caret(deletion, insertion,
@@ -421,15 +421,17 @@ class WordSuggestions:
         self._correction_span = None
 
         if self._spell_checker and \
-           config.are_spelling_suggestions_enabled() and \
-           self.can_spell_check():
-            word_span = self._get_word_to_spell_check(
-                self.text_context.get_span_at_caret(), self.is_typing())
-            if word_span:
-                (self._correction_choices,
-                self._correction_span,
-                auto_capitalization) = \
-                            self._find_correction_choices(word_span, False)
+           config.are_spelling_suggestions_enabled():
+            caret_span = self.text_context.get_span_at_caret()
+            if caret_span:
+                word_span = self._get_word_to_spell_check(caret_span,
+                                                          self.is_typing())
+                if word_span and \
+                   self._can_spell_check(word_span):
+                    (self._correction_choices,
+                    self._correction_span,
+                    auto_capitalization) = \
+                        self._find_correction_choices(word_span, False)
 
     def _find_correction_choices(self, word_span, auto_capitalize):
         """
@@ -698,23 +700,23 @@ class WordSuggestions:
 
     def _get_word_to_spell_check(self, caret_span, is_typing):
         """
-        Get the word to be spell checked.
+        Get the word to be spell-checked.
 
         Doctests:
         >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
 
-        # not typing and caret at word begin: return the word
+        # not typing and caret at word begin: return word at caret
         >>> span = TextSpan(9, 0, "binomial proportion")
         >>> print(wp._get_word_to_spell_check(span, False))
         TextSpan(9, 10, 'proportion', 9, None)
 
-        # not typing and caret before word end: return the word
+        # not typing and caret before word end: return word at caret
         >>> span = TextSpan(7, 0, "binomial proportion")
         >>> print(wp._get_word_to_spell_check(span, False))
         TextSpan(0, 8, 'binomial', 0, None)
 
-        # not typing and caret at word end: return the word
+        # not typing and caret at word end: return word before caret
         >>> span = TextSpan(8, 0, "binomial proportion")
         >>> print(wp._get_word_to_spell_check(span, False))
         TextSpan(0, 8, 'binomial', 0, None)
@@ -743,7 +745,6 @@ class WordSuggestions:
         Doctests:
         >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
-        >>> tc = wp.text_context
 
         # caret right in the middle of a word
         >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
@@ -770,17 +771,16 @@ class WordSuggestions:
                     break
                 itoken = i
 
-            if not itoken is None:
+            if itoken is not None:
                 token = unicode_str(tokens[itoken])
 
                 # We're only looking for actual words
-                if not token in ["<unk>", "<num>", "<s>"]:
+                if token not in ["<unk>", "<num>", "<s>"]:
                     b = spans[itoken][0] + text_begin
                     e = spans[itoken][1] + text_begin
-                    word_span = TextSpan(b, e-b, token, b)
+                    word_span = TextSpan(b, e - b, token, b)
 
         return word_span
-
 
     def _delete_selected_text(self):
         """
@@ -837,7 +837,7 @@ class WordSuggestions:
             if offset >= 0:
                 self._text_changer.press_keysyms("right", offset)
 
-    def _replace_text_at_caret(self, deletion, insertion, auto_separator = ""):
+    def _replace_text_at_caret(self, deletion, insertion, auto_separator=""):
         """
         Insert a word/word-remainder and add a separator string as needed.
         """
@@ -867,11 +867,12 @@ class WordSuggestions:
             if auto_separator:
                 self._text_changer.insert_string_at_caret(auto_separator)
                 if delete_existing_separator:
-                    pos = selection_span.begin() - len(deletion) + len(insertion) + len(auto_separator)
+                    pos = selection_span.begin() - len(deletion) + \
+                        len(insertion) + len(auto_separator)
                     self._replace_text(pos,
                                        pos + len(auto_separator),
                                        pos,
-                                       "") # delete, replace with nothing
+                                       "")  # delete, replace with nothing
 
         return auto_separator
 
@@ -891,8 +892,7 @@ class WordSuggestions:
         """ Synchronous callback for text insertion """
 
         # auto-correction
-        if config.is_auto_capitalization_enabled() and \
-           self.can_auto_correct():
+        if config.is_auto_capitalization_enabled():
             word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
                 self._auto_correct_at(word_span, caret_offset)
@@ -966,7 +966,7 @@ class WordSuggestions:
 
         return keys_to_redraw
 
-    def hide_input_line(self, hide = True):
+    def hide_input_line(self, hide=True):
         """
         Temporarily hide the input line to access keys below it.
         """
@@ -986,24 +986,27 @@ class WordSuggestions:
                 return True
         return False
 
+    def get_text_domain(self):
+        return self.text_context.get_text_domain()
+
     def can_give_keypress_feedback(self):
         """ Password entries may block feedback to prevent eavesdropping. """
-        domain = self.text_context.get_text_domain()
+        domain = self.get_text_domain()
         if domain and not domain.can_give_keypress_feedback():
             return False
         return True
 
-    def can_spell_check(self):
+    def _can_spell_check(self, span_to_check):
         """ No spell checking for passwords, URLs, etc. """
-        domain = self.text_context.get_text_domain()
-        if domain and domain.can_spell_check():
+        domain = self.get_text_domain()
+        if domain and domain.can_spell_check(span_to_check):
             return True
         return False
 
-    def can_auto_correct(self):
+    def _can_auto_correct(self, section_span):
         """ No auto correct for passwords, URLs, etc. """
-        domain = self.text_context.get_text_domain()
-        if domain and domain.can_auto_correct():
+        domain = self.get_text_domain()
+        if domain and domain.can_auto_correct(section_span):
             return True
         return False
 
@@ -1097,17 +1100,60 @@ class WordSuggestions:
         return correction_span, replacement
 
     def _get_word_to_auto_correct(self, insertion_span):
-        # find position of last word end with added space
-        char_before = insertion_span.get_char_before_span()
-        text = char_before + insertion_span.get_span_text()
-        match = re.search("\S\s+\S*$", text)
+        """
+        Doctests:
+        >>> from Onboard.TextDomain import DomainGenericText
+        >>> wp = WordSuggestions()
+        >>> wp._wpengine = WPLocalEngine()
+        >>> d = DomainGenericText()
+        >>> wp.get_text_domain = lambda : d
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(6, 1, "abc def")))
+        None
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def ")))
+        TextSpan(4, 3, 'def', 4, None)
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def.")))
+        None
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(8, 1, "abc def. ")))
+        TextSpan(4, 3, 'def', 4, None)
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(56, 6,
+        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor ")))
+        None
+        """
+        char = insertion_span.get_last_char_in_span()
+        if char.isspace():
+            section_span = self._get_section_before_span(insertion_span)
+            if section_span and \
+               self._can_auto_correct(section_span):
+                word_span = self._get_word_before_span(insertion_span)
+                return word_span
+        return None
+
+    def _get_section_before_span(self, insertion_span):
+        """
+        Doctests:
+        >>> wp = WordSuggestions()
+
+        >>> wp._get_section_before_span(TextSpan(6, 1, "abc def"))
+        TextSpan(4, 3, 'def', 0, None)
+        >>> wp._get_section_before_span(TextSpan(7, 1, "abc def "))
+        TextSpan(4, 3, 'def', 0, None)
+        >>> wp._get_section_before_span(TextSpan(56, 6,
+        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor"))
+        TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor', 0, None)
+        """
+        text = insertion_span.get_text_until_span()
+        import sys
+        match = re.search("\S*(?=\s*$)", text)
         if match:
             span = insertion_span.copy()
-            span.length = 0
-            span.pos = insertion_span.begin() + match.start() + 1
-            if char_before:
-                span.pos -= 1
-            return self._get_word_before_span(span)
+            span.length = match.end() - match.start()
+            span.pos = match.start()
+            return span
         return None
 
     @staticmethod
@@ -1435,7 +1481,7 @@ class LearnStrategyLRU(LearnStrategy):
             if engine:
                 bot_marker = text_context.get_text_begin_marker()
                 bot_offset = text_context.get_begin_of_text_offset()
-                domain = text_context.get_text_domain()
+                domain = self._wp.get_text_domain()
                 self._learn_spans(spans, bot_marker, bot_offset, domain)
                 engine.clear_scratch_models() # clear short term memory
 
