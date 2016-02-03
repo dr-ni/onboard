@@ -63,10 +63,10 @@ class TextContext:
     def insert_text_at_caret(self, text):
         return NotImplementedError()
 
-    def delete_text(self, offset, length = 1):
+    def delete_text(self, offset, length=1):
         return NotImplementedError()
 
-    def delete_text_before_caret(self, length = 1):
+    def delete_text_before_caret(self, length=1):
         return NotImplementedError()
 
     def get_context(self):
@@ -204,6 +204,12 @@ class AtspiTextContext(TextContext):
             return domain.can_suggest_before_typing()
         return True
 
+    def can_auto_punctuate(self):
+        domain = self.get_text_domain()
+        if domain:
+            return domain.can_auto_punctuate(self._begin_of_text)
+        return False
+
     def get_begin_of_text_offset(self):
         return self._begin_of_text_offset \
                if self._accessible else None
@@ -225,11 +231,11 @@ class AtspiTextContext(TextContext):
         #return False # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and self._can_insert_text
 
-    def delete_text(self, offset, length = 1):
+    def delete_text(self, offset, length=1):
         """ Delete directly, without going through faking key presses. """
         self._accessible.delete_text(offset, offset + length)
 
-    def delete_text_before_caret(self, length = 1):
+    def delete_text_before_caret(self, length=1):
         """ Delete directly, without going through faking key presses. """
         offset = self._accessible.get_caret_offset()
         self.delete_text(offset - length, length)
@@ -258,18 +264,18 @@ class AtspiTextContext(TextContext):
         offset = self._accessible.get_caret_offset()
         self.insert_text(offset, text)
 
-    def _register_atspi_listeners(self, register = True):
+    def _register_atspi_listeners(self, register=True):
         st = self._state_tracker
         if register:
             st.connect("text-entry-activated", self._on_text_entry_activated)
             st.connect("text-changed", self._on_text_changed)
             st.connect("text-caret-moved", self._on_text_caret_moved)
-            #st.connect("key-pressed", self._on_atspi_key_pressed)
+            # st.connect("key-pressed", self._on_atspi_key_pressed)
         else:
             st.disconnect("text-entry-activated", self._on_text_entry_activated)
             st.disconnect("text-changed", self._on_text_changed)
             st.disconnect("text-caret-moved", self._on_text_caret_moved)
-            #st.disconnect("key-pressed", self._on_atspi_key_pressed)
+            # st.disconnect("key-pressed", self._on_atspi_key_pressed)
 
     def get_accessible_capabilities(self, accessible, **kwargs):
         can_insert_text = False
@@ -279,8 +285,9 @@ class AtspiTextContext(TextContext):
         if accessible:
 
             # Can insert text via Atspi?
-            # Advantages: - faster, no individual key presses
-            #             - full trouble-free insertion of all unicode characters
+            # Advantages:
+            # - faster, no individual key presses
+            # - trouble-free insertion of all unicode characters
             if "EditableText" in interfaces:
                 # Support for atspi text insertion is spotty.
                 # Firefox, LibreOffice Writer, gnome-terminal don't support it,
@@ -288,7 +295,7 @@ class AtspiTextContext(TextContext):
 
                 # Allow direct text insertion for gtk widgets
                 if self._state_tracker.is_toolkit_gtk3(attributes):
-                   can_insert_text = True
+                    can_insert_text = True
 
         return can_insert_text
 
@@ -296,7 +303,7 @@ class AtspiTextContext(TextContext):
         # old text_domain still valid here
         self._wp.on_text_entry_deactivated()
 
-        #print("_on_text_entry_activated", accessible)
+        # print("_on_text_entry_activated", accessible)
         # keep track of the active accessible asynchronously
         self._accessible = accessible
         self._entering_text = False
@@ -315,9 +322,9 @@ class AtspiTextContext(TextContext):
         # log accessible info
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             log = _logger.atspi
-            log("-"*70)
+            log("-" * 70)
             log("Accessible focused: ")
-            indent = " "*4
+            indent = " " * 4
             if self._accessible:
                 state = self._state_tracker.get_state()
                 for key, value in sorted(state.items()):
@@ -329,10 +336,10 @@ class AtspiTextContext(TextContext):
                     else:
                         msg += repr(value)
                     log(indent + msg)
-                log(indent + "text_domain: {}" \
-                    .format(self._text_domain and \
+                log(indent + "text_domain: {}"
+                    .format(self._text_domain and
                             type(self._text_domain).__name__))
-                log(indent + "can_insert_text: {}" \
+                log(indent + "can_insert_text: {}"
                     .format(self._can_insert_text))
             else:
                 log(indent + "None")
@@ -349,7 +356,7 @@ class AtspiTextContext(TextContext):
         if insertion_span:
             try:
                 caret_offset = self._accessible.get_caret_offset()
-            except: # gi._glib.GError
+            except:  # gi._glib.GError
                 pass
             else:
                 self._wp.on_text_inserted(insertion_span, caret_offset)
@@ -361,10 +368,10 @@ class AtspiTextContext(TextContext):
 
     def _on_atspi_key_pressed(self, event):
         """ disabled, Francesco didn't receive any AT-SPI key-strokes. """
-        keycode = event.hw_code # uh oh, only keycodes...
-                                # hopefully "c" doesn't move around a lot.
-        modifiers = event.modifiers
-        #self._handle_key_press(keycode, modifiers)
+        # keycode = event.hw_code # uh oh, only keycodes...
+        #                         # hopefully "c" doesn't move around a lot.
+        # modifiers = event.modifiers
+        # self._handle_key_press(keycode, modifiers)
 
     def on_onboard_typing(self, key, mod_mask):
         if key.is_text_changing():
@@ -383,11 +390,11 @@ class AtspiTextContext(TextContext):
             domain = self.get_text_domain()
             if domain:
                 self._entering_text, end_of_editing = \
-                        domain.handle_key_press(keycode, modifiers)
+                    domain.handle_key_press(keycode, modifiers)
 
-                if end_of_editing == True:
+                if end_of_editing is True:
                     self._wp.commit_changes()
-                elif end_of_editing == False:
+                elif end_of_editing is False:
                     self._wp.discard_changes()
 
     def _record_text_change(self, pos, length, insert):
@@ -398,17 +405,15 @@ class AtspiTextContext(TextContext):
         if accessible:
             try:
                 char_count = accessible.get_character_count()
-            except: # gi._glib.GError: The application no longer exists
-                    # when closing a tab in gnome-terminal.
+            except:     # gi._glib.GError: The application no longer exists
+                        # when closing a tab in gnome-terminal.
                 char_count = None
 
-        if not char_count is None:
+        if char_count is not None:
             # record the change
             spans_to_update = []
 
             if insert:
-                #print("insert", pos, length)
-
                 if self._entering_text and \
                    self.can_record_insertion(accessible, pos, length):
                     if self._wp.is_typing() or length < 30:
@@ -423,10 +428,10 @@ class AtspiTextContext(TextContext):
 
                     # simple span for current insertion
                     begin = max(pos - 100, 0)
-                    end = min(pos+length + 100, char_count)
+                    end = min(pos + length + 100, char_count)
                     text = self._state_tracker.get_accessible_text(accessible,
                                                                    begin, end)
-                    if not text is None:
+                    if text is not None:
                         insertion_span = TextSpan(pos, length, text, begin)
                 else:
                     # Remember nothing, just update existing spans.
@@ -436,7 +441,6 @@ class AtspiTextContext(TextContext):
                                                        include_length)
 
             else:
-                #print("delete", pos, length)
                 spans_to_update = self._changes.delete(pos, length,
                                                        self._entering_text)
 
@@ -449,8 +453,6 @@ class AtspiTextContext(TextContext):
                 span.text = Atspi.Text.get_text(accessible, begin, end)
                 span.text_pos = begin
 
-            #print(self._changes)
-
         self._text_changed = True
 
         return insertion_span
@@ -460,7 +462,7 @@ class AtspiTextContext(TextContext):
 
     def on_text_context_changed(self):
         result = self._text_domain.read_context(self._accessible)
-        if not result is None:
+        if result is not None:
             (self._context,
              self._line,
              self._line_caret,
@@ -468,7 +470,7 @@ class AtspiTextContext(TextContext):
              self._begin_of_text,
              self._begin_of_text_offset) = result
 
-            context = self.get_bot_context() # make sure to include bot-markers
+            context = self.get_bot_context()  # mk sure to include bot-markers
             if self._last_context != context or \
                self._last_line != self._line:
                 self._last_context = context
@@ -508,12 +510,12 @@ class InputLine(TextContext):
         self.line   = self.line[:self.caret] + s + self.line[self.caret:]
         self.move_caret(len(s))
 
-    def delete_left(self, n=1):  # backspace
-        self.line = self.line[:self.caret-n] + self.line[self.caret:]
+    def delete_left(self, n=1):     # backspace
+        self.line = self.line[:self.caret - n] + self.line[self.caret:]
         self.move_caret(-n)
 
-    def delete_right(self, n=1): # delete
-        self.line = self.line[:self.caret] + self.line[self.caret+n:]
+    def delete_right(self, n=1):    # delete
+        self.line = self.line[:self.caret] + self.line[self.caret + n:]
 
     def move_caret(self, n):
         self.caret += n
@@ -542,8 +544,9 @@ class InputLine(TextContext):
         """
         if char == "\t":
             return True
-        return not unicodedata.category(char) in ('Cc','Cf','Cs','Co',
-                                                  'Cn','Zl','Zp')
+        return not unicodedata.category(char) in ('Cc', 'Cf', 'Cs', 'Co',
+                                                  'Cn', 'Zl', 'Zp')
+
     def track_sent_key(self, key, mods):
         """
         Sync input_line with single key presses.
@@ -552,16 +555,15 @@ class InputLine(TextContext):
         end_editing = False
 
         if config.wp.stealth_mode:
-            return  True
+            return True
 
         id = key.id.upper()
         char = key.get_label()
-        #print  id," '"+char +"'",key.action_type
         if char is None or len(char) > 1:
             char = ""
 
         if key.action_type == KeyCommon.WORD_ACTION:
-            pass # don't reset input on word insertion
+            pass  # don't reset input on word insertion
 
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             pass  # simply pressing a modifier shouldn't stop the word
@@ -570,12 +572,12 @@ class InputLine(TextContext):
             pass
 
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
-            if   id == 'ESC':
+            if id == 'ESC':
                 self.reset()
             end_editing = True
 
         elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-            if   id == 'DELE':
+            if id == 'DELE':
                 self.delete_right()
             elif id == 'LEFT':
                 self.move_caret(-1)
@@ -585,7 +587,7 @@ class InputLine(TextContext):
                 end_editing = True
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
-            if   id == 'RTRN':
+            if id == 'RTRN':
                 char = "\n"
             elif id == 'SPCE':
                 char = " "
@@ -604,9 +606,9 @@ class InputLine(TextContext):
         else:
             end_editing = True
 
-        if not self.is_valid(): # caret moved outside known range?
+        if not self.is_valid():  # caret moved outside known range?
             end_editing = True
 
-        #print end_editing,"'%s' " % self.line, self.caret
+        # print end_editing,"'%s' " % self.line, self.caret
         return end_editing
 

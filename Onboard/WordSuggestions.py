@@ -375,12 +375,13 @@ class WordSuggestions:
                                                       separator)
 
         # Arm punctuator with the span of the just added separator.
-        separator_span = TextSpan(insert_result_span.begin(),
-                                  len(added_separator),
-                                  added_separator,
-                                  insert_result_span.begin()) \
-                         if added_separator else None
-        self._punctuator.set_added_separator(separator_span)
+        if self._can_auto_punctuate():
+            separator_span = TextSpan(insert_result_span.begin(),
+                                    len(added_separator),
+                                    added_separator,
+                                    insert_result_span.begin()) \
+                            if added_separator else None
+            self._punctuator.set_added_separator(separator_span)
 
     def _simulate_insertion(self, caret_span, deletion, insertion):
         """
@@ -1014,6 +1015,10 @@ class WordSuggestions:
         if domain and domain.can_auto_correct(section_span):
             return True
         return False
+
+    def _can_auto_punctuate(self):
+        """ No auto-punctuation in terminal when prompt was detected. """
+        return self.text_context.can_auto_punctuate()
 
     def on_focusable_gui_opening(self):
         """
@@ -1678,8 +1683,8 @@ class Punctuator:
     def on_before_press(self, key):
         if config.wp.punctuation_assistance and \
            self._added_separator_span and \
-           (key.type == KeyCommon.KEYCODE_TYPE or \
-            key.type == KeyCommon.KEYSYM_TYPE or \
+           (key.type == KeyCommon.KEYCODE_TYPE or
+            key.type == KeyCommon.KEYSYM_TYPE or
             key.type == KeyCommon.CHAR_TYPE):
 
             # Only act if we are still at the caret position
@@ -1688,7 +1693,7 @@ class Punctuator:
             if caret_span and \
                self._added_separator_span.end() == caret_span.begin():
                 char = key.get_label()
-                if   char in self.punctuation_no_capitalize:
+                if char in self.punctuation_no_capitalize:
                     self._delete_at_caret()
                     self._separator_removed = True
 

@@ -277,6 +277,9 @@ class TextDomain:
     def can_auto_correct(self, section_span):
         return False
 
+    def can_auto_punctuate(self, has_begin_of_text):
+        return False
+
     def can_suggest_before_typing(self):
         """ Can give word suggestions before typing has started? """
         return True
@@ -426,6 +429,9 @@ class DomainGenericText(TextDomain):
         """
         return self.can_spell_check(section_span)
 
+    def can_auto_punctuate(self, has_begin_of_text):
+        return True
+
     def get_text_begin_marker(self):
         return "<bot:txt>"
 
@@ -565,7 +571,7 @@ class DomainTerminal(TextDomain):
             prompt_length = self._find_prompt(l)
             context_lines.insert(0, l[prompt_length:])
             if i == 0:
-                line = line[prompt_length:] # cut prompt from input line
+                line = line[prompt_length:]  # cut prompt from input line
                 line_start += prompt_length
                 line_caret -= prompt_length
             if prompt_length:
@@ -607,7 +613,7 @@ class DomainTerminal(TextDomain):
         # Problem: learning won't happen for uncommon prompts, but less random
         # junk scrolling by should enter the user model in return.
         context_lines, prompt_length, line, line_start, line_caret = \
-                self._get_text_after_prompt(accessible, offset)
+            self._get_text_after_prompt(accessible, offset)
         return bool(prompt_length)
 
     def can_suggest_before_typing(self):
@@ -628,6 +634,14 @@ class DomainTerminal(TextDomain):
             return False, False
 
         return True, None  # entering_text, end_of_editing
+
+    def can_auto_punctuate(self, has_begin_of_text):
+        """
+        Only auto-punctuate in Terminal when no prompt was detected.
+        Intention is to allow punctuation assistance in editors, but disable
+        it when entering commands at the prompt, e.g. for "cd ..".
+        """
+        return not has_begin_of_text
 
 
 class DomainURL(DomainGenericText):
