@@ -426,8 +426,7 @@ class WordSuggestions:
             if caret_span:
                 word_span = self._get_word_to_spell_check(caret_span,
                                                           self.is_typing())
-                if word_span and \
-                   self._can_spell_check(word_span):
+                if word_span:
                     (self._correction_choices,
                     self._correction_span,
                     auto_capitalization) = \
@@ -703,8 +702,11 @@ class WordSuggestions:
         Get the word to be spell-checked.
 
         Doctests:
+        >>> from Onboard.TextDomain import DomainGenericText
         >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
+        >>> d = DomainGenericText()
+        >>> wp.get_text_domain = lambda : d
 
         # not typing and caret at word begin: return word at caret
         >>> span = TextSpan(9, 0, "binomial proportion")
@@ -721,66 +723,69 @@ class WordSuggestions:
         >>> print(wp._get_word_to_spell_check(span, False))
         TextSpan(0, 8, 'binomial', 0, None)
 
+        # not typing and caret in URLs or filenames: no spelling suggestions
+        >>> span = TextSpan(57, 0,
+        ...  "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor ")
+        >>> print(wp._get_word_to_spell_check(span, False))
+        None
+        >>> span = TextSpan(2, 0, "http://www.domain.org")
+        >>> print(wp._get_word_to_spell_check(span, False))
+        None
+
         # typing and caret at word end: suppress spelling suggestions
         >>> span = TextSpan(8, 0, "binomial proportion")
         >>> print(wp._get_word_to_spell_check(span, True))
         None
         """
-        word_span = self._get_word_before_span(caret_span)
+        section_span = self._get_section_before_span(caret_span)
+        if section_span and \
+           self._can_spell_check(section_span):
+            word_span = self._get_word_before_span(caret_span)
 
-        # Don't pop up spelling corrections if we're
-        # currently typing the word.
-        caret = caret_span.begin()
-        if is_typing and \
-           word_span and \
-           word_span.end() == caret:
-            word_span = None
+            # Don't pop up spelling corrections if we're
+            # currently typing the word.
+            caret = caret_span.begin()
+            if is_typing and \
+               word_span and \
+               word_span.end() == caret:
+                word_span = None
 
-        return word_span
+            return word_span
+        return None
 
-    def _get_word_before_span(self, span):
+    def _get_word_to_auto_correct(self, insertion_span):
         """
-        Get the word at or before the span.
-
         Doctests:
+        >>> from Onboard.TextDomain import DomainGenericText
         >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
+        >>> d = DomainGenericText()
+        >>> wp.get_text_domain = lambda : d
 
-        # caret right in the middle of a word
-        >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
-        TextSpan(9, 10, 'proportion', 9, None)
+        >>> print(wp._get_word_to_auto_correct(TextSpan(6, 1, "abc def")))
+        None
 
-        # text at offset
-        >>> wp._get_word_before_span(TextSpan(25, 0, "binomial proportion", 10))
-        TextSpan(19, 10, 'proportion', 19, None)
+        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def ")))
+        TextSpan(4, 3, 'def', 4, None)
 
-        # caret after whitespace - get the previous word
-        >>> wp._get_word_before_span(TextSpan(9, 0, "binomial  proportion"))
-        TextSpan(0, 8, 'binomial', 0, None)
+        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def.")))
+        None
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(8, 1, "abc def. ")))
+        TextSpan(4, 3, 'def', 4, None)
+
+        >>> print(wp._get_word_to_auto_correct(TextSpan(56, 6,
+        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor ")))
+        None
         """
-        word_span = None
-        if span and self._wpengine:
-            tokens, spans = self._wpengine.tokenize_text(span.get_text())
-
-            text_begin = span.text_begin()
-            local_caret = span.begin() - text_begin
-
-            itoken = None
-            for i, s in enumerate(spans):
-                if s[0] > local_caret:
-                    break
-                itoken = i
-
-            if itoken is not None:
-                token = unicode_str(tokens[itoken])
-
-                # We're only looking for actual words
-                if token not in ["<unk>", "<num>", "<s>"]:
-                    b = spans[itoken][0] + text_begin
-                    e = spans[itoken][1] + text_begin
-                    word_span = TextSpan(b, e - b, token, b)
-
-        return word_span
+        char = insertion_span.get_last_char_in_span()
+        if char.isspace():
+            section_span = self._get_section_before_span(insertion_span)
+            if section_span and \
+               self._can_auto_correct(section_span):
+                word_span = self._get_word_before_span(insertion_span)
+                return word_span
+        return None
 
     def _delete_selected_text(self):
         """
@@ -1133,28 +1138,87 @@ class WordSuggestions:
                 return word_span
         return None
 
+    _section_begin_pattern = re.compile("\S*\s*$")
+    _section_end_pattern = re.compile("\S*(?=\s*)")
+
     def _get_section_before_span(self, insertion_span):
         """
+        Get first whitespace-separated section that
+        begins before the given span.
+
         Doctests:
         >>> wp = WordSuggestions()
 
         >>> wp._get_section_before_span(TextSpan(6, 1, "abc def"))
         TextSpan(4, 3, 'def', 0, None)
+
         >>> wp._get_section_before_span(TextSpan(7, 1, "abc def "))
         TextSpan(4, 3, 'def', 0, None)
+
         >>> wp._get_section_before_span(TextSpan(56, 6,
         ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor"))
         TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor', 0, None)
+
+        >>> wp._get_section_before_span(TextSpan(6, 2,
+        ...     "abc http://www.domain.org"))
+        TextSpan(4, 21, 'http://www.domain.org', 0, None)
         """
         text = insertion_span.get_text_until_span()
-        import sys
-        match = re.search("\S*(?=\s*$)", text)
+        match = self._section_begin_pattern.search(text)
         if match:
-            span = insertion_span.copy()
-            span.length = match.end() - match.start()
-            span.pos = match.start()
-            return span
+            begin = match.start()
+            text = insertion_span.text[begin:]
+            match = self._section_end_pattern.search(text)
+            if match:
+                span = insertion_span.copy()
+                span.length = match.end() - match.start()
+                span.pos = begin + match.start()
+                return span
         return None
+
+    def _get_word_before_span(self, span):
+        """
+        Get the word at or before the span.
+
+        Doctests:
+        >>> wp = WordSuggestions()
+        >>> wp._wpengine = WPLocalEngine()
+
+        # caret right in the middle of a word
+        >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
+        TextSpan(9, 10, 'proportion', 9, None)
+
+        # text at offset
+        >>> wp._get_word_before_span(TextSpan(25, 0, "binomial proportion", 10))
+        TextSpan(19, 10, 'proportion', 19, None)
+
+        # caret after whitespace - get the previous word
+        >>> wp._get_word_before_span(TextSpan(9, 0, "binomial  proportion"))
+        TextSpan(0, 8, 'binomial', 0, None)
+        """
+        word_span = None
+        if span and self._wpengine:
+            tokens, spans = self._wpengine.tokenize_text(span.get_text())
+
+            text_begin = span.text_begin()
+            local_caret = span.begin() - text_begin
+
+            itoken = None
+            for i, s in enumerate(spans):
+                if s[0] > local_caret:
+                    break
+                itoken = i
+
+            if itoken is not None:
+                token = unicode_str(tokens[itoken])
+
+                # We're only looking for actual words
+                if token not in ["<unk>", "<num>", "<s>"]:
+                    b = spans[itoken][0] + text_begin
+                    e = spans[itoken][1] + text_begin
+                    word_span = TextSpan(b, e - b, token, b)
+
+        return word_span
 
     @staticmethod
     def _string_distance(s1, s2):

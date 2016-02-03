@@ -403,24 +403,28 @@ class DomainGenericText(TextDomain):
                 begin_of_text, begin_of_text_offset)
 
     def can_spell_check(self, section_span):
-        return True
-
-    def can_auto_correct(self, section_span):
         """
         Can we auto-correct this span?.
 
         Doctests:
         >>> d = DomainGenericText()
-        >>> d.can_auto_correct(TextSpan(0, 3, "abc"))
+        >>> d.can_spell_check(TextSpan(0, 3, "abc"))
         True
-        >>> d.can_auto_correct(TextSpan(4, 3, "abc def"))
+        >>> d.can_spell_check(TextSpan(4, 3, "abc def"))
         True
-        >>> d.can_auto_correct(TextSpan(0, 20, "http://www.domain.org"))
+        >>> d.can_spell_check(TextSpan(0, 20, "http://www.domain.org"))
         False
         """
         section = section_span.get_span_text()
         return not self._url_parser.is_maybe_url(section) and \
                not self._url_parser._is_maybe_filename(section)
+        return True
+
+    def can_auto_correct(self, section_span):
+        """
+        Can we auto-correct this span?.
+        """
+        return self.can_spell_check(section_span)
 
     def get_text_begin_marker(self):
         return "<bot:txt>"
