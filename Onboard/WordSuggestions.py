@@ -238,12 +238,17 @@ class WordSuggestions:
     def get_spellchecker_dicts(self):
         return self._spell_checker.get_supported_dict_ids()
 
-    def on_activity_detected(self):
-        """
-        User interacted with the keyboard.
-        """
+    def on_any_key_down(self):
+        self.on_activity_detected()
+
+        # Don't auto-save while keys are being pressed,
+        # or the resulting delay may cause key repeats.
         if self._wpengine:
-            self._wpengine.postpone_autosave()
+            self._wpengine.pause_autosave()
+
+    def on_all_keys_up(self):
+        if self._wpengine:
+            self._wpengine.resume_autosave()
 
     def on_before_key_press(self, key):
         if not key.is_modifier() and not key.is_button():
@@ -268,6 +273,13 @@ class WordSuggestions:
                         KeyCommon.CORRECTION_TYPE,
                         KeyCommon.MACRO_TYPE]:
             self.text_context.on_onboard_typing(key, self.get_mod_mask())
+
+    def on_activity_detected(self):
+        """
+        User interacted with the keyboard.
+        """
+        if self._wpengine:
+            self._wpengine.postpone_autosave()
 
     def on_spell_checker_changed(self):
         self.update_spell_checker()

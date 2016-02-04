@@ -785,14 +785,13 @@ class Keyboard(WordSuggestions):
         return key and \
                key.is_text_changing()
 
-    def key_down(self, key, view = None, sequence = None, action = True):
+    def key_down(self, key, view=None, sequence=None, action=True):
         """
         Press down on one of Onboard's key representations.
         This may be either an initial press, or a switch of the active_key
         due to dragging.
         """
-        self.on_activity_detected()
-
+        self.on_any_key_down()
         self.stop_raise_attempts()
 
         if sequence:
@@ -800,7 +799,7 @@ class Keyboard(WordSuggestions):
             event_type = sequence.event_type
         else:
             button = 1
-            event_type =  EventType.CLICK
+            event_type = EventType.CLICK
 
         # Stop garbage collection delays until key release. They might cause
         # unexpected key repeats on slow systems.
@@ -827,19 +826,17 @@ class Keyboard(WordSuggestions):
                 self._do_key_down_action(key, view, button, event_type)
 
             # remember as pressed key
-            if not key in self._pressed_keys:
+            if key not in self._pressed_keys:
                 self._pressed_keys.append(key)
 
-    def key_up(self, key, view = None, sequence = None, action = True):
+    def key_up(self, key, view=None, sequence=None, action=True):
         """ Release one of Onboard's key representations. """
-        update = False
-
         if sequence:
             button = sequence.button
             event_type = sequence.event_type
         else:
             button = 1
-            event_type =  EventType.CLICK
+            event_type = EventType.CLICK
 
         if key and \
            key.sensitive:
@@ -912,12 +909,13 @@ class Keyboard(WordSuggestions):
             self._non_modifier_released = False
             self._pressed_keys = []
             self._pressed_key = None
+            self.on_all_keys_up()
             gc.enable()
 
         # Process pending UI updates
         self.commit_ui_updates()
 
-    def key_long_press(self, key, view = None, button = 1):
+    def key_long_press(self, key, view=None, button=1):
         """ Long press of one of Onboard's key representations. """
         long_pressed = False
         key_type = key.type
@@ -957,7 +955,7 @@ class Keyboard(WordSuggestions):
                     long_pressed = True
 
         if long_pressed:
-            key.activated = True # no more drag selection
+            key.activated = True  # no more drag selection
 
         return long_pressed
 
@@ -988,7 +986,7 @@ class Keyboard(WordSuggestions):
             if key.is_modifier() and \
                not self._can_cycle_modifiers():
                 can_send_key = True
-            else: # single touch/click
+            else:  # single touch/click
                 can_send_key = self.step_sticky_key(key, button, event_type)
 
             if can_send_key:
@@ -1008,7 +1006,7 @@ class Keyboard(WordSuggestions):
     def send_key_down(self, key, view, button, event_type):
         if self.is_key_disabled(key):
             _logger.debug("send_key_down: "
-                          "rejecting blacklisted key action for '{}'" \
+                          "rejecting blacklisted key action for '{}'"
                           .format(key.id))
             return
 
@@ -1020,16 +1018,17 @@ class Keyboard(WordSuggestions):
         else:
 
             if button == 3:
-               self._maybe_lock_temporary_modifier(key, Modifiers.SHIFT)
+                self._maybe_lock_temporary_modifier(key, Modifiers.SHIFT)
 
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
                 WordSuggestions.on_before_key_press(self, key)
-                self.maybe_send_alt_press_for_key(key, view, button, event_type)
+                self.maybe_send_alt_press_for_key(key, view,
+                                                  button, event_type)
 
                 self.send_key_press(key, view, button, event_type)
 
-            if action == KeyCommon.DOUBLE_STROKE_ACTION: # e.g. CAPS
+            if action == KeyCommon.DOUBLE_STROKE_ACTION:  # e.g. CAPS
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:

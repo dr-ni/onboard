@@ -86,21 +86,22 @@ class OnboardGtk(object):
         # no python3-dbus on Fedora17
         bus = None
         err_msg = ""
-        if not "dbus" in globals():
+        if "dbus" not in globals():
             err_msg = "D-Bus bindings unavailable"
         else:
             # Use D-bus main loop by default
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-            # Don't fail to start in Xenial's lightdm due to D-Bus not available
+            # Don't fail to start in Xenial's lightdm due
+            # to D-Bus not available.
             try:
                 bus = dbus.SessionBus()
-            except dbus.exceptions.DBusException as e:
+            except dbus.exceptions.DBusException:
                 err_msg = "D-Bus session bus unavailable"
                 bus = None
 
         if not bus:
-            _logger.warning(err_msg + \
+            _logger.warning(err_msg +
                             "Onboard will start with reduced functionality. "
                             "Single-instance check, "
                             "D-Bus service and "
@@ -123,7 +124,7 @@ class OnboardGtk(object):
             # the user session (LP: 938302).
             if config.xid_mode and \
                config.launched_by == config.LAUNCHER_GSS and \
-               not (config.gnome_a11y and \
+               not (config.gnome_a11y and
                     config.gnome_a11y.screen_keyboard_enabled) and \
                not has_remote_instance:
                 sys.exit(0)
@@ -133,7 +134,8 @@ class OnboardGtk(object):
                 if has_remote_instance and \
                    not config.options.allow_multiple_instances:
                     # Present remote instance
-                    remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
+                    remote = bus.get_object(self.DBUS_NAME,
+                                            ServiceOnboardKeyboard.PATH)
                     remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
                     _logger.info("Exiting: Not the primary instance.")
                     sys.exit(0)
@@ -208,9 +210,10 @@ class OnboardGtk(object):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
-        #config.xid_mode = True
+        # config.xid_mode = True
         self._window.application = self
-        config.main_window = self._window # need this to access screen properties
+        # need this to access screen properties
+        config.main_window = self._window
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -225,9 +228,9 @@ class OnboardGtk(object):
                 size = options.size.split("x")
                 rect.w = int(size[0])
                 rect.h = int(size[1])
-            if not options.x is None:
+            if options.x is not None:
                 rect.x = options.x
-            if not options.y is None:
+            if options.y is not None:
                 rect.y = options.y
 
             # Make sure the keyboard fits on screen
@@ -236,7 +239,7 @@ class OnboardGtk(object):
             if rect != self._window.get_rect():
                 orientation = self._window.get_screen_orientation()
                 self._window.write_window_rect(orientation, rect)
-                self._window.restore_window_rect() # move/resize early
+                self._window.restore_window_rect()  # move/resize early
 
         # export dbus service
         if not config.xid_mode and \
@@ -251,9 +254,11 @@ class OnboardGtk(object):
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
-        self.do_connect(self.keymap, "keys-changed", self.cb_keys_changed) # map changes
+        # map changes
+        self.do_connect(self.keymap, "keys-changed", self.cb_keys_changed)
         self.do_connect(self.keymap, "state-changed", self.cb_state_changed)
-        Gdk.event_handler_set(cb_any_event, self)          # group changes
+        # group changes
+        Gdk.event_handler_set(cb_any_event, self)
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
@@ -261,29 +266,30 @@ class OnboardGtk(object):
         reload_layout       = lambda x: once(self.reload_layout_and_present)
         update_ui           = lambda x: once(self._update_ui)
         update_ui_no_resize = lambda x: once(self._update_ui_no_resize)
-        update_transparency = lambda x: once(self.keyboard_widget.update_transparency)
+        update_transparency = \
+            lambda x: once(self.keyboard_widget.update_transparency)
         update_inactive_transparency = \
-                              lambda x: once(self.keyboard_widget.update_inactive_transparency)
+            lambda x: once(self.keyboard_widget.update_inactive_transparency)
 
         # general
-        config.auto_show.enabled_notify_add(lambda x: \
+        config.auto_show.enabled_notify_add(lambda x:
                                     self.keyboard.update_auto_show())
-        config.auto_show.hide_on_key_press_notify_add(lambda x: \
+        config.auto_show.hide_on_key_press_notify_add(lambda x:
                                     self.keyboard.update_auto_hide())
 
         # keyboard
         config.keyboard.key_synth_notify_add(reload_layout)
-        config.keyboard.input_event_source_notify_add(lambda x: \
+        config.keyboard.input_event_source_notify_add(lambda x:
                                     self.keyboard.update_input_event_source())
-        config.keyboard.touch_input_notify_add(lambda x: \
+        config.keyboard.touch_input_notify_add(lambda x:
                                     self.keyboard.update_touch_input_mode())
         config.keyboard.show_secondary_labels_notify_add(update_ui)
 
-
         # window
-        config.window.window_state_sticky_notify_add(lambda x: \
-                                   self._window.update_sticky_state())
-        config.window.window_decoration_notify_add(self._on_window_options_changed)
+        config.window.window_state_sticky_notify_add(
+            lambda x: self._window.update_sticky_state())
+        config.window.window_decoration_notify_add(
+            self._on_window_options_changed)
         config.window.force_to_top_notify_add(self._on_window_options_changed)
         config.window.keep_aspect_ratio_notify_add(update_ui)
 
@@ -298,7 +304,7 @@ class OnboardGtk(object):
         config.layout_filename_notify_add(reload_layout)
 
         # theme
-        #config.gdi.gtk_theme_notify_add(self.on_gtk_theme_changed)
+        # config.gdi.gtk_theme_notify_add(self.on_gtk_theme_changed)
         config.theme_notify_add(self.on_theme_changed)
         config.key_label_font_notify_add(reload_layout)
         config.key_label_overrides_notify_add(reload_layout)
@@ -312,7 +318,7 @@ class OnboardGtk(object):
 
         # word suggestions
         config.word_suggestions.show_context_line_notify_add(update_ui)
-        config.word_suggestions.enabled_notify_add(lambda x: \
+        config.word_suggestions.enabled_notify_add(lambda x:
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.word_suggestions.auto_learn_notify_add(
                                  update_ui_no_resize)

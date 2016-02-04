@@ -87,13 +87,21 @@ class WPLocalEngine(object):
     def postpone_autosave(self):
         self._auto_save_timer.postpone()
 
-    def predict(self, context_line, limit = 20,
-                case_insensitive = False,
-                case_insensitive_smart = False,
-                accent_insensitive = False,
-                accent_insensitive_smart = False,
-                ignore_capitalized = False,
-                ignore_non_capitalized = False):
+    def pause_autosave(self):
+        # Pause for a minute max, because resume_autosave isn't
+        # reliable called, e.g. when dragging and leaving the window.
+        self._auto_save_timer.pause(60)
+
+    def resume_autosave(self):
+        self._auto_save_timer.resume()
+
+    def predict(self, context_line, limit=20,
+                case_insensitive=False,
+                case_insensitive_smart=False,
+                accent_insensitive=False,
+                accent_insensitive_smart=False,
+                ignore_capitalized=False,
+                ignore_non_capitalized=False):
         """ Find completion/prediction choices. """
         LanguageModel = pypredict.LanguageModel
         options = 0
@@ -128,7 +136,7 @@ class WPLocalEngine(object):
             for i, token in enumerate(tokens):
                 if token.endswith("'"):
                     token = token[:-1]
-                    if not token: # shouldn't happen
+                    if not token:  # shouldn't happen
                         token = "<unk>"
                     tokens[i] = token
 
@@ -137,7 +145,7 @@ class WPLocalEngine(object):
                 token_sections = [tokens]
             else:
                 token_sections = self._drop_new_words(tokens, spans,
-                                                        self.persistent_models)
+                                                      self.persistent_models)
             models = self._model_cache.get_models(self.auto_learn_models)
             for model in models:
                 for tokens in token_sections:
@@ -155,7 +163,7 @@ class WPLocalEngine(object):
         """ Remove tokens that don't already exist in any active model.  """
 
         tokspans, counts = self.lookup_tokens(tokens, spans, lmids)
-        split_indices = [i for i, model_counts in enumerate(counts) \
+        split_indices = [i for i, model_counts in enumerate(counts)
                          if all(n != 1 for n in model_counts)]
         return pypredict.split_tokens_at(tokens, split_indices)
 
@@ -164,7 +172,7 @@ class WPLocalEngine(object):
         tokens, spans = pypredict.tokenize_text(text)
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
-            #print("scratch learn", model, tokens)
+            # print("scratch learn", model, tokens)
             model.learn_tokens(tokens, True)
 
     def clear_scratch_models(self):
@@ -194,18 +202,20 @@ class WPLocalEngine(object):
         result is either 0 for no match, 1 for an exact match or -n for
         count n partial (prefix) matches.
         """
-        tokspans  = [(spans[i][0], spans[i][1], t) for i,t in enumerate(tokens)]
+        tokspans  = [(spans[i][0], spans[i][1], t)
+                     for i, t in enumerate(tokens)]
         counts = [[0 for lmid in lmids] for t in tokspans]
-        for i,lmid in enumerate(lmids):
+        for i, lmid in enumerate(lmids):
             model = self._model_cache.get_model(lmid)
             if model:
-                for j,t in enumerate(tokspans):
+                for j, t in enumerate(tokspans):
                     counts[j][i] = model.lookup_word(t[2])
 
-        _logger.debug("lookup_tokens: tokens=%s counts=%s" % \
-                     (repr(tokens), repr(counts)) )
+        _logger.debug("lookup_tokens: tokens=%s counts=%s" %
+                     (repr(tokens), repr(counts)))
 
-        # counts are 0 for no match, 1 for exact match or -n for partial matches
+        # Counts are 0 for no match, 1 for exact match or
+        # -n for partial matches
         return tokens, counts
 
     def word_exists(self, word):
@@ -214,7 +224,7 @@ class WPLocalEngine(object):
         """
         exists = False
         lmids = self.persistent_models
-        for i,lmid in enumerate(lmids):
+        for i, lmid in enumerate(lmids):
             model = self._model_cache.get_model(lmid)
             if model:
                 count = model.lookup_word(word)
@@ -275,7 +285,7 @@ class WPLocalEngine(object):
             # failed in practice for anything but natural language, e.g.
             # shell commands.
             # -> use the second best available: absolute discounting
-            #m.smoothing = "kneser-ney"
+            # m.smoothing = "kneser-ney"
             m.smoothing = "abs-disc"
 
             # setup recency caching
@@ -292,8 +302,8 @@ class WPLocalEngine(object):
                 m.recency_lambdas = [0.404, 0.831, 0.444]
 
         model = pypredict.overlay(models)
-        #model = pypredict.linint(models, weights)
-        #model = pypredict.loglinint(models, weights)
+        # model = pypredict.linint(models, weights)
+        # model = pypredict.loglinint(models, weights)
 
         choices = model.predictp(context, limit, options=options)
 
@@ -310,13 +320,14 @@ class WPLocalEngine(object):
             changes = m.remove_context(context)
 
             # debug output
-            _logger.debug("removing {} from '{}': {} n-grams affected" \
+            _logger.debug("removing {} from '{}': {} n-grams affected"
                           .format(context, lmids[i], len(changes)))
             if _logger.isEnabledFor(logging.DEBUG):
                 changes = sorted(sorted(changes.items()),
                                  key=lambda x: -len(x[0]))
                 for ng in changes:
-                    _logger.debug("    remove: {}, count {}".format(ng[0], ng[1]))
+                    _logger.debug("    remove: {}, count {}"
+                                  .format(ng[0], ng[1]))
 
 
 class ModelCache:
@@ -372,7 +383,7 @@ class ModelCache:
                 if filename.endswith("." + extension):
                     models.append(os.path.join(path, filename))
         except OSError as e:
-            _logger.warning("Failed to find language models in '{}': {} ({})" \
+            _logger.warning("Failed to find language models in '{}': {} ({})"
                             .format(path, os.strerror(e.errno), e.errno))
         return models
 
@@ -391,7 +402,7 @@ class ModelCache:
             lmids.append(fields[0])
 
             weight = 1.0
-            if len(fields) >= 2: # weight is optional
+            if len(fields) >= 2:  # weight is optional
                 try:
                     weight = float(fields[1])
                 except:
@@ -429,7 +440,7 @@ class ModelCache:
         filename = self.get_filename(lmid)
 
         if type_ == "lm":
-            if   class_ == "system":
+            if class_ == "system":
                 if pypredict.read_order(filename) == 1:
                     model = pypredict.UnigramModel()
                 else:
@@ -439,11 +450,11 @@ class ModelCache:
             elif class_ == "mem":
                 model = pypredict.DynamicModel()
             else:
-                _logger.error("Unknown class component '{}' in lmid '{}'" \
+                _logger.error("Unknown class component '{}' in lmid '{}'"
                               .format(class_, lmid))
                 return None
         else:
-            _logger.error("Unknown type component '{}' in lmid '{}'" \
+            _logger.error("Unknown type component '{}' in lmid '{}'"
                           .format(type_, lmid))
             return None
 
@@ -459,17 +470,17 @@ class ModelCache:
         if not os.path.exists(filename):
             if class_ == "system":
                 _logger.warning("System language model '{}' "
-                                "doesn't exist, skipping." \
+                                "doesn't exist, skipping."
                                 .format(filename))
         else:
             try:
                 model.load(filename)
             except IOError as ex:
-                if not ex.errno is None: # not n-gram count mismatch
+                if ex.errno is not None:  # not n-gram count mismatch
                     errno = ex.errno
                     errstr = os.strerror(errno)
                     msg = _format(
-                            "Failed to load language model '{}': {} ({})", \
+                            "Failed to load language model '{}': {} ({})",
                             filename, errstr, errno)
                 else:
                     msg = unicode_str(ex)
@@ -497,11 +508,11 @@ class ModelCache:
         backup_filename = self.get_backup_filename(filename)
 
         if filename and \
-        model.modified:
+           model.modified:
 
             if model.load_error:
                 _logger.warning("Not saving modified language model '{}' "
-                                "due to previous error on load." \
+                                "due to previous error on load."
                                 .format(filename))
             else:
                 _logger.info("Saving language model '{}'".format(filename))
@@ -523,8 +534,9 @@ class ModelCache:
 
                     model.modified = False
                 except (IOError, OSError) as e:
-                    _logger.warning("Failed to save language model '{}': {} ({})" \
-                                    .format(filename, os.strerror(e.errno), e.errno))
+                    _logger.warning(
+                        "Failed to save language model '{}': {} ({})"
+                        .format(filename, os.strerror(e.errno), e.errno))
 
     @staticmethod
     def get_filename(lmid):
@@ -534,7 +546,7 @@ class ModelCache:
         else:
             if class_ == "system":
                 path = config.get_system_model_dir()
-            else: #if class_ == "user":
+            else:  # if class_ == "user":
                 path = config.get_user_model_dir()
             ext = type_
             filename = os.path.join(path, name + "." + ext)
@@ -586,18 +598,35 @@ class ModelCache:
 class AutoSaveTimer(Timer):
     """ Auto-save modified language models periodically """
 
-    def __init__(self, mode_cache, interval_min=10*60, interval_max=15*60, postpone_delay=10):
+    def __init__(self, mode_cache,
+                 interval_min=10 * 60,
+                 interval_max=30 * 60,
+                 postpone_delay=10):
         self._model_cache = mode_cache
         self._interval_min = interval_min  # in seconds
         self._interval_max = interval_max  # in seconds
         self._postpone_delay = postpone_delay
         self._interval = self._interval_min  # in seconds
         self._last_save_time = time.time()
-        self.start(5, self._on_timer)
+        self._pause = 0
+        self._timer_interval = 5
+        self.start(self._timer_interval, self._on_timer)
+
+    def pause(self, duration=None):
+        """
+        No auto-saving while paused, e.g. during key-press.
+        """
+        self._pause = duration
+
+    def resume(self):
+        """
+        Allow auto-saving again.
+        """
+        self._pause = 0
 
     def postpone(self):
         """
-        Postpone saving a little while the user is still typing.
+        Postpone saving a little, while the user is still typing.
         Helps to mask the delay when saving large models during which
         Onboard briefly becomes unresponsive.
         """
@@ -607,19 +636,24 @@ class AutoSaveTimer(Timer):
             if self._interval > self._interval_max:
                 self._interval = self._interval_max
         _logger.debug("postponing autosave: current interval {}, "
-                      "elapsed since last save {}" \
+                      "elapsed since last save {}"
                       .format(self._interval, elapsed))
 
     def _on_timer(self):
         now = time.time()
         elapsed = now - self._last_save_time
-        if self._interval < elapsed:
+        if self._interval < elapsed and \
+           self._pause == 0:
             self._last_save_time = now
             self._interval = self._interval_min
             _logger.debug("auto-saving language models; "
-                            "interval {}, elapsed time {}" \
-                            .format(self._interval, elapsed))
+                          "interval {}, elapsed time {}"
+                          .format(self._interval, elapsed))
             self._model_cache.save_models()
-        return True # run again
+
+        if self._pause:
+            self._pause = max(0, self._pause - self._timer_interval)
+
+        return True  # run again
 
 
