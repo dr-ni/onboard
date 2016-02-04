@@ -54,18 +54,19 @@ class AutoHide(EventSource):
         self._register_xinput_events(False)
 
     def is_enabled(self):
-        return not self._device_manager is None
+        return self._device_manager is not None
 
     def enable(self, enable, use_gtk=False):
         self.register_input_events(enable, use_gtk)
 
-    def register_input_events(self, register, use_gtk = False):
+    def register_input_events(self, register, use_gtk=False):
         self._register_xinput_events(False)
         if register:
-            if not use_gtk: # can't do this with gtk yet
+            if not use_gtk:  # can't do this with gtk yet
                 if not self._register_xinput_events(True):
-                    _logger.warning("XInput event source failed to initialize, "
-                                    "falling back to GTK.")
+                    _logger.warning(
+                        "XInput event source failed to initialize, "
+                        "falling back to GTK.")
 
     def _register_xinput_events(self, register):
         """ Setup XInput event handling """
@@ -99,13 +100,12 @@ class AutoHide(EventSource):
 
         self._unselect_xinput_devices()
 
-        # Select keyboard events
         event_mask = XIEventMask.KeyPressMask | \
                      XIEventMask.KeyReleaseMask
 
         devices = self._device_manager.get_client_keyboard_attached_slaves()
-        _logger.info("listening to keyboard devices: {}" \
-                     .format([(d.name, d.id, d.get_config_string()) \
+        _logger.info("listening to keyboard devices: {}"
+                     .format([(d.name, d.id, d.get_config_string())
                               for d in devices]))
         for device in devices:
             try:
@@ -113,7 +113,7 @@ class AutoHide(EventSource):
             except Exception as ex:
                 _logger.warning("Failed to select events for device "
                                 "{id}: {ex}"
-                                .format(id = device.id, ex = ex))
+                                .format(id=device.id, ex=ex))
         self._keyboard_slave_devices = devices
 
     def _unselect_xinput_devices(self):
@@ -124,7 +124,7 @@ class AutoHide(EventSource):
                 except Exception as ex:
                     _logger.warning("Failed to unselect events for device "
                                     "{id}: {ex}"
-                                    .format(id = device.id, ex = ex))
+                                    .format(id=device.id, ex=ex))
             self._keyboard_slave_devices = None
 
     def _on_device_grab(self, device, event):
@@ -153,24 +153,24 @@ class AutoHide(EventSource):
                     _logger.info("Hiding keyboard and pausing "
                                 "auto-show due to physical key-{} "
                                 "{} from device '{}' ({})"
-                                .format("press" \
-                                        if event_type == XIEventType.KeyPress \
+                                .format("press"
+                                        if event_type == XIEventType.KeyPress
                                         else "release",
                                         event.keyval,
                                         device_name,
                                         event.source_id))
-
-                duration = config.auto_show.hide_on_key_press_pause
-                if duration:
-                    if duration < 0.0: # negative means off
-                        duration = None
-                    self._keyboard.pause_auto_show(duration)
 
                 if self._keyboard.is_visible():
                     if config.are_word_suggestions_enabled():
                         self._keyboard.discard_changes()
 
                     self._keyboard.set_visible(False)
+
+            duration = config.auto_show.hide_on_key_press_pause
+            if duration:
+                if duration < 0.0:  # negative means auto-hide is off
+                    duration = None
+                self._keyboard.pause_auto_show(duration)
 
             return
 
