@@ -1,0 +1,41 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="guide"
+      id="index">
+
+  <info>
+    <revision pkgversion="1.2.0" docversion="0.1"/>
+
+    <credit type="author">
+      <name>Francesco Fumanti</name>
+      <email>francesco.fumanti@gmx.net</email>
+      <years>2016</years>
+    </credit>
+
+    <license href="http://creativecommons.org/licenses/by-sa/4.0/">
+      <p>This work is licensed under the
+      <link href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+      Commons Attribution-ShareAlike 4.0 International License</link>.</p>
+    </license>
+
+
+  </info>
+
+  <title><app>Onboard</app></title>
+
+  <section id="usage" style="2column">
+    <title>Using <app>Onboard</app></title>
+  </section>
+
+  <section id="prefs" style="2column">
+	<title><app>Onboard</app> Preferences</title>
+  </section>
+
+  <section id="advanced" style="2column">
+    <title>Advanced Configuration</title>
+  </section>
+
+  <section id="tips" style="2column">
+    <title>Tips</title>
+  </section>
+
+</page>

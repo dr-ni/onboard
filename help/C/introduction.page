@@ -1,0 +1,69 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="introduction">
+
+  <info>
+    <link type="guide" xref="index"/>
+
+    <desc>Introduction to the <app>Onboard</app> on-screen keyboard.</desc>
+
+    <credit type="author">
+      <name>Francesco Fumanti</name>
+      <email>francesco.fumanti@gmx.net</email>
+      <years>2016</years>
+    </credit>
+
+    <license href="http://creativecommons.org/licenses/by-sa/4.0/">
+      <p>This work is licensed under the
+      <link href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+      Commons Attribution-ShareAlike 4.0 International License</link>.</p>
+    </license>
+
+
+  </info>
+
+  <title>Introduction</title>
+
+  <p><app>Onboard</app> is an on-screen keyboard useful for everybody that cannot use a hardware keyboard; for example Tablet users, mobility impaired users,...</p>
+
+  <figure>
+    <title><gui>Onboard</gui> on-screen keyboard window</title>
+    <desc><app>Onboard</app> using the Compact layout, the Nightshade theme, word suggestions and the hover click with the Swiss French system language.</desc>
+    <media type="image" src="images/onboard_compact_nightshade_prediction.png" mime="image/png" style="right">
+    <p>Picture of the keyboard window of <app>Onboard</app> the Compact layout, the Nightshade theme, the typing assistance and the hover click.</p>
+    </media>
+  </figure>
+
+  <p><app>Onboard</app> has been designed with simplicity in mind and its basic features can be used out of the box without the need of any configuration.</p>
+
+ <p><app>Onboard</app> offers the following features:</p>
+
+<p>General features:</p>
+<list>
+  <item><p><app>Onboard</app> supports <keyseq><key>modifier</key><key>mouse click</key></keyseq> combinations.</p></item>
+  <item><p>The window of the on-screen keyboard can be resized and placed anywhere on the screen.</p></item>
+  <item><p>The window of the on-screen keyboard supports docking at the bottom of the screen.</p></item>
+<item><p>The user can define snippets of text that are automatically written when he clicks on a snippet key.</p></item>
+  <item><p><app>Onboard</app> offers several layouts with different numbers of keys. There is for example a layout with less, but bigger keys for tablets.</p></item>
+  <item><p>The user can choose among several themes to control the shape and colours of the keys of the layouts.</p></item>
+  <item><p><app>Onboard</app> follows the keyboard language set for the system keyboard. If the user changes the keyboard language during his session, <app>Onboard</app> automatically adapts to the new language.</p></item>
+     <item><p><app>Onboard</app> offers an option to make it appear when unlocking the screen.</p></item>
+ </list>
+
+<p>Advanced features:</p>
+<list>
+  <item><p>For distributions <app>Onboard</app> offers a configuration file to define the settings to use by default.</p></item>
+  <item><p>Advanced users can define custom layouts through xml and svg files.</p></item>
+  <item><p>Advanced users can define custom themes through xml files.</p></item>
+  <item><p><app>Onboard</app> does not require the Assistive Technology Framework to run in basic mode. However, the more advanced features like auto-show and word suggestions need the Assistive Technology Framework to run. If the user activates a feature requiring the Assistive Technology Framework, <app>Onboard</app> will ask for the permission to activate it, if it is not already running.</p></item>
+  <item><p><app>Onboard</app> can be set to appear and disappear automatically when the focus is on an editable item. This functionality however depends on the cooperation of the active application with the Assistive Technology Framework.</p></item>
+ </list>
+
+<p>Accessibility features:</p>
+<list>
+  <item><p><app>Onboard</app> can be used to turn a <key>left click</key> into a <key>middle click</key>, <key>right click</key>, <key>double click</key> or <key>drag click</key>.</p></item>
+  <item><p><app>Onboard</app> can control the hover clicks provided by the <app>mousetweaks</app> software.</p></item>
+  <item><p><app>Onboard</app> supports a basic scanning mode.</p></item>
+ </list>
+
+</page>
