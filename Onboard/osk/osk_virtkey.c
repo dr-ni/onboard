@@ -1392,12 +1392,12 @@ vk_get_label_from_keysym (KeySym keyval)
                     // Show the hex number fully as label for easier debugging.
                     // Happend with Belgian CapsLock+keycode 51,
                     // keysym 0x039c on Xenial.
-                    label = PyString_FromStringAndSize(name, 10);
+                    label = PyString_FromStringAndSize(name, MIN(l, 10));
                 }
                 else
                 if (name)
                 {
-                    label = PyString_FromStringAndSize(name, 2);
+                    label = PyString_FromStringAndSize(name, MIN(l, 2));
                 }
                 else
                 {
