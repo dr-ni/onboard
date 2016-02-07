@@ -361,36 +361,36 @@ class WordSuggestions:
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
+        # Went out of range once while clicking quickly left+right
+        if choice_index >= len(self._prediction_choices):
+            return
+
         deletion, insertion = \
             self._get_prediction_choice_changes(choice_index)
 
         separator = ""
         insert_result_span = None
-        if config.wp.punctuation_assistance and \
-           allow_separator:
+        if allow_separator:
             # Simulate the change and determine the final text
             # before the caret.
             caret_span = self.text_context.get_span_at_caret()
-            insert_result_span = self._simulate_insertion(caret_span,
-                                                         deletion, insertion)
+            insert_result_span = \
+                self._simulate_insertion(caret_span, deletion, insertion)
             # Should we add an auto-separator after the inserted word?
             domain = self.get_text_domain()
-            separator = domain.get_auto_separator(
-                insert_result_span.get_text())
+            separator = \
+                domain.get_auto_separator(insert_result_span.get_text())
 
         # Type remainder/replace word and possibly add separator.
-        added_separator = self._replace_text_at_caret(deletion, insertion,
-                                                      separator)
+        self._replace_text_at_caret(deletion, insertion)
 
-        # Arm punctuator with the span of the just added separator.
-        if self._can_auto_punctuate():
-            separator_span = \
-                TextSpan(insert_result_span.begin(),
-                         len(added_separator),
-                         added_separator,
-                         insert_result_span.begin()) \
-                if added_separator else None
-            self._punctuator.set_added_separator(separator_span)
+        # Arm punctuator with the separator.
+        separator_span = \
+            TextSpan(insert_result_span.begin(),
+                     len(separator), separator,
+                     insert_result_span.begin()) \
+            if separator else None
+        self._punctuator.set_pending_separator(separator_span)
 
     def _simulate_insertion(self, caret_span, deletion, insertion):
         """
@@ -512,8 +512,15 @@ class WordSuggestions:
             context = text_context.get_context()
             if context:  # don't load models on startup
                 max_choices = config.wp.max_word_choices
-                bot_context = text_context.get_bot_context()
                 bot_marker = text_context.get_text_begin_marker()
+                bot_context = text_context.get_bot_context()
+
+                # After inserting a prediction, immediately show new
+                # predictions as if we had already typed the pending separator.
+                separator = self._punctuator.get_pending_separator()
+                if separator:
+                    bot_context += separator.get_span_text()
+
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
                 (case_insensitive_mode, ignore_non_caps,
@@ -822,25 +829,11 @@ class WordSuggestions:
             if offset >= 0:
                 self._text_changer.press_keysyms("right", offset)
 
-    def _replace_text_at_caret(self, deletion, insertion, auto_separator=""):
+    def _replace_text_at_caret(self, deletion, insertion):
         """
-        Insert a word/word-remainder and add a separator string as needed.
+        Insert a word/word-remainder.
         """
-        delete_existing_separator = False
-
         selection_span = self.text_context.get_selection_span()
-        if auto_separator:
-            caret_text = selection_span.get_text_after_span()
-            remaining_line = self.text_context.get_line_past_caret()
-
-            # Insert separator if the separator does not exist at the caret
-            # yet. For space characters also check if the caret is at the
-            # end of the line. The end of the line in the terminal
-            # (e.g. in vim) may mean lots of spaces until the final new line.
-            delete_existing_separator = True
-            if not caret_text.startswith(auto_separator) or \
-               auto_separator.isspace() and remaining_line.isspace():
-                delete_existing_separator = False
 
         with self.suppress_modifiers():
             if insertion:
@@ -849,17 +842,6 @@ class WordSuggestions:
                                    selection_span.begin(),
                                    selection_span.begin(),
                                    insertion)
-            if auto_separator:
-                self._text_changer.insert_string_at_caret(auto_separator)
-                if delete_existing_separator:
-                    pos = selection_span.begin() - len(deletion) + \
-                        len(insertion) + len(auto_separator)
-                    self._replace_text(pos,
-                                       pos + len(auto_separator),
-                                       pos,
-                                       "")  # delete, replace with nothing
-
-        return auto_separator
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -875,7 +857,6 @@ class WordSuggestions:
 
     def on_text_inserted(self, insertion_span, caret_offset):
         """ Synchronous callback for text insertion """
-
         # auto-correction
         if config.is_auto_capitalization_enabled():
             word_span = self._get_word_to_auto_correct(insertion_span)
@@ -1167,7 +1148,6 @@ class WordSuggestions:
         Get the word at or before the span.
 
         Doctests:
-        >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
 
         # caret right in the middle of a word
@@ -1662,49 +1642,99 @@ class Punctuator:
         self.reset()
 
     def reset(self):
-        self._added_separator_span = None
-        self._separator_removed = False
+        self._pending_separator_span = None
+        self._request_caps_mode = False
 
-    def set_added_separator(self, separator_span=None):
-        """ Notify punctuator of an actually added word separator. """
-        self._added_separator_span = separator_span
+    def set_pending_separator(self, separator_span=None):
+        """ Remember this separator span for later insertion. """
+        self._pending_separator_span = separator_span
+
+    def get_pending_separator(self):
+        """ Return current pending separator span or None """
+        return self._pending_separator_span
 
     def on_before_press(self, key):
-        if config.wp.punctuation_assistance and \
-           self._added_separator_span and \
-           (key.type == KeyCommon.KEYCODE_TYPE or
-            key.type == KeyCommon.KEYSYM_TYPE or
-            key.type == KeyCommon.CHAR_TYPE):
-
-            # Only act if we are still at the caret position
-            # where the separator was added.
-            caret_span = self._get_span_at_caret()
-            if caret_span and \
-               self._added_separator_span.end() == caret_span.begin():
-                char = key.get_label()
-                if char in self.punctuation_no_capitalize:
-                    self._delete_at_caret()
-                    self._separator_removed = True
-
-                elif char in self.punctuation_capitalize:
-                    self._delete_at_caret()
-                    self._separator_removed = True
-                    if config.is_auto_capitalization_enabled():
-                        self._wp.request_capitalization(True)
-
-            self._added_separator_span = None
+        """
+        Chance to insert separators before a key-press.
+        """
+        self._on_key_event(key, True)
 
     def on_after_release(self, key):
         """
-        Type the last part of the punctuation and possibly
-        enable capitalization for the next key press
+        Chance to insert separators and possibly
+        enable capitalization after a key-press.
         """
-        if config.wp.punctuation_assistance:
-            if self._separator_removed:
-                self._separator_removed = False
-                # No direct insertion here. Space must always arrive last,
-                # i.e. after the released key was generated.
-                self._wp._text_changer.press_keysyms("space")
+        self._on_key_event(key, False)
+
+    def _on_key_event(self, key, before=True):
+        after = not before
+        if self._pending_separator_span and \
+           config.wp.punctuation_assistance:
+
+            insert_now = False
+
+            if key.is_layer_button() or \
+               key.is_modifier():
+                pass  # do nothing, keep pending separator for the next key
+
+            elif key.is_prediction_key():
+                if before:
+                    insert_now = True
+
+            elif key.is_separator_cancelling():
+                self._pending_separator_span = None
+
+            elif key.is_text_changing():
+                # Only act if we are still at the caret position
+                # where the separator is to be added.
+                self._update_text_context() # delay-stroke '?' needs this
+                caret_span = self._get_span_at_caret()
+                if caret_span:
+                    char = key.get_label()
+                    punctuation_no_capitalize = \
+                        char in self.punctuation_no_capitalize
+                    punctuation_capitalize = \
+                        char in self.punctuation_capitalize
+                    punctuation = (punctuation_no_capitalize or
+                                   punctuation_capitalize)
+                    caret_pos = caret_span.begin()
+                    separator_pos = self._pending_separator_span.begin()
+
+                    if punctuation and self._wp._can_auto_punctuate():
+                        if after and caret_pos == separator_pos + 1:
+                            insert_now = True
+                            if punctuation_capitalize:
+                                self._request_caps_mode = True
+                    else:
+                        if before and caret_pos == separator_pos:
+                            insert_now = True
+                        elif after and caret_pos == separator_pos + 1:
+                            insert_now = True
+
+                else:
+                    self._pending_separator_span = None
+            else:
+                self._pending_separator_span = None
+
+            if self._pending_separator_span and \
+               insert_now:
+                self._insert_at_caret(
+                    self._pending_separator_span.get_span_text())
+                self._pending_separator_span = None
+                time.sleep(0.1)
+                self._update_text_context()
+
+                if after:
+                    if self._request_caps_mode:
+                        if config.is_auto_capitalization_enabled():
+                            self._wp.request_capitalization(True)
+                        self._request_caps_mode = False
+
+    def _update_text_context(self):
+        self._wp.text_context.on_text_context_changed()
+
+    def _insert_at_caret(self, string):
+        self._wp._text_changer.insert_string_at_caret(string)
 
     def _delete_at_caret(self):
         self._wp._text_changer.delete_at_caret()

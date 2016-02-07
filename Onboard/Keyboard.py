@@ -963,8 +963,7 @@ class Keyboard(WordSuggestions):
         # generate key-stroke
         action = self.get_key_action(key)
         can_send_key = (not key.sticky or not key.active) and \
-                        not key.action == KeyCommon.DELAYED_STROKE_ACTION and \
-                        not key.type == KeyCommon.WORD_TYPE
+                        not key.action == KeyCommon.DELAYED_STROKE_ACTION
         if can_send_key:
             self.send_key_down(key, view, button, event_type)
 

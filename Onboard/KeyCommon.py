@@ -440,8 +440,18 @@ class KeyCommon(LayoutItem):
 
     def is_return(self):
         id = self.id
-        return id == "RTRN" or \
-               id == "KPEN"
+        return (id == "RTRN" or
+                id == "KPEN")
+
+    def is_separator_cancelling(self):
+        """ Should this key cancel pending word separators? """
+        return (self.is_correction_key() or
+                self.is_return() or
+                self.id in set(["SPCE", "TAB", "BKSP", "DELE",
+                                "LEFT", "RGHT", "UP", "DOWN",
+                                "HOME", "END", "PGUP", "PGDN",
+                                "INS", "ESC", "MENU",
+                                "Prnt", "Pause", "Scroll"]))
 
     def get_layer_index(self):
         assert(self.is_layer_button())
