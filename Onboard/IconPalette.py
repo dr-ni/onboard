@@ -31,22 +31,18 @@ import cairo
 
 from Onboard.utils       import Rect, roundrect_arc, Fade
 from Onboard.Timer       import CallOnce, Timer
-from Onboard.WindowUtils import WindowManipulator, WindowRectPersist, \
-                                Orientation, set_unity_property, \
-                                DwellProgress, gtk_has_resize_grip_support
+from Onboard.WindowUtils import (WindowManipulator, WindowRectPersist,
+                                 Orientation, set_unity_property,
+                                 DwellProgress, gtk_has_resize_grip_support)
 from Onboard.TouchInput  import InputSequence
 from Onboard.KeyGtk      import RectKey
 from Onboard.Indicator   import ContextMenu
 
-### Logging ###
 import logging
 _logger = logging.getLogger("IconPalette")
-###############
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
@@ -62,7 +58,8 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
     """
 
     __gsignals__ = {
-        str('activated') : (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, ())
+        str('activated') : (GObject.SignalFlags.RUN_LAST,
+                            GObject.TYPE_NONE, ())
     }
 
     """ Minimum size of the IconPalette """
@@ -117,19 +114,20 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
 
-        self.connect("button-press-event",   self._on_button_press_event)
-        self.connect("motion-notify-event",  self._on_motion_notify_event)
+        self.connect("draw", self._on_draw)
+        self.connect("button-press-event", self._on_button_press_event)
+        self.connect("motion-notify-event", self._on_motion_notify_event)
         self.connect("button-release-event", self._on_button_release_event)
-        self.connect("draw",                 self._on_draw)
-        self.connect("configure-event",      self._on_configure_event)
-        self.connect("realize",              self._on_realize_event)
-        self.connect("unrealize",            self._on_unrealize_event)
-        self.connect("enter-notify-event",   self._on_mouse_enter)
-        self.connect("leave-notify-event",   self._on_mouse_leave)
+        self.connect("configure-event", self._on_configure_event)
+        self.connect("realize", self._on_realize_event)
+        self.connect("unrealize", self._on_unrealize_event)
+        self.connect("enter-notify-event", self._on_mouse_enter)
+        self.connect("leave-notify-event", self._on_mouse_leave)
 
         # default coordinates of the iconpalette on the screen
         self.set_min_window_size(self.MINIMUM_SIZE, self.MINIMUM_SIZE)
-        #self.set_default_size(1, 1)  # no flashing on left screen edge in unity
+        # no flashing on left screen edge in unity
+        # self.set_default_size(1, 1)
         self.restore_window_rect()
 
         # Realize the window. Test changes to this in all supported
@@ -138,11 +136,12 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         self.hide()
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
-        rect_changed = lambda x: once(self._on_config_rect_changed)
-        config.icp.position_notify_add(rect_changed)
-        config.icp.size_notify_add(rect_changed)
-
-        config.icp.window_handles_notify_add(lambda x: self.update_window_handles())
+        config.icp.position_notify_add(
+            lambda x: once(self._on_config_rect_changed))
+        config.icp.size_notify_add(
+            lambda x: once(self._on_config_rect_changed))
+        config.icp.window_handles_notify_add(
+            lambda x: self.update_window_handles())
 
         self.update_sticky_state()
         self.update_window_handles()
@@ -194,7 +193,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         else:
             return Gdk.WindowTypeHint.UTILITY
 
-    def update_window_options(self, startup = False):
+    def update_window_options(self, startup=False):
         if not config.xid_mode:   # not when embedding
 
             # (re-)create the gdk window?
@@ -203,9 +202,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             if self._force_to_top != force_to_top:
                 self._force_to_top = force_to_top
 
-                visible = self._visible # visible before?
+                visible = self._visible  # visible before?
 
-                if self.get_realized(): # not starting up?
+                if self.get_realized():  # not starting up?
                     self.hide()
                     self.unrealize()
 
@@ -238,9 +237,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
                 self.enable_drag_protection(True)
                 sequence = InputSequence()
                 sequence.init_from_button_event(event)
-                self.handle_press(sequence, move_on_background = True)
+                self.handle_press(sequence, move_on_background=True)
                 if self.is_moving():
-                    self.reset_drag_protection() # force threshold
+                    self.reset_drag_protection()  # force threshold
 
         return True
 
@@ -250,7 +249,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         """
         sequence = InputSequence()
         sequence.init_from_motion_event(event)
-        self.handle_motion(sequence, fallback = True)
+        self.handle_motion(sequence, fallback=True)
         self.set_drag_cursor_at((event.x, event.y))
 
         # start dwelling if nothing else is going on
@@ -275,8 +274,8 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         """
         if event.window == self.get_window():
             if event.button == 1 and \
-            event.window == self.get_window() and \
-            not self.is_drag_active():
+               event.window == self.get_window() and \
+               not self.is_drag_active():
                 self.emit("activated")
 
             self.stop_drag()
@@ -298,8 +297,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         if not Gtk.cairo_should_draw_window(cr, self.get_window()):
             return False
 
-        rect = Rect(0.0, 0.0, float(self.get_allocated_width()),
-                              float(self.get_allocated_height()))
+        rect = Rect(0.0, 0.0,
+                    float(self.get_allocated_width()),
+                    float(self.get_allocated_height()))
         color_scheme = self.get_color_scheme()
 
         # clear background
@@ -336,13 +336,14 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         rgba = [0.8, 0.0, 0.0, 0.5]
         bg_rgba = [0.1, 0.1, 0.1, 0.5]
         if color_scheme:
-            key  = RectKey("icon0") # take dwell color from the first icon "key"
+            # take dwell color from the first icon "key"
+            key  = RectKey("icon0")
             rgba = color_scheme.get_key_rgba(key, "dwell-progress")
-            rgba[3] = min(0.75, rgba[3]) # more transparency
+            rgba[3] = min(0.75, rgba[3])  # more transparency
 
             key  = RectKey("icon1")
             bg_rgba = color_scheme.get_key_rgba(key, "fill")
-            bg_rgba[3] = min(0.75, rgba[3]) # more transparency
+            bg_rgba[3] = min(0.75, rgba[3])  # more transparency
 
         dwell_rect = rect.grow(0.5)
         self._dwell_progress.draw(cr, dwell_rect, rgba, bg_rgba)
@@ -355,13 +356,13 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
 
         # Default colors for the case when none of the icon keys
         # are defined in the color scheme.
-        background_rgba =  [1.0, 1.0, 1.0, 1.0]
+        # background_rgba =  [1.0, 1.0, 1.0, 1.0]
         fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
                            [1.0, 1.0, 1.0, 1.0],
                            [1.0, 1.0, 1.0, 1.0],
                            [0.0, 0.54, 1.0, 1.0]]
-        stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
-        label_rgba      =  [0.0, 0.0, 0.0, 1.0]
+        stroke_rgba     = [0.0, 0.0, 0.0, 1.0]
+        label_rgba      = [0.0, 0.0, 0.0, 1.0]
 
         themed = False
         if color_scheme:
@@ -374,7 +375,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         cr.save()
         cr.scale(icon_rect.w / 100., icon_rect.h / 100.0)
         cr.translate(icon_rect.x, icon_rect.y)
-        cr.select_font_face ("sans-serif")
+        cr.select_font_face("sans-serif")
         cr.set_line_width(2)
 
         for i, key in enumerate(keys):
@@ -401,10 +402,10 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
                     letter = "B"
 
                 cr.set_font_size(25)
-                x_bearing, y_bearing, _width, _height, \
-                x_advance, y_advance = cr.text_extents(letter)
+                (x_bearing, y_bearing, _width, _height,
+                 x_advance, y_advance) = cr.text_extents(letter)
                 r = rect.align_rect(Rect(0, 0, _width, _height),
-                                         0.3, 0.33)
+                                    0.3, 0.33)
                 cr.move_to(r.x - x_bearing, r.y - y_bearing)
                 cr.set_source_rgba(*label_rgba)
                 cr.show_text(letter)
@@ -417,7 +418,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         Override Gtk.Widget.hide() to save the window geometry.
         """
         Gtk.Window.show(self)
-        self.move_resize(*self.get_rect()) # sync with WindowRectTracker
+        self.move_resize(*self.get_rect())  # sync with WindowRectTracker
         self._visible = True
 
     def hide(self):
@@ -462,9 +463,9 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         co.apply()
 
     def _is_dwelling(self):
-        return bool(self._dwell_begin_timer) and \
-               (self._dwell_begin_timer.is_running() or \
-               self._dwell_progress.is_dwelling())
+        return (bool(self._dwell_begin_timer) and
+                (self._dwell_begin_timer.is_running() or
+                self._dwell_progress.is_dwelling()))
 
     def _start_dwelling(self):
         self._stop_dwelling()
