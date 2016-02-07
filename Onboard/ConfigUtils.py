@@ -23,10 +23,8 @@ File containing ConfigObject.
 
 from __future__ import division, print_function, unicode_literals
 
-### Logging ###
 import logging
 _logger = logging.getLogger("ConfigUtils")
-###############
 
 import os
 import sys
@@ -46,13 +44,14 @@ from Onboard.utils import pack_name_value_list, unpack_name_value_list, \
                           unicode_str
 import Onboard.osk as osk
 
-_CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
-_GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
-_GSETTINGS_SET_HOOK = "_gsettings_set_" # store into gsettings
-_UNPACK_HOOK        = "_unpack_"        # convert gsettings value -> property
-_PACK_HOOK          = "_pack_"          # convert property -> gsettings value
-_POST_NOTIFY_HOOK   = "_post_notify_"   # runs after all listeners notified
-_NOTIFY_CALLBACKS   = "_{}_notify_callbacks" # name of list of callbacka
+_CAN_SET_HOOK       = "_can_set_"        # return true if value is valid
+_GSETTINGS_GET_HOOK = "_gsettings_get_"  # retrieve from gsettings
+_GSETTINGS_SET_HOOK = "_gsettings_set_"  # store into gsettings
+_UNPACK_HOOK        = "_unpack_"         # convert gsettings value -> property
+_PACK_HOOK          = "_pack_"           # convert property -> gsettings value
+_POST_NOTIFY_HOOK   = "_post_notify_"    # runs after all listeners notified
+_NOTIFY_CALLBACKS   = "_{}_notify_callbacks"  # name of list of callbacka
+
 
 class ConfigObject(object):
     """
@@ -63,14 +62,14 @@ class ConfigObject(object):
     Python properties and notification functions are created
     automagically for all keys added in _init_keys().
     """
-    def __init__(self, parent = None, schema = ""):
-        self.parent = parent       # parent ConfigObject
-        self.children = []         # child config objects; not necessarily
-                                   #   reflecting the gsettings hierarchy
-        self.schema = schema       # schema-path to the gsettings object
-        self.gskeys = {}           # key-value objects {property name, GSKey()}
-        self.sysdef_section = None # system defaults section name
-        self.system_defaults = {}  # system defaults {property name, value}
+    def __init__(self, parent=None, schema=""):
+        self.parent = parent        # parent ConfigObject
+        self.children = []          # child config objects; not necessarily
+                                    #   reflecting the gsettings hierarchy
+        self.schema = schema        # schema-path to the gsettings object
+        self.gskeys = {}            # key-value objects {property name,GSKey()}
+        self.sysdef_section = None  # system defaults section name
+        self.system_defaults = {}   # system defaults {property name, value}
         self._osk_dconf = None
 
         # add keys in here
@@ -80,7 +79,6 @@ class ConfigObject(object):
         if not self.schema in Gio.Settings.list_schemas():
             raise SchemaError(_("gsettings schema for '{}' is not installed").
                                                           format(self.schema))
-
         # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.schema)
         for gskey in list(self.gskeys.values()):
@@ -95,7 +93,7 @@ class ConfigObject(object):
         pass
 
     def add_key(self, key, default, type_string=None, enum=None,
-                prop = None, sysdef = None, writable = True):
+                prop=None, sysdef=None, writable=True):
         """ Convenience function to create and add a new GSKey. """
         gskey = GSKey(None, key, default, type_string, enum,
                       prop, sysdef, writable)
@@ -144,10 +142,11 @@ class ConfigObject(object):
             for prefix in prefixes:
                 if member.startswith(prefix):
                     prop = member[len(prefix):]
-                    if not prop in self.gskeys:
+                    if prop not in self.gskeys:
                         # no need for translation
                         raise NameError(
-                            "'{}' looks like a ConfigObject hook function, but "
+                            "'{}' looks like a ConfigObject hook "
+                            "function, but "
                             "'{}' is not a known property of '{}'"
                             .format(member, prop, str(self)))
 
@@ -171,7 +170,7 @@ class ConfigObject(object):
         def _notify_add(self, callback, _prop=prop):
             """ method to add a callback to this property """
             getattr(self, _NOTIFY_CALLBACKS.format(prop)).append(callback)
-        setattr(type(self), prop+'_notify_add', _notify_add)
+        setattr(type(self), prop + '_notify_add', _notify_add)
 
         # method to remove a callback
         def _notify_remove(self, callback, _prop=prop):
@@ -180,7 +179,7 @@ class ConfigObject(object):
                 getattr(self, _NOTIFY_CALLBACKS.format(prop)).remove(callback)
             except ValueError:
                 pass
-        setattr(type(self), prop+'_notify_remove', _notify_remove)
+        setattr(type(self), prop + '_notify_remove', _notify_remove)
 
         # gsettings callback
         def _notify_changed_cb(self, settings, key, _gskey=gskey, _prop=prop):
@@ -190,8 +189,8 @@ class ConfigObject(object):
             value = self.get_unpacked(_gskey)
 
             # Can-set hook, for value validation.
-            if not hasattr(self, _CAN_SET_HOOK + _prop) or \
-                   getattr(self, _CAN_SET_HOOK + _prop)(value):
+            if (not hasattr(self, _CAN_SET_HOOK + _prop) or
+                    getattr(self, _CAN_SET_HOOK + _prop)(value)):
 
                 if _gskey.value != value:
                     _gskey.value = value
@@ -203,10 +202,12 @@ class ConfigObject(object):
                                 callback(value)
 
                         GLib.idle_add(notify,
-                                        getattr(self, _NOTIFY_CALLBACKS.format(prop)),
-                                        value)
+                            getattr(self,
+                                _NOTIFY_CALLBACKS.format(prop)), value)
                     else:
-                        for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
+                        for callback in getattr(self,
+                                                _NOTIFY_CALLBACKS.format(prop)
+                                                ):
                             callback(value)
 
             # Post-notification hook for anything that properties
@@ -214,24 +215,24 @@ class ConfigObject(object):
             if hasattr(self, _POST_NOTIFY_HOOK + _prop):
                 getattr(self, _POST_NOTIFY_HOOK + _prop)()
 
-        setattr(type(self), '_'+prop+'_changed_cb', _notify_changed_cb)
+        setattr(type(self), '_' + prop + '_changed_cb', _notify_changed_cb)
 
         # connect callback function to gsettings
         if gskey.settings:
-            gskey.settings.connect("changed::"+gskey.key,
-                                    getattr(self, '_'+prop+'_changed_cb'))
+            gskey.settings.connect("changed::" + gskey.key,
+                                   getattr(self, '_' + prop + '_changed_cb'))
 
         # getter function
-        def get_value(self, _gskey = gskey, _prop = prop):
+        def get_value(self, _gskey=gskey, _prop=prop):
             """ property getter """
             return _gskey.value
 
         # setter function
-        def set_value(self, value, save = True, _gskey = gskey, _prop = prop):
+        def set_value(self, value, save=True, _gskey=gskey, _prop=prop):
             """ property setter """
             # can-set hook, for value validation
-            if not hasattr(self, _CAN_SET_HOOK +_prop) or \
-                   getattr(self, _CAN_SET_HOOK +_prop)(value):
+            if (not hasattr(self, _CAN_SET_HOOK + _prop) or
+                    getattr(self, _CAN_SET_HOOK + _prop)(value)):
 
                 if save:
                     if value != _gskey.value or _gskey.modified:
@@ -241,13 +242,13 @@ class ConfigObject(object):
                 _gskey.value = value
 
         # create propery
-        if not hasattr(self, 'get_'+prop):   # allow overloading
-            setattr(type(self), 'get_'+prop, get_value)
-        if not hasattr(self, 'set_'+prop):   # allow overloading
-            setattr(type(self), 'set_'+prop, set_value)
+        if not hasattr(self, 'get_' + prop):   # allow overloading
+            setattr(type(self), 'get_' + prop, get_value)
+        if not hasattr(self, 'set_' + prop):   # allow overloading
+            setattr(type(self), 'set_' + prop, set_value)
         setattr(type(self), prop,
-                            property(getattr(type(self), 'get_'+prop),
-                                     getattr(type(self), 'set_'+prop)))
+                property(getattr(type(self), 'get_' + prop),
+                         getattr(type(self), 'set_' + prop)))
 
     def init_properties(self, options):
         """ initialize the values of all properties """
@@ -256,8 +257,8 @@ class ConfigObject(object):
         self.init_from_gsettings()
 
         # let system defaults override gsettings
-        use_system_defaults = self.use_system_defaults or \
-                              self._check_hints_file()
+        use_system_defaults = (self.use_system_defaults or
+                               self._check_hints_file())
         if use_system_defaults:
             self.init_from_system_defaults()
             self.use_system_defaults = False    # write to gsettings
@@ -266,11 +267,10 @@ class ConfigObject(object):
         for gskey in list(self.gskeys.values()):
             if hasattr(options, gskey.prop):  # command line option there?
                 value = getattr(options, gskey.prop)
-                if not value is None:
+                if value is not None:
                     gskey.value = value
 
         return use_system_defaults
-
 
     def _check_hints_file(self):
         """
@@ -280,15 +280,15 @@ class ConfigObject(object):
         """
         filename = "/tmp/onboard-use-system-defaults"
         if os.path.exists(filename):
-            _logger.warning("Hint file '{}' exists; applying system defaults." \
+            _logger.warning("Hint file '{}' exists; applying system defaults."
                          .format(filename))
             try:
                 os.remove(filename)
             except (IOError, OSError) as ex:
                 errno = ex.errno
                 errstr = os.strerror(errno)
-                _logger.error("failed to remove hint file '{}': {} ({})" \
-                            .format(filename, errstr, errno))
+                _logger.error("failed to remove hint file '{}': {} ({})"
+                              .format(filename, errstr, errno))
             return True
         return False
 
@@ -328,7 +328,7 @@ class ConfigObject(object):
         self.apply()
 
         for child in self.children:
-           child.migrate_dconf_tree(old_root, current_root)
+            child.migrate_dconf_tree(old_root, current_root)
 
     def migrate_dconf_value(self, dconf_key, gskey):
         """ Copy the value of dconf_key to the given gskey """
@@ -340,7 +340,7 @@ class ConfigObject(object):
             value = None
             _logger.warning("migrate_dconf_value: {}".format(e))
 
-        if not value is None:
+        if value is not None:
             # Enums are stored as strings in dconf, convert them to int.
             if gskey.enum:
                 value = gskey.enum.get(value, 0)
@@ -348,13 +348,13 @@ class ConfigObject(object):
             # Optionally convert from gsettings value to property value.
             hook = _UNPACK_HOOK + gskey.prop
             if hasattr(self, hook):
-                v = value
                 value = getattr(self, hook)(value)
 
-            _logger.info("migrate_dconf_value: {key} -> {path} {gskey}, value={value}" \
-                          .format(key=dconf_key,
-                                  path=self.schema,
-                                  gskey=gskey.key, value=value))
+            _logger.info("migrate_dconf_value: "
+                         "{key} -> {path} {gskey}, value={value}"
+                         .format(key=dconf_key,
+                                 path=self.schema,
+                                 gskey=gskey.key, value=value))
 
             try:
                 setattr(self, gskey.prop, value)
@@ -362,7 +362,7 @@ class ConfigObject(object):
                 _logger.error("Migrating dconf key failed: '{key}={value}'; "
                               "possibly due to incompatible dconf type; "
                               "skipping this key. "
-                              "Exception: {exception}" \
+                              "Exception: {exception}"
                               .format(key=dconf_key, value=value,
                                       exception=unicode_str(ex)))
 
@@ -384,7 +384,6 @@ class ConfigObject(object):
         # Never do this in _gsettings_get_ hooks or the migrations fail.
         hook = _UNPACK_HOOK + gskey.prop
         if hasattr(self, hook):
-            v = value
             value = getattr(self, hook)(value)
         return value
 
@@ -411,9 +410,9 @@ class ConfigObject(object):
         self.settings.apply()
 
     @staticmethod
-    def _get_user_sys_filename_gs(gskey, final_fallback, \
-                            user_filename_func = None,
-                            system_filename_func = None):
+    def _get_user_sys_filename_gs(gskey, final_fallback,
+                                  user_filename_func=None,
+                                  system_filename_func=None):
         """ Convenience function, takes filename from gskey. """
         return ConfigObject._get_user_sys_filename(gskey.value, gskey.key,
                                                    final_fallback,
@@ -421,10 +420,10 @@ class ConfigObject(object):
                                                    system_filename_func)
 
     @staticmethod
-    def _get_user_sys_filename(filename, description, \
-                               final_fallback = None,
-                               user_filename_func = None,
-                               system_filename_func = None):
+    def _get_user_sys_filename(filename, description,
+                               final_fallback=None,
+                               user_filename_func=None,
+                               system_filename_func=None):
         """
         Checks a filename's validity and if necessary expands it to a
         fully qualified path pointing to either the user or system directory.
@@ -436,20 +435,20 @@ class ConfigObject(object):
         if filename and not ConfigObject._is_valid_filename(filename):
             # assume filename is just a basename instead of a full file path
             _logger.debug(_format("{description} '{filename}' not found yet, "
-                                  "retrying in default paths", \
+                                  "retrying in default paths",
                                   description=description, filename=filename))
 
-            filepath = ConfigObject._expand_user_sys_filename(
-                                                     filename,
-                                                     user_filename_func,
-                                                     system_filename_func)
+            filepath = \
+                ConfigObject._expand_user_sys_filename(filename,
+                                                       user_filename_func,
+                                                       system_filename_func)
             if not filepath:
                 _logger.info(_format("unable to locate '{filename}', "
                                      "loading default {description} instead",
                                      description=description,
                                      filename=filename))
 
-        if not filepath and not final_fallback is None:
+        if not filepath and final_fallback is not None:
             filepath = final_fallback
 
         if not os.path.isfile(filepath):
@@ -463,9 +462,9 @@ class ConfigObject(object):
         return filepath
 
     @staticmethod
-    def _expand_user_sys_filename(filename, \
-                                  user_filename_func = None,
-                                  system_filename_func = None):
+    def _expand_user_sys_filename(filename,
+                                  user_filename_func=None,
+                                  system_filename_func=None):
         result = filename
         if result and not ConfigObject._is_valid_filename(result):
             if user_filename_func:
@@ -473,7 +472,7 @@ class ConfigObject(object):
                 if not os.path.isfile(result):
                     result = ""
 
-            if  not result and system_filename_func:
+            if not result and system_filename_func:
                 result = system_filename_func(filename)
                 if not os.path.isfile(result):
                     result = ""
@@ -482,7 +481,7 @@ class ConfigObject(object):
 
     @staticmethod
     def _get_resource_filename(filename, description,
-                               paths, final_fallback = None):
+                               paths, final_fallback=None):
         """
         Find the full path of a valid resource file, e.g. an image file.
         If the filename is already valid, it is returned unchanged. Else
@@ -505,7 +504,7 @@ class ConfigObject(object):
                         result = fn
                         break
 
-        if not result and not final_fallback is None:
+        if not result and final_fallback is not None:
             result = final_fallback
 
         if not os.path.isfile(result):
@@ -519,9 +518,9 @@ class ConfigObject(object):
 
     @staticmethod
     def _is_valid_filename(filename):
-        return bool(filename) and \
-               os.path.isabs(filename) and \
-               os.path.isfile(filename)
+        return (bool(filename) and
+                os.path.isabs(filename) and
+                os.path.isfile(filename))
 
     @staticmethod
     def get_unpacked_string_list(gskey, type_spec):
@@ -544,25 +543,26 @@ class ConfigObject(object):
                 # has collection interface?
                 key, _val = list(_dict.items())[0]
                 if not hasattr(_val, "__iter__"):
-                    _dict = dict([key, [value]] for key, value in _dict.items())
+                    _dict = dict([key, [value]]
+                                 for key, value in _dict.items())
             return ConfigObject._dict_to_list(_dict)
 
-        assert(False) # unsupported python type
+        assert(False)  # unsupported python type
 
     @staticmethod
     def unpack_string_list(_list, type_spec):
         """ very crude hard coded behavior, fixme as needed """
         if type_spec == "a{ss}":
-            _dict = ConfigObject._list_to_dict(_list, str, num_values = 1)
+            _dict = ConfigObject._list_to_dict(_list, str, num_values=1)
             return dict([key, value[0]] for key, value in _dict.items())
 
         if type_spec == "a{s[ss]}":
-            return ConfigObject._list_to_dict(_list, str, num_values = 2)
+            return ConfigObject._list_to_dict(_list, str, num_values=2)
 
         if type_spec == "a{i[ss]}":
-            return ConfigObject._list_to_dict(_list, int, num_values = 2)
+            return ConfigObject._list_to_dict(_list, int, num_values=2)
 
-        assert(False) # unsupported type_spec
+        assert(False)  # unsupported type_spec
 
     @staticmethod
     def _dict_to_list(_dict):
@@ -570,13 +570,14 @@ class ConfigObject(object):
         return pack_name_value_list(_dict)
 
     @staticmethod
-    def _list_to_dict(_list, key_type = str, num_values = 2):
+    def _list_to_dict(_list, key_type=str, num_values=2):
         """ Get dictionary from a gsettings list key """
         if sys.version_info.major == 2:
             _list = [unicode_str(x) for x in _list]  # translate to unicode
 
-        return unpack_name_value_list(_list, key_type=key_type,
-                                             num_values = num_values)
+        return unpack_name_value_list(_list,
+                                      key_type=key_type,
+                                      num_values=num_values)
 
     def load_system_defaults(self, paths):
         """
@@ -589,14 +590,14 @@ class ConfigObject(object):
                              paths=paths))
 
         filename = None
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         try:
             if sys.version_info.major == 2:
                 filename = parser.read(paths)
             else:
                 filename = parser.read(paths, "UTF-8")
         except configparser.ParsingError as ex:
-            _logger.error(_("Failed to read system defaults. " + \
+            _logger.error(_("Failed to read system defaults. " +
                             unicode_str(ex)))
 
         if not filename:
@@ -605,7 +606,6 @@ class ConfigObject(object):
             _logger.info(_format("Loading system defaults from {filename}",
                                  filename=filename))
             self._read_sysdef_section(parser)
-
 
     def _read_sysdef_section(self, parser):
         """
@@ -624,7 +624,8 @@ class ConfigObject(object):
                 items = [(key, val.decode("UTF-8")) for key, val in items]
 
             # convert ini file strings to property values
-            sysdef_gskeys = dict((k.sysdef, k) for k in list(self.gskeys.values()))
+            sysdef_gskeys = dict((k.sysdef, k)
+                                 for k in list(self.gskeys.values()))
             for sysdef, value in items:
                 _logger.info(_format("Found system default '[{}] {}={}'",
                                      self.sysdef_section, sysdef, value))
@@ -632,10 +633,9 @@ class ConfigObject(object):
                 gskey = sysdef_gskeys.get(sysdef, None)
                 value = self._convert_sysdef_key(gskey, sysdef, value)
 
-                if not value is None:
+                if value is not None:
                     prop = gskey.prop if gskey else sysdef.replace("-", "_")
                     self.system_defaults[prop] = value
-
 
     def _convert_sysdef_key(self, gskey, sysdef, value):
         """
@@ -658,7 +658,7 @@ class ConfigObject(object):
         else:
             _type = type(gskey.default)
             str_type = str if sys.version_info.major >= 3 \
-                       else unicode
+                       else unicode  # noqa: pep8
             if _type == str_type and value[0] != '"':
                 value = '"' + value + '"'
             try:
@@ -679,22 +679,22 @@ class GSKey:
     system default keys and command line options.
     """
     def __init__(self, settings, key, default, type_string, enum,
-                       prop, sysdef, writable):
+                 prop, sysdef, writable):
         if prop is None:
-            prop = key.replace("-","_")
+            prop = key.replace("-", "_")
         if sysdef is None:
             sysdef = key
-        self.settings    = settings    # gsettings object
-        self.key         = key         # gsettings key name
-        self.sysdef      = sysdef      # system default name
-        self.prop        = prop        # python property name
-        self.default     = default     # hard coded default, determines type
-        self.type_string = type_string # GVariant type string or None
-        self.enum        = enum        # dict of enum choices {si}
-        self.value       = default     # current property value
-        self.writable    = writable    # If False, never write the key
-                                       #    to gsettings, even on accident.
-        self.modified    = False       # If True, force writing to gsettings
+        self.settings    = settings     # gsettings object
+        self.key         = key          # gsettings key name
+        self.sysdef      = sysdef       # system default name
+        self.prop        = prop         # python property name
+        self.default     = default      # hard coded default, determines type
+        self.type_string = type_string  # GVariant type string or None
+        self.enum        = enum         # dict of enum choices {si}
+        self.value       = default      # current property value
+        self.writable    = writable     # If False, never write the key
+                                        #    to gsettings, even on accident.
+        self.modified    = False        # If True, force writing to gsettings
 
     def is_default(self):
         return self.value == self.default
@@ -709,7 +709,7 @@ class GSKey:
             # reading from gsettings before writing.
             # Check with:
             # lsof -w -p $( pgrep gio-test ) -Fn |sort|uniq -c|sort -n|tail
-            #value = self.settings[self.key]
+            # value = self.settings[self.key]
 
             if self.enum:
                 value = self.settings.get_enum(self.key)
@@ -727,14 +727,14 @@ class GSKey:
                     value = self.settings[self.key]
 
         except KeyError as ex:
-            _logger.error(_("Failed to get gsettings value. ") + \
+            _logger.error(_("Failed to get gsettings value. ") +
                           unicode_str(ex))
 
         return value
 
     def gsettings_set(self, value):
         """ Send value to gsettings. """
-        #print("gsettings_set", self.key, repr(value))
+        # print("gsettings_set", self.key, repr(value))
         if self.writable:
             if self.enum:
                 self.settings.set_enum(self.key, value)
