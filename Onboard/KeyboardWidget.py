@@ -241,8 +241,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         WindowManipulator.__init__(self)
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
+        
+        self.set_app_paintable(True)
 
         self.canvas_rect = Rect()
+        self._opacity = 1.0
 
         self._last_click_time = 0
         self._last_click_key = None
@@ -333,6 +336,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self.touch_handles.set_window(win)
             self.update_window_handles()
 
+    def set_opacity(self, opacity):
+        """ Override deprecated Gtk function of the same name """
+        if self._opacity != opacity:
+            self._opacity = opacity
+            self.redraw()
+
+    def get_opacity(self):
+        """ Override deprecated Gtk function of the same name """
+        return self._opacity
+
     def set_startup_visibility(self):
         win = self.get_kbd_window()
         assert(win)
@@ -354,8 +367,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         # when inactive transparency is enabled.
         screen = self.get_screen()
         if screen and screen.is_composited() and \
-            self.inactivity_timer.is_enabled():
-            win.set_opacity(0.05, True) # keep it slightly visible just in case
+           self.inactivity_timer.is_enabled():
+            self.set_opacity(0.05)  # keep it slightly visible just in case
 
         # transition to initial opacity
         self.transition_visible_to(visible, 0.0, 0.4)
@@ -645,8 +658,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         window = self.get_kbd_window()
         if window:
-            if window.get_opacity() != opacity:
-                window.set_opacity(opacity)
+            self.set_opacity(opacity)
 
             visible_before = window.is_visible()
             visible_later  = state.target_visibility
@@ -1246,6 +1258,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
                 GLib.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
+        context.push_group()
+
         decorated = LayoutView.draw(self, widget, context)
 
         # draw touch handles (enlarged move and resize handles)
@@ -1253,6 +1267,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             corner_radius = config.CORNER_RADIUS if decorated else 0
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
+
+        context.pop_group_to_source()
+        context.paint_with_alpha(self._opacity)
 
     def _overcome_initial_key_resistance(self, sequence):
         """
@@ -1417,11 +1434,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self._key_popup = None
 
     def _create_key_popup(self, parent):
-        popup = LayoutPopup(self.keyboard,
-                         self.close_key_popup)
+        popup = LayoutPopup(self.keyboard, self.close_key_popup)
         popup.supports_alpha = self.supports_alpha
         popup.set_transient_for(parent)
-        popup.set_opacity(parent.get_opacity())
+        popup.set_opacity(self.get_opacity())
         return popup
 
     def _show_key_popup(self, popup, key):

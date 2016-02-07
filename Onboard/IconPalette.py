@@ -70,7 +70,6 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
     _layout_view = None
 
     def __init__(self, keyboard):
-
         self._visible = False
         self._force_to_top = False
         self._last_pos = None
@@ -89,7 +88,6 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             "urgency_hint" : False,
             "decorated" : False,
             "accept_focus" : False,
-            "opacity" : self.OPACITY,    # no effect on Vivid
             "width_request" : self.MINIMUM_SIZE,
             "height_request" : self.MINIMUM_SIZE,
             "app_paintable" : True,
@@ -104,17 +102,23 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
 
         self.set_keep_above(True)
 
+        self.drawing_area = Gtk.DrawingArea()
+        self.add(self.drawing_area)
+        self.drawing_area.connect("draw", self._on_draw)
+        self.drawing_area.show()
+
         # use transparency if available
         visual = Gdk.Screen.get_default().get_rgba_visual()
         if visual:
             self.set_visual(visual)
+            self.drawing_area.set_visual(visual)
 
         # set up event handling
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK |
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
 
-        self.connect("draw", self._on_draw)
+        # self.connect("draw", self._on_draw)
         self.connect("button-press-event", self._on_button_press_event)
         self.connect("motion-notify-event", self._on_motion_notify_event)
         self.connect("button-release-event", self._on_button_release_event)
@@ -179,9 +183,6 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         if config.is_force_to_top():
             self.set_override_redirect(True)
         self.restore_window_rect(True)
-
-        # Work around initial opacity having no effect in Vivid.
-        self.set_opacity(self.OPACITY - 0.01)
 
     def _on_unrealize_event(self, user_data):
         """ Gdk window destroyed """
@@ -294,7 +295,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         """
         Draw the onboard icon.
         """
-        if not Gtk.cairo_should_draw_window(cr, self.get_window()):
+        if not Gtk.cairo_should_draw_window(cr, widget.get_window()):
             return False
 
         rect = Rect(0.0, 0.0,
@@ -307,6 +308,10 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         cr.set_operator(cairo.OPERATOR_CLEAR)
         cr.paint()
         cr.restore()
+
+        composited = Gdk.Screen.get_default().is_composited()
+        if composited:
+            cr.push_group()
 
         # draw background color
         background_rgba = list(color_scheme.get_icon_rgba("background"))
@@ -347,6 +352,10 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
 
         dwell_rect = rect.grow(0.5)
         self._dwell_progress.draw(cr, dwell_rect, rgba, bg_rgba)
+
+        if composited:
+            cr.pop_group_to_source()
+            cr.paint_with_alpha(self.OPACITY)
 
         return True
 
@@ -417,7 +426,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        Gtk.Window.show(self)
+        Gtk.Window.show_all(self)
         self.move_resize(*self.get_rect())  # sync with WindowRectTracker
         self._visible = True
 

@@ -29,7 +29,7 @@ require_gi_versions()
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
 from Onboard.definitions import DockingMonitor
-from Onboard.utils       import Rect
+from Onboard.utils       import Rect, Version
 from Onboard.Timer       import CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
                                 set_unity_property, \
@@ -83,7 +83,6 @@ class KbdWindowBase:
         self._current_docking_monitor = None
         self._monitor_workarea = {}
 
-        self._opacity = 1.0
         if gtk_has_resize_grip_support():
             self._default_resize_grip = self.get_has_resize_grip()
         else:
@@ -198,11 +197,15 @@ class KbdWindowBase:
             self.set_visual(visual)
             self.keyboard_widget.set_visual(visual)
 
-            # full transparency for the window background
-            self.override_background_color(Gtk.StateFlags.NORMAL,
-                                           Gdk.RGBA(0, 0, 0, 0))
-            self.keyboard_widget.override_background_color(Gtk.StateFlags.NORMAL,
-                                           Gdk.RGBA(0, 0, 0, 0))
+            # Somehow Gtk 3.4 still needs these now deprecated calls,
+            # even though IconPalette and LabelPopups don't.
+            # Otherwise there will be a white background.
+            gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
+            if gtk_version < Version(3, 18):  # Xenial doesn't need them
+                self.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                self.keyboard_widget.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
         else:
             _logger.info(_("no window transparency available;"
                            " screen doesn't support alpha channels"))
@@ -375,36 +378,11 @@ class KbdWindowBase:
                 service.PropertiesChanged(service.IFACE,
                                           {'Visible': visible}, ['Visible'])
 
-    def set_opacity(self, opacity, force_set = False):
-        # Only set the opacity on visible windows.
-        # Metacity with compositing shows an unresponsive
-        # ghost of the window when trying to set opacity
-        # while it's hidden (LP: #929513).
-        _logger.debug("setting opacity to {}, force_set={}, "
-                      "visible={}" \
-                      .format(opacity, force_set, self.is_visible()))
-        if force_set:
-            self._do_set_opacity(opacity)
-        else:
-            if self.is_visible():
-                self._do_set_opacity(opacity)
-            self._opacity = opacity
-
-    def _do_set_opacity(self, opacity):
-        # In Wily, Gtk moved on from using the _NET_WM_OPACITY X window property
-        # to doing all opacity effects internally with cairo. It just so
-        # happens that as soon our XInput event source calls XISelectEvents()
-        # the opacity is only applied to toplevels anymore, not their child
-        # windows. The reason is unclear.
-        # Workaround: keep the toplevel transparent and apply opacity to
-        # the child only.
-        if hasattr(Gtk.Widget, "set_opacity"): # doesn't exist on Precise
-            Gtk.Widget.set_opacity(self.keyboard_widget, opacity)
-        else:
-            Gtk.Window.set_opacity(self, opacity)
+    def set_opacity(self, opacity):
+        self.keyboard_widget.set_opacity(opacity)
 
     def get_opacity(self):
-        return self._opacity
+        return self.keyboard_widget.get_opacity()
 
     def is_maximized(self):
         return self._maximized
@@ -426,11 +404,7 @@ class KbdWindowBase:
                 self.icp.hide()
 
     def _cb_visibility_notify(self, widget, event):
-        if not self.keyboard_widget.is_drag_initiated():
-            if event.state == Gdk.VisibilityState.UNOBSCURED:
-                # Metacity with compositing sometimes ignores set_opacity()
-                # immediately after unhiding. Set it here to be sure it sticks.
-                self.set_opacity(self._opacity)
+        pass
 
     def _cb_window_state_event(self, widget, event):
         """

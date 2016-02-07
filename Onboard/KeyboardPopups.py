@@ -27,7 +27,7 @@ from Onboard.Version import require_gi_versions
 require_gi_versions()
 from gi.repository          import Gdk, Gtk, Pango, PangoCairo
 
-from Onboard.utils          import Rect, roundrect_arc
+from Onboard.utils          import Rect, roundrect_arc, Version
 from Onboard.Timer          import Timer
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
@@ -150,6 +150,8 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
     """ Abstract base class for popups. """
 
     def __init__(self):
+        self._opacity = 1.0
+
         WindowRectTracker.__init__(self)
 
         args = {
@@ -159,6 +161,7 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
             "decorated" : False,
             "accept_focus" : False,
             "opacity" : 1.0,
+            "app_paintable" : True,
         }
         if gtk_has_resize_grip_support():
             args["has_resize_grip"] = False
@@ -184,11 +187,25 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
         if visual:
             self.set_visual(visual)
             self.drawing_area.set_visual(visual)
-            self.override_background_color(Gtk.StateFlags.NORMAL,
-                                           Gdk.RGBA(0, 0, 0, 0))
-            self.drawing_area.override_background_color(Gtk.StateFlags.NORMAL,
-                                           Gdk.RGBA(0, 0, 0, 0))
+
+            # Somehow Gtk 3.4 still needs these now deprecated calls
+            # for LayoutPopups, even though IconPalette and LabelPopups
+            # don't. Otherwise there will be a white background.
+            gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
+            if gtk_version < Version(3, 18):  # Xenial doesn't need them
+                self.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+                self.drawing_area.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
             self.supports_alpha = True
+
+    def set_opacity(self, opacity):
+        """ Override deprecated Gtk function of the same name """
+        self._opacity = opacity
+
+    def get_opacity(self):
+        """ Override deprecated Gtk function of the same name """
+        return self._opacity
 
     def on_draw(self, widget, context):
         raise NotImplementedError()
@@ -263,6 +280,8 @@ class LabelPopup(KeyboardPopup):
         context.paint()
         context.restore()
 
+        context.push_group()
+
         context.set_source_rgba(*fill)
         roundrect_arc(context, content_rect, config.CORNER_RADIUS)
         context.fill()
@@ -285,6 +304,9 @@ class LabelPopup(KeyboardPopup):
                 if label == " ":
                     label = "␣"
                 self._draw_text(context, label, label_rect, label_color)
+
+        context.pop_group_to_source()
+        context.paint_with_alpha(self._opacity)
 
     def _draw_text(self, context, text, rect, rgba):
         layout = self._pango_layout
@@ -355,7 +377,7 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
 
-        self.connect("destroy",              self._on_destroy_event)
+        self.connect("destroy", self._on_destroy_event)
 
         self._close_timer = Timer()
         self.start_close_timer()
@@ -439,7 +461,12 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
             self.close_window()
 
     def on_draw(self, widget, context):
+        context.push_group()
+
         LayoutView.draw(self, widget, context)
+
+        context.pop_group_to_source()
+        context.paint_with_alpha(self._opacity)
 
     def draw_window_frame(self, context, lod):
         corner_radius = config.CORNER_RADIUS
