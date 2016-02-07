@@ -27,7 +27,7 @@ import weakref
 
 from Onboard.Version import require_gi_versions
 require_gi_versions()
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gtk, Pango
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -42,15 +42,12 @@ from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine, ModelCache
-from Onboard.utils             import Rect, unicode_str, escape_markup, \
-                                      Modifiers
+from Onboard.utils             import Rect, unicode_str, escape_markup
 from Onboard.Timer             import CallOnce, Timer, TimerOnce
 from Onboard.KeyGtk            import FullSizeKey, WordKey
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class WordSuggestions:
@@ -143,8 +140,8 @@ class WordSuggestions:
     def apply_prediction_profile(self):
         if self._wpengine:
             lang_id = self.get_lang_id()
-            system_lang_id = self._languagedb \
-                             .find_system_model_language_id(lang_id)
+            system_lang_id = \
+                self._languagedb.find_system_model_language_id(lang_id)
 
             system_models  = ["lm:system:" + system_lang_id]
             user_models    = ["lm:user:" + lang_id]
@@ -288,8 +285,7 @@ class WordSuggestions:
     def update_spell_checker(self):
         # select the backend
         backend = config.typing_assistance.spell_check_backend \
-                  if config.is_spell_checker_enabled() \
-                  else None
+            if config.is_spell_checker_enabled() else None
         self._spell_checker.set_backend(backend)
 
         if backend is not None:
@@ -388,11 +384,12 @@ class WordSuggestions:
 
         # Arm punctuator with the span of the just added separator.
         if self._can_auto_punctuate():
-            separator_span = TextSpan(insert_result_span.begin(),
-                                    len(added_separator),
-                                    added_separator,
-                                    insert_result_span.begin()) \
-                            if added_separator else None
+            separator_span = \
+                TextSpan(insert_result_span.begin(),
+                         len(added_separator),
+                         added_separator,
+                         insert_result_span.begin()) \
+                if added_separator else None
             self._punctuator.set_added_separator(separator_span)
 
     def _simulate_insertion(self, caret_span, deletion, insertion):
@@ -477,10 +474,10 @@ class WordSuggestions:
         text_begin = word_span.text_begin()
         word = word_span.get_span_text()
         caret = self.text_context.get_caret()
-        offset = caret - text_begin # caret offset into the word
+        offset = caret - text_begin  # caret offset into the word
 
         span, choices = \
-                self._spell_checker.find_corrections(word, offset)
+            self._spell_checker.find_corrections(word, offset)
         if choices:
             correction_choices = choices
             correction_span = TextSpan(span[0] + text_begin,
@@ -497,8 +494,8 @@ class WordSuggestions:
 
                 elif word and word[0].islower():
                     word_caps = word.capitalize()
-                    span, choices = self._spell_checker. \
-                            find_corrections(word_caps, offset)
+                    span, choices = \
+                        self._spell_checker.find_corrections(word_caps, offset)
                     if not choices:
                         auto_capitalization = word_caps
                         correction_span = word_span
@@ -513,24 +510,24 @@ class WordSuggestions:
         if self._wpengine:
 
             context = text_context.get_context()
-            if context: # don't load models on startup
+            if context:  # don't load models on startup
                 max_choices = config.wp.max_word_choices
                 bot_context = text_context.get_bot_context()
                 bot_marker = text_context.get_text_begin_marker()
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
-                case_insensitive_mode, ignore_non_caps, \
-                capitalize, drop_capitalized = \
-                       self._get_prediction_options(tokens,
-                                                    bool(self.mods[1]),
-                                                    bot_marker)
+                (case_insensitive_mode, ignore_non_caps,
+                 capitalize, drop_capitalized) = \
+                    self._get_prediction_options(tokens,
+                                                 bool(self.mods[1]),
+                                                 bot_marker)
 
                 _choices = self._wpengine.predict(bot_context,
                        max_choices * 2,
-                       case_insensitive = case_insensitive_mode == 1,
-                       case_insensitive_smart = case_insensitive_mode == 2,
-                       accent_insensitive_smart = config.wp.accent_insensitive,
-                       ignore_non_capitalized = ignore_non_caps)
+                       case_insensitive=case_insensitive_mode == 1,
+                       case_insensitive_smart=case_insensitive_mode == 2,
+                       accent_insensitive_smart=config.wp.accent_insensitive,
+                       ignore_non_capitalized=ignore_non_caps)
 
                 choices = []
                 for choice in _choices:
@@ -560,10 +557,11 @@ class WordSuggestions:
             self._prediction_choices = choices
 
             # update word information for the input line display
-            #self.word_infos = self.get_word_infos(self.text_context.get_line())
+            # self.word_infos = \
+            #    self.get_word_infos(self.text_context.get_line())
 
     @staticmethod
-    def _get_prediction_options(tokens, shift, bot_marker = None):
+    def _get_prediction_options(tokens, shift, bot_marker=None):
         """
         Determine prediction options.
 
@@ -618,14 +616,14 @@ class WordSuggestions:
         """
         if tokens:
             prefix = tokens[-1]
-            sentence_begin = len(tokens) >= 2 and \
-                             (tokens[-2] == "<s>" or \
-                              bool(bot_marker) and tokens[-2] == bot_marker)
+            sentence_begin = (len(tokens) >= 2 and
+                              (tokens[-2] == "<s>" or
+                               bool(bot_marker) and tokens[-2] == bot_marker))
             capitalized = bool(prefix) and prefix[0].isupper()
             empty_prefix = not bool(prefix)
 
-            ignore_non_caps  = not sentence_begin and \
-                               (capitalized or empty_prefix and shift)
+            ignore_non_caps  = (not sentence_begin and
+                                (capitalized or empty_prefix and shift))
 
             capitalize       = sentence_begin and (capitalized or shift)
 
@@ -645,13 +643,14 @@ class WordSuggestions:
 
         drop_capitalized = False
 
-        return case_insensitive_mode, ignore_non_caps, capitalize, drop_capitalized
+        return (case_insensitive_mode, ignore_non_caps,
+                capitalize, drop_capitalized)
 
     def get_word_infos(self, text):
         wis = []
         if text.rstrip():  # don't load models on startup
             tokspans, counts = self._wpengine.lookup_text(text)
-            for i,t in enumerate(tokspans):
+            for i, t in enumerate(tokspans):
                 start, end, token = t
                 word = text[start:end]
                 wi = WordInfo(start, end, word)
@@ -660,7 +659,7 @@ class WordSuggestions:
                 wi.ignored       = word != token
                 if self._spell_checker:
                     wi.spelling_errors = \
-                            self._spell_checker.find_incorrect_spans(word)
+                        self._spell_checker.find_incorrect_spans(word)
                 wis.append(wi)
 
         return wis
@@ -672,9 +671,11 @@ class WordSuggestions:
         double entries created that way.
 
         Doctests:
-        >>> WordSuggestions._capitalize_choices(["word1", "Word1", "Word2", "word3"])
+        >>> WordSuggestions._capitalize_choices(
+        ...     ["word1", "Word1", "Word2", "word3"])
         ['Word1', 'Word2', 'Word3']
-        >>> WordSuggestions._capitalize_choices(["Word", "woRD", "WORD"])
+        >>> WordSuggestions._capitalize_choices(
+        ...     ["Word", "woRD", "WORD"])
         ['Word', 'WoRD', 'WORD']
         """
         results = []
@@ -683,7 +684,7 @@ class WordSuggestions:
         for choice in choices:
             if choice:
                 choice = choice[:1].upper() + choice[1:]
-                if not choice in seen:
+                if choice not in seen:
                     results.append(choice)
                     seen.add(choice)
         return results
@@ -764,40 +765,6 @@ class WordSuggestions:
                 word_span = None
 
             return word_span
-        return None
-
-    def _get_word_to_auto_correct(self, insertion_span):
-        """
-        Doctests:
-        >>> from Onboard.TextDomain import DomainGenericText
-        >>> wp = WordSuggestions()
-        >>> wp._wpengine = WPLocalEngine()
-        >>> d = DomainGenericText()
-        >>> wp.get_text_domain = lambda : d
-
-        >>> print(wp._get_word_to_auto_correct(TextSpan(6, 1, "abc def")))
-        None
-
-        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def ")))
-        TextSpan(4, 3, 'def', 4, None)
-
-        >>> print(wp._get_word_to_auto_correct(TextSpan(7, 1, "abc def.")))
-        None
-
-        >>> print(wp._get_word_to_auto_correct(TextSpan(8, 1, "abc def. ")))
-        TextSpan(4, 3, 'def', 4, None)
-
-        >>> print(wp._get_word_to_auto_correct(TextSpan(56, 6,
-        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor ")))
-        None
-        """
-        char = insertion_span.get_last_char_in_span()
-        if char.isspace():
-            section_span = self._get_section_before_span(insertion_span)
-            if section_span and \
-               self._can_auto_correct(section_span):
-                word_span = self._get_word_before_span(insertion_span)
-                return word_span
         return None
 
     def _delete_selected_text(self):
@@ -928,8 +895,8 @@ class WordSuggestions:
 
     def has_changes(self):
         """ Are there any text changes to learn? """
-        return self.text_context and \
-               self.text_context.has_changes()
+        return (self.text_context and
+                self.text_context.has_changes())
 
     def commit_changes(self):
         """ Learn all accumulated changes and clear them """
@@ -1072,9 +1039,8 @@ class WordSuggestions:
         Auto-capitalize/correct a word_span.
         """
         correction_span, replacement = \
-           self._find_auto_correction(word_span,
-                                      True,
-                                      config.typing_assistance.auto_correction)
+            self._find_auto_correction(word_span, True,
+                                    config.typing_assistance.auto_correction)
         if replacement:
             with self.suppress_modifiers():
                 self._replace_text(correction_span.begin(),
@@ -1091,7 +1057,8 @@ class WordSuggestions:
         True
 
         # auto-capitalization
-        >>> wp._find_auto_correction(TextSpan(0, 7, "jupiter ..."), True, False)
+        >>> wp._find_auto_correction(
+        ...     TextSpan(0, 7, "jupiter ..."), True, False)
         (TextSpan(0, 7, 'jupiter', 0, None), 'Jupiter')
         >>> wp._find_auto_correction(TextSpan(0, 3, "usa ..."), True, False)
         (TextSpan(0, 3, 'usa', 0, None), 'USA')
@@ -1102,21 +1069,21 @@ class WordSuggestions:
         (correction_choices,
          correction_span,
          auto_capitalization) = \
-              self._find_correction_choices(word_span, auto_capitalize)
+            self._find_correction_choices(word_span, auto_capitalize)
 
         replacement = auto_capitalization
         if not replacement and \
            correction_choices and \
            auto_correct:
 
-            MIN_AUTO_CORRECT_LENGTH = 2
-            MAX_STRING_DISTANCE = 2
+            min_auto_correct_length = 2
+            max_string_distance = 2
 
             word = word_span.get_span_text()
-            if len(word) > MIN_AUTO_CORRECT_LENGTH:
-                choice = correction_choices[0] # rely on spell checker for now
+            if len(word) > min_auto_correct_length:
+                choice = correction_choices[0]  # rely on spell checker for now
                 distance = self._string_distance(word, choice)
-                if distance <= MAX_STRING_DISTANCE:
+                if distance <= max_string_distance:
                     replacement = choice
 
         return correction_span, replacement
@@ -1143,7 +1110,8 @@ class WordSuggestions:
         TextSpan(4, 3, 'def', 4, None)
 
         >>> print(wp._get_word_to_auto_correct(TextSpan(56, 6,
-        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor ")))
+        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/"
+        ...     "?p=1#anchor ")))
         None
         """
         char = insertion_span.get_last_char_in_span()
@@ -1173,7 +1141,8 @@ class WordSuggestions:
         TextSpan(4, 3, 'def', 0, None)
 
         >>> wp._get_section_before_span(TextSpan(56, 6,
-        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor"))
+        ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/"
+        ...     "?p=1#anchor"))
         TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor', 0, None)
 
         >>> wp._get_section_before_span(TextSpan(6, 2,
@@ -1202,15 +1171,18 @@ class WordSuggestions:
         >>> wp._wpengine = WPLocalEngine()
 
         # caret right in the middle of a word
-        >>> wp._get_word_before_span(TextSpan(15, 0, "binomial proportion"))
+        >>> wp._get_word_before_span(
+        ...     TextSpan(15, 0, "binomial proportion"))
         TextSpan(9, 10, 'proportion', 9, None)
 
         # text at offset
-        >>> wp._get_word_before_span(TextSpan(25, 0, "binomial proportion", 10))
+        >>> wp._get_word_before_span(
+        ...     TextSpan(25, 0, "binomial proportion", 10))
         TextSpan(19, 10, 'proportion', 19, None)
 
         # caret after whitespace - get the previous word
-        >>> wp._get_word_before_span(TextSpan(9, 0, "binomial  proportion"))
+        >>> wp._get_word_before_span(
+        ...     TextSpan(9, 0, "binomial  proportion"))
         TextSpan(0, 8, 'binomial', 0, None)
         """
         word_span = None
@@ -1260,25 +1232,24 @@ class LearnStrategy:
     Base class of learn strategies.
     """
 
-    def __init__(self, tokenize = None):
-        self._tokenize = tokenize if tokenize \
-                         else pypredict.tokenize_text  # no D-Bus for tests
+    def __init__(self, tokenize=None):
+        self._tokenize = tokenize \
+            if tokenize else pypredict.tokenize_text  # no D-Bus for tests
 
-    def _learn_spans(self, spans, bot_marker = "", bot_offset = None,
-                     text_domain = None):
+    def _learn_spans(self, spans, bot_marker="", bot_offset=None,
+                     text_domain=None):
         if config.wp.can_auto_learn():
             texts = self._get_learn_texts(spans, bot_marker, bot_offset,
                                           text_domain)
 
-            #_logger.info("learning " + repr(texts))
-            #print("learning " + repr(texts))
+            # print("learning " + repr(texts))
 
             engine = self._wp._wpengine
             for text in texts:
                 engine.learn_text(text,
                              config.word_suggestions.can_learn_new_words())
 
-    def _learn_scratch_spans(self, spans, text_domain = None):
+    def _learn_scratch_spans(self, spans, text_domain=None):
         if config.wp.can_auto_learn():
             engine = self._wp._wpengine
             engine.clear_scratch_models()
@@ -1288,15 +1259,15 @@ class LearnStrategy:
                 for text in texts:
                     engine.learn_scratch_text(text)
 
-    def _get_learn_texts(self, spans, bot_marker = "", bot_offset = None,
-                         text_domain = None):
+    def _get_learn_texts(self, spans, bot_marker="", bot_offset=None,
+                         text_domain=None):
         token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset,
                                             text_domain)
         return [" ".join(tokens) for tokens in token_sets]
 
     def _get_learn_tokens(self, text_spans,
-                          bot_marker = "", bot_offset = None,
-                          text_domain = None):
+                          bot_marker="", bot_offset=None,
+                          text_domain=None):
         """
         Get disjoint sets of tokens to learn.
         Tokens of overlapping or adjacent spans are joined.
@@ -1332,9 +1303,11 @@ class LearnStrategy:
         [['word1', '<s>', 'word2']]
 
         # Begin of text marker, generic text.
-        >>> p._get_learn_tokens([TextSpan(2, 2, "word1 word2")], "<bot:txt>", 0)
+        >>> p._get_learn_tokens(
+        ...     [TextSpan(2, 2, "word1 word2")], "<bot:txt>", 0)
         [['<bot:txt>', 'word1']]
-        >>> p._get_learn_tokens([TextSpan(8, 2, "word1 word2")], "<bot:txt>", 0)
+        >>> p._get_learn_tokens(
+        ...     [TextSpan(8, 2, "word1 word2")], "<bot:txt>", 0)
         [['word2']]
 
         # Begin of text marker, terminal.
@@ -1352,7 +1325,8 @@ class LearnStrategy:
         [['word2']]
 
         # The hierarichcal part of URLs is considered changed as a whole
-        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/home/index.html")],
+        >>> p._get_learn_tokens(
+        ...     [TextSpan(14, 1, "http://www.domain.org/home/index.html")],
         ...                          None, None, d)
         [['http', 'www', 'domain', 'org', 'home', 'index', 'html']]
 
@@ -1362,12 +1336,14 @@ class LearnStrategy:
         [['www', 'domain', 'org']]
 
         # The query part of an URL isn't automatically included.
-        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/?p=1")],
+        >>> p._get_learn_tokens(
+        ...     [TextSpan(14, 1, "http://www.domain.org/?p=1")],
         ...                          None, None, d)
         [['http', 'www', 'domain', 'org']]
 
         # The fragment part of an URL isn't automatically included.
-        >>> p._get_learn_tokens([TextSpan(14, 1, "http://www.domain.org/#anchor")],
+        >>> p._get_learn_tokens(
+        ...     [TextSpan(14, 1, "http://www.domain.org/#anchor")],
         ...                          None, None, d)
         [['http', 'www', 'domain', 'org']]
 
@@ -1408,7 +1384,7 @@ class LearnStrategy:
                         if prev_span == link_span:
                             k = i + 1 if span_before else i
                             token_sets[-1] = prev_tokens[:k] + tokens
-                            span_sets[-1]  = prev_spans [:k] + spans
+                            span_sets[-1]  = prev_spans[:k] + spans
                             merged = True
 
                 # No previous tokens exist, the current ones are the
@@ -1416,11 +1392,11 @@ class LearnStrategy:
                 else:
                     # prepend begin-of-text marker
                     if bot_marker and \
-                       not bot_offset is None:
+                       bot_offset is not None:
                         if span_before is None or \
                            span_before[1] < bot_offset <= spans[0][0]:
                             tokens = [bot_marker] + tokens
-                            spans = [(-1, -1)] + spans # dummy span, don't use
+                            spans = [(-1, -1)] + spans  # dummy span, don't use
 
             if not merged and \
                len(tokens):
@@ -1429,7 +1405,7 @@ class LearnStrategy:
 
         return token_sets
 
-    def _tokenize_span(self, text_span, prepend_tokens = 0):
+    def _tokenize_span(self, text_span, prepend_tokens=0):
         """
         Expand spans to word boundaries and return as tokens.
         Include <prepend_tokens> tokens before the span.
@@ -1518,7 +1494,7 @@ class LearnStrategy:
         begin  = text_span.begin() - offset
         end    = text_span.end() - offset
         for i, s in enumerate(spans):
-            if begin < s[1] and end > s[0]: # intersects?
+            if begin < s[1] and end > s[0]:  # intersects?
                 itokens.append(i)
 
         return itokens
@@ -1531,7 +1507,7 @@ class LearnStrategyLRU(LearnStrategy):
     """
 
     LEARN_DELAY  = 60  # seconds from last modification until spans are learned
-    POLLING_TIME =  2  # seconds between polling for timed-out spans
+    POLLING_TIME = 2   # seconds between polling for timed-out spans
 
     def __init__(self, wp):
         LearnStrategy.__init__(self,
@@ -1564,7 +1540,7 @@ class LearnStrategyLRU(LearnStrategy):
                 bot_offset = text_context.get_begin_of_text_offset()
                 domain = self._wp.get_text_domain()
                 self._learn_spans(spans, bot_marker, bot_offset, domain)
-                engine.clear_scratch_models() # clear short term memory
+                engine.clear_scratch_models()  # clear short term memory
 
         changes.clear()
 
@@ -1572,7 +1548,7 @@ class LearnStrategyLRU(LearnStrategy):
         """ Discard and remove all changes """
         engine = self._wp._wpengine
         if engine:
-            engine.clear_scratch_models() # clear short term memory
+            engine.clear_scratch_models()  # clear short term memory
         self.reset()
 
     def commit_expired_changes(self):
@@ -1594,7 +1570,7 @@ class LearnStrategyLRU(LearnStrategy):
         # learn expired spans
         expired_spans = []
         for span in list(spans):
-            if not span is most_recent and \
+            if span is not most_recent and \
                time.time() - span.last_modified >= self.LEARN_DELAY:
                 expired_spans.append(span)
                 changes.remove_span(span)
@@ -1656,12 +1632,13 @@ class LearnStrategyLRU(LearnStrategy):
         Update short term memory with changes that haven't been learned yet.
         """
         changes = self._wp.text_context.get_changes()
-        spans = changes.get_spans() # by reference
+        spans = changes.get_spans()  # by reference
         self._learn_scratch_spans(spans)
         self._insert_count = changes.insert_count
         self._delete_count = changes.delete_count
 
-        # reflect the model change in the wordlist, e.g. when deleting new words
+        # reflect the model change in the wordlist,
+        # e.g. when deleting new words
         if update_ui:
             self._wp.invalidate_context_ui()
             self._wp.commit_ui_updates()
@@ -1675,8 +1652,8 @@ class Punctuator:
 
     punctuation_no_capitalize = [",", ":", ";", ")", "}", "]",
                                  "’",
-                                 "”", "»", '›', # language dependent :/
-                                ]
+                                 "”", "»", '›',  # language dependent :/
+                                 ]
     punctuation_capitalize    = [".", "?", "!"]
     punctuation = punctuation_capitalize + punctuation_no_capitalize
 
@@ -1688,7 +1665,7 @@ class Punctuator:
         self._added_separator_span = None
         self._separator_removed = False
 
-    def set_added_separator(self, separator_span = None):
+    def set_added_separator(self, separator_span=None):
         """ Notify punctuator of an actually added word separator. """
         self._added_separator_span = separator_span
 
@@ -1752,12 +1729,12 @@ class WordInfo:
         self.spelling_errors = None
 
     def __str__(self):
-        return  "'{}' {}-{} unknown={} exact={} partial={} ignored={} " \
-                "spelling_errors={}".format(self.word,
-                                            self.start, self.end,
-                                            self.unknown, self.exact_match,
-                                            self.partial_match, self.ignored,
-                                            self.spelling_errors)
+        return "'{}' {}-{} unknown={} exact={} partial={} ignored={} " \
+               "spelling_errors={}".format(self.word,
+                                           self.start, self.end,
+                                           self.unknown, self.exact_match,
+                                           self.partial_match, self.ignored,
+                                           self.spelling_errors)
 
 
 class WordListPanel(LayoutPanel):
@@ -1782,15 +1759,15 @@ class WordListPanel(LayoutPanel):
 
     def _get_button_width(self, button):
         return button.get_initial_border_rect().w * \
-               config.theme_settings.key_size / 100.0
+            config.theme_settings.key_size / 100.0
 
     def _get_button_spacing(self):
-        return config.WORDLIST_BUTTON_SPACING[0] \
-               * 2 * (2.0 - config.theme_settings.key_size / 100.0)
+        return config.WORDLIST_BUTTON_SPACING[0] * 2 * \
+            (2.0 - config.theme_settings.key_size / 100.0)
 
     def _get_entry_spacing(self):
-        return config.WORDLIST_ENTRY_SPACING[0] \
-               * 2 * (2.0 - config.theme_settings.key_size / 100.0)
+        return config.WORDLIST_ENTRY_SPACING[0] * 2 * \
+            (2.0 - config.theme_settings.key_size / 100.0)
 
     def create_keys(self, correction_choices, prediction_choices):
         """
@@ -1835,10 +1812,10 @@ class WordListPanel(LayoutPanel):
         wordlist.set_visible(not correction_choices)
 
         # create correction keys
-        keys, used_rect = self._create_correction_keys( \
-                                        correction_choices,
-                                        rect, wordlist,
-                                        key_context, font_size)
+        keys, used_rect = \
+            self._create_correction_keys(correction_choices,
+                                         rect, wordlist,
+                                         key_context, font_size)
         rect.x += used_rect.w
         rect.w -= used_rect.w
 
@@ -1866,13 +1843,13 @@ class WordListPanel(LayoutPanel):
         color_scheme = fixed_buttons[0].color_scheme
         for key in keys:
             key.color_scheme = color_scheme
-        self.set_items(fixed_background + keys + \
+        self.set_items(fixed_background + keys +
                        fixed_buttons + hideable_buttons)
 
         return keys
 
     def _create_correction_keys(self, correction_choices, rect, wordlist,
-                                    key_context, font_size):
+                                key_context, font_size):
         """
         Create all correction keys.
         """
@@ -1899,11 +1876,13 @@ class WordListPanel(LayoutPanel):
         n = self.get_max_non_expanded_corrections()
         choices = correction_choices[:n]
         expanded_choices = correction_choices[n:] \
-                           if self.are_corrections_expanded() else []
+            if self.are_corrections_expanded() else []
 
         # create unexpanded correction keys
-        keys, used_rect = self._create_correction_choices(choices, choices_rect,
-                                           key_context, font_size, 0, template)
+        keys, used_rect = \
+            self._create_correction_choices(choices, choices_rect,
+                                            key_context, font_size,
+                                            0, template)
         exp_keys = []
         bg_keys = []
         if keys:
@@ -1949,9 +1928,10 @@ class WordListPanel(LayoutPanel):
                 exp_rect = choices_rect.copy()
                 exp_rect.x += used_rect.w
                 exp_rect.w -= used_rect.w
-                exp_keys, exp_used_rect = self._create_correction_choices( \
-                                         expanded_choices, exp_rect,
-                                         key_context, font_size, len(choices))
+                exp_keys, exp_used_rect = \
+                    self._create_correction_choices(expanded_choices, exp_rect,
+                                                    key_context, font_size,
+                                                    len(choices))
                 keys += exp_keys
                 used_rect.w += exp_used_rect.w
         else:
@@ -1968,7 +1948,7 @@ class WordListPanel(LayoutPanel):
 
     def _create_correction_choices(self, choices, rect,
                                    key_context, font_size,
-                                   start_index = 0, template = None):
+                                   start_index=0, template=None):
         """
         Dynamically create a variable number of buttons for word correction.
         """
@@ -2013,31 +1993,33 @@ class WordListPanel(LayoutPanel):
         keys = []
         spacing = self._get_entry_spacing()
 
-        button_infos, filled_up, xend = self._fill_rect_with_choices( \
-                                choices, wordlist_rect, key_context, font_size)
+        button_infos, filled_up, xend = \
+            self._fill_rect_with_choices(choices, wordlist_rect,
+                                         key_context, font_size)
         if button_infos:
-            all_spacings = (len(button_infos)-1) * spacing
+            all_spacings = (len(button_infos) - 1) * spacing
 
             if filled_up:
                 # Find a stretch factor that fills the remaining space
                 # with only expandable items.
-                length_nonexpandables = sum(bi.w for bi in button_infos \
+                length_nonexpandables = sum(bi.w for bi in button_infos
                                             if not bi.expand)
-                length_expandables = sum(bi.w for bi in button_infos \
+                length_expandables = sum(bi.w for bi in button_infos
                                          if bi.expand)
-                length_target = wordlist_rect.w - length_nonexpandables \
-                                - all_spacings
+                length_target = (wordlist_rect.w -
+                                 length_nonexpandables -
+                                 all_spacings)
                 scale = length_target / length_expandables \
-                             if length_expandables else 1.0
+                    if length_expandables else 1.0
             else:
                 # Find the stretch factor that fills the available
                 # space with all items.
-                scale = (wordlist_rect.w - all_spacings) / \
-                              float(xend - all_spacings)
-            #scale = 1.0  # no stretching, left aligned
+                scale = ((wordlist_rect.w - all_spacings) /
+                         float(xend - all_spacings))
+            # scale = 1.0  # no stretching, left aligned
 
             # create buttons
-            x,y = 0.0, 0.0
+            x, y = 0.0, 0.0
             for i, bi in enumerate(button_infos):
                 w = bi.w
 
@@ -2062,19 +2044,19 @@ class WordListPanel(LayoutPanel):
 
     def _fill_rect_with_choices(self, choices, rect, key_context, font_size):
         spacing = self._get_entry_spacing()
-        x, y = 0.0, 0.0
+        x = 0.0
 
-        context = Gdk.pango_context_get()
+        # context = Gdk.pango_context_get()
         pango_layout = WordKey.get_pango_layout(None, font_size)
         button_infos = []
         filled_up = False
-        for i,choice in enumerate(choices):
+        for i, choice in enumerate(choices):
 
             # text extent in Pango units -> button size in logical units
             pango_layout.set_text(choice, -1)
             label_width, _label_height = pango_layout.get_size()
-            label_width = key_context.scale_canvas_to_log_x(
-                                                label_width / Pango.SCALE)
+            label_width = \
+                key_context.scale_canvas_to_log_x(label_width / Pango.SCALE)
             w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
 
             expand = w >= rect.h
@@ -2086,7 +2068,8 @@ class WordListPanel(LayoutPanel):
                 filled_up = True
                 break
 
-            class ButtonInfo: pass
+            class ButtonInfo:
+                pass
             bi = ButtonInfo()
             bi.label_width = label_width
             bi.x = x
@@ -2107,7 +2090,7 @@ class WordListPanel(LayoutPanel):
 class ModelErrorRecovery:
     """ Notify of and recover from errors when loading user models. """
 
-    def __init__(self, keyboard = None):
+    def __init__(self, keyboard=None):
         self._keyboard = weakref.ref(keyboard) if keyboard else None
 
     def get_keyboard(self):
@@ -2198,7 +2181,8 @@ class ModelErrorRecovery:
 
         if _test_mode:
             class Logger:
-                def error(self, s): print(s)
+                def error(self, s):
+                    print(s)
             _logger = Logger()
 
         if os.path.exists(backup_filename):
@@ -2210,15 +2194,15 @@ class ModelErrorRecovery:
                 msg)
             markup = escape_markup(markup, preserve_tags=True)
             reply = self._show_dialog(markup, parent, buttons="yes_no") \
-                   if not _test_mode else True
+                if not _test_mode else True
 
             if reply:
                 try:
                     os.rename(filename, broken_filename)
                     shutil.copy(backup_filename, filename)
                 except OSError as ex:
-                    _logger.error("Failed to revert to backup model: {}" \
-                                    .format(unicode_str(ex)))
+                    _logger.error("Failed to revert to backup model: {}"
+                                  .format(unicode_str(ex)))
                 retry = True
         else:
             markup = _format(
@@ -2234,11 +2218,12 @@ class ModelErrorRecovery:
             try:
                 os.rename(filename, broken_filename)
             except OSError as ex:
-                _logger.error("Failed to rename broken model: {}" \
-                                .format(unicode_str(ex)))
+                _logger.error("Failed to rename broken model: {}"
+                              .format(unicode_str(ex)))
         return retry
 
-    def _show_dialog(self, markup, parent=None, message_type = "error", buttons="ok"):
+    def _show_dialog(self, markup, parent=None,
+                     message_type="error", buttons="ok"):
         keyboard = self.get_keyboard()
 
         if message_type == "question":
@@ -2264,13 +2249,12 @@ class ModelErrorRecovery:
 
         if keyboard:
             keyboard.on_focusable_gui_opening()
-        response = dialog.run() #dlg.connect("response", self._on_confirmation_dialog_response)
+        response = dialog.run()
         dialog.destroy()
         if keyboard:
             keyboard.on_focusable_gui_closed()
 
         return response == Gtk.ResponseType.YES
-
 
     def get_backup_filename(self, filename):
         return ModelCache.get_backup_filename(filename)
