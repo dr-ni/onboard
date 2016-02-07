@@ -41,7 +41,7 @@ config = Config()
 
 class ContextMenu(GObject.GObject):
     __gsignals__ = {
-        str('quit-onboard') : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+        str('quit-onboard') : (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     def __init__(self, keyboard=None):

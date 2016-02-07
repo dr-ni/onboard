@@ -1938,9 +1938,9 @@ class CellRendererMapping(Gtk.CellRendererText):
                         str('pointer-mode') : (bool, '', '', True,
                                              GObject.PARAM_READWRITE) }
 
-    __gsignals__ = { str('mapping-edited') : (GObject.SIGNAL_RUN_LAST,
+    __gsignals__ = { str('mapping-edited') : (GObject.SignalFlags.RUN_LAST,
                                              None, (str, int, bool)),
-                     str('mapping-cleared'): (GObject.SIGNAL_RUN_LAST,
+                     str('mapping-cleared'): (GObject.SignalFlags.RUN_LAST,
                                              None, (str, bool)) }
 
     def __init__(self):

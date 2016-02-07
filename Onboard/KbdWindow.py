@@ -573,7 +573,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         WindowRectPersist.__init__(self)
 
         GObject.signal_new("quit-onboard", KbdWindow,
-                           GObject.SIGNAL_RUN_LAST,
+                           GObject.SignalFlags.RUN_LAST,
                            GObject.TYPE_BOOLEAN, ())
 
         self._auto_position_poll_timer = Timer()

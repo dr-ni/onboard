@@ -62,7 +62,7 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
     """
 
     __gsignals__ = {
-        str('activated') : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+        str('activated') : (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     """ Minimum size of the IconPalette """
