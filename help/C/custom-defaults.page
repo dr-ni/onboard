@@ -15,10 +15,9 @@
       <years>2016</years>
     </credit>
 
-    <license href="http://creativecommons.org/licenses/by-sa/4.0/">
+    <license href="http://www.gnu.org/licenses/gpl.html">
       <p>This work is licensed under the
-      <link href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-      Commons Attribution-ShareAlike 4.0 International License</link>.</p>
+      <link href="http://www.gnu.org/licenses/gpl.html">GNU General Public License version 3 or any later version</link>.</p>
     </license>
 
 
