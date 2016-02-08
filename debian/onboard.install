@@ -6,6 +6,7 @@ usr/share/glib-2.0
 usr/share/icons
 usr/share/locale
 usr/share/man/man1
+usr/share/help/C/onboard
 usr/share/onboard/AUTHORS
 usr/share/onboard/CHANGELOG
 usr/share/onboard/COPYING
