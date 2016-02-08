@@ -28,20 +28,17 @@ from gi.repository import GObject, Gtk
 from Onboard.definitions import StatusIconProviderEnum
 from Onboard.utils import unicode_str, run_script
 
-### Logging ###
 import logging
 _logger = logging.getLogger("Indicator")
-###############
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class ContextMenu(GObject.GObject):
     __gsignals__ = {
-        str('quit-onboard') : (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, ())
+        str('quit-onboard') : (GObject.SignalFlags.RUN_LAST,
+                               GObject.TYPE_NONE, ())
     }
 
     def __init__(self, keyboard=None):
@@ -181,16 +178,18 @@ class Indicator():
             "Onboard",
             "onboard",
             AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self._indicator.set_icon_full("onboard", _("Onboard on-screen keyboard"))
+        self._indicator.set_icon_full("onboard",
+                                      _("Onboard on-screen keyboard"))
 
         self._indicator.set_menu(self._menu._menu)
-        self._indicator.set_secondary_activate_target( \
-                                                self._menu._menu.get_children()[0])
+        self._indicator.set_secondary_activate_target(
+            self._menu._menu.get_children()[0])
 
     def _init_status_icon(self):
         self._status_icon = Gtk.StatusIcon(icon_name="onboard")
         self._status_icon.connect("activate",
-                                  lambda x: self._menu.on_show_keyboard_toggle())
+                                  lambda x:
+                                  self._menu.on_show_keyboard_toggle())
         self._status_icon.connect("popup-menu",
                                   self._on_status_icon_popup_menu)
 
@@ -229,9 +228,11 @@ class Indicator():
             pass
         else:
             if active:
-                self._indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+                self._indicator.set_status(
+                    AppIndicator.IndicatorStatus.ACTIVE)
             else:
-                self._indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
+                self._indicator.set_status(
+                    AppIndicator.IndicatorStatus.PASSIVE)
 
     def is_appindicator(self):
         if self._indicator:
