@@ -7,7 +7,7 @@ DH_VERBOSE=1
 	rm -f po/*.pot
 
 override_dh_python3:
-	dh_python3 --no-guessing-deps
+	dh_python3 --no-guessing-deps --shebang=/usr/bin/python3
 
 # python3 needs some manual work, see 
 # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=597105

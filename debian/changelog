@@ -1,3 +1,73 @@
+onboard (1.1.2-0ubuntu1) wily; urgency=medium
+
+  * Request for sponsorship for new upstream release (LP: #1487009)
+  * debian/patches: refresh add_defaults_for_ubuntu.patch
+  * Import wily translations from rosetta for Onboard 1.1 as of 18/08/2015
+  * Attempt to auto-show and keep Onboard visible in unity dash
+  * Correctly position the language menu also in wily
+  * Have rounded corners and transparency of the icon palette also in wily
+  * Return transparency effects of the keyboard in wily
+  * Don't invert the case of auto-typed suggestions when CAPS is enabled
+  * Improve auto-show logic in the presence of text popups
+  * Automatically insert a slash after the top level domain co
+  * Fix touch input with event source GTK and multi-touch mode, thanks J Wiegman
+  * Fix touch events not being received in Kwin (LP:1470825)
+  * Fix spurious backtrace on suggestions when accessible becomes invalid
+  * Fix status icon size with lxpanel-indicator-applet-plugin (LP: #1467723)
+  * Improve window movement with enabled decoration when dragging the titlebar
+  * Keep the keyboard active while moving by title bar (LP: #1461823)
+  * Fix re.split() FutureWarning for python 3.5
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 20 Aug 2015 14:39:38 +0200
+
+onboard (1.1.1-0ubuntu5) wily; urgency=medium
+
+  * Remove explicit dependencies on any shared library.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 05 Aug 2015 12:36:16 +0200
+
+onboard (1.1.1-0ubuntu4) wily; urgency=medium
+
+  * Rebuild, follow-up for libstdc++ ABI transition.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 05 Aug 2015 11:20:31 +0200
+
+onboard (1.1.1-0ubuntu3) wily; urgency=medium
+
+  * debian/rules: Use dh_python3 --shebang=/usr/bin/python3 (LP: #1479699)
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Thu, 30 Jul 2015 04:01:54 -0600
+
+onboard (1.1.1-0ubuntu2) wily; urgency=medium
+
+  * No-change rebuild for python3.5 transition
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Wed, 22 Jul 2015 19:04:01 +0000
+
+onboard (1.1.1-0ubuntu1) vivid; urgency=low
+
+  * Request for sponsorship for new upstream release (LP: #1423181)
+  * debian/rules:
+    - Add additional cleaning to override_dh_auto_clean target
+  * debian/patches:
+    - Clean up and rebase add_defaults_for_ubuntu.patch patch
+  * Import vivid translations from rosetta for Onboard 1.1 as of 18/02/2015
+  * Fix international character selection offset on high-dpi screen (LP: #1421840)
+  * Fix left click on GtkStatusIcon fallback not working (LP: #1421972)
+  * Trap the occasional X error BadDrawable causing Onboard to exit
+  * Fix traceback when showing keyboard popups in Precise
+  * Fix display of key popups for compiz and metacity in Precise
+  * Fix stuck keys in keyboard popups with event source GTK
+  * Fix auto-inserting separator Ĩ instead of space when NumLock is enabled
+  * Fix initial Py_None not being dereferenced when copying OskDeviceEvents
+  * Stop synchronisation of modifiers when Alt is active
+  * Recognize a touch device with reception of a touch event
+  * Enhance cleaning command of source tree
+  * Add encoding line to setup.py
+  * Remove unused template.svg
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Wed, 18 Feb 2015 14:47:43 +0100
+
 onboard (1.1.0-0ubuntu1) vivid; urgency=low
 
   * Request for sponsorship for new upstream release (LP: #1415041)

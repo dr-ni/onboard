@@ -6,6 +6,7 @@ recursive-include icons *
 recursive-include sounds *
 recursive-include docs *
 recursive-include layouts *
+recursive-include man *
 recursive-include scripts *
 recursive-include themes *
 recursive-include po *.po

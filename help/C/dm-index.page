@@ -1,0 +1,36 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="guide" style="2column"
+      id="dm-index">
+
+  <info>
+    <link type="guide" xref="index#tips"/>
+    <link type="seealso" xref="multiple-selections"/>
+    <link type="seealso" xref="password-dialogs"/>
+
+    <desc>Set custom system defaults that are used by Onboard the first time it is launched.</desc>
+
+    <credit type="author">
+      <name>Francesco Fumanti</name>
+      <email>francesco.fumanti@gmx.net</email>
+      <years>2016</years>
+    </credit>
+
+    <license href="http://creativecommons.org/licenses/by-sa/4.0/">
+      <p>This work is licensed under the
+      <link href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+      Commons Attribution-ShareAlike 4.0 International License</link>.</p>
+    </license>
+
+
+  </info>
+
+  <title><app>Onboard</app> at login</title>
+
+  <section id="display-managers" style="2column">
+    <info>
+      <title type="link"><app>Onboard</app> at login</title>
+    </info>
+    <title>Starting <app>Onboard</app> from within the display manager</title>
+  </section>
+</page>

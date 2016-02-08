@@ -1,0 +1,43 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="guide" style="task"
+      id="layouts-index">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <link type="seealso" xref="themes-index"/>
+    <link type="seealso" xref="custom-defaults"/>
+
+    <desc>Index page for the pages about layout creation and layout customisation.</desc>
+
+    <credit type="author">
+      <name>Francesco Fumanti</name>
+      <email>francesco.fumanti@gmx.net</email>
+      <years>2016</years>
+    </credit>
+
+    <license href="http://creativecommons.org/licenses/by-sa/4.0/">
+      <p>This work is licensed under the
+      <link href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+      Commons Attribution-ShareAlike 4.0 International License</link>.</p>
+    </license>
+
+
+  </info>
+
+  <title>Layout creation and customisation</title>
+
+  <section id="introduction">
+    <title>Introduction</title>
+    <p>A layout in <app>Onboard</app> defines the shape, the position and the function of the different keys on the <app>Onboard</app> on-screen keyboard.</p>
+    <p> It does not define how the key will look; for example the colour of the key, whether it is flat or rounded,... You can learn more about themes in the <link xref="create-theme" /> page.</p>
+    <p>A layout consists of one xml file with the .onboard extension and one or more svg files. The xml file defines what keys are on the layout and the function of each key. The svg files define the shape and the position of each key on the on-screen keyboard.</p>
+    <p>When creating a new layout, it might be good to start with copying an already existing layout instead of stating from scratch.</p>
+  </section>
+
+  <section id="topics" style="2column">
+    <title>Topics</title>
+  </section>
+
+</page>
+
+
