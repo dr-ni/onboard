@@ -252,6 +252,9 @@ class WordSuggestions:
             self._punctuator.on_before_press(key)
         self.text_context.on_onboard_typing(key, self.get_mod_mask())
 
+    def on_before_key_release(self, key):
+        self._punctuator.on_before_release(key)
+
     def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
         if not key.is_correction_key():
@@ -520,6 +523,7 @@ class WordSuggestions:
                 separator = self._punctuator.get_pending_separator()
                 if separator:
                     bot_context += separator.get_span_text()
+                print("_update_prediction_choices", separator)
 
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
@@ -712,9 +716,19 @@ class WordSuggestions:
             # no case change?
             if word_prefix + remainder == choice:
                 insertion = remainder
+
+                # Force update of word suggestions, even if there is
+                # no change necessary. Else, with lazy word separators,
+                # predictions won't take the pending separator into account.
+                if not deletion and \
+                   not insertion:
+                    deletion = choice[-1]
+                    insertion = deletion
             else:
                 deletion = word_prefix
                 insertion = choice
+
+        print("_get_prediction_choice_changes", repr(deletion), repr(insertion))
 
         return deletion, insertion
 
@@ -862,17 +876,20 @@ class WordSuggestions:
             word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
                 self._auto_correct_at(word_span, caret_offset)
+        print("on_text_inserted")
 
-    def on_text_context_changed(self):
+    def on_text_context_changed(self, change_detected):
         """
         Asynchronous callback for generic context changes.
         The text of the target widget changed or the caret moved.
         Use this for low priority display stuff.
         """
-        self.expand_corrections(False)
-        self.invalidate_context_ui()
-        self.commit_ui_updates()
-        self._learn_strategy.on_text_context_changed()
+        if change_detected or \
+           self._punctuator.get_pending_separator():
+            self.expand_corrections(False)
+            self.invalidate_context_ui()
+            self.commit_ui_updates()
+            self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
         """ Are there any text changes to learn? """
@@ -1626,7 +1643,7 @@ class LearnStrategyLRU(LearnStrategy):
 
 class Punctuator:
     """
-    Punctiation assistance. Mainly adds and removes spaces around
+    Punctuation assistance. Mainly adds and removes spaces around
     punctuation depending on the user action immediately after word completion.
     """
 
@@ -1643,7 +1660,7 @@ class Punctuator:
 
     def reset(self):
         self._pending_separator_span = None
-        self._request_caps_mode = False
+        self._key_down_labels = {}
 
     def set_pending_separator(self, separator_span=None):
         """ Remember this separator span for later insertion. """
@@ -1655,20 +1672,47 @@ class Punctuator:
 
     def on_before_press(self, key):
         """
-        Chance to insert separators before a key-press.
+        Chance to insert separators before key-press.
         """
-        self._on_key_event(key, True)
+        # clear label in case there was no after call
+        self._key_down_labels[key] = None
+
+        self._pending_separator_span, insert, caps = \
+            self._handle_key_event(key, self._pending_separator_span, True)
+        if insert:
+            self._insert_separator()
+
+            # give AT-SPI time to process the change
+            time.sleep(0.3)
+            self._update_text_context()
+
+    def on_before_release(self, key):
+        """
+        Chance to request capitalization before key-release.
+        """
+        _span, insert, caps = \
+            self._handle_key_event(key, self._pending_separator_span, False)
+        print("on_before_release", _span, insert, caps)
+        if caps and \
+           config.is_auto_capitalization_enabled():
+            self._wp.request_capitalization(True)
 
     def on_after_release(self, key):
         """
-        Chance to insert separators and possibly
-        enable capitalization after a key-press.
+        Chance to insert separators after key-release.
         """
-        self._on_key_event(key, False)
+        self._pending_separator_span, insert, caps = \
+            self._handle_key_event(key, self._pending_separator_span, False)
+        if insert:
+            self._insert_separator()
 
-    def _on_key_event(self, key, before=True):
+        self._key_down_labels[key] = None
+
+    def _handle_key_event(self, key, pending_separator_span, before=True):
         after = not before
-        if self._pending_separator_span and \
+        caps_mode = False
+
+        if pending_separator_span and \
            config.wp.punctuation_assistance:
 
             insert_now = False
@@ -1680,21 +1724,21 @@ class Punctuator:
             elif key.is_prediction_key():
                 if before:
                     insert_now = True
-                elif after and \
-                   self._pending_separator_span.get_span_text() != " ":
+                elif (after and
+                      pending_separator_span.get_span_text() != " "):
                     # Separators that aren't space are inserted immediately.
                     insert_now = True
 
             elif key.is_separator_cancelling():
-                self._pending_separator_span = None
+                pending_separator_span = None
 
             elif key.is_text_changing():
                 # Only act if we are still at the caret position
                 # where the separator is to be added.
-                self._update_text_context() # delay-stroke '?' needs this
+                # self._update_text_context()  # delayed-stroke '?' needs this
                 caret_span = self._get_span_at_caret()
                 if caret_span:
-                    char = key.get_label()
+                    char = self._get_key_down_label(key, before)
                     punctuation_no_capitalize = \
                         char in self.punctuation_no_capitalize
                     punctuation_capitalize = \
@@ -1702,43 +1746,63 @@ class Punctuator:
                     punctuation = (punctuation_no_capitalize or
                                    punctuation_capitalize)
                     caret_pos = caret_span.begin()
-                    separator_pos = self._pending_separator_span.begin()
+                    separator_pos = pending_separator_span.begin()
 
+                    print(key, punctuation_no_capitalize, punctuation_capitalize, punctuation, caret_pos, separator_pos)
                     if punctuation and self._wp._can_auto_punctuate():
-                        if after and caret_pos == separator_pos + 1:
+                        # Text context often hasn't caught up to recent changes
+                        # for delayed stroke keys like "?". Allow
+                        # range of caret positions.
+                        if after and (caret_pos >= separator_pos and
+                                      caret_pos <= separator_pos + 1):
                             insert_now = True
                             if punctuation_capitalize:
-                                self._request_caps_mode = True
+                                print("caps_mode")
+                                caps_mode = True
                     else:
                         if before and caret_pos == separator_pos:
                             insert_now = True
-                        elif after and caret_pos == separator_pos + 1:
+                        elif after and (caret_pos >= separator_pos and
+                                        caret_pos <= separator_pos + 1):
                             insert_now = True
 
                 else:
-                    self._pending_separator_span = None
+                    pending_separator_span = None
             else:
-                self._pending_separator_span = None
+                pending_separator_span = None
 
-            if self._pending_separator_span and \
+            if pending_separator_span and \
                insert_now:
-                self._insert_at_caret(
-                    self._pending_separator_span.get_span_text())
-                self._pending_separator_span = None
-                time.sleep(0.1)
-                self._update_text_context()
+                return pending_separator_span, True, caps_mode
 
-                if after:
-                    if self._request_caps_mode:
-                        if config.is_auto_capitalization_enabled():
-                            self._wp.request_capitalization(True)
-                        self._request_caps_mode = False
+        return pending_separator_span, False, False
+
+    def _insert_separator(self):
+        string = self._pending_separator_span.get_span_text()
+
+        # Don't use direct insertion here, because many keys always generate
+        # key-strokes and are likely to arrive after the separator.
+        self._wp._text_changer.insert_string_at_caret(string,
+                                                      allow_insertion=False)
+        self._pending_separator_span = None
+
+    def _get_key_down_label(self, key, before):
+        """
+        Return the label key had before it was pressed down.
+        Keys may change labels when modifiers are activated or released,
+        but we need the same label before and after the press here.
+        Else ":" turns to "." in Compact and requests capitalization.
+        Multiple pressed keys may be in flight, due to multi-touch
+        so keep the label per key.
+        """
+        label = self._key_down_labels.get(key)
+        if label is None:
+            label = key.get_label()
+            self._key_down_labels[key] = label
+        return label
 
     def _update_text_context(self):
         self._wp.text_context.on_text_context_changed()
-
-    def _insert_at_caret(self, string):
-        self._wp._text_changer.insert_string_at_caret(string)
 
     def _delete_at_caret(self):
         self._wp._text_changer.delete_at_caret()

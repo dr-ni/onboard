@@ -471,11 +471,13 @@ class AtspiTextContext(TextContext):
              self._begin_of_text_offset) = result
 
             context = self.get_bot_context()  # mk sure to include bot-markers
-            if self._last_context != context or \
-               self._last_line != self._line:
+            change_detected = (self._last_context != context or
+                               self._last_line != self._line)
+            if change_detected:
                 self._last_context = context
                 self._last_line    = self._line
-                self._wp.on_text_context_changed()
+
+            self._wp.on_text_context_changed(change_detected)
 
         return False
 

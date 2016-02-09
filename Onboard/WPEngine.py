@@ -269,7 +269,7 @@ class WPLocalEngine(object):
         text = text[-1024:]
         tokens, spans = self.tokenize_context(text)
         if len(spans):
-            # Don't return the the token itself as it won't include
+            # Don't return the token itself as it won't include
             # trailing dashes. Catch the text until its very end.
             begin = spans[-1][0]
             return text[begin:]

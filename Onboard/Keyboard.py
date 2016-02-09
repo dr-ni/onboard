@@ -335,22 +335,23 @@ class TextChanger():
         self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
-    def press_keysyms(self, key_name, count = 1):
+    def press_keysyms(self, key_name, count=1):
         """
         Generate any number of full key-strokes for the given named key symbol.
         """
         keysym = get_keysym_from_name(key_name)
         for i in range(count):
-            self.press_keysym  (keysym)
+            self.press_keysym(keysym)
             self.release_keysym(keysym)
 
-    def insert_string_at_caret(self, text):
+    def insert_string_at_caret(self, text, allow_insertion=True):
         """
         Send key presses for all characters in a unicode string
         and keep track of the changes in text_context.
         """
+        print("insert_string_at_caret", repr(text))
         text_context = self.get_keyboard().text_context
-        if text_context.can_insert_text():
+        if allow_insertion and text_context.can_insert_text():
             text = text.replace("\\n", "\n")
             text_context.insert_text_at_caret(text)
         else:
@@ -1080,7 +1081,7 @@ class Keyboard(WordSuggestions):
             else:
                 self.send_key_release(key, view, button, event_type)
 
-        # Unlock NumLock, CAPS, etc. after key events are sent,
+        # Unlock NumLock, CAPS, etc. after key events were sent,
         # else they are toggled right back on.
         if modifier and \
            action == KeyCommon.DOUBLE_STROKE_ACTION:
@@ -1270,6 +1271,11 @@ class Keyboard(WordSuggestions):
         return False
 
     def _release_non_sticky_key(self, key, view, button, event_type):
+        # Request capitalization before keys are unlatched, so we can
+        # prevent modifiers from toggling more than once and confuse
+        # set_modifiers().
+        WordSuggestions.on_before_key_release(self, key)
+
         # release key
         self.send_key_up(key, view, button, event_type)
 
@@ -1280,8 +1286,17 @@ class Keyboard(WordSuggestions):
            not (key.type == KeyCommon.BUTTON_TYPE and \
                 key.is_click_type_key()) and \
            not key in self.get_text_displays():
+
+            # Don't release SHIFT if we're going to enable
+            # capitalization anyway.
+            except_keys = None
+            if self._capitalization_requested:
+                except_keys = [key for key in self._latched_sticky_keys
+                               if key.modifier == Modifiers.SHIFT]
+
             # release latched modifiers
-            self.release_latched_sticky_keys(only_unpressed = True)
+            self.release_latched_sticky_keys(only_unpressed=True,
+                                             except_keys=except_keys)
 
             # undo temporary suppression of the text display
             WordSuggestions.show_input_line_on_key_release(self, key)
@@ -1301,7 +1316,7 @@ class Keyboard(WordSuggestions):
         # capitalization requested by punctuator?
         if self._capitalization_requested:
             self._capitalization_requested = False
-            if not self.mods[Modifiers.SHIFT]: # SHIFT not active yet?
+            if not self.mods[Modifiers.SHIFT]:  # SHIFT not active yet?
                 self._enter_caps_mode()
 
     def request_capitalization(self, capitalize):
