@@ -447,7 +447,7 @@ class KeyCommon(LayoutItem):
         """ Should this key cancel pending word separators? """
         return (self.is_correction_key() or
                 self.is_return() or
-                self.id in set(["SPCE", "TAB", "BKSP", "DELE",
+                self.id in set(["SPCE", "TAB", "DELE",
                                 "LEFT", "RGHT", "UP", "DOWN",
                                 "HOME", "END", "PGUP", "PGDN",
                                 "INS", "ESC", "MENU",
