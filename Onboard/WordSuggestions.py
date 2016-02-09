@@ -1680,6 +1680,10 @@ class Punctuator:
             elif key.is_prediction_key():
                 if before:
                     insert_now = True
+                elif after and \
+                   self._pending_separator_span.get_span_text() != " ":
+                    # Separators that aren't space are inserted immediately.
+                    insert_now = True
 
             elif key.is_separator_cancelling():
                 self._pending_separator_span = None
