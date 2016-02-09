@@ -2,9 +2,9 @@ include AUTHORS CHANGELOG COPYING HACKING NEWS README
 include *.ui
 include onboard-defaults.conf.example
 recursive-include data *
+recursive-include help *
 recursive-include icons *
 recursive-include sounds *
-recursive-include docs *
 recursive-include layouts *
 recursive-include man *
 recursive-include scripts *
