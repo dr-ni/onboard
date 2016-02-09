@@ -53,6 +53,12 @@ const OnboardIndicator = new Lang.Class({
         this.menu.addAction(_('Preferences'), function(event) {
             GLib.spawn_command_line_async('onboard-settings', null);
         });
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+        this.menu.addAction(_('Help'), function(event) {
+            GLib.spawn_command_line_async('/usr/bin/yelp help:onboard', null);
+        });
     },
 
     _onEvent: function(actor, event) {

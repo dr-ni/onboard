@@ -21,6 +21,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import subprocess
+
 from Onboard.Version import require_gi_versions
 require_gi_versions()
 from gi.repository import GObject, Gtk
@@ -78,6 +80,14 @@ class ContextMenu(GObject.GObject):
             settings_item.connect("activate", self._on_settings_clicked)
             menu.append(settings_item)
 
+        item = Gtk.SeparatorMenuItem.new()
+        menu.append(item)
+
+        help_item = Gtk.MenuItem.new_with_label(_("_Help"))
+        help_item.set_use_underline(True)
+        help_item.connect("activate", self._on_help)
+        menu.append(help_item)
+
         if not config.lockdown.disable_quit:
             item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
@@ -114,6 +124,9 @@ class ContextMenu(GObject.GObject):
 
     def on_show_keyboard_toggle(self):
         self._keyboard.toggle_visible()
+
+    def _on_help(self, data=None):
+        subprocess.Popen(["/usr/bin/yelp", "help:onboard"])
 
     def _on_quit(self, data=None):
         _logger.debug("Entered _on_quit")
