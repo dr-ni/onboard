@@ -477,7 +477,6 @@ class CommandHeaderUpdate(Command):
                     copyright += " <"  + email + ">"
 
                 copyright += "\n"
-            print(repr(copyright))
 
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
@@ -1037,6 +1036,8 @@ class FileTypePO(FileType):
             raise RuntimeError(msg)
 
         # BSD-3-clause license
+        # Onboard's strings are GPLv3, the translated ones BSD, see
+        # https://help.launchpad.net/Translations/LicensingFAQ
         bsd = split_docstring("""
         Redistribution and use in source and binary forms, with or without
         modification, are permitted provided that the following conditions are
