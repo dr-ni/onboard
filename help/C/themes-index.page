@@ -27,7 +27,7 @@
 
   <section id="theme-intro">
     <title>Introduction</title>
-    <p>The look of a layout in <app>Onboard</app> is specified through themes. They specify among others the colors used by the onscreen keyboard, whether the keys are flat or have a gradient, whether the keys should have rounded corners, etc. The themes however, do not specify size and position of the keys; these are specified in the <file>layout</file> files. You can learn more about layouts in the <link xref="create-layout" /> page.</p>
+    <p>The look of a layout in <app>Onboard</app> is specified through themes. They specify among others the colors used by the onscreen keyboard, whether the keys are flat or have a gradient, whether the keys should have rounded corners, etc. The themes however, do not specify size and position of the keys; these are specified in the <file>layout</file> files. You can learn more about layouts in the <link xref="layouts-index" /> page.</p>
     <p>A theme consists of two xml files:</p>
     <list>
       <item><p>The xml file with <file>.theme</file> as extension contains information among others about key style, key stroke, label overrides, what font to use and a reference to the xml file with the color information. </p></item>
