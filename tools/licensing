@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2015 marmuta <marmvta@gmail.com>
+# Copyright © 2015, 2016 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -269,6 +269,7 @@ class Command:
                       FileTypeC,
                       FileTypeShell,
                       FileTypeXML,
+                      FileTypePO,
                       FileTypeDesktopShortcut,
                       FileTypeINI,
                       ]
@@ -375,17 +376,17 @@ class CommandHeaderUpdate(Command):
                 unknown_files.append(fn)
             else:
                 if ft.needs_license_header():
-                    print("'{}', {}".format(fn, type(ft).__name__))
-                    header = \
-                        self._create_license_header(fn,
-                                                    options.exclude_committers)
-
                     # read file
                     try:
                         with open(fn, encoding="UTF-8") as f:
-                                lines = f.readlines()
+                            lines = f.readlines()
                     except UnicodeDecodeError:  # binary file?
                         lines = None
+
+                    print("'{}', {}".format(fn, type(ft).__name__))
+                    template = ft.get_license_template(lines)
+                    header = self._create_license_header(
+                        fn, template, options.exclude_committers)
 
                     # insert header
                     if lines:   # no error, not empty file
@@ -414,74 +415,58 @@ class CommandHeaderUpdate(Command):
             for fn in unknown_files:
                 print(" " * 4, fn, file=sys.stderr)
 
-    def _create_license_header(self, fn, exclude_committers):
-        template = lstrip_multiline(
-        """
-        {copyright}
-        This file is part of {prog}.
-
-        {prog} is free software; you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation; either version 3 of the License, or
-        (at your option) any later version.
-
-        {prog} is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-        GNU General Public License for more details.
-
-        You should have received a copy of the GNU General Public License
-        along with this program. If not, see <http://www.gnu.org/licenses/>.
-        """)    # noqa
+    def _create_license_header(self, fn, template, exclude_committers):
         # collect committer information from bzr
-        copyrights = {}
-        committers = self.get_committers(fn, exclude_committers,
-                                         self._exclude_revisions)
-        for committer in committers:
-            if not committer.ignore:
-                # find years of contribution
-                code = self.get_code(fn, committer.emails,
-                                     self._exclude_revisions)
-                timestamps = set()
-                for fields in code:
-                    assert(fields[3] == "|")
-                    timestamps.add(fields[2])
-
-                timestamps = sorted(list(timestamps))
-                copyrights[committer] = tuple(timestamps)
-
-        # add additional copyrights that can't be found with bzr annotate
-        for file_pattern, email, timestamps in self._extra_copyrights:
-            if fn.endswith(file_pattern):
-                committer = self.get_committer_from_email(email)
-                copyrights[committer] = \
-                    copyrights.get(committer, ()) + tuple(timestamps)
-
-        # sort by year tuple
-        copyrights = list(copyrights.items())
-        copyrights.sort(key=lambda x: x[1])
-        # sort by last year of commit
-        copyrights.sort(key=lambda x: x[1][-1])
-
-        # build the copyright section
         copyright = ""
-        for committer, timestamps in copyrights:
-            years = set(int(ts[:4]) for ts in timestamps)
-            years = sorted(list(years))
-            year_str = self._build_year_range_str(years)
-            copyright += "Copyright © " + year_str + " " + \
-                         committer.name
-            email = committer.get_main_email()
-            if email is not None:
-                copyright += " <"  + email + ">"
+        if "{copyrights}" in template:
+            copyrights = {}
+            committers = self.get_committers(fn, exclude_committers,
+                                            self._exclude_revisions)
+            for committer in committers:
+                if not committer.ignore:
+                    # find years of contribution
+                    code = self.get_code(fn, committer.emails,
+                                        self._exclude_revisions)
+                    timestamps = set()
+                    for fields in code:
+                        assert(fields[3] == "|")
+                        timestamps.add(fields[2])
 
-            copyright += "\n"
+                    timestamps = sorted(list(timestamps))
+                    copyrights[committer] = tuple(timestamps)
+
+            # add additional copyrights that can't be found with bzr annotate
+            for file_pattern, email, timestamps in self._extra_copyrights:
+                if fn.endswith(file_pattern):
+                    committer = self.get_committer_from_email(email)
+                    copyrights[committer] = \
+                        copyrights.get(committer, ()) + tuple(timestamps)
+
+            # sort by year tuple
+            copyrights = list(copyrights.items())
+            copyrights.sort(key=lambda x: x[1])
+            # sort by last year of commit
+            copyrights.sort(key=lambda x: x[1][-1])
+
+            # build the copyright section
+            for committer, timestamps in copyrights:
+                years = set(int(ts[:4]) for ts in timestamps)
+                years = sorted(list(years))
+                year_str = self._build_year_range_str(years)
+                copyright += "Copyright © " + year_str + " " + \
+                            committer.name
+                email = committer.get_main_email()
+                if email is not None:
+                    copyright += " <"  + email + ">"
+
+                copyright += "\n"
 
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
-        header = header[1:-1]  # cut off empty lines
+        header_lines = header.split("\n")
+        header_lines = header_lines[1:-1]  # cut off empty lines
         lines = [line.replace("\n", "").rstrip()
-                 for line in header.split("\n")]
+                 for line in header_lines]
 
         return lines
 
@@ -541,6 +526,9 @@ class FileType:
     def can_list_committers(self):
         return True
 
+    def can_insert_empty_lines(self):
+        return True
+
     def read_license_header():
         raise NotImplementedError()
 
@@ -557,6 +545,27 @@ class FileType:
                 return True
         return False
 
+    def get_license_template(self, lines):
+        template = lstrip_docstring(
+        """
+        {copyright}
+        This file is part of {prog}.
+
+        {prog} is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 3 of the License, or
+        (at your option) any later version.
+
+        {prog} is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this program. If not, see <http://www.gnu.org/licenses/>.
+        """)    # noqa
+        return template
+
     def insert_license_header(self, lines, header):
         begin, end = self.find_insert_range(lines)
 
@@ -569,11 +578,12 @@ class FileType:
                      if i < begin or i >= end]
 
             # make sure there will be empty lines before and after the header
-            if lines[begin - 1].strip():
-                lines.insert(begin, "\n")
-                begin += 1
-            if lines[begin].strip():
-                lines.insert(begin, "\n")
+            if self.can_insert_empty_lines():
+                if lines[begin - 1].strip():
+                    lines.insert(begin, "\n")
+                    begin += 1
+                if lines[begin].strip():
+                    lines.insert(begin, "\n")
 
             # insert header
             header = self.comment_lines(header)
@@ -904,6 +914,128 @@ class FileTypeXML(FileType):
         return begin, end
 
 
+class FileTypePO(FileType):
+    """ Matches *.po translation files """
+    @staticmethod
+    def matches(fn):
+        extensions = ["po"]
+        for ext in extensions:
+            if fn.endswith("." + ext):
+                return True
+
+        return False
+
+    def comment_lines(self, lines):
+        return ["# " + line for line in lines]
+
+    def find_insert_range(self, lines):
+        """
+        Find the line range of the existing license comment.
+
+        Doctests:
+        >>> func = FileTypePO().find_insert_range
+
+        >>> func(['msgid ""'])
+        (0, 0)
+
+        >>> func(['',
+        ...       '',
+        ...       'msgid ""'])
+        (0, 2)
+
+        >>> func(['',
+        ...       '# German translation for onboard',
+        ...       '# Copyright (c) 2011 Rosetta Contributors',
+        ...       '# This file is distributed under the same license',
+        ...       '# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.',
+        ...       '#',
+        ...       '',
+        ...       'msgid ""'])
+        (0, 7)
+        """
+
+        begin = None
+        end = None
+
+        for iline, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                if begin is None:
+                    begin = iline
+            elif not stripped:
+                if begin is None:
+                    begin = iline
+            else:
+                if begin is None:
+                    begin = iline
+                    end = iline
+                else:
+                    end = iline
+                break
+
+        return begin, end
+
+    def get_license_template(self, lines):
+        template_lines = [""]
+
+        # Extract these snippets from the original license header:
+        # # German translation for onboard
+        #   <--                        -->
+        # # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+        #   <--                                 -->
+        for iline, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                m = re.search("\w.+ translation for ", stripped)
+                if m:
+                    template_lines.append(m.group() + "{prog}")
+                    template_lines.append("")
+
+                m = re.search("Copyright.*Rosetta Contributors", stripped)
+                if m:
+                    template_lines.append(m.group())
+            elif not stripped:
+                break
+
+        # BSD-3-clause license
+        bsd = split_docstring("""
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are
+        met:
+
+        * Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        * Redistributions in binary form must reproduce the above
+        copyright notice, this list of conditions and the following
+        disclaimer in the documentation and/or other materials provided
+        with the distribution.
+
+        * Neither the name of the Onboard Devel Team nor the names of its
+        contributors may be used to endorse or promote products derived
+        from this software without specific prior written permission.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+        "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+        LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+        A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+        HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+        SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+        LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+        DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+        THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+        (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+        """)[1:]
+
+        template_lines += bsd  # noqa
+        return "\n".join(template_lines)
+
+    def can_insert_empty_lines(self):
+        return False
+
+
 class FileTypeBinary(FileType):
     """ Match binary files."""
 
@@ -946,7 +1078,7 @@ class FileTypeNoHeader(FileType):
                                      "AUTHORS", "HACKING",
                                      "NEWS", "CHANGELOG", "MANIFEST.in",
                                      ".bzrignore", "attic/Makefile"],
-                                    [".po", ".lm", ".svg", ".ui"])
+                                    [".lm", ".svg", ".ui"])
 
     def needs_license_header(self):
         return False
@@ -966,10 +1098,13 @@ def write_file(fn, lines):
         f.writelines(lines)
 
 
-def lstrip_multiline(docstring):
+def lstrip_docstring(docstring):
+    return "\n".join(split_docstring(docstring))
+
+
+def split_docstring(docstring):
     lines = docstring.expandtabs().splitlines()
-    lines = [line.lstrip() for line in lines]
-    return lines
+    return [line.lstrip() for line in lines]
 
 if __name__ == '__main__':
     if "--doctest" in sys.argv:
