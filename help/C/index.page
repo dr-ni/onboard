@@ -3,6 +3,9 @@
       id="index">
 
   <info>
+    <title type="text">Onboard Help</title>
+    <title type="link">Onboard Help</title>
+
     <revision pkgversion="1.2.0" docversion="0.1"/>
 
     <credit type="author">
@@ -16,10 +19,14 @@
       <link href="http://www.gnu.org/licenses/gpl.html">GNU General Public License version 3 or any later version</link>.</p>
     </license>
 
+    <desc>On-screen Keyboard with macros, custom layout creation and word suggestion.</desc>
 
   </info>
 
-  <title><app>Onboard</app></title>
+  <title>
+    <media type="image" mime="image/png" src="figures/onboard-icon.png" />
+    <app>Onboard</app>
+  </title>
 
   <section id="usage" style="2column">
     <title>Using <app>Onboard</app></title>
