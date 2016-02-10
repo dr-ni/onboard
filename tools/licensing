@@ -369,6 +369,7 @@ class CommandHeaderUpdate(Command):
     def run(self, args):
         unknown_files = []
         noheader_files = []
+        failed_files = []
         options, args = self.parse_cmd_line(args)
         for fn in self.iter_filtered_files(options, args):
             ft = self.find_file_type(fn)
@@ -384,20 +385,27 @@ class CommandHeaderUpdate(Command):
                         lines = None
 
                     print("'{}', {}".format(fn, type(ft).__name__))
-                    template = ft.get_license_template(lines)
-                    header = self._create_license_header(
-                        fn, template, options.exclude_committers)
+                    try:
+                        template = ft.get_license_template(lines)
+                    except RuntimeError as e:
+                        msg = "WARNING: skipping '{}'. {}" \
+                              .format(fn, e)
+                        print(msg, file=sys.stderr)
+                        failed_files.append([fn, ft, e])
+                    else:
+                        header = self._create_license_header(
+                            fn, template, options.exclude_committers)
 
-                    # insert header
-                    if lines:   # no error, not empty file
-                        lines = ft.insert_license_header(lines, header)
-                        if options.verbose:
-                            for line in lines[:40]:
-                                print(" " * 8, repr(line))
+                        # insert header
+                        if lines:   # no error, not empty file
+                            lines = ft.insert_license_header(lines, header)
+                            if options.verbose:
+                                for line in lines[:40]:
+                                    print(" " * 8, repr(line))
 
-                        # write file
-                        with open(fn, mode="w", encoding="UTF-8") as f:
-                            f.writelines(lines)
+                            # write file
+                            with open(fn, mode="w", encoding="UTF-8") as f:
+                                f.writelines(lines)
 
                 else:
                     noheader_files.append(fn)
@@ -409,6 +417,15 @@ class CommandHeaderUpdate(Command):
             for fn in noheader_files:
                 print(" " * 4, fn, file=sys.stderr)
 
+        if failed_files:
+            print(file=sys.stderr)
+            print("Files that were recognized but couldn't be processed:",
+                  file=sys.stderr)
+            for fn, ft, msg in failed_files:
+                print("    {:50} {:16} {}"
+                      .format(fn, ft.__class__.__name__, msg),
+                      file=sys.stderr)
+
         if unknown_files:
             print(file=sys.stderr)
             print("Unknown files, ignored:", file=sys.stderr)
@@ -418,15 +435,15 @@ class CommandHeaderUpdate(Command):
     def _create_license_header(self, fn, template, exclude_committers):
         # collect committer information from bzr
         copyright = ""
-        if "{copyrights}" in template:
+        if "{copyright}" in template:
             copyrights = {}
             committers = self.get_committers(fn, exclude_committers,
-                                            self._exclude_revisions)
+                                             self._exclude_revisions)
             for committer in committers:
                 if not committer.ignore:
                     # find years of contribution
                     code = self.get_code(fn, committer.emails,
-                                        self._exclude_revisions)
+                                         self._exclude_revisions)
                     timestamps = set()
                     for fields in code:
                         assert(fields[3] == "|")
@@ -454,17 +471,17 @@ class CommandHeaderUpdate(Command):
                 years = sorted(list(years))
                 year_str = self._build_year_range_str(years)
                 copyright += "Copyright © " + year_str + " " + \
-                            committer.name
+                             committer.name
                 email = committer.get_main_email()
                 if email is not None:
                     copyright += " <"  + email + ">"
 
                 copyright += "\n"
+            print(repr(copyright))
 
         # assemble the final header
         header = template.format(copyright=copyright, prog="Onboard")
         header_lines = header.split("\n")
-        header_lines = header_lines[1:-1]  # cut off empty lines
         lines = [line.replace("\n", "").rstrip()
                  for line in header_lines]
 
@@ -526,9 +543,6 @@ class FileType:
     def can_list_committers(self):
         return True
 
-    def can_insert_empty_lines(self):
-        return True
-
     def read_license_header():
         raise NotImplementedError()
 
@@ -563,7 +577,7 @@ class FileType:
 
         You should have received a copy of the GNU General Public License
         along with this program. If not, see <http://www.gnu.org/licenses/>.
-        """)    # noqa
+        """)    # noqa - shut up flake8
         return template
 
     def insert_license_header(self, lines, header):
@@ -576,14 +590,6 @@ class FileType:
             # remove old range
             lines = [line for i, line in enumerate(lines)
                      if i < begin or i >= end]
-
-            # make sure there will be empty lines before and after the header
-            if self.can_insert_empty_lines():
-                if lines[begin - 1].strip():
-                    lines.insert(begin, "\n")
-                    begin += 1
-                if lines[begin].strip():
-                    lines.insert(begin, "\n")
 
             # insert header
             header = self.comment_lines(header)
@@ -926,7 +932,7 @@ class FileTypePO(FileType):
         return False
 
     def comment_lines(self, lines):
-        return ["# " + line for line in lines]
+        return ["#" + (" " if line else "") + line for line in lines]
 
     def find_insert_range(self, lines):
         """
@@ -976,26 +982,59 @@ class FileTypePO(FileType):
         return begin, end
 
     def get_license_template(self, lines):
-        template_lines = [""]
+        template_lines = []
+        footer_lines = []
 
         # Extract these snippets from the original license header:
         # # German translation for onboard
-        #   <--                        -->
+        #   ^--                        --^
         # # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-        #   <--                                 -->
+        #   ^--                                 --^
+        # and everything below the line
+        # # This file is distributed under the same license...
+        state = 0
+        final_state = 3
         for iline, line in enumerate(lines):
             stripped = line.strip()
             if stripped.startswith("#"):
-                m = re.search("\w.+ translation for ", stripped)
-                if m:
-                    template_lines.append(m.group() + "{prog}")
-                    template_lines.append("")
 
-                m = re.search("Copyright.*Rosetta Contributors", stripped)
-                if m:
-                    template_lines.append(m.group())
+                if state == 0:
+                    m = re.search("\w.+ translation for ", stripped)
+                    if m:
+                        template_lines.append(m.group() + "{prog}")
+                        template_lines.append("")
+                        state = 1
+
+                elif state == 1:
+                    m = re.search("Copyright.*Rosetta Contributors", stripped)
+                    if m:
+                        template_lines.append(m.group())
+                        state = 2
+
+                # last line of the fixed part
+                elif state == 2:
+                    m = re.search("#\s*This file is distributed under the "
+                                  "same license as the onboard package",
+                                  stripped)
+                    if m:
+                        state = 3
+
+                elif state == 3:
+                    # match everything after the comment character
+                    m = re.search("#\s?(.*)", stripped)
+                    if m and m.groups():
+                        s = m.groups()[0]
+                        if s:   # no empty lines
+                            footer_lines.append(s)
+
             elif not stripped:
                 break
+
+        # parsing failed?
+        if state != final_state:
+            msg = "Failed to parse original license header (state=={})." \
+                  .format(state)
+            raise RuntimeError(msg)
 
         # BSD-3-clause license
         bsd = split_docstring("""
@@ -1029,11 +1068,11 @@ class FileTypePO(FileType):
 
         """)[1:]
 
-        template_lines += bsd  # noqa
-        return "\n".join(template_lines)
+        template_lines += bsd
+        template_lines += footer_lines
+        template_lines += [""]
 
-    def can_insert_empty_lines(self):
-        return False
+        return "\n".join(template_lines)
 
 
 class FileTypeBinary(FileType):
@@ -1104,7 +1143,15 @@ def lstrip_docstring(docstring):
 
 def split_docstring(docstring):
     lines = docstring.expandtabs().splitlines()
-    return [line.lstrip() for line in lines]
+    lines = [line.lstrip() for line in lines]
+
+    # cut off empty lines at top and bottom
+    if not lines[0]:
+        lines = lines[1:]
+    if not lines[-1]:
+        lines = lines[:-1]
+
+    return lines
 
 if __name__ == '__main__':
     if "--doctest" in sys.argv:
