@@ -241,7 +241,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         WindowManipulator.__init__(self)
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
-        
+
         self.set_app_paintable(True)
 
         self.canvas_rect = Rect()
@@ -252,6 +252,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         self._outside_click_timer = Timer()
         self._outside_click_detected = False
+        self._outside_click_num = 0
+        self._outside_click_button_mask = 0
         self._outside_click_start_time = None
 
         self._long_press_timer = Timer()
@@ -732,6 +734,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
             self._outside_click_start_time = time.time()
+            self._outside_click_num = 0
 
     def stop_click_polling(self):
         self._outside_click_timer.stop()
@@ -742,21 +745,43 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         dunno, x, y, mask = rootwin.get_pointer()
         if mask & BUTTON123_MASK:
             self._outside_click_detected = True
+            self._outside_click_button_mask = mask
         elif self._outside_click_detected:
-            # button released anywhere outside of onboard's control
+            self._outside_click_detected = False
+            # A button was released anywhere outside of Onboard's control.
             _logger.debug("click polling: outside click")
-            self.stop_click_polling()
-            self.close_key_popup()
-            self.keyboard.on_outside_click()
-            return False
 
-        # stop after 30 seconds
+            button = \
+                self._get_button_from_mask(self._outside_click_button_mask)
+
+            # When clicking left, don't stop polling right away. This allows
+            # the user to select some text and paste it with middle click,
+            # while the pending separator is still inserted.
+            self._outside_click_num += 1
+            if button != 1 or \
+               self._outside_click_num >= 4:  # allow a couple of left clicks
+                self.stop_click_polling()
+
+            self.close_key_popup()
+            self.keyboard.on_outside_click(button)
+            return True
+
+        # stop polling after 30 seconds
         if time.time() - self._outside_click_start_time > 30.0:
             self.stop_click_polling()
             self.keyboard.on_cancel_outside_click()
             return False
 
         return True
+
+    @staticmethod
+    def _get_button_from_mask(mask):
+        for i, bit in enumerate((Gdk.ModifierType.BUTTON1_MASK,
+                                 Gdk.ModifierType.BUTTON2_MASK,
+                                 Gdk.ModifierType.BUTTON3_MASK,)):
+            if mask & bit:
+                return i + 1
+        return 0
 
     def get_drag_window(self):
         """ Overload for WindowManipulator """

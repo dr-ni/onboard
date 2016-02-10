@@ -115,6 +115,8 @@ class AtspiTextContext(TextContext):
         self._last_line = None
 
         self._update_context_timer = Timer()
+        self._update_context_delay_normal = 0.01
+        self._update_context_delay = self._update_context_delay_normal
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -457,8 +459,15 @@ class AtspiTextContext(TextContext):
 
         return insertion_span
 
+    def set_update_context_delay(self, delay):
+        self._update_context_delay = delay
+
+    def reset_update_context_delay(self):
+        self._update_context_delay = self._update_context_delay_normal
+
     def _update_context(self):
-        self._update_context_timer.start(0.01, self.on_text_context_changed)
+        self._update_context_timer.start(self._update_context_delay,
+                                         self.on_text_context_changed)
 
     def on_text_context_changed(self):
         result = self._text_domain.read_context(self._accessible)

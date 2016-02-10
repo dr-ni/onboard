@@ -285,6 +285,15 @@ class WordSuggestions:
         self.update_spell_checker()
         self.commit_ui_updates()
 
+    def insert_pending_separator(self):
+        """
+        Insert pending separator at the position of the separator.
+        This is only useful when text was inserted from outside of
+        Onboard, e.g. by middle clicking to insert something from
+        clipboard.
+        """
+        self._punctuator.insert_separator_at_distance()
+
     def update_spell_checker(self):
         # select the backend
         backend = config.typing_assistance.spell_check_backend \
@@ -358,9 +367,9 @@ class WordSuggestions:
         span = self._correction_span  # span to correct
         with self.suppress_modifiers():
             self._delete_selected_text()
-            self._replace_text(span.begin(), span.end(),
-                               self.text_context.get_span_at_caret().begin(),
-                               self._correction_choices[choice_index])
+            self.replace_text(span.begin(), span.end(),
+                              self.text_context.get_span_at_caret().begin(),
+                              self._correction_choices[choice_index])
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
@@ -523,7 +532,6 @@ class WordSuggestions:
                 separator = self._punctuator.get_pending_separator()
                 if separator:
                     bot_context += separator.get_span_text()
-                print("_update_prediction_choices", separator)
 
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
@@ -728,8 +736,6 @@ class WordSuggestions:
                 deletion = word_prefix
                 insertion = choice
 
-        print("_get_prediction_choice_changes", repr(deletion), repr(insertion))
-
         return deletion, insertion
 
     def _get_word_to_spell_check(self, caret_span, is_typing):
@@ -802,7 +808,7 @@ class WordSuggestions:
             # keystrokes delete the selection on their own.
             pass
 
-    def _replace_text(self, begin, end, caret, new_text):
+    def replace_text(self, begin, end, caret, new_text):
         """
         Replace text from <begin> to <end> with <new_text>,
         """
@@ -815,7 +821,8 @@ class WordSuggestions:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
-        self.text_context.delete_text(begin, end - begin)
+        if end > begin:
+            self.text_context.delete_text(begin, end - begin)
         self.text_context.insert_text(begin, new_text)
 
     def _replace_text_key_strokes(self, begin, end, caret, new_text):
@@ -823,6 +830,7 @@ class WordSuggestions:
         Replace text from <begin> to <end> with <new_text>,
         Fall-back for text entries without support for direct text insertion.
         """
+
         with self.suppress_modifiers():
             length = end - begin
             offset = caret - end  # offset of caret to word end
@@ -852,10 +860,10 @@ class WordSuggestions:
         with self.suppress_modifiers():
             if insertion:
                 self._delete_selected_text()
-                self._replace_text(selection_span.begin() - len(deletion),
-                                   selection_span.begin(),
-                                   selection_span.begin(),
-                                   insertion)
+                self.replace_text(selection_span.begin() - len(deletion),
+                                  selection_span.begin(),
+                                  selection_span.begin(),
+                                  insertion)
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -876,7 +884,6 @@ class WordSuggestions:
             word_span = self._get_word_to_auto_correct(insertion_span)
             if word_span:
                 self._auto_correct_at(word_span, caret_offset)
-        print("on_text_inserted")
 
     def on_text_context_changed(self, change_detected):
         """
@@ -1041,10 +1048,10 @@ class WordSuggestions:
                                     config.typing_assistance.auto_correction)
         if replacement:
             with self.suppress_modifiers():
-                self._replace_text(correction_span.begin(),
-                                   correction_span.end(),
-                                   caret_offset,
-                                   replacement)
+                self.replace_text(correction_span.begin(),
+                                  correction_span.end(),
+                                  caret_offset,
+                                  replacement)
 
     def _find_auto_correction(self, word_span, auto_capitalize, auto_correct):
         """
@@ -1680,7 +1687,7 @@ class Punctuator:
         self._pending_separator_span, insert, caps = \
             self._handle_key_event(key, self._pending_separator_span, True)
         if insert:
-            self._insert_separator()
+            self.insert_separator()
 
             # give AT-SPI time to process the change
             time.sleep(0.3)
@@ -1692,7 +1699,6 @@ class Punctuator:
         """
         _span, insert, caps = \
             self._handle_key_event(key, self._pending_separator_span, False)
-        print("on_before_release", _span, insert, caps)
         if caps and \
            config.is_auto_capitalization_enabled():
             self._wp.request_capitalization(True)
@@ -1704,7 +1710,7 @@ class Punctuator:
         self._pending_separator_span, insert, caps = \
             self._handle_key_event(key, self._pending_separator_span, False)
         if insert:
-            self._insert_separator()
+            self.insert_separator()
 
         self._key_down_labels[key] = None
 
@@ -1748,7 +1754,6 @@ class Punctuator:
                     caret_pos = caret_span.begin()
                     separator_pos = pending_separator_span.begin()
 
-                    print(key, punctuation_no_capitalize, punctuation_capitalize, punctuation, caret_pos, separator_pos)
                     if punctuation and self._wp._can_auto_punctuate():
                         # Text context often hasn't caught up to recent changes
                         # for delayed stroke keys like "?". Allow
@@ -1757,7 +1762,6 @@ class Punctuator:
                                       caret_pos <= separator_pos + 1):
                             insert_now = True
                             if punctuation_capitalize:
-                                print("caps_mode")
                                 caps_mode = True
                     else:
                         if before and caret_pos == separator_pos:
@@ -1777,14 +1781,39 @@ class Punctuator:
 
         return pending_separator_span, False, False
 
-    def _insert_separator(self):
-        string = self._pending_separator_span.get_span_text()
+    def insert_separator(self):
+        """ Insert pending separator at the caret. """
+        if self._pending_separator_span:
+            string = self._pending_separator_span.get_span_text()
 
-        # Don't use direct insertion here, because many keys always generate
-        # key-strokes and are likely to arrive after the separator.
-        self._wp._text_changer.insert_string_at_caret(string,
-                                                      allow_insertion=False)
-        self._pending_separator_span = None
+            # Don't use direct insertion here, because many keys
+            # always generate key-strokes and are likely to arrive
+            # after the separator.
+            self._wp._text_changer.insert_string_at_caret(
+                string, allow_insertion=False)
+
+            self._pending_separator_span = None
+
+    def insert_separator_at_distance(self):
+        """
+        Insert pending separator even if it is located at some
+        distance away from the caret. Caret position will be
+        restored afterwards.
+        """
+        if self._pending_separator_span:
+            string = self._pending_separator_span.get_span_text()
+
+            caret_span = self._get_span_at_caret()
+            if caret_span and \
+               (self._wp.text_context.can_insert_text() or
+                len(string) < 50):  # abort if too many key-presses necessary
+                separator_pos = self._pending_separator_span.begin()
+                self._wp.replace_text(separator_pos,
+                                      separator_pos,
+                                      caret_span.begin(),
+                                      string)
+
+            self._pending_separator_span = None
 
     def _get_key_down_label(self, key, before):
         """

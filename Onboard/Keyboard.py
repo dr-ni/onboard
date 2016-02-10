@@ -346,10 +346,8 @@ class TextChanger():
 
     def insert_string_at_caret(self, text, allow_insertion=True):
         """
-        Send key presses for all characters in a unicode string
-        and keep track of the changes in text_context.
+        Insert text at the caret position.
         """
-        print("insert_string_at_caret", repr(text))
         text_context = self.get_keyboard().text_context
         if allow_insertion and text_context.can_insert_text():
             text = text.replace("\\n", "\n")
@@ -1873,7 +1871,7 @@ class Keyboard(WordSuggestions):
         self.redraw([key])
         self._touch_feedback.hide(key)
 
-    def on_outside_click(self):
+    def on_outside_click(self, button):
         """
         Called by outside click polling.
         Keep this as Francesco likes to have modifiers
@@ -1881,6 +1879,8 @@ class Keyboard(WordSuggestions):
         """
         self.release_latched_sticky_keys()
         self._click_sim.end_mapped_click()
+        if button == 2:  # middle button?
+            WordSuggestions.insert_pending_separator(self)
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
