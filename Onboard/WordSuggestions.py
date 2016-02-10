@@ -153,9 +153,9 @@ class WordSuggestions:
 
             _logger.info("selecting language models: "
                          "system={} user={} auto_learn={}"
-                        .format(repr(system_models),
-                                repr(user_models),
-                                repr(auto_learn_models)))
+                         .format(repr(system_models),
+                                 repr(user_models),
+                                 repr(auto_learn_models)))
 
             # auto-learn language model must be part of the user models
             for model in auto_learn_models:
@@ -450,8 +450,8 @@ class WordSuggestions:
                                                           self.is_typing())
                 if word_span:
                     (self._correction_choices,
-                    self._correction_span,
-                    auto_capitalization) = \
+                     self._correction_span,
+                     auto_capitalization) = \
                         self._find_correction_choices(word_span, False)
 
     def _find_correction_choices(self, word_span, auto_capitalize):
@@ -541,12 +541,13 @@ class WordSuggestions:
                                                  bool(self.mods[1]),
                                                  bot_marker)
 
-                _choices = self._wpengine.predict(bot_context,
-                       max_choices * 2,
-                       case_insensitive=case_insensitive_mode == 1,
-                       case_insensitive_smart=case_insensitive_mode == 2,
-                       accent_insensitive_smart=config.wp.accent_insensitive,
-                       ignore_non_capitalized=ignore_non_caps)
+                _choices = self._wpengine.predict(
+                    bot_context,
+                    max_choices * 2,
+                    case_insensitive=case_insensitive_mode == 1,
+                    case_insensitive_smart=case_insensitive_mode == 2,
+                    accent_insensitive_smart=config.wp.accent_insensitive,
+                    ignore_non_capitalized=ignore_non_caps)
 
                 choices = []
                 for choice in _choices:
@@ -1044,8 +1045,8 @@ class WordSuggestions:
         Auto-capitalize/correct a word_span.
         """
         correction_span, replacement = \
-            self._find_auto_correction(word_span, True,
-                                    config.typing_assistance.auto_correction)
+            self._find_auto_correction(
+                word_span, True, config.typing_assistance.auto_correction)
         if replacement:
             with self.suppress_modifiers():
                 self.replace_text(correction_span.begin(),
@@ -1148,7 +1149,8 @@ class WordSuggestions:
         >>> wp._get_section_before_span(TextSpan(56, 6,
         ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/"
         ...     "?p=1#anchor"))
-        TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/?p=1#anchor', 0, None)
+        TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/\
+?p=1#anchor', 0, None)
 
         >>> wp._get_section_before_span(TextSpan(6, 2,
         ...     "abc http://www.domain.org"))
@@ -1172,6 +1174,7 @@ class WordSuggestions:
         Get the word at or before the span.
 
         Doctests:
+        >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
 
         # caret right in the middle of a word
@@ -1250,8 +1253,8 @@ class LearnStrategy:
 
             engine = self._wp._wpengine
             for text in texts:
-                engine.learn_text(text,
-                             config.word_suggestions.can_learn_new_words())
+                engine.learn_text(
+                    text, config.word_suggestions.can_learn_new_words())
 
     def _learn_scratch_spans(self, spans, text_domain=None):
         if config.wp.can_auto_learn():
@@ -2080,8 +2083,8 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons for word correction.
         """
         spacing = self._get_entry_spacing()
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices,
-                                                rect, key_context, font_size)
+        button_infos, filled_up, xend = \
+            self._fill_rect_with_choices(choices, rect, key_context, font_size)
 
         # create buttons
         keys = []
@@ -2113,7 +2116,7 @@ class WordListPanel(LayoutPanel):
         return keys, used_rect
 
     def _create_prediction_keys(self, choices, wordlist_rect,
-                               key_context, font_size):
+                                key_context, font_size):
         """
         Dynamically create a variable number of buttons for word prediction.
         """
@@ -2155,9 +2158,10 @@ class WordListPanel(LayoutPanel):
                     w *= scale
 
                 # create the word key with the generic id "prediction<n>"
-                key = WordKey("prediction" + str(i), Rect(wordlist_rect.x + x,
-                                               wordlist_rect.y + y,
-                                               w, wordlist_rect.h))
+                key = WordKey("prediction" + str(i),
+                              Rect(wordlist_rect.x + x,
+                              wordlist_rect.y + y,
+                              w, wordlist_rect.h))
                 key.group = self.SUGGESTIONS_GROUP
                 key.labels = {0 : bi.label[:]}
                 key.font_size = font_size
