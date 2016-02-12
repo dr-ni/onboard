@@ -1745,10 +1745,6 @@ class Punctuator:
             self.insert_separator(separator_span)
             separator_span = None
 
-            # give AT-SPI time to process the change
-            time.sleep(0.3)
-            self._update_text_context()
-
         self.set_pending_separator(separator_span)
 
     def on_before_release(self, key):

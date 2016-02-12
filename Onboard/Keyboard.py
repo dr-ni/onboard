@@ -1654,7 +1654,9 @@ class Keyboard(WordSuggestions):
                 if controller and \
                    controller.is_activated_on_press():
                     action = KeyCommon.SINGLE_STROKE_ACTION
-            else:
+
+            elif (key.type == KeyCommon.WORD_TYPE and
+                  key.type == KeyCommon.CORRECTION_TYPE):
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
                 if (len(label) == 1 and label.isalnum()) or \
