@@ -468,6 +468,20 @@ class AtspiStateTracker(EventSource):
         return rect
 
     @staticmethod
+    def get_accessible_character_extents(accessible, offset):
+        """ Screen rect of the character at offset of the accessible """
+        try:
+            rect = AtspiStateTracker._get_accessible_character_extents(
+                accessible, offset)
+        except Exception as ex:  # private exception gi._glib.GError when
+                # right clicking onboards unity2d launcher (Precise)
+            _logger.atspi("Invalid accessible,"
+                          " failed to get character extents: " +
+                          unicode_str(ex))
+            rect = Rect()
+        return rect
+
+    @staticmethod
     def _get_accessible_extents(accessible):
         """
         Screen rect of the given accessible, no caching,
@@ -485,6 +499,31 @@ class AtspiStateTracker(EventSource):
                 scale = 1.0 / config.window_scaling_factor
 
         ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+        return Rect(ext.x * scale, ext.y * scale,
+                    ext.width * scale, ext.height * scale)
+
+    @staticmethod
+    def _get_accessible_character_extents(accessible, offset):
+        """
+        Screen rect of the character at offset of the accessible, no caching,
+        no exception handling.
+        """
+        scale = config.window_scaling_factor
+        if scale != 1.0:
+            attributes = accessible.get_attributes()
+            # Only Gtk-3 widgets return scaled coordinates, all others,
+            # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
+            # apparently don't.
+            if AtspiStateTracker.is_toolkit_gtk3(attributes):
+                scale = 1.0
+            else:
+                scale = 1.0 / config.window_scaling_factor
+
+        ext = accessible.get_character_extents(offset, Atspi.CoordType.SCREEN)
+        # x, y = ext.x + ext.width / 2, ext.y + ext.height / 2
+        # offset_control = accessible.get_offset_at_point(x, y,
+        #                                                Atspi.CoordType.SCREEN)
+        # print(offset, offset_control)
         return Rect(ext.x * scale, ext.y * scale,
                     ext.width * scale, ext.height * scale)
 

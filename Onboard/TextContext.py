@@ -186,7 +186,15 @@ class AtspiTextContext(TextContext):
 
     def get_caret(self):
         return self._selection_span.begin() \
-               if self._accessible else 0
+            if self._accessible else 0
+
+    def get_character_extents(self, offset):
+        accessible = self._accessible
+        if accessible:
+            return self._state_tracker.get_accessible_character_extents(
+                accessible, offset)
+        else:
+            return None
 
     def get_text_begin_marker(self):
         domain = self.get_text_domain()

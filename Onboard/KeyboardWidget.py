@@ -751,6 +751,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             # A button was released anywhere outside of Onboard's control.
             _logger.debug("click polling: outside click")
 
+            self.close_key_popup()
+
             button = \
                 self._get_button_from_mask(self._outside_click_button_mask)
 
@@ -758,12 +760,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             # the user to select some text and paste it with middle click,
             # while the pending separator is still inserted.
             self._outside_click_num += 1
-            if button != 1 or \
-               self._outside_click_num >= 4:  # allow a couple of left clicks
+            if button != 1:  # middle and right click stop polling immediately
                 self.stop_click_polling()
-
-            self.close_key_popup()
-            self.keyboard.on_outside_click(button)
+                self.keyboard.on_outside_click(button)
+            elif self._outside_click_num >= 4:  # allow a couple of left clicks
+                self.stop_click_polling()
+                self.keyboard.on_cancel_outside_click()
+            else:
+                self.keyboard.on_outside_click(button)
             return True
 
         # stop polling after 30 seconds

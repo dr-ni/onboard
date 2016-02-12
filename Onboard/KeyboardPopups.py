@@ -222,13 +222,6 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
 
         self.move(x, y)
 
-    def limit_to_workarea(self, rect, x_mon, y_mon):
-        screen = self.get_screen()
-        mon = screen.get_monitor_at_point(x_mon, y_mon)
-        area = screen.get_monitor_workarea(mon)
-        area = Rect(area.x, area.y, area.width, area.height)
-        return rect.intersection(area)
-
     def limit_to_workarea(self, rect):
         visible_rect = Rect(0, 0, rect.w, rect.h)
 
@@ -658,4 +651,87 @@ class LayoutBuilderAlternatives(LayoutBuilderKeySequence):
 
         return LayoutBuilderKeySequence.build(source_key, color_scheme,
                                               key_sequence)
+
+
+class PendingSeparatorPopup(KeyboardPopup):
+    """ Ephemeral popup displaying the pending word separator. """
+
+    _osk_util = osk.Util()
+
+    def __init__(self):
+        KeyboardPopup.__init__(self)
+        self.connect("realize", self._on_realize_event)
+
+    def show_at(self, view, character_rect):
+        toplevel = view.get_toplevel()
+
+        self.set_transient_for(toplevel)
+        self.realize()
+
+        x, y, w, h = character_rect
+        self.set_default_size(w, h)
+        self.resize(w, h)
+        self.move(x, y)
+
+        self.supports_alpha = view.supports_alpha
+        if self.supports_alpha:
+            self.set_opacity(toplevel.get_opacity())
+        self.show_all()
+
+    def _on_realize_event(self, user_data):
+        self.set_override_redirect(True)
+
+        # set minimal input shape for the popup to become click-through
+        win = self.get_window()
+        self._osk_util.set_input_rect(win, 0, 0, 1, 1)
+
+    def on_draw(self, widget, cr):
+        fill_rgba = (1.0, 1.0, 1.0, 0.3)
+        stroke_rgba = (0.0, 0.0, 0.3, 0.3)
+        rect = Rect(0, 0,
+                    self.get_allocated_width(), self.get_allocated_height())
+
+        border = rect.w / 8
+        if 1:
+            cr.set_source_rgba(*fill_rgba)
+            cr.rectangle(*rect)
+            cr.fill()
+
+            cr.rectangle(*rect.deflate(border))
+            cr.set_source_rgba(*stroke_rgba)
+            cr.set_line_width(2.0)
+            cr.stroke()
+
+        if 0:
+            cr.save()
+            pattern = self._create_stipple_pattern()
+            cr.set_source(pattern)
+            cr.paint()
+            cr.restore()
+
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+            cr.rectangle(*rect.deflate(border))
+            cr.fill()
+
+    @staticmethod
+    def _create_stipple_pattern():
+        w = h = 4
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
+        cr = cairo.Context(surface)
+
+        cr.set_source_rgb(1.0, 1.0, 1.0)
+        cr.paint()
+
+        for x in range(w):
+            for y in range(h):
+                if x & 1 and y & 1:
+                    cr.set_source_rgb(0, 0, 0)
+                    cr.rectangle(x, y, 1, 1)
+                    cr.fill()
+
+        pattern = cairo.SurfacePattern(surface)
+        pattern.set_extend(cairo.EXTEND_REPEAT)
+        pattern.set_filter(cairo.FILTER_NEAREST)
+        return pattern
 

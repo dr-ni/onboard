@@ -576,6 +576,12 @@ class Keyboard(WordSuggestions):
         if layout_view in self._layout_views:
             self._layout_views.remove(layout_view)
 
+    def get_main_view(self):
+        layout_views = self._layout_views
+        if layout_views:
+            return layout_views[0]
+        return None
+
     def is_visible(self):
         for view in self._layout_views:
             visible = view.is_visible()
@@ -1879,12 +1885,11 @@ class Keyboard(WordSuggestions):
         """
         self.release_latched_sticky_keys()
         self._click_sim.end_mapped_click()
-        if button == 2:  # middle button?
-            WordSuggestions.insert_pending_separator(self)
+        WordSuggestions.on_outside_click(self, button)
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
-        pass
+        WordSuggestions.on_cancel_outside_click(self)
 
     def get_click_simulator(self):
         if config.mousetweaks and \
