@@ -38,6 +38,7 @@ from Onboard.utils        import Rect, EventSource, Process, unicode_str
 from Onboard.Config import Config
 config = Config()
 
+
 class AsyncEvent:
     """
     Decouple AT-SPI events from D-Bus calls to reduce the risk for deadlocks.
@@ -48,9 +49,9 @@ class AsyncEvent:
 
     def __repr__(self):
         return type(self).__name__ + "(" + \
-           ", ".join(str(key) + "=" + repr(val) \
-                     for key, val in self._kwargs.items()) \
-           + ")"
+            ", ".join(str(key) + "=" + repr(val)
+                      for key, val in self._kwargs.items()) \
+            + ")"
 
 
 class AtspiStateTracker(EventSource):
@@ -65,10 +66,10 @@ class AtspiStateTracker(EventSource):
     _async_event_names      = ("async-focus-changed",
                                "async-text-changed",
                                "async-text-caret-moved")
-    _event_names = _async_event_names + \
-                   _focus_event_names + \
-                   _text_event_names + \
-                   _key_stroke_event_names
+    _event_names = (_async_event_names +
+                    _focus_event_names +
+                    _text_event_names +
+                    _key_stroke_event_names)
 
     _focus_listeners_registered = False
     _keystroke_listeners_registered = False
@@ -80,7 +81,7 @@ class AtspiStateTracker(EventSource):
     _focused_accessible = None   # last focused editable accessible
     _focused_pid = None          # pid of last focused editable accessible
     _active_accessible = None    # currently active editable accessible
-    _active_accessible_activation_time = 0.0 # time of activation of _active_accessible
+    _active_accessible_activation_time = 0.0  # time since focus received
     _last_active_accessible = None
     _state = None                # cache of various accessible properties
 
@@ -142,7 +143,7 @@ class AtspiStateTracker(EventSource):
         self._register_atspi_keystroke_listeners(register)
 
     def _register_atspi_focus_listeners(self, register):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
 
         if self._focus_listeners_registered != register:
@@ -172,7 +173,7 @@ class AtspiStateTracker(EventSource):
             self._focus_listeners_registered = register
 
     def _register_atspi_text_listeners(self, register):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
 
         if self._text_listeners_registered != register:
@@ -197,7 +198,7 @@ class AtspiStateTracker(EventSource):
         self._text_listeners_registered = register
 
     def _register_atspi_keystroke_listeners(self, register):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
 
         if self._keystroke_listeners_registered != register:
@@ -206,15 +207,16 @@ class AtspiStateTracker(EventSource):
             if register:
                 if not self._keystroke_listener:
                     self._keystroke_listener = \
-                       Atspi.DeviceListener.new(self._on_atspi_keystroke, None)
+                        Atspi.DeviceListener.new(self._on_atspi_keystroke,
+                                                 None)
 
                 for modifier_mask in modifier_masks:
-                    Atspi.register_keystroke_listener( \
-                                        self._keystroke_listener,
-                                        None,        # key set, None=all
-                                        modifier_mask,
-                                        Atspi.KeyEventType.PRESSED,
-                                        Atspi.KeyListenerSyncType.SYNCHRONOUS)
+                    Atspi.register_keystroke_listener(
+                        self._keystroke_listener,
+                        None,        # key set, None=all
+                        modifier_mask,
+                        Atspi.KeyEventType.PRESSED,
+                        Atspi.KeyListenerSyncType.SYNCHRONOUS)
             else:
                 # Apparently any single deregister call will turn off
                 # all the other registered modifier_masks too. Since
@@ -225,10 +227,10 @@ class AtspiStateTracker(EventSource):
 
                 for modifier_mask in modifier_masks:
                     Atspi.deregister_keystroke_listener(
-                                        self._keystroke_listener,
-                                        None, # key set, None=all
-                                        modifier_mask,
-                                        Atspi.KeyEventType.PRESSED)
+                        self._keystroke_listener,
+                        None,  # key set, None=all
+                        modifier_mask,
+                        Atspi.KeyEventType.PRESSED)
 
         self._keystroke_listeners_registered = register
 
@@ -274,7 +276,7 @@ class AtspiStateTracker(EventSource):
         if not self._frozen:
             EventSource.emit_async(self, event_name, *args, **kwargs)
 
-    ########## synchronous handlers ##########
+    # ######### synchronous handlers ######### #
 
     def _on_atspi_global_focus(self, event, user_data):
         self._on_atspi_focus(event, True)
@@ -282,41 +284,45 @@ class AtspiStateTracker(EventSource):
     def _on_atspi_object_focus(self, event, user_data):
         self._on_atspi_focus(event)
 
-    def _on_atspi_focus(self, event, focus_received = False):
-        focused = bool(focus_received) or bool(event.detail1) # received focus?
-        ae = AsyncEvent(accessible = event.source,
-                        focused = focused)
+    def _on_atspi_focus(self, event, focus_received=False):
+        focused = (bool(focus_received) or
+                   bool(event.detail1))  # received focus?
+        ae = AsyncEvent(accessible=event.source,
+                        focused=focused)
         self.emit_async("async-focus-changed", ae)
 
     def _on_atspi_text_changed(self, event, user_data):
-        #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
-        ae = AsyncEvent(accessible = event.source,
-                        type = event.type,
-                        pos = event.detail1,
-                        length = event.detail2)
+        # print("_on_atspi_text_changed", event.detail1, event.detail2,
+        #       event.source, event.type, event.type.endswith("delete"))
+        ae = AsyncEvent(accessible=event.source,
+                        type=event.type,
+                        pos=event.detail1,
+                        length=event.detail2)
         self.emit_async("async-text-changed", ae)
         return False
 
     def _on_atspi_text_caret_moved(self, event, user_data):
-        #print("_on_atspi_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
-        ae = AsyncEvent(accessible = event.source,
-                        caret = event.detail1)
+        # print("_on_atspi_text_caret_moved", event.detail1, event.detail2,
+        #       event.source, event.type, event.source.get_name(),
+        #       event.source.get_role())
+        ae = AsyncEvent(accessible=event.source,
+                        caret=event.detail1)
         self.emit_async("async-text-caret-moved", ae)
         return False
 
     def _on_atspi_keystroke(self, event, user_data):
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
-            _logger.atspi("key-stroke {} {} {} {}" \
+            _logger.atspi("key-stroke {} {} {} {}"
                           .format(event.modifiers,
                                   event.hw_code, event.id, event.is_text))
-            #keysym = event.id # What is this? Not XK_ keysyms apparently.
-            ae = AsyncEvent(hw_code   = event.hw_code,
-                            modifiers = event.modifiers)
+            # keysym = event.id # What is this? Not an XK_ keysym apparently.
+            ae = AsyncEvent(hw_code=event.hw_code,
+                            modifiers=event.modifiers)
             self.emit_async("key-pressed", ae)
 
-        return False # don't consume event
+        return False  # don't consume event
 
-    ########## asynchronous handlers ##########
+    # ######### asynchronous handlers ######### #
 
     def _on_async_focus_changed(self, event):
         accessible = event.accessible
@@ -340,7 +346,8 @@ class AtspiStateTracker(EventSource):
                     self._focused_accessible = None
             else:
                 if focused:
-                    self._state = self._read_initial_accessible_state(accessible)
+                    self._state = \
+                        self._read_initial_accessible_state(accessible)
                     pid = self._state.get("pid")
 
                     if self._is_accessible_editable(self._state):
@@ -353,7 +360,7 @@ class AtspiStateTracker(EventSource):
                         # over those buttons silently drops the focus from the
                         # text entry. Let's pretend the buttons don't exist
                         # and keep the previously saved text entry active.
-                        app_name = self._state.get("app-name","").lower()
+                        app_name = self._state.get("app-name", "").lower()
                         if app_name == "unity":
                             ignore_accessible = True
                         else:
@@ -364,17 +371,20 @@ class AtspiStateTracker(EventSource):
                             # ATSPI_ROLE_DOCUMENT_FRAME) for a short while
                             # after opening dash.
                             now = time.time()
-                            if now - self._active_accessible_activation_time > .5:
+                            if now - self._active_accessible_activation_time \
+                               > .5:
                                 if self._focused_pid != pid:
                                     self._focused_accessible = None
                                     _logger.atspi("Dropping accessible due to "
-                                                "pid change: {} != {} " \
-                                                .format(self._focused_pid, pid))
+                                                  "pid change: {} != {} "
+                                                  .format(self._focused_pid,
+                                                          pid))
 
             if not ignore_accessible:
                 # Make sure we have a valid state for all cases.
                 if not state_valid:
-                    self._state = self._read_initial_accessible_state(self._focused_accessible)
+                    self._state = self._read_initial_accessible_state(
+                        self._focused_accessible)
 
                 # Has the previously focused accessible lost the focus?
                 active_accessible = self._focused_accessible
@@ -386,18 +396,21 @@ class AtspiStateTracker(EventSource):
     def _set_active_accessible(self, accessible):
         self._active_accessible = accessible
 
-        if not self._active_accessible is None or \
-           not self._last_active_accessible is None:
+        if self._active_accessible is not None or \
+           self._last_active_accessible is not None:
 
-            if not accessible is None:
+            if accessible is not None:
                 try:
-                    self._state.update( \
-                            self._read_remaining_accessible_state(accessible))
-                except Exception as ex: # Private exception gi._glib.GError when
-                                        # gedit became unresponsive.
+                    self._state.update(
+                        self._read_remaining_accessible_state(accessible))
+                # Private exception gi._glib.GError when
+                # gedit became unresponsive.
+                except Exception as ex:
+
                     _logger.atspi("_set_active_accessible(): "
-                            "invalid accessible, failed to read remaining state: " \
-                            + unicode_str(ex))
+                                  "invalid accessible, failed to "
+                                  "read remaining state: " +
+                                  unicode_str(ex))
 
             # notify listeners
             self.emit("text-entry-activated",
@@ -411,13 +424,13 @@ class AtspiStateTracker(EventSource):
             type = event.type
             insert = type.endswith(("insert", "insert:system"))
             delete = type.endswith(("delete", "delete:system"))
-            #print(event.accessible.get_id(), type, insert)
+            # print(event.accessible.get_id(), type, insert)
             if insert or delete:
                 event.insert = insert
                 self.emit("text-changed", event)
             else:
                 _logger.warning("_on_async_text_changed: "
-                                "unknown event type '{}'" \
+                                "unknown event type '{}'"
                                 .format(event.type))
 
     def _on_async_text_caret_moved(self, event):
@@ -460,10 +473,11 @@ class AtspiStateTracker(EventSource):
         """ Screen rect of the given accessible, no caching """
         try:
             rect = AtspiStateTracker._get_accessible_extents(accessible)
-        except Exception as ex: # private exception gi._glib.GError when
-                # right clicking onboards unity2d launcher (Precise)
+        # private exception gi._glib.GError when
+        # right clicking onboards unity2d launcher (Precise)
+        except Exception as ex:
             _logger.atspi("Invalid accessible,"
-                         " failed to get extents: " + unicode_str(ex))
+                          " failed to get extents: " + unicode_str(ex))
             rect = Rect()
         return rect
 
@@ -532,11 +546,11 @@ class AtspiStateTracker(EventSource):
         """ Text of the given accessible, no caching """
         try:
             text = Atspi.Text.get_text(accessible, begin, end)
-        except Exception as ex: # private exception
-                                # gi._glib.GError: timeout from dbind
-                                # with web search in firefox.
+        # private exception gi._glib.GError: timeout from dbind
+        # with web search in firefox.
+        except Exception as ex:
             _logger.atspi("Invalid accessible,"
-                         " failed to get text: " + unicode_str(ex))
+                          " failed to get text: " + unicode_str(ex))
             return None
 
         return text
@@ -555,23 +569,24 @@ class AtspiStateTracker(EventSource):
                 role = parent.get_role()
                 _logger.atspi("parent: {}".format(role))
                 if role == Atspi.Role.FRAME or \
-                    role == Atspi.Role.DIALOG or \
-                    role == Atspi.Role.WINDOW or \
-                    role == Atspi.Role.NOTIFICATION:
+                   role == Atspi.Role.DIALOG or \
+                   role == Atspi.Role.WINDOW or \
+                   role == Atspi.Role.NOTIFICATION:
                     frame = parent
                     break
-
-        except Exception as ex: # private exception gi._glib.GError when
-                # right clicking onboards unity2d launcher (Precise)
+        # private exception gi._glib.GError when
+        # right clicking onboards unity2d launcher (Precise)
+        except Exception as ex:
             _logger.atspi("Invalid accessible,"
-                         " failed to get top level accessible: " + unicode_str(ex))
+                          " failed to get top level accessible: " +
+                          unicode_str(ex))
         return frame
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
         role      = acc_state.get("role")
         state_set = acc_state.get("state-set")
-        if not state_set is None:
+        if state_set is not None:
 
             if role in [Atspi.Role.TEXT,
                         Atspi.Role.TERMINAL,
@@ -588,9 +603,9 @@ class AtspiStateTracker(EventSource):
                         Atspi.Role.PARAGRAPH,      # LibreOffice Writer
                         Atspi.Role.HEADER,
                         Atspi.Role.FOOTER,
-                       ]:
+                        ]:
                 if role in [Atspi.Role.TERMINAL] or \
-                   (not state_set is None and \
+                   (state_set is not None and
                     state_set.contains(Atspi.StateType.EDITABLE)):
                     return True
         return False
@@ -606,31 +621,36 @@ class AtspiStateTracker(EventSource):
         Read just enough to find out if we are interested in this accessible.
         """
         state = {}
-        if not accessible is None:
+        if accessible is not None:
             try:
                 state["role"] = accessible.get_role()
                 state["state-set"] = accessible.get_state_set()
                 state["id"] = accessible.get_id()
-            except Exception as ex: # Private exception gi._glib.GError when
-                                    # gedit became unresponsive.
+            # Private exception gi._glib.GError when
+            # gedit became unresponsive.
+            except Exception as ex:
                 _logger.info("_read_initial_accessible_state(): "
-                                "invalid accessible, failed to read state: " \
-                                + unicode_str(ex))
+                             "invalid accessible, failed to read state: " +
+                             unicode_str(ex))
             try:
                 state["pid"] = accessible.get_process_id()
-            except Exception as ex: # Private exception gi._glib.GError when
-                                    # gedit became unresponsive.
+            # Private exception gi._glib.GError when
+            # gedit became unresponsive.
+            except Exception as ex:
+
                 _logger.info("_read_initial_accessible_state(): "
-                                "failed to get pid: " \
-                                + unicode_str(ex))
+                             "failed to get pid: " +
+                             unicode_str(ex))
             try:
                 app = accessible.get_application()
                 state["app-name"] = app.get_name()
-            except Exception as ex: # Private exception gi._glib.GError when
-                                    # gedit became unresponsive.
+            # Private exception gi._glib.GError when
+            # gedit became unresponsive.
+            except Exception as ex:
+
                 _logger.info("_read_initial_accessible_state(): "
-                                "failed to get app-name: " \
-                                + unicode_str(ex))
+                             "failed to get app-name: " +
+                             unicode_str(ex))
         return state
 
     def _read_remaining_accessible_state(self, accessible):
@@ -660,15 +680,18 @@ class AtspiStateTracker(EventSource):
 
             state["toolkit-name"] = accessible.get_toolkit_name()
             state["toolkit-version"] = accessible.get_toolkit_version()
-            #state["summary"] = accessible.get_summary()
+            # state["summary"] = accessible.get_summary()
             state["editable_text_iface"] = accessible.get_editable_text_iface()
-            #state["document_attributes"] = accessible.get_document_attributes()
+            # state["document_attributes"] = \
+            #    accessible.get_document_attributes()
             state["description"] = accessible.get_description()
-            #state["default_attributes"] = accessible.get_default_attributes() # not implemented by unity dash
+            # state["default_attributes"] = \
+            #    accessible.get_default_attributes() # not impl. by unity dash
 
             frame = self._get_accessible_frame(accessible)
             state["frame"] = frame
-            state["frame_extents"] = self._get_accessible_extents(frame) if frame else None
+            state["frame_extents"] = self._get_accessible_extents(frame) \
+                if frame else None
 
         return state
 
@@ -676,7 +699,7 @@ class AtspiStateTracker(EventSource):
     def is_toolkit_gtk3(attributes):
         """ Are the accessible attributes from a gtk3 widget? """
         return attributes and \
-               "toolkit" in attributes and attributes["toolkit"] == "gtk"
+            "toolkit" in attributes and attributes["toolkit"] == "gtk"
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
@@ -698,20 +721,22 @@ class AtspiStateTracker(EventSource):
                     state_set = accessible.get_state_set()
                     states = state_set.states
                     editable = state_set.contains(Atspi.StateType.EDITABLE) \
-                               if state_set else None
+                        if state_set else None
                     extents = self._get_accessible_extents(accessible)
-                except: # private exception gi._glib.GError when gedit became unresponsive
+                # private exception gi._glib.GError when gedit became
+                # unresponsive
+                except:
                     pass
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
-                        .format(name=name,
-                                role = role.value_name if role else role,
-                                role_name = role_name,
-                                editable = editable,
-                                states = states,
-                                extents = extents \
+                       .format(name=name,
+                               role=role.value_name if role else role,
+                               role_name=role_name,
+                               editable=editable,
+                               states=states,
+                               extents=extents
                                )
             _logger.atspi(msg)
 
@@ -759,12 +784,12 @@ class AtspiStateType:
               'VERTICAL',
               'VISIBLE',
               'VISITED',
-             ]
+              ]
 
     @staticmethod
     def to_strings(state_set):
         result = []
-        if not state_set is None:
+        if state_set is not None:
             for s in AtspiStateType.states:
                 if state_set.contains(getattr(Atspi.StateType, s)):
                     result.append(s)
