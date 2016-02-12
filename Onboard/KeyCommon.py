@@ -447,7 +447,13 @@ class KeyCommon(LayoutItem):
         """ Should this key cancel pending word separators? """
         return (self.is_correction_key() or
                 self.is_return() or
-                self.id in set(["SPCE", "TAB", "DELE",
+                self.id in set(["SPCE", "TAB",
+                                # Don't cancel for Backspace. We want to have
+                                # it appear to delete the pending separator.
+                                # This way it inserts a space, then immediately
+                                # deletes it.
+                                # "BKSP",
+                                "DELE",
                                 "LEFT", "RGHT", "UP", "DOWN",
                                 "HOME", "END", "PGUP", "PGDN",
                                 "INS", "ESC", "MENU",

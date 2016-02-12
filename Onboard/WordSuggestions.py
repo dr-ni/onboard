@@ -74,6 +74,8 @@ class WordSuggestions:
         self._prediction_choices = []
         self.word_infos = []
 
+        self._separator_before_key_press = None
+
         self._hide_input_line = False
         self._word_list_bars = []
         self._text_displays = []
@@ -251,6 +253,8 @@ class WordSuggestions:
             self._wpengine.resume_autosave()
 
     def on_before_key_press(self, key):
+        self._separator_before_key_press = \
+            self.text_context.get_pending_separator()
         if not key.is_modifier() and not key.is_button():
             self._punctuator.on_before_press(key)
         self.text_context.on_onboard_typing(key, self.get_mod_mask())
@@ -261,10 +265,11 @@ class WordSuggestions:
     def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
 
-        # DEL and BKSP don't alway change text. Be sure to update
-        # the separator popup here.
-        if self._punctuator.get_pending_separator() is None:
-            self._update_pending_separator_popup()
+        # DEL and BKSP don't alway change text and no AT-SPI events are
+        # generated. Be sure to update the separator popup here.
+        separator_after = self.text_context.get_pending_separator()
+        if self._separator_before_key_press != separator_after:
+            self.invalidate_context_ui()
 
         if not key.is_correction_key():
             self.expand_corrections(False)
@@ -286,11 +291,12 @@ class WordSuggestions:
     def on_outside_click(self, button):
         if button == 2:  # middle button?
             self._insert_pending_separator()
-            self._update_pending_separator_popup()
+            self.invalidate_context_ui()
 
     def on_cancel_outside_click(self):
-        self._punctuator.set_pending_separator(None)
-        self._update_pending_separator_popup()
+        self.text_context.set_pending_separator(None)
+        self.invalidate_context_ui()
+        self.commit_ui_updates()
 
     def on_activity_detected(self):
         """
@@ -329,6 +335,7 @@ class WordSuggestions:
     def update_suggestions_ui(self):
         self._update_correction_choices()
         self._update_prediction_choices()
+        self._update_pending_separator_popup()
         keys_to_redraw = self.update_inputline()
         keys_to_redraw.extend(self.update_wordlists())
         return keys_to_redraw
@@ -414,13 +421,13 @@ class WordSuggestions:
         # Type remainder/replace word and possibly add separator.
         self._replace_text_at_caret(deletion, insertion)
 
-        # Arm punctuator with the separator.
+        # Separator becomes the new pending separator
         separator_span = \
             TextSpan(insert_result_span.begin(),
                      len(separator), separator,
                      insert_result_span.begin()) \
             if separator else None
-        self._punctuator.set_pending_separator(separator_span)
+        self.text_context.set_pending_separator(separator_span)
 
     def _update_pending_separator_popup(self):
         show = False
@@ -571,13 +578,7 @@ class WordSuggestions:
             if context:  # don't load models on startup
                 max_choices = config.wp.max_word_choices
                 bot_marker = text_context.get_text_begin_marker()
-                bot_context = text_context.get_bot_context()
-
-                # After inserting a prediction, immediately show new
-                # predictions as if we had already typed the pending separator.
-                separator = self._punctuator.get_pending_separator()
-                if separator:
-                    bot_context += separator.get_span_text()
+                bot_context = text_context.get_pending_bot_context()
 
                 tokens, spans = self._wpengine.tokenize_context(bot_context)
 
@@ -920,8 +921,7 @@ class WordSuggestions:
         if config.word_suggestions.get_pause_learning() == 1:  # not locked?
             config.word_suggestions.set_pause_learning(0)
 
-        self._punctuator.set_pending_separator(None)
-        self._update_pending_separator_popup()
+        self.text_context.set_pending_separator(None)
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
@@ -941,13 +941,15 @@ class WordSuggestions:
         The text of the target widget changed or the caret moved.
         Use this for low priority display stuff.
         """
-        if change_detected or \
-           self._punctuator.get_pending_separator():
+        if change_detected:
             self.expand_corrections(False)
             self.invalidate_context_ui()
             self.commit_ui_updates()
             self._learn_strategy.on_text_context_changed()
-            self._update_pending_separator_popup()
+
+    def on_text_caret_moved(self):
+        """ Caret position changed. """
+        pass
 
     def has_changes(self):
         """ Are there any text changes to learn? """
@@ -1719,18 +1721,15 @@ class Punctuator:
         self.reset()
 
     def reset(self):
-        self._pending_separator_span = None
         self._key_down_labels = {}
 
     def set_pending_separator(self, separator_span=None):
         """ Remember this separator span for later insertion. """
-        if self._pending_separator_span is not separator_span:
-            self._pending_separator_span = separator_span
-            #self._wp.on_pending_separator_changed()
+        self._wp.text_context.set_pending_separator(separator_span)
 
     def get_pending_separator(self):
         """ Return current pending separator span or None """
-        return self._pending_separator_span
+        return self._wp.text_context.get_pending_separator()
 
     def on_before_press(self, key):
         """
@@ -1739,8 +1738,9 @@ class Punctuator:
         # clear label in case there was no after call
         self._key_down_labels[key] = None
 
+        separator_span = self.get_pending_separator()
         separator_span, insert, caps = \
-            self._handle_key_event(key, self._pending_separator_span, True)
+            self._handle_key_event(key, separator_span, True)
         if insert:
             self.insert_separator(separator_span)
             separator_span = None
@@ -1751,8 +1751,9 @@ class Punctuator:
         """
         Chance to request capitalization before key-release.
         """
-        pending_separator_span, insert, caps = \
-            self._handle_key_event(key, self._pending_separator_span, False)
+        separator_span = self.get_pending_separator()
+        separator_span, insert, caps = \
+            self._handle_key_event(key, separator_span, False)
         if caps and \
            config.is_auto_capitalization_enabled():
             self._wp.request_capitalization(True)
@@ -1761,8 +1762,9 @@ class Punctuator:
         """
         Chance to insert separators after key-release.
         """
+        separator_span = self.get_pending_separator()
         separator_span, insert, caps = \
-            self._handle_key_event(key, self._pending_separator_span, False)
+            self._handle_key_event(key, separator_span, False)
         if insert:
             self.insert_separator(separator_span)
             separator_span = None
@@ -1840,7 +1842,7 @@ class Punctuator:
     def insert_separator(self, separator_span):
         """ Insert pending separator at the caret. """
         if separator_span:
-            string = self._pending_separator_span.get_span_text()
+            string = separator_span.get_span_text()
 
             # Don't use direct insertion here, because many keys
             # always generate key-strokes and are likely to arrive
@@ -1854,14 +1856,15 @@ class Punctuator:
         distance away from the caret. Caret position will be
         restored afterwards.
         """
-        if self._pending_separator_span:
-            string = self._pending_separator_span.get_span_text()
+        separator_span = self.get_pending_separator()
+        if separator_span:
+            string = separator_span.get_span_text()
 
             caret_span = self._get_span_at_caret()
             if caret_span and \
                (self._wp.text_context.can_insert_text() or
                 len(string) < 50):  # abort if too many key-presses necessary
-                separator_pos = self._pending_separator_span.begin()
+                separator_pos = separator_span.begin()
                 self._wp.replace_text(separator_pos,
                                       separator_pos,
                                       caret_span.begin(),

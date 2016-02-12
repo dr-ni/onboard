@@ -111,6 +111,8 @@ class AtspiTextContext(TextContext):
         self._begin_of_text = False        # context starts at begin of text?
         self._begin_of_text_offset = None  # offset of text begin
 
+        self._pending_separator_span = None
+
         self._last_context = None
         self._last_line = None
 
@@ -126,6 +128,15 @@ class AtspiTextContext(TextContext):
 
     def get_text_domain(self):
         return self._text_domain
+
+    def set_pending_separator(self, separator_span=None):
+        """ Remember this separator span for later insertion. """
+        if self._pending_separator_span is not separator_span:
+            self._pending_separator_span = separator_span
+
+    def get_pending_separator(self):
+        """ Return current pending separator span or None """
+        return self._pending_separator_span
 
     def get_context(self):
         """
@@ -158,6 +169,15 @@ class AtspiTextContext(TextContext):
                 if marker:
                     context = marker + " " + context
 
+        return context
+
+    def get_pending_bot_context(self):
+        """
+        Context including bot marker and pending separator.
+        """
+        context = self.get_bot_context()
+        if self._pending_separator_span is not None:
+            context += self._pending_separator_span.get_span_text()
         return context
 
     def get_line(self):
@@ -374,7 +394,13 @@ class AtspiTextContext(TextContext):
         self._update_context()
 
     def _on_text_caret_moved(self, event):
+        # clear pending separator when user clicked somewhere else
+        if self._pending_separator_span:
+            if event.caret != self._pending_separator_span.begin():
+                self.set_pending_separator(None)
+
         self._update_context()
+        self._wp.on_text_caret_moved()
 
     def _on_atspi_key_pressed(self, event):
         """ disabled, Francesco didn't receive any AT-SPI key-strokes. """
@@ -487,7 +513,8 @@ class AtspiTextContext(TextContext):
              self._begin_of_text,
              self._begin_of_text_offset) = result
 
-            context = self.get_bot_context()  # mk sure to include bot-markers
+            # make sure to include bot-markers and pending separator
+            context = self.get_pending_bot_context()
             change_detected = (self._last_context != context or
                                self._last_line != self._line)
             if change_detected:
