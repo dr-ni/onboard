@@ -265,8 +265,8 @@ class WordSuggestions:
     def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
 
-        # DEL and BKSP don't alway change text and no AT-SPI events are
-        # generated. Be sure to update the separator popup here.
+        # DEL and BKSP don't always change text and generate
+        # AT-SPI events. Be sure to update the separator popup here.
         separator_after = self.text_context.get_pending_separator()
         if self._separator_before_key_press != separator_after:
             self.invalidate_context_ui()
@@ -433,15 +433,17 @@ class WordSuggestions:
         show = False
         rect = None
 
-        span = self._punctuator.get_pending_separator()
+        span = self.text_context.get_pending_separator()
         if span:
             offset = span.begin() - 1
             if offset >= 0:
                 rect = self.text_context.get_character_extents(offset)
                 if rect:
-                    if not rect.w:
-                        rect.w = rect.h / 2
                     rect.x += rect.w
+                    # Set width to a compromise between narrowest, e.g. "i",
+                    # and widest, e.g. "M", proportional characters.
+                    # This still does OK for fixed Terminal fonts.
+                    rect.w = max(min(rect.w, rect.h / 2), rect.h / 3)
                     if not rect.is_empty():
                         show = True
 

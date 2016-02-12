@@ -20,6 +20,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import unicodedata
+import time
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -112,6 +113,9 @@ class AtspiTextContext(TextContext):
         self._begin_of_text_offset = None  # offset of text begin
 
         self._pending_separator_span = None
+        self._last_text_change_time = 0
+        self._last_caret_move_time = 0
+        self._last_caret_move_position = 0
 
         self._last_context = None
         self._last_line = None
@@ -333,7 +337,6 @@ class AtspiTextContext(TextContext):
         # old text_domain still valid here
         self._wp.on_text_entry_deactivated()
 
-        # print("_on_text_entry_activated", accessible)
         # keep track of the active accessible asynchronously
         self._accessible = accessible
         self._entering_text = False
@@ -391,14 +394,12 @@ class AtspiTextContext(TextContext):
             else:
                 self._wp.on_text_inserted(insertion_span, caret_offset)
 
+        self._last_text_change_time = time.time()
         self._update_context()
 
     def _on_text_caret_moved(self, event):
-        # clear pending separator when user clicked somewhere else
-        if self._pending_separator_span:
-            if event.caret != self._pending_separator_span.begin():
-                self.set_pending_separator(None)
-
+        self._last_caret_move_time = time.time()
+        self._last_caret_move_position = event.caret
         self._update_context()
         self._wp.on_text_caret_moved()
 
@@ -504,6 +505,16 @@ class AtspiTextContext(TextContext):
                                          self.on_text_context_changed)
 
     def on_text_context_changed(self):
+        # Clear pending separator when the user clicked to move
+        # the cursor away from the separator position.
+        if self._pending_separator_span:
+            # Lone caret movement, no recent text change?
+            if self._last_caret_move_time - self._last_text_change_time > 1.0:
+                # Away from the separator?
+                if self._last_caret_move_position != \
+                   self._pending_separator_span.begin():
+                    self.set_pending_separator(None)
+
         result = self._text_domain.read_context(self._accessible)
         if result is not None:
             (self._context,
