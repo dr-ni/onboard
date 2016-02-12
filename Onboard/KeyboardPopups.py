@@ -686,52 +686,24 @@ class PendingSeparatorPopup(KeyboardPopup):
         self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
     def on_draw(self, widget, cr):
-        fill_rgba = (1.0, 1.0, 1.0, 0.3)
-        stroke_rgba = (0.0, 0.0, 0.3, 0.3)
         rect = Rect(0, 0,
                     self.get_allocated_width(), self.get_allocated_height())
 
-        border = rect.w / 8
-        if 1:
-            cr.set_source_rgba(*fill_rgba)
-            cr.rectangle(*rect)
-            cr.fill()
+        fill_rgba = (1.0, 0.5, 0.5, 0.2)
+        stroke_rgba = (1.0, 0.5, 0.5, 0.7)
 
-            cr.rectangle(*rect.deflate(border))
-            cr.set_source_rgba(*stroke_rgba)
-            cr.set_line_width(2.0)
-            cr.stroke()
+        cr.set_source_rgba(*fill_rgba)
+        cr.rectangle(*rect)
+        cr.fill()
 
-        if 0:
-            cr.save()
-            pattern = self._create_stipple_pattern()
-            cr.set_source(pattern)
-            cr.paint()
-            cr.restore()
-
-            cr.set_operator(cairo.OPERATOR_CLEAR)
-            cr.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-            cr.rectangle(*rect.deflate(border))
-            cr.fill()
-
-    @staticmethod
-    def _create_stipple_pattern():
-        w = h = 4
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
-        cr = cairo.Context(surface)
-
-        cr.set_source_rgb(1.0, 1.0, 1.0)
-        cr.paint()
-
-        for x in range(w):
-            for y in range(h):
-                if x & 1 and y & 1:
-                    cr.set_source_rgb(0, 0, 0)
-                    cr.rectangle(x, y, 1, 1)
-                    cr.fill()
-
-        pattern = cairo.SurfacePattern(surface)
-        pattern.set_extend(cairo.EXTEND_REPEAT)
-        pattern.set_filter(cairo.FILTER_NEAREST)
-        return pattern
+        r = rect
+        top = r.y + r.h * 0.75
+        bottom = r.bottom()
+        cr.set_source_rgba(*stroke_rgba)
+        cr.set_line_width(max(1, r.h / 6))
+        cr.move_to(r.left(), top)
+        cr.line_to(r.left(), bottom)
+        cr.line_to(r.right(), bottom)
+        cr.line_to(r.right(), top)
+        cr.stroke()
 
