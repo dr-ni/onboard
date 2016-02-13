@@ -1754,9 +1754,9 @@ class SuggestionMenu(KeyMenu):
 
     def _on_remove_suggestion(self, menu_item):
         keyboard = self._keyboard
-        suggestion, history = keyboard.get_prediction_choice_and_history( \
-                                                           self._choice_index)
-        history = history[-1:] # only single word history supported
+        suggestion, history = \
+            keyboard.get_prediction_choice_and_history(self._choice_index)
+        history = history[-1:]  # only single word history supported
         dialog = RemoveSuggestionConfirmationDialog(
                     self._keyboard_widget.get_kbd_window(),
                     keyboard, suggestion, history)
@@ -1776,8 +1776,8 @@ class SuggestionMenu(KeyMenu):
         if menu_size[0] > rkey.w:
             return rkey.left(), rkey.bottom()
         else:
-            return super(SuggestionMenu, self).get_menu_position(
-                                                          rkey, menu_size)
+            return super(SuggestionMenu, self) \
+                .get_menu_position(rkey, menu_size)
 
 
 class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
@@ -1797,8 +1797,8 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
             self.set_transient_for(parent)
 
         # Don't hide dialog behind the keyboard in force-to-top mode.
-        #if config.is_force_to_top():
-        #    dialog.set_position(Gtk.WindowPosition.CENTER)
+        if config.is_force_to_top():
+            self.set_position(Gtk.WindowPosition.CENTER)
 
         markup = "<big>" + _("Remove word suggestion") + "</big>"
         markup = escape_markup(markup, preserve_tags=True)
