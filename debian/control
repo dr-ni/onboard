@@ -8,7 +8,7 @@ Build-Depends: debhelper (>=7.0.50~),
                libgtk-3-dev,
                libxtst-dev,
                libxkbfile-dev,
-               libdconf-dev (>= 0.13.4),
+               libdconf-dev (>= 0.12.0),
                libcanberra-dev,
                libhunspell-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
