@@ -1741,7 +1741,7 @@ class Punctuator:
         self._key_down_labels[key] = None
 
         separator_span = self.get_pending_separator()
-        separator_span, insert, caps = \
+        separator_span, insert, caps_mode = \
             self._handle_key_event(key, separator_span, True)
         if insert:
             self.insert_separator(separator_span)
@@ -1754,9 +1754,9 @@ class Punctuator:
         Chance to request capitalization before key-release.
         """
         separator_span = self.get_pending_separator()
-        separator_span, insert, caps = \
+        separator_span, insert, caps_mode = \
             self._handle_key_event(key, separator_span, False)
-        if caps and \
+        if caps_mode and \
            config.is_auto_capitalization_enabled():
             self._wp.request_capitalization(True)
 
@@ -1765,7 +1765,7 @@ class Punctuator:
         Chance to insert separators after key-release.
         """
         separator_span = self.get_pending_separator()
-        separator_span, insert, caps = \
+        separator_span, insert, caps_mode = \
             self._handle_key_event(key, separator_span, False)
         if insert:
             self.insert_separator(separator_span)
@@ -1820,7 +1820,13 @@ class Punctuator:
                         # range of caret positions.
                         if after and (caret_pos >= separator_pos and
                                       caret_pos <= separator_pos + 1):
-                            insert_now = True
+                            # Move span after the punctuation character.
+                            # Make copy for fast comparison.
+                            pending_separator_span = \
+                                pending_separator_span.copy()
+                            pending_separator_span.pos += 1
+                            pending_separator_span.text_pos += 1
+
                             if punctuation_capitalize:
                                 caps_mode = True
                     else:
@@ -1839,7 +1845,7 @@ class Punctuator:
                insert_now:
                 return pending_separator_span, True, caps_mode
 
-        return pending_separator_span, False, False
+        return pending_separator_span, False, caps_mode
 
     def insert_separator(self, separator_span):
         """ Insert pending separator at the caret. """
