@@ -661,6 +661,7 @@ class PendingSeparatorPopup(KeyboardPopup):
     def __init__(self):
         KeyboardPopup.__init__(self)
         self.connect("realize", self._on_realize_event)
+        self._visible = False
 
     def show_at(self, view, character_rect):
         toplevel = view.get_toplevel()
@@ -677,6 +678,14 @@ class PendingSeparatorPopup(KeyboardPopup):
         if self.supports_alpha:
             self.set_opacity(toplevel.get_opacity())
         self.show_all()
+        self._visible = True
+
+    def hide(self):
+        KeyboardPopup.hide(self)
+        self._visible = False
+
+    def is_visible(self):
+        return self._visible
 
     def _on_realize_event(self, user_data):
         self.set_override_redirect(True)

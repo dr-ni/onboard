@@ -211,7 +211,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
         <key name="long-press-delay" type="d">
             <default>0.5</default>
             <summary>Long-press delay</summary>
-            <description>Time pressing a key down until a long-press is detected.</description>
+            <description>Time to hold a key down until a long-press is detected.</description>
         </key>
         <key name="touch-input"  enum="org.onboard.keyboard.TouchInput">
             <default>"multi"</default>
@@ -777,6 +777,11 @@ With 'known-only', new words are rejected, but frequency and recency of already 
             <default>true</default>
             <summary>Enable punctuation assistance</summary>
             <description>Add and remove spaces when inserting word suggestions followed by punctuation characters.</description>
+        </key>
+        <key name="delayed-word-separators-enabled" type="b">
+            <default>false</default>
+            <summary>Insert word separators lazily</summary>
+            <description>Experimental, not recommended.</description>
         </key>
         <key name="stealth-mode" type="b">
             <default>false</default>

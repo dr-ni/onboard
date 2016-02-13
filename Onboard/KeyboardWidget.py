@@ -760,14 +760,22 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             # the user to select some text and paste it with middle click,
             # while the pending separator is still inserted.
             self._outside_click_num += 1
+            max_clicks = 4
+
             if button != 1:  # middle and right click stop polling immediately
                 self.stop_click_polling()
                 self.keyboard.on_outside_click(button)
-            elif self._outside_click_num >= 4:  # allow a couple of left clicks
+
+            elif button == 1 and self._outside_click_num == 1:
+                if not config.wp.delayed_word_separators_enabled:
+                    self.stop_click_polling()
+                self.keyboard.on_outside_click(button)
+
+            # allow a couple of left clicks with delayed separators
+            elif self._outside_click_num >= max_clicks:
                 self.stop_click_polling()
                 self.keyboard.on_cancel_outside_click()
-            else:
-                self.keyboard.on_outside_click(button)
+
             return True
 
         # stop polling after 30 seconds

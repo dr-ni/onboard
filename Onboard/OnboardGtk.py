@@ -330,6 +330,8 @@ class OnboardGtk(object):
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.word_suggestions.spelling_suggestions_enabled_notify_add(lambda x: \
                                  self.keyboard.on_spell_checker_changed())
+        config.word_suggestions.delayed_word_separators_enabled_notify_add(lambda x: \
+                                 self.keyboard.on_punctuator_changed())
         config.word_suggestions.wordlist_buttons_notify_add(
                                  update_ui_no_resize)
 
