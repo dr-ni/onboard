@@ -449,6 +449,7 @@ class DomainTerminal(TextDomain):
                                     "^\?",                # vi reverse search
                                     "\$ ",                # generic prompt
                                     "# ",                 # root prompt
+                                    "^.*?@.*?/.*?> "      # fish
                                 )
                             )
 
