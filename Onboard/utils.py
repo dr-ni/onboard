@@ -1129,23 +1129,30 @@ class Process:
         cmdline = ""
         with open("/proc/%s/cmdline" % pid) as f:
             cmdline = f.read()
-        return cmdline
+        return cmdline.split("\0")
 
     @staticmethod
     def get_process_name(pid):
-        args = Process.get_cmdline(pid).split("\0")
-        if args:
-            return os.path.basename(args[0])
+        cmdline = Process.get_cmdline(pid)
+        if cmdline:
+            return os.path.basename(cmdline[0])
         return ""
 
     @staticmethod
-    def was_launched_by(process_name):
+    def get_launch_process_cmdline():
         """ Checks if this process was launched by <process_name> """
         ppid = os.getppid()
         if ppid:
             cmdline = Process.get_cmdline(ppid)
-            return process_name in cmdline
-        return False
+            return cmdline
+        return []
+
+    @staticmethod
+    def was_launched_by(process_name):
+        """ Checks if this process was launched by <process_name> """
+        cmdline = " ".join(Process.get_launch_process_cmdline())
+        return process_name in cmdline
+
 
 def exists_in_path(basename):
     """

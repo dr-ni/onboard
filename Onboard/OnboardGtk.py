@@ -101,7 +101,7 @@ class OnboardGtk(object):
                 bus = None
 
         if not bus:
-            _logger.warning(err_msg +
+            _logger.warning(err_msg + "  " +
                             "Onboard will start with reduced functionality. "
                             "Single-instance check, "
                             "D-Bus service and "

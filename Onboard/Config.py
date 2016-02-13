@@ -287,6 +287,13 @@ class Config(ConfigObject):
         self.quirks_name = options.quirks_name
         self.quirks = None  # WMQuirks instance, provided by KbdWindow for now
 
+        # optionally log to file; everything, including stack traces
+        if 0:
+            options.debug = "debug"
+            logfile = open("/tmp/onboard.log", "w")
+            sys.stdout = logfile
+            sys.stderr = logfile
+
         # setup logging
         min_level_name = None
         max_level_name = None
@@ -316,7 +323,9 @@ class Config(ConfigObject):
             else:
                 if Process.was_launched_by("gnome-screensaver"):
                     self.launched_by = self.LAUNCHER_GSS
-                elif "UNITY_GREETER_DBUS_NAME" in os.environ:
+                elif ("UNITY_GREETER_DBUS_NAME" in os.environ or
+                      "LIGHTDM_TO_SERVER_FD" in os.environ or  # Xenial
+                      os.environ.get("USER") == "lightdm"):
                     self.launched_by = self.LAUNCHER_UNITY_GREETER
 
         self.is_running_from_source = self._is_running_from_source()
@@ -333,6 +342,14 @@ class Config(ConfigObject):
         except SchemaError as e:
             _logger.error(unicode_str(e))
             sys.exit()
+
+        # log how we were launched
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug("command line: " + str(sys.argv))
+            #_logger.debug("environment: " + str(os.environ))
+            cmdline = Process.get_launch_process_cmdline()
+            _logger.debug("lauched by, process: '{}'".format(cmdline))
+            _logger.debug("lauched by, detected: {}".format(self.launched_by))
 
         # init paths
         self.install_dir = self._get_install_dir()
@@ -572,12 +589,6 @@ class Config(ConfigObject):
             if max_level_name in levels:
                 max_level, color = levels[max_level_name]
                 handler.addFilter(CustomFilter(max_level))
-
-        if 0: # optionally log to file; everything, including stack traces
-            log_params["level"] = "DEBUG"
-            logfile = open("/tmp/onboard.log", "w")
-            sys.stdout = logfile
-            sys.stderr = logfile
 
     def _init_keys(self):
         """ Create key descriptions """
