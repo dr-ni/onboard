@@ -16,7 +16,7 @@
       <panel>
         <!-- layer0 -->
 
-        <!-- Cyrillic keymaps-->
+        <!-- Cyrillic keymaps -->
         <panel id="alpha-keys" filename="Small-Alpha.svg" layer="alpha" layout="ru,ua,by,bg,tj,ge(os),az(cyrillic),mn,mk">
           <!-- row 4 -->
           <key group="bottomrow" id="ESC" label_margin=", 2"/>
@@ -68,7 +68,7 @@
           <key group="shifts" id="RTSH"/>
         </panel>
 
-        <!-- Latin and others keymaps-->
+        <!-- Latin and other keymaps -->
         <panel id="alpha-keys" filename="Small-Alpha.svg" layer="alpha">
           <!-- row 4 -->
           <key group="bottomrow" id="ESC" label_margin=", 2"/>

@@ -43,7 +43,58 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <box orientation="vertical">
       <!-- alpha and numbers layers -->
         <panel>
-          <panel filename="Phone-Alpha.svg" layer="alpha">
+            <!-- Cyrillic keymaps-->
+            <panel id="alpha-keys" filename="Phone-Alpha.svg" layer="alpha" layout="ru,ua,by,bg,tj,ge(os),az(cyrillic),mn,mk">
+            <!-- row 2,3 and 4 of the layers -->
+            <!-- row 4 -->
+            <key group="alphanumeric" id="AD01" svg_id="AD01-cyr"/>
+            <key group="alphanumeric" id="AD02" svg_id="AD02-cyr"/>
+            <key group="alphanumeric" id="AD03" svg_id="AD03-cyr"/>
+            <key group="alphanumeric" id="AD04" svg_id="AD04-cyr"/>
+            <key group="alphanumeric" id="AD05" svg_id="AD05-cyr"/>
+            <key group="alphanumeric" id="AD06" svg_id="AD06-cyr"/>
+            <key group="alphanumeric" id="AD07" svg_id="AD07-cyr"/>
+            <key group="alphanumeric" id="AD08" svg_id="AD08-cyr"/>
+            <key group="alphanumeric" id="AD09" svg_id="AD09-cyr"/>
+            <key group="alphanumeric" id="AD10" svg_id="AD10-cyr"/>
+            <key group="alphanumeric" id="AD11" svg_id="AD11-cyr"/>
+
+            <!-- row 3 -->
+            <key group="alphanumeric" id="AC01" svg_id="AC01-cyr"/>
+            <key group="alphanumeric" id="AC02" svg_id="AC02-cyr"/>
+            <key group="alphanumeric" id="AC03" svg_id="AC03-cyr"/>
+            <key group="alphanumeric" id="AC04" svg_id="AC04-cyr"/>
+            <key group="alphanumeric" id="AC05" svg_id="AC05-cyr"/>
+            <key group="alphanumeric" id="AC06" svg_id="AC06-cyr"/>
+            <key group="alphanumeric" id="AC07" svg_id="AC07-cyr"/>
+            <key group="alphanumeric" id="AC08" svg_id="AC08-cyr"/>
+            <key group="alphanumeric" id="AC09" svg_id="AC09-cyr"/>
+            <key group="alphanumeric" id="AC10" svg_id="AC10-cyr"/>
+            <key group="alphanumeric" id="AC11" svg_id="AC11-cyr" keycode="35" layout="ru,tj,az(cyrillic)"/>
+            <key group="alphanumeric" id="AC11" svg_id="AC11-cyr" keycode="51" layout="ua"/>
+            <key group="alphanumeric" id="AC11" svg_id="AC11-cyr"/>
+
+            <!-- row 2 -->
+            <key group="shifts" id="LFSH.like_rtrn" svg_id="LFSH-cyr"/>
+            <key group="alphanumeric" id="AB01" svg_id="AB01-cyr"/>
+            <key group="alphanumeric" id="AB02" svg_id="AB02-cyr"/>
+            <key group="alphanumeric" id="AB03" svg_id="AB03-cyr"/>
+            <key group="alphanumeric" id="AB04" svg_id="AB04-cyr"/>
+            <key group="alphanumeric" id="AB05" svg_id="AB05-cyr"/>
+            <key group="alphanumeric" id="AB06" svg_id="AB06-cyr"/>
+            <key group="alphanumeric" id="AB07" svg_id="AB07-cyr"/>
+            <key group="alphanumeric" id="AB08" svg_id="AB08-cyr"/>
+            <key group="alphanumeric" id="AB09" svg_id="AB09-cyr"/>
+            <key group="alphanumeric" id="AB09" svg_id="AB09-cyr"/>
+            <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="48" layout="ru,ua,tj,az(cyrillic)"/>
+            <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="49" layout="ge(os)"/> <!-- not ideal, but sacrifice ESC instead? -->
+            <key group="alphanumeric" id="AB10" svg_id="AB10-cyr" keycode="51" layout="mk"/>
+            <key group="alphanumeric" id="AB10" svg_id="AB10-cyr"/>
+            <key group="bottomrow" id="BKSP" svg_id="BKSP-cyr"/>
+          </panel>
+
+          <!-- Latin and other keymaps -->
+          <panel id="alpha-keys" filename="Phone-Alpha.svg" layer="alpha">
             <!-- row 2,3 and 4 of the layers -->
             <!-- row 4 -->
             <key group="alphanumeric" id="AD01"/>
@@ -56,6 +107,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key group="alphanumeric" id="AD08"/>
             <key group="alphanumeric" id="AD09"/>
             <key group="alphanumeric" id="AD10"/>
+
             <!-- row 3 -->
             <key group="alphanumeric" id="AC01"/>
             <key group="alphanumeric" id="AC02"/>
@@ -68,6 +120,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key group="alphanumeric" id="AC09"/>
             <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty)"/>
             <key group="alphanumeric" id="AC10" char="'" label="'"/>
+
             <!-- row 2 -->
             <key group="shifts" id="LFSH.like_rtrn"/>
             <key group="alphanumeric" id="AB01"/>
@@ -80,6 +133,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key group="alphanumeric" id="AB07"/>
             <key group="bottomrow" id="BKSP"/>
           </panel>
+
           <panel filename="Phone-Numbers.svg" layer="numbers">
             <!-- row 4 -->
             <key group="alphanumeric" id="BD01" keysym="0x31" label="1" unlatch_layer="false"/>
@@ -92,17 +146,19 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key group="alphanumeric" id="BD08" keysym="0x38" label="8" unlatch_layer="false"/>
             <key group="alphanumeric" id="BD09" keysym="0x39" label="9" unlatch_layer="false"/>
             <key group="alphanumeric" id="BD10" keysym="0x30" label="0" unlatch_layer="false"/>
+
             <!-- row 3 -->
             <key group="alphanumeric" id="TAB"/>
             <key group="alphanumeric" id="BC02" char="#" label="#"/>
             <key group="alphanumeric" id="BC03" char="%" label="%"/>
-            <key group="alphanumeric" id="BC04" char="&amp;" label="&amp;"/>
-            <key group="alphanumeric" id="BC05" char="*" label="*"/>
-            <key group="alphanumeric" id="BC06" char="/" label="/"/>
-            <key group="alphanumeric" id="BC07" char="+" label="+"/>
-            <key group="alphanumeric" id="BC08" char="-" label="-"/>
-            <key group="alphanumeric" id="BC09" char="(" label="("/>
-            <key group="alphanumeric" id="BC10" char=")" label=")"/>
+            <key group="alphanumeric" id="BC04" char="*" label="*"/>
+            <key group="alphanumeric" id="BC05" char="/" label="/"/>
+            <key group="alphanumeric" id="BC06" char="+" label="+"/>
+            <key group="alphanumeric" id="BC07" char="-" label="-"/>
+            <key group="alphanumeric" id="BC08" char="(" label="("/>
+            <key group="alphanumeric" id="BC09" char=")" label=")"/>
+            <key group="alphanumeric" id="BC10" char="'" label="'"/>
+
             <!-- row 2 -->
             <key group="bottomrow" id="layer2.like_rtrn" label="1/3" image=""/>
             <key group="alphanumeric" id="BB01" char=";" label=";"/>
@@ -115,6 +171,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key group="bottomrow" id="BKSP" unlatch_layer="false"/>
           </panel>
         </panel>
+
         <panel>
           <panel filename="Phone-Alpha.svg">
             <!-- row 1 of the layer -->
@@ -139,12 +196,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key group="alphanumeric" id="CD09" char="[" label="["/>
         <key group="alphanumeric" id="CD10" char="]" label="]"/>
         <!-- row 3 -->
+
         <key group="alphanumeric" id="CC01" char="$" label="$"/>
-        <key group="alphanumeric" id="CC02" keysym="8364" label="€"/>
-        <key group="alphanumeric" id="CC03" char="£" label="£"/>
-        <key group="alphanumeric" id="CC04" char="¥" label="¥"/>
-        <key group="alphanumeric" id="CC05" char="¢" label="¢"/>
-        <key group="alphanumeric" id="CC06" char="₩" label="₩"/>
+        <key group="alphanumeric" id="CC02" label="€" keysym="8364"/>
+        <key group="alphanumeric" id="CC03" label="¥" char="¥"/>
+        <key group="alphanumeric" id="CC04" label="₽" char="₽"/>
+        <key group="alphanumeric" id="CC05" label="₮" char="₮" layout="mn"/>  <!-- Mongolian tögrög -->
+        <key group="alphanumeric" id="CC05" label="£" char="£"/>
+        <key group="alphanumeric" id="CC06" label="&amp;" char="&amp;"/>
         <key group="alphanumeric" id="CC07" char="§" label="§"/>
         <key group="alphanumeric" id="CC08" char="^" label="^"/>
         <key group="alphanumeric" id="CC09" char="`" label="`"/>
