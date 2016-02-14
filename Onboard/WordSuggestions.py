@@ -328,7 +328,10 @@ class WordSuggestions:
         Onboard, e.g. by middle clicking to insert something from
         clipboard.
         """
-        self._punctuator.insert_separator_at_distance()
+        separator_span = self.text_context.get_pending_separator()
+        if separator_span:
+            self._punctuator.insert_separator_at_distance(separator_span)
+            self.text_context.set_pending_separator(None)
 
     def _update_spell_checker(self):
         # select the backend
@@ -1800,13 +1803,12 @@ class Punctuator:
             self._wp._text_changer.insert_string_at_caret(
                 string, allow_insertion=False)
 
-    def insert_separator_at_distance(self):
+    def insert_separator_at_distance(self, separator_span):
         """
         Insert pending separator even if it is located at some
         distance away from the caret. Caret position will be
         restored afterwards.
         """
-        separator_span = self.get_pending_separator()
         if separator_span:
             string = separator_span.get_span_text()
 
@@ -1819,8 +1821,6 @@ class Punctuator:
                                       separator_pos,
                                       caret_span.begin(),
                                       string)
-
-            self.set_pending_separator(None)
 
     def _update_text_context(self):
         self._wp.text_context.on_text_context_changed()
