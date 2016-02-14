@@ -1221,6 +1221,12 @@ class Keyboard(WordSuggestions):
         elif key_type == KeyCommon.SCRIPT_TYPE:
             activated = False
 
+        elif key_type == KeyCommon.WORD_TYPE:
+            activated = False
+
+        elif key_type == KeyCommon.CORRECTION_TYPE:
+            activated = False
+
         key.activated = activated
 
     def send_key_release(self, key, view, button = 1, event_type = EventType.CLICK):
@@ -1656,8 +1662,8 @@ class Keyboard(WordSuggestions):
                    controller.is_activated_on_press():
                     action = KeyCommon.SINGLE_STROKE_ACTION
 
-            elif (key.type == KeyCommon.WORD_TYPE and
-                  key.type == KeyCommon.CORRECTION_TYPE):
+            elif (key.type != KeyCommon.WORD_TYPE and
+                  key.type != KeyCommon.CORRECTION_TYPE):
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
                 if (len(label) == 1 and label.isalnum()) or \
