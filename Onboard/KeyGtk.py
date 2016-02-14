@@ -578,7 +578,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def draw_label(self, context, lod):
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
-        if self.font_size == 0:
+        if self.font_size == 0 or not self.show_label:
             return
 
         runs = self.get_label_runs()

@@ -13,7 +13,7 @@
    height="115"
    width="190"
    version="1.0"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="Grid-Alpha.svg">
   <defs
      id="defs49" />
@@ -32,48 +32,52 @@
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
-     inkscape:zoom="12.178811"
-     inkscape:cx="162.96278"
-     inkscape:cy="77.73502"
+     inkscape:zoom="8.4575076"
+     inkscape:cx="139.29158"
+     inkscape:cy="75.54867"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="scan-base"
      showguides="true"
      inkscape:guide-bbox="true" />
- <metadata id="metadata7">
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>Grid-Alpha.svg</dc:title>
-    <cc:license rdf:resource="https://www.gnu.org/licenses/gpl.txt"/>
-    <dc:creator>
-     <cc:Agent>
-      <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
-     </cc:Agent>
-    </dc:creator>
-    <dc:rights>
-     <cc:Agent>
-      <dc:title>GPL-3+ license</dc:title>
-     </cc:Agent>
-    </dc:rights>
-    <dc:publisher>
-     <cc:Agent>
-      <dc:title>Onboard Devel Team</dc:title>
-     </cc:Agent>
-    </dc:publisher>
-    <dc:source>https://launchpad.net/onboard</dc:source>
-    <dc:relation>This file is part of Onboard</dc:relation>
-    <dc:contributor>
-     <cc:Agent>
-      <dc:title>Copyright © 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Grid-Alpha.svg</dc:title>
+        <cc:license
+           rdf:resource="https://www.gnu.org/licenses/gpl.txt" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>GPL-3+ license</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:source>https://launchpad.net/onboard</dc:source>
+        <dc:relation>This file is part of Onboard</dc:relation>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Copyright © 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
 Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
-     </cc:Agent>
-    </dc:contributor>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
+          </cc:Agent>
+        </dc:contributor>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
   <rect
      x="95.500443"
      y="58.499943"
@@ -428,23 +432,23 @@ Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
   <rect
      id="expand-corrections"
      height="15"
-     width="10.976416"
+     width="11"
      y="3.9998169"
      x="38.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="hide.wordlist"
-     height="14.969875"
-     width="11.969875"
-     y="4.0148773"
-     x="152.5"
+     height="15.000001"
+     width="12"
+     y="3.9998169"
+     x="155.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
-     x="135.5"
-     y="4.0148773"
-     width="11.969875"
-     height="14.969875"
+     x="141.5"
+     y="3.9998169"
+     width="12"
+     height="15.000001"
      id="language.wordlist"
      inkscape:label="" />
   <rect
@@ -486,9 +490,25 @@ Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
   <rect
      inkscape:label=""
      id="pause-learning.wordlist"
-     height="14.969875"
-     width="11.969875"
-     y="4.0148773"
-     x="118.5"
+     height="15.000001"
+     width="12"
+     y="3.9998169"
+     x="127.5"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     x="113.5"
+     y="3.9998169"
+     width="12"
+     height="15.000001"
+     id="next-predictions.wordlist"
+     inkscape:label="" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     x="99.5"
+     y="3.9998169"
+     width="12"
+     height="15.000001"
+     id="previous-predictions.wordlist"
+     inkscape:label="" />
 </svg>

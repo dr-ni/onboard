@@ -33,6 +33,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
         <!-- wordlist buttons -->
         <key group='wordlist' id='expand-corrections' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
+        <key group='wsbutton' id='previous-predictions.wordlist' svg_id='previous-predictions.wordlist' label='' image='arrow-left.svg' button='true' class='BarKey' scannable='true' tooltip='Previous suggestions'/>
+        <key group='wsbutton' id='next-predictions.wordlist' svg_id='next-predictions.wordlist' label='' image='arrow-right.svg' button='true' class='BarKey' scannable='true' tooltip='More suggestions'/>
         <key group='wsbutton' id='pause-learning.wordlist' svg_id='pause-learning.wordlist' label='' image='pause.svg' button='true' class='BarKey' scannable='true' tooltip='Pause learning'/>
         <key group='wsbutton' id='language.wordlist' svg_id='language.wordlist' label='' button='true' class='BarKey' label_margin=", 1.2" scannable='false'/>
         <key group='wsbutton' id='hide.wordlist' svg_id='hide.wordlist' image='close.svg' button='true' class='BarKey' scannable='false' tooltip='Hide Onboard'/>

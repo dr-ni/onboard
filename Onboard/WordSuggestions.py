@@ -102,7 +102,7 @@ class WordSuggestions:
     def enable_word_suggestions(self, enable):
 
         # show/hide word-prediction buttons
-        for item in self.get_word_list_bars():
+        for item in self._get_wordlist_bars():
             item.visible = enable
         for item in self.get_text_displays():
             item.visible = enable
@@ -125,7 +125,7 @@ class WordSuggestions:
 
         if enable:
             # only enable if there is a wordlist in the layout
-            if self.get_word_list_bars():
+            if self._get_wordlist_bars():
                 self._wpengine = WPLocalEngine()
                 self.apply_prediction_profile()
         else:
@@ -226,7 +226,7 @@ class WordSuggestions:
         config.typing_assistance.active_language = lang_id
         self.on_active_lang_id_changed()
 
-    def get_word_list_bars(self):
+    def _get_wordlist_bars(self):
         """
         Return all word list bars, so we don't have
         to look for them all the time.
@@ -276,6 +276,9 @@ class WordSuggestions:
 
         if not key.is_correction_key():
             self.expand_corrections(False)
+
+        if not key.is_button():
+            self._goto_first_prediction()
 
     def send_key_up(self, key, button, event_type):
         key_type = key.type
@@ -341,6 +344,9 @@ class WordSuggestions:
 
         self.invalidate_context_ui()
 
+    def invalidate_for_resize(self):
+        self._goto_first_prediction()
+
     def update_suggestions_ui(self):
         self._update_correction_choices()
         self._update_prediction_choices()
@@ -351,7 +357,7 @@ class WordSuggestions:
 
     def update_wordlists(self):
         keys_to_redraw = []
-        items = self.get_word_list_bars()
+        items = self._get_wordlist_bars()
         for item in items:
             keys = item.create_keys(self._correction_choices,
                                     self._prediction_choices)
@@ -386,13 +392,23 @@ class WordSuggestions:
                 item.expand_corrections(expand)
                 self.redraw([item])
 
-    def get_prediction_choice(self, choice_index):
-        if choice_index >= 0 and choice_index < len(self._prediction_choices):
-            return self._prediction_choices[choice_index]
+    def _goto_first_prediction(self):
+        for item in self.find_items_from_classes((WordListPanel)):
+            item.goto_first_prediction()
+
+    def get_prediction_choice(self, wordlist, choice_index):
+        """
+        wordlist:     WordListPanel that choice_index belongs to
+        choice_index: index of a visible prediction key
+        """
+        if wordlist:
+            index = choice_index + wordlist.get_first_prediction_index()
+            if index >= 0 and index < len(self._prediction_choices):
+                return self._prediction_choices[index]
         return ""
 
-    def get_prediction_choice_and_history(self, choice_index):
-        word = self.get_prediction_choice(choice_index)
+    def get_prediction_choice_and_history(self, wordlist, choice_index):
+        word = self.get_prediction_choice(wordlist, choice_index)
         context = self.text_context.get_bot_context()
         tokens, spans = self._wpengine.tokenize_context(context)
         history = tokens[:-1]
@@ -413,12 +429,9 @@ class WordSuggestions:
 
     def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
-        # Went out of range once while clicking quickly left+right
-        if choice_index >= len(self._prediction_choices):
-            return
-
+        choice = self.get_prediction_choice(key.get_parent(), choice_index)
         deletion, insertion = \
-            self._get_prediction_choice_changes(choice_index)
+            self._get_prediction_choice_changes(choice)
 
         # Get the auto separator
         separator = ""
@@ -641,7 +654,6 @@ class WordSuggestions:
 
             context = text_context.get_context()
             if context:  # don't load models on startup
-                max_choices = config.wp.max_word_choices
                 bot_marker = text_context.get_text_begin_marker()
                 bot_context = text_context.get_pending_bot_context()
 
@@ -655,7 +667,7 @@ class WordSuggestions:
 
                 _choices = self._wpengine.predict(
                     bot_context,
-                    max_choices * 2,
+                    config.wp.max_word_choices * 8,
                     case_insensitive=case_insensitive_mode == 1,
                     case_insensitive_smart=case_insensitive_mode == 2,
                     accent_insensitive_smart=config.wp.accent_insensitive,
@@ -677,8 +689,6 @@ class WordSuggestions:
                             continue
 
                     choices.append(choice)
-
-                choices = choices[:max_choices]
 
                 # Make all words start upper case
                 if capitalize:
@@ -821,7 +831,7 @@ class WordSuggestions:
                     seen.add(choice)
         return results
 
-    def _get_prediction_choice_changes(self, choice_index):
+    def _get_prediction_choice_changes(self, choice):
         """
         Determines the text changes necessary when inserting
         the prediction choice at choice_index.
@@ -831,7 +841,6 @@ class WordSuggestions:
         if self._wpengine:
             context = self.text_context.get_context()
             word_prefix = self._wpengine.get_last_context_fragment(context)
-            choice = self._prediction_choices[choice_index]
             remainder = choice[len(word_prefix):]
 
             # no case change?
@@ -994,6 +1003,7 @@ class WordSuggestions:
         """
         if change_detected:
             self.expand_corrections(False)
+            self._goto_first_prediction()
             self.invalidate_context_ui()
             self.commit_ui_updates()
             self._learn_strategy.on_text_context_changed()
@@ -1848,13 +1858,13 @@ class PunctuatorImmediateSeparators(Punctuator):
 
         # before punctuation remove the separator again
         if self._added_separator_span and \
-            key.is_text_changing():
+           key.is_text_changing():
             # Only act if we are still at the caret position
             # where the separator was added.
             caret_span = self._get_span_at_caret()
             if caret_span:
                 if caret_span.begin() == \
-                    self._added_separator_span.end():
+                   self._added_separator_span.end():
                     char = key.get_label()
                     if char in self.punctuation_no_capitalize:
                         self._delete_at_caret()
@@ -2079,6 +2089,12 @@ class WordListPanel(LayoutPanel):
     def __init__(self):
         LayoutPanel.__init__(self)
         self._correcions_expanded = False
+        self._first_prediction = 0
+        self._more_predictions_requested = False
+        self._can_goto_previous_predictions = False
+        self._can_goto_next_predictions = False
+        self._next_predictions_increment = 0
+        self._prev_predictions_stack = []
 
     def get_max_non_expanded_corrections(self):
         return 1
@@ -2088,6 +2104,38 @@ class WordListPanel(LayoutPanel):
 
     def are_corrections_expanded(self):
         return self._correcions_expanded
+
+    def were_more_predictions_requested(self):
+        """ Has the more arrow been clicked at least once? """
+        return self._more_predictions_requested
+
+    def get_first_prediction_index(self):
+        """ index of first visible prediction """
+        return self._first_prediction
+
+    def goto_next_predictions(self):
+        """ scroll suggestions to the right """
+        self._prev_predictions_stack.append(self._first_prediction)
+        self._first_prediction += self._next_predictions_increment
+        self._more_predictions_requested = True
+
+    def goto_previous_predictions(self):
+        """ scroll suggestions to the left """
+        if self._prev_predictions_stack:
+            self._first_prediction = self._prev_predictions_stack[-1]
+            del self._prev_predictions_stack[-1]
+
+    def goto_first_prediction(self):
+        """ reset scroll position """
+        self._first_prediction = 0
+        self._prev_predictions_stack = []
+        self._more_predictions_requested = False
+
+    def can_goto_previous_predictions(self):
+        return self._can_goto_previous_predictions
+
+    def can_goto_next_predictions(self):
+        return self._can_goto_next_predictions
 
     def _get_button_width(self, button):
         return button.get_initial_border_rect().w * \
@@ -2102,30 +2150,112 @@ class WordListPanel(LayoutPanel):
             (2.0 - config.theme_settings.key_size / 100.0)
 
     def create_keys(self, correction_choices, prediction_choices):
+        fixed_background = list(self.find_ids(["wordlist",
+                                               "prediction",
+                                               "correction"]))
+        fixed_buttons    = list(self.find_ids(["expand-corrections"]))
+        hideable_buttons = list(self.find_ids(["previous-predictions",
+                                               "next-predictions",
+                                               "pause-learning",
+                                               "language",
+                                               "hide"]))
+        # scroll to current position
+        first = self._first_prediction
+        max_choices = config.wp.max_word_choices \
+            if first == 0 else 100
+        # if not self._more_predictions_requested else 100
+        first = self._first_prediction
+        scrolled_prediction_choices = \
+            prediction_choices[first:first + max_choices]
+
+        # hide/show buttons
+        visible_button_ids = \
+            self._get_visible_buttons(correction_choices, prediction_choices,
+                                      scrolled_prediction_choices)
+        for button in hideable_buttons:
+            button.set_visible(button.get_id() in visible_button_ids)
+
+        # create keys
+        correction_keys, prediction_keys = \
+            self._create_keys(correction_choices,
+                              scrolled_prediction_choices,
+                              visible_button_ids)
+
+        # add all keys to the panel
+        keys = correction_keys + prediction_keys
+        color_scheme = fixed_buttons[0].color_scheme
+        for key in keys:
+            key.color_scheme = color_scheme
+        self.set_items(fixed_background + keys +
+                       fixed_buttons + hideable_buttons)
+
+        self._can_goto_previous_predictions = \
+            self._first_prediction > 0
+        self._can_goto_next_predictions = \
+            self._first_prediction + len(prediction_keys) < \
+            len(prediction_choices)
+        self._next_predictions_increment = len(prediction_keys)
+
+        return keys
+
+    def _get_visible_buttons(self, correction_choices,
+                             prediction_choices, scrolled_prediction_choices):
+        enabled_button_ids = \
+            config.word_suggestions.get_shown_wordlist_button_ids()
+
+        previous_predictions_id = "previous-predictions"
+        next_predictions_id = "next-predictions"
+
+        previous_predictions_enabled = \
+            previous_predictions_id in enabled_button_ids
+        next_predictions_enabled = \
+            next_predictions_id in enabled_button_ids
+
+        if next_predictions_enabled and \
+           not self._more_predictions_requested:
+
+            # generate keys without scrolling buttons
+            visible_button_ids = enabled_button_ids[:]
+            if previous_predictions_enabled:
+                visible_button_ids.remove(previous_predictions_id)
+
+            if next_predictions_enabled:
+                visible_button_ids.remove(next_predictions_id)
+
+            correction_keys, prediction_keys = \
+                self._create_keys(correction_choices,
+                                  scrolled_prediction_choices,
+                                  visible_button_ids)
+
+            # hide/show buttons as needed
+            visible_button_ids = enabled_button_ids[:]
+
+            if previous_predictions_enabled and \
+               (not self._more_predictions_requested or
+                len(prediction_keys) == len(prediction_choices)):
+                visible_button_ids.remove(previous_predictions_id)
+
+            if next_predictions_enabled and \
+               len(prediction_keys) == len(prediction_choices):
+                visible_button_ids.remove(next_predictions_id)
+        else:
+            visible_button_ids = enabled_button_ids
+
+        return visible_button_ids
+
+    def _create_keys(self, correction_choices, prediction_choices,
+                     visible_button_ids):
         """
         Dynamically create a variable number of buttons
         for word correction and prediction.
         """
         wordlist = self._get_child_button("wordlist")
-        fixed_background = list(self.find_ids(["wordlist",
-                                               "prediction",
-                                               "correction"]))
-        fixed_buttons    = list(self.find_ids(["expand-corrections"]))
-        hideable_buttons = list(self.find_ids(["pause-learning",
-                                               "language",
-                                               "hide"]))
         if not wordlist:
             return []
 
         key_context = wordlist.context
         wordlist_rect = wordlist.get_rect()
         rect = wordlist_rect.copy()
-
-        # hide buttons disabled by preferences
-        visible_button_ids = \
-            config.word_suggestions.get_shown_wordlist_button_ids()
-        for button in hideable_buttons:
-            button.set_visible(button.get_id() in visible_button_ids)
 
         # position visible buttons
         buttons = []
@@ -2144,7 +2274,7 @@ class WordListPanel(LayoutPanel):
         wordlist.set_visible(not correction_choices)
 
         # create correction keys
-        keys, used_rect = \
+        correction_keys, used_rect = \
             self._create_correction_keys(correction_choices,
                                          rect, wordlist,
                                          key_context, font_size)
@@ -2152,9 +2282,11 @@ class WordListPanel(LayoutPanel):
         rect.w -= used_rect.w
 
         # create prediction keys
+        prediction_keys = []
         if not self.are_corrections_expanded():
-            keys += self._create_prediction_keys(prediction_choices, rect,
-                                                 key_context, font_size)
+            prediction_keys = self._create_prediction_keys(prediction_choices,
+                                                           rect, key_context,
+                                                           font_size)
 
         # move the buttons to the end of the bar
         if buttons:
@@ -2171,21 +2303,13 @@ class WordListPanel(LayoutPanel):
                     rw.w -= button_width + button_spacing
                 button.set_border_rect(r)
 
-        # finally add all keys to the panel
-        color_scheme = fixed_buttons[0].color_scheme
-        for key in keys:
-            key.color_scheme = color_scheme
-        self.set_items(fixed_background + keys +
-                       fixed_buttons + hideable_buttons)
-
-        return keys
+        return correction_keys, prediction_keys
 
     def _create_correction_keys(self, correction_choices, rect, wordlist,
                                 key_context, font_size):
         """
         Create all correction keys.
         """
-
         choices_rect = rect.copy()
         wordlist_rect = wordlist.get_rect()
         section_spacing = 1

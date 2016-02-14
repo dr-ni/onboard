@@ -1901,6 +1901,18 @@ class ConfigTypingAssistance(ConfigObject):
 class ConfigWordSuggestions(ConfigObject):
     """ word-suggestions configuration keys"""
 
+    # wordlist_buttons
+    KEY_ID_PREVIOUS_PREDICTIONS = "previous-predictions"
+    KEY_ID_NEXT_PREDICTIONS = "next-predictions"
+    KEY_ID_LANGUAGE = "language"
+    KEY_ID_PAUSE_LEARNING = "pause-learning"
+    KEY_ID_HIDE = "hide"
+    KEY_ORDER = [KEY_ID_PREVIOUS_PREDICTIONS,
+                 KEY_ID_NEXT_PREDICTIONS,
+                 KEY_ID_PAUSE_LEARNING,
+                 KEY_ID_LANGUAGE,
+                 KEY_ID_HIDE]
+
     def _init_keys(self):
         self.schema = SCHEMA_WORD_SUGGESTIONS
         self.sysdef_section = "word-suggestions"
@@ -1912,14 +1924,18 @@ class ConfigWordSuggestions(ConfigObject):
         self.add_key("accent-insensitive", True)
         self.add_key("max-word-choices", 5)
         self.add_key("spelling-suggestions-enabled", True)
-        self.add_key("wordlist-buttons", ["language", "hide"])
+        self.add_key("wordlist-buttons",
+                     [self.KEY_ID_PREVIOUS_PREDICTIONS,
+                      self.KEY_ID_NEXT_PREDICTIONS,
+                      self.KEY_ID_LANGUAGE,
+                      self.KEY_ID_HIDE])
         self.add_key("pause-learning-locked", False)
         self.add_key("learning-behavior-paused", LearningBehavior.NOTHING,
-                    enum={"nothing" : LearningBehavior.NOTHING,
-                          "known-only" : LearningBehavior.KNOWN_ONLY,
-                        })
+                     enum={"nothing" : LearningBehavior.NOTHING,
+                           "known-only" : LearningBehavior.KNOWN_ONLY})
 
-        self._pause_learning = 0  # 0=off, 1=latched, 2=locked; not in gsettings
+        # 0=off, 1=latched, 2=locked; not in gsettings
+        self._pause_learning = 0
 
         # deprecated
         self.add_key("stealth-mode", False)
@@ -1954,53 +1970,81 @@ class ConfigWordSuggestions(ConfigObject):
     def _post_notify_pause_learning_locked(self):
         self._pause_learning = 2 if self.pause_learning_locked else 0
 
-    KEY_ID_LANGUAGE = "language"
-    KEY_ID_PAUSE_LEARNING = "pause-learning"
-
     def get_shown_wordlist_button_ids(self):
         result = []
         for button_id in self.wordlist_buttons:
             if button_id != self.KEY_ID_PAUSE_LEARNING or \
-                self.can_show_pause_learning_button():
+               self.can_show_pause_learning_button():
                 result.append(button_id)
         return result
+
+    def show_wordlist_button(self, key_id, show):
+        """
+        Doctests:
+        >>> co = ConfigWordSuggestions()
+        >>> ConfigWordSuggestions.wordlist_buttons = []
+
+        >>> co.wordlist_buttons = []
+        >>> co.show_wordlist_button(co.KEY_ID_HIDE, True)
+        >>> print(co.wordlist_buttons)
+        ['hide']
+
+        >>> co.wordlist_buttons = []
+        >>> co.show_wordlist_button(co.KEY_ID_LANGUAGE, True)
+        >>> print(co.wordlist_buttons)
+        ['language']
+
+        >>> co.wordlist_buttons = []
+        >>> co.show_wordlist_button("notabutton", True)
+        >>> print(co.wordlist_buttons)
+        []
+
+        >>> co.wordlist_buttons = [co.KEY_ID_PAUSE_LEARNING, co.KEY_ID_HIDE]
+        >>> co.show_wordlist_button(co.KEY_ID_LANGUAGE, True)
+        >>> print(co.wordlist_buttons)
+        ['pause-learning', 'language', 'hide']
+
+        >>> co.wordlist_buttons = [co.KEY_ID_LANGUAGE, co.KEY_ID_HIDE]
+        >>> co.show_wordlist_button(co.KEY_ID_PAUSE_LEARNING, True)
+        >>> print(co.wordlist_buttons)
+        ['pause-learning', 'language', 'hide']
+
+        """
+        buttons = self.wordlist_buttons[:]
+        if show:
+            if key_id not in buttons:
+                priority = self._get_button_priority(key_id)
+                if priority >= 0:
+                    for i, button in enumerate(buttons):
+                        p = self._get_button_priority(button)
+                        if priority < p:
+                            buttons.insert(i, key_id)
+                            break
+                    else:
+                        buttons.append(key_id)
+
+                self.wordlist_buttons = buttons
+        else:
+            if key_id in buttons:
+                buttons.remove(key_id)
+                self.wordlist_buttons = buttons
+
+    @staticmethod
+    def _get_button_priority(key_id):
+        try:
+            return ConfigWordSuggestions.KEY_ORDER.index(key_id)
+        except ValueError:
+            return -1
 
     def can_show_language_button(self):
         return self.KEY_ID_LANGUAGE in self.wordlist_buttons
 
-    def show_language_button(self, show):
-        key_id = self.KEY_ID_LANGUAGE
-        buttons = self.wordlist_buttons[:]
-        if show:
-            if not key_id in buttons:
-                try:
-                    index = buttons.index("hide")
-                    buttons.insert(index, key_id)
-                except ValueError:
-                    buttons.append(key_id)
-
-                self.wordlist_buttons = buttons
-        else:
-            if key_id in buttons:
-                buttons.remove(key_id)
-                self.wordlist_buttons = buttons
-
     def can_show_pause_learning_button(self):
         return self.auto_learn and \
-               self.KEY_ID_PAUSE_LEARNING in self.wordlist_buttons
+            self.KEY_ID_PAUSE_LEARNING in self.wordlist_buttons
 
-    def show_pause_learning_button(self, show):
-        key_id = self.KEY_ID_PAUSE_LEARNING
-        buttons = self.wordlist_buttons[:]
-        if show:
-            if not key_id in buttons:
-                buttons.insert(0, key_id)
-
-                self.wordlist_buttons = buttons
-        else:
-            if key_id in buttons:
-                buttons.remove(key_id)
-                self.wordlist_buttons = buttons
+    def can_show_more_predictions_button(self):
+        return self.KEY_ID_NEXT_PREDICTIONS in self.wordlist_buttons
 
     def can_learn_new_words(self):
         return not self.is_learning_paused()

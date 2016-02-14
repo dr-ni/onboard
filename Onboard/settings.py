@@ -1148,16 +1148,28 @@ class PageWordSuggestions(DialogBuilder):
         self.bind_check("language_button_toggle",
             config.word_suggestions, "wordlist_buttons",
             config_get_callback = lambda co, key: \
-                    config.word_suggestions.can_show_language_button(),
+                    co.can_show_language_button(),
             config_set_callback = lambda co, key, value: \
-                    config.word_suggestions.show_language_button(value))
+                    co.show_wordlist_button(co.KEY_ID_LANGUAGE, value))
 
         self.bind_check("pause_learning_button_toggle",
             config.word_suggestions, "wordlist_buttons",
             config_get_callback = lambda co, key: \
-                    config.word_suggestions.can_show_pause_learning_button(),
+                    co.can_show_pause_learning_button(),
             config_set_callback = lambda co, key, value: \
-                    config.word_suggestions.show_pause_learning_button(value))
+                    co.show_wordlist_button(co.KEY_ID_PAUSE_LEARNING, value))
+
+        def _get(co, key):
+            return co.can_show_more_predictions_button()
+
+        def _set(co, key, value):
+            co.show_wordlist_button(co.KEY_ID_NEXT_PREDICTIONS, value)
+            co.show_wordlist_button(co.KEY_ID_PREVIOUS_PREDICTIONS, value)
+
+        self.bind_check("more_predictions_button_toggle",
+                        config.word_suggestions, "wordlist_buttons",
+                        config_get_callback=_get,
+                        config_set_callback=_set)
 
         self.bind_combobox_id("learning_behavior_paused_combobox",
                         config.word_suggestions, "learning_behavior_paused")

@@ -708,7 +708,8 @@ class Keyboard(WordSuggestions):
                    [BCMiddleClick, BCSingleClick, BCSecondaryClick,
                     BCDoubleClick, BCDragClick, BCHoverClick,
                     BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
-                    BCExpandCorrections, BCPauseLearning, BCLanguage,
+                    BCExpandCorrections, BCPreviousPredictions,
+                    BCNextPredictions, BCPauseLearning, BCLanguage,
                     BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
                    ]
                 }
@@ -1797,12 +1798,16 @@ class Keyboard(WordSuggestions):
 
         if mask & UIMask.CONTROLLERS:
             # update buttons
-            for controller in list(self.button_controllers.values()):
+            for controller in self.button_controllers.values():
                 controller.update()
-            mask = self._invalidated_ui  # may have changed by controllers
+            mask = self._invalidated_ui  # may have been changed by controllers
 
         if mask & UIMask.SUGGESTIONS:
             keys.update(WordSuggestions.update_suggestions_ui(self))
+
+            # update buttons that depend on suggestions
+            for controller in self.button_controllers.values():
+                controller.update_late()
 
         if mask & UIMask.LAYERS:
             self.update_visible_layers()
@@ -2107,6 +2112,10 @@ class ButtonController(object):
         """ asynchronous ui update """
         pass
 
+    def update_late(self):
+        """ after suggestions have been updated """
+        pass
+
     def can_dwell(self):
         """ can start dwelling? """
         return False
@@ -2403,7 +2412,7 @@ class BCQuit(ButtonController):
             GLib.idle_add(app.do_quit_onboard)
 
     def update(self):
-        self.set_visible(not config.xid_mode and \
+        self.set_visible(not config.xid_mode and
                          not config.lockdown.disable_quit)
 
 
@@ -2414,6 +2423,35 @@ class BCExpandCorrections(ButtonController):
     def release(self, view, button, event_type):
         wordlist = self.key.get_parent()
         wordlist.expand_corrections(not wordlist.are_corrections_expanded())
+
+
+class BCPreviousPredictions(ButtonController):
+
+    id = "previous-predictions"
+
+    def release(self, view, button, event_type):
+        wordlist = self.key.get_parent()
+        wordlist.goto_previous_predictions()
+        self.keyboard.invalidate_context_ui()
+
+    def update_late(self):
+        wordlist = self.key.get_parent()
+        self.set_sensitive(wordlist.can_goto_previous_predictions())
+
+
+class BCNextPredictions(ButtonController):
+
+    id = "next-predictions"
+
+    def release(self, view, button, event_type):
+        wordlist = self.key.get_parent()
+        wordlist.goto_next_predictions()
+        self.keyboard.invalidate_context_ui()
+
+    def update_late(self):
+        key = self.key
+        wordlist = key.get_parent()
+        self.set_sensitive(wordlist.can_goto_next_predictions())
 
 
 class BCPauseLearning(ButtonController):

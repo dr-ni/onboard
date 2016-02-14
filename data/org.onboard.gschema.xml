@@ -804,7 +804,7 @@ With 'known-only', new words are rejected, but frequency and recency of already 
             <description>Display the currently edited text line in the keyboard.</description>
         </key>
         <key name="wordlist-buttons" type="as">
-            <default>["language", "hide"]</default>
+            <default>["previous-predictions", "next-predictions", "language", "hide"]</default>
             <summary>Buttons visible in the word suggestion bar</summary>
             <description>Key ids and order of buttons visible in the word suggestion bar.</description>
         </key>

@@ -1747,15 +1747,17 @@ class SuggestionMenu(KeyMenu):
         menu = Gtk.Menu()
 
         item = Gtk.MenuItem.new_with_mnemonic(_("_Remove suggestion…"))
-        item.connect("activate", self._on_remove_suggestion)
+        item.connect("activate", self._on_remove_suggestion, key)
         menu.append(item)
 
         return menu
 
-    def _on_remove_suggestion(self, menu_item):
+    def _on_remove_suggestion(self, menu_item, key):
         keyboard = self._keyboard
+        wordlist = key.get_parent()
         suggestion, history = \
-            keyboard.get_prediction_choice_and_history(self._choice_index)
+            keyboard.get_prediction_choice_and_history(wordlist,
+                                                       self._choice_index)
         history = history[-1:]  # only single word history supported
         dialog = RemoveSuggestionConfirmationDialog(
                     self._keyboard_widget.get_kbd_window(),

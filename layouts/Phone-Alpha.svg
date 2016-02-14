@@ -13,7 +13,7 @@
    height="96"
    width="240"
    version="1.0"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="Phone-Alpha.svg">
   <defs
      id="defs84" />
@@ -30,9 +30,9 @@
      inkscape:window-height="1176"
      id="namedview82"
      showgrid="false"
-     inkscape:zoom="11.322851"
-     inkscape:cx="249.73072"
-     inkscape:cy="78.471711"
+     inkscape:zoom="3.1599999"
+     inkscape:cx="125.63199"
+     inkscape:cy="19.363975"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -43,39 +43,43 @@
      inkscape:bbox-nodes="true"
      showguides="true"
      inkscape:guide-bbox="true" />
- <metadata id="metadata3346">
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>Phone-Alpha.svg</dc:title>
-    <cc:license rdf:resource="https://www.gnu.org/licenses/gpl.txt"/>
-    <dc:creator>
-     <cc:Agent>
-      <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
-     </cc:Agent>
-    </dc:creator>
-    <dc:rights>
-     <cc:Agent>
-      <dc:title>GPL-3+ license</dc:title>
-     </cc:Agent>
-    </dc:rights>
-    <dc:publisher>
-     <cc:Agent>
-      <dc:title>Onboard Devel Team</dc:title>
-     </cc:Agent>
-    </dc:publisher>
-    <dc:source>https://launchpad.net/onboard</dc:source>
-    <dc:relation>This file is part of Onboard</dc:relation>
-    <dc:contributor>
-     <cc:Agent>
-      <dc:title>Copyright © 2013, 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
+  <metadata
+     id="metadata3346">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Phone-Alpha.svg</dc:title>
+        <cc:license
+           rdf:resource="https://www.gnu.org/licenses/gpl.txt" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>GPL-3+ license</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:source>https://launchpad.net/onboard</dc:source>
+        <dc:relation>This file is part of Onboard</dc:relation>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Copyright © 2013, 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
 Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
-     </cc:Agent>
-    </dc:contributor>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
+          </cc:Agent>
+        </dc:contributor>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
   <rect
      id="AD09"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
@@ -311,32 +315,32 @@ Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
      x="216.63158" />
   <rect
      id="wordlist"
-     height="17.970619"
-     width="238.98888"
-     y="-18.48531"
-     x="0.50556129"
+     height="17.979628"
+     width="238.97963"
+     y="-18.490578"
+     x="0.51018578"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:1.02037156;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="correction"
-     height="17.827623"
-     width="46.80859"
-     y="-18.413813"
-     x="30.585579"
-     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.16723001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     height="17.832769"
+     width="38.832771"
+     y="-18.417149"
+     x="5.5836148"
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.16723001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
   <rect
      id="expand-corrections"
-     height="17.407192"
-     width="18.360826"
-     y="-18.203596"
-     x="88.816208"
+     height="17.400974"
+     width="17.400974"
+     y="-18.201252"
+     x="48.799515"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="prediction"
-     height="17.804632"
-     width="48.784645"
-     y="-18.402313"
-     x="118.61121"
-     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.1908443;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     height="17.809156"
+     width="38.809155"
+     y="-18.405342"
+     x="70.595421"
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.1908443;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
   <rect
      id="AA02"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
@@ -371,26 +375,42 @@ Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
      inkscape:label="" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none"
-     x="220.83647"
-     y="-18.203598"
-     width="18.360826"
-     height="17.407192"
+     x="220.79951"
+     y="-18.19738"
+     width="17.400974"
+     height="17.400974"
      id="hide.wordlist"
      inkscape:label="" />
   <rect
      inkscape:label=""
      id="language.wordlist"
-     height="17.407192"
-     width="18.360826"
-     y="-18.203598"
-     x="198.79951"
+     height="17.400974"
+     width="17.400974"
+     y="-18.19738"
+     x="200.79951"
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none"
-     x="176.79951"
-     y="-18.203598"
-     width="18.360826"
-     height="17.407192"
+     x="180.79951"
+     y="-18.19738"
+     width="17.400974"
+     height="17.400974"
      id="pause-learning.wordlist"
      inkscape:label="" />
+  <rect
+     inkscape:label=""
+     id="next-predictions.wordlist"
+     height="17.400974"
+     width="17.400974"
+     y="-18.19738"
+     x="160.79951"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     inkscape:label=""
+     id="previous-predictions.wordlist"
+     height="17.400974"
+     width="17.400974"
+     y="-18.19738"
+     x="140.79951"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.59902573;stroke-miterlimit:4;stroke-dasharray:none" />
 </svg>

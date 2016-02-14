@@ -89,12 +89,13 @@ class LayoutView:
     def get_color_scheme(self):
         return self.keyboard.color_scheme
 
-    def invalidate_for_resize(self, lod = LOD.FULL):
+    def invalidate_for_resize(self, lod=LOD.FULL):
         self.invalidate_keys()
         if self._lod == LOD.FULL:
             self.invalidate_shadows()
         self.invalidate_font_sizes()
-        #self.invalidate_label_extents()
+        # self.invalidate_label_extents()
+        self.keyboard.invalidate_for_resize()
 
     def invalidate_font_sizes(self):
         """
