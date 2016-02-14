@@ -2211,8 +2211,8 @@ class WordListPanel(LayoutPanel):
         next_predictions_enabled = \
             next_predictions_id in enabled_button_ids
 
-        if next_predictions_enabled and \
-           not self._more_predictions_requested:
+        if previous_predictions_enabled or \
+           next_predictions_enabled:
 
             # generate keys without scrolling buttons
             visible_button_ids = enabled_button_ids[:]
@@ -2229,14 +2229,16 @@ class WordListPanel(LayoutPanel):
 
             # hide/show buttons as needed
             visible_button_ids = enabled_button_ids[:]
+            enabled = len(prediction_keys) != len(prediction_choices) and \
+                not self._correcions_expanded
 
             if previous_predictions_enabled and \
                (not self._more_predictions_requested or
-                len(prediction_keys) == len(prediction_choices)):
+                not enabled):
                 visible_button_ids.remove(previous_predictions_id)
 
             if next_predictions_enabled and \
-               len(prediction_keys) == len(prediction_choices):
+               not enabled:
                 visible_button_ids.remove(next_predictions_id)
         else:
             visible_button_ids = enabled_button_ids
