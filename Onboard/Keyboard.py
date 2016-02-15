@@ -128,8 +128,7 @@ class UnpressTimers:
         return False
 
     def unpress(self, key):
-        if key.pressed and \
-           self._timers.get(key):
+        if key.pressed:
             key.pressed = False
             self._keyboard.on_key_unpressed(key)
 
