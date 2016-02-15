@@ -365,6 +365,12 @@ class Settings(DialogBuilder):
                         config.keyboard, "audio_feedback_place_in_space")
         self.bind_check("show_secondary_labels_toggle",
                         config.keyboard, "show_secondary_labels")
+        self.bind_check("upper_case_on_right_click_toggle",
+                        config.keyboard, "key_press_modifiers",
+                        config_get_callback=lambda co, key:
+                            co.can_upper_case_on_button(3),
+                        config_set_callback=lambda co, key, value:
+                            co.set_upper_case_on_button(3, value))
 
         # Keyboard - Advanced page
         self.bind_combobox_id("default_key_action_combobox",

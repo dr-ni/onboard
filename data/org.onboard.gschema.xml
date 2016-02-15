@@ -258,6 +258,13 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Delay until external modifier changes become visible</summary>
             <description>Delay in seconds until most modifier changes from the outside become visible in Onboard. 0.0 for no delay. -1.0 to never show modifier changes.</description>
         </key>
+        <key name="key-press-modifiers" type="a{ss}">
+            <default>{"button3" : "SHIFT"}</default>
+            <summary>Auto-activate modifiers based on how a key was pressed</summary>
+            <description>Format {trigger, modifier[|modifier [|...]]}. Triggers may be one of "button0"-"button32", "swipeup", or "swipedown".
+Modifiers can only be "SHIFT" at the moment.
+            </description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">

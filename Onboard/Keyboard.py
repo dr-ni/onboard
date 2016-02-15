@@ -822,7 +822,7 @@ class Keyboard(WordSuggestions):
 
             # announce temporary modifiers
             temp_mod_mask = 0
-            if button == 3:
+            if config.keyboard.can_upper_case_on_button(button):
                 temp_mod_mask = Modifiers.SHIFT
             self._set_temporary_modifiers(temp_mod_mask)
             self._update_temporary_key_label(key, temp_mod_mask)

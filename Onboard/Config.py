@@ -1463,6 +1463,25 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("inter-key-stroke-delay", 0.0)
         self.add_key("modifier-update-delay", 1.0)
 
+        self.add_key("key-press-modifiers", {"button3" : "SHIFT"}, 'a{ss}')
+
+    def can_upper_case_on_button(self, button):
+        kpms = self.key_press_modifiers
+        if not kpms:  # speed up the empty case
+            return False
+        key = "button" + str(button)
+        return kpms.get(key) == "SHIFT"
+
+    def set_upper_case_on_button(self, button, on):
+        key = "button" + str(button)
+        values = dict(self.key_press_modifiers)  # must be a copy
+        if on:
+            values[key] = "SHIFT"
+        else:
+            if key in values:
+                del values[key]
+        self.key_press_modifiers = values
+
 
 class ConfigWindow(ConfigObject):
     """Window configuration """

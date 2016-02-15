@@ -1883,7 +1883,6 @@
                                   <object class="GtkBox" id="box23">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_left">12</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
@@ -2047,6 +2046,59 @@
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkFrame" id="frame16">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label_xalign">0</property>
+                                <property name="shadow_type">none</property>
+                                <child>
+                                  <object class="GtkBox" id="box41">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="margin_top">6</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">2</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="upper_case_on_right_click_toggle">
+                                        <property name="label" translatable="yes">Upper case on right click.</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Temporarily enable SHIFT when clicking with the secondary button.</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child type="label">
+                                  <object class="GtkLabel" id="label63">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Key Behaviour</property>
+                                    <property name="use_markup">True</property>
+                                    <attributes>
+                                      <attribute name="weight" value="bold"/>
+                                    </attributes>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
