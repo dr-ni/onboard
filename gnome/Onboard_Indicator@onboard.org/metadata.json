@@ -1,0 +1,4 @@
+{"shell-version": ["3.18"],
+ "name": "Onboard Indicator",
+ "description": "Add indicator and menu for Onboard onscreen-keyboard and disable the built-in keyboard.",
+ "uuid": "Onboard_Indicator@onboard.org"}
