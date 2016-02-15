@@ -359,7 +359,6 @@ DistUtilsExtra.auto.setup(
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
                   ('share/man/man1', glob.glob('man/*')),
                   ('share/sounds/freedesktop/stereo', glob.glob('sounds/*')),
-                  ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
