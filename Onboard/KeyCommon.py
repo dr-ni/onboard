@@ -230,7 +230,7 @@ class KeyCommon(LayoutItem):
     # label that is currently displayed by this key
     label = ""
 
-    # mod_mask for the currently displayed label
+    # mod_mask for the currently configured label
     mod_mask = 0
 
     # smaller label of a currently invisible modifier level
@@ -268,7 +268,10 @@ class KeyCommon(LayoutItem):
             return
 
         # primary label
-        label = self.get_label_for_modmask(mod_mask)
+        label = labels.get(mod_mask)
+        if label is None:
+            mask = mod_mask & LABEL_MODIFIERS
+            label = labels.get(mask)
 
         # secondary label, usually the label of the shift state
         secondary_label = None
@@ -329,14 +332,6 @@ class KeyCommon(LayoutItem):
 
     def get_label(self):
         return self.label
-
-    def get_label_for_modmask(self, mod_mask):
-        labels = self.labels
-        label = labels.get(mod_mask)
-        if label is None:
-            mask = mod_mask & LABEL_MODIFIERS
-            label = labels.get(mask)
-        return label
 
     def get_secondary_label(self):
         return self.secondary_label
