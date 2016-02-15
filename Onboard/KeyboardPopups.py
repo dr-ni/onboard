@@ -524,9 +524,10 @@ class LayoutBuilderKeySequence(LayoutBuilder):
     @staticmethod
     def build(source_key, color_scheme, key_sequence):
         # parse sequence into lines
-        lines, ncolumns = LayoutBuilderKeySequence \
-                             ._layout_sequence(key_sequence)
-        return LayoutBuilderKeySequence._create_layout(source_key, color_scheme,
+        lines, ncolumns = \
+            LayoutBuilderKeySequence ._layout_sequence(key_sequence)
+        return LayoutBuilderKeySequence._create_layout(source_key,
+                                                       color_scheme,
                                                        lines, ncolumns)
 
     @staticmethod
@@ -543,7 +544,7 @@ class LayoutBuilderKeySequence(LayoutBuilder):
                               rect.w * ncolumns + spacing[0] * (ncolumns - 1),
                               rect.h * nrows + spacing[1] * (nrows - 1))
 
-        # subdive into logical rectangles for the keys
+        # subdivide into logical rectangles for the keys
         layout_rect = context.canvas_to_log_rect(layout_canvas_rect)
         key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
 

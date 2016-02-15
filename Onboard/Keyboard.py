@@ -128,7 +128,8 @@ class UnpressTimers:
         return False
 
     def unpress(self, key):
-        if key.pressed:
+        if key.pressed and \
+           self._timers.get(key):
             key.pressed = False
             self._keyboard.on_key_unpressed(key)
 
@@ -208,13 +209,13 @@ class KeySynthVirtkey(KeySynth):
         if self._vk:
             self._vk.release_keycode(keycode)
 
-    def lock_mod(self, mod):
+    def lock_mod(self, mod_mask):
         if self._vk:
-            self._vk.lock_mod(mod)
+            self._vk.lock_mod(mod_mask)
 
-    def unlock_mod(self, mod):
+    def unlock_mod(self, mod_mask):
         if self._vk:
-            self._vk.unlock_mod(mod)
+            self._vk.unlock_mod(mod_mask)
 
     def press_key_string(self, keystr):
         """
@@ -467,7 +468,8 @@ class Keyboard(WordSuggestions):
         self._pressed_key = None
         self._last_typing_time = 0
 
-        self._locked_temporary_modifier = None
+        self._temporary_modifiers = None
+        self._locked_temporary_modifiers = None
         self._suppress_modifiers_stack = []
         self._capitalization_requested = False
 
@@ -818,6 +820,13 @@ class Keyboard(WordSuggestions):
             # stop timed redrawing for this key
             self._unpress_timers.stop(key)
 
+            # announce temporary modifiers
+            temp_mod_mask = 0
+            if button == 3:
+                temp_mod_mask = Modifiers.SHIFT
+            self._set_temporary_modifiers(temp_mod_mask)
+            self._update_temporary_key_label(key, temp_mod_mask)
+
             # mark key pressed
             key.pressed = True
             self.on_key_pressed(key, view, sequence, action)
@@ -966,6 +975,7 @@ class Keyboard(WordSuggestions):
         return long_pressed
 
     def _do_key_down_action(self, key, view, button, event_type):
+
         # generate key-stroke
         action = self.get_key_action(key)
         can_send_key = ((not key.sticky or not key.active) and
@@ -1021,15 +1031,12 @@ class Keyboard(WordSuggestions):
            self._is_alt_special():
             self._last_alt_key = key
         else:
-
-            if button == 3:
-                self._maybe_lock_temporary_modifier(key, Modifiers.SHIFT)
-
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
                 WordSuggestions.on_before_key_press(self, key)
-                self.maybe_send_alt_press_for_key(key, view,
-                                                  button, event_type)
+                self._maybe_send_alt_press_for_key(key, view,
+                                                   button, event_type)
+                self._maybe_lock_temporary_modifiers(key)
 
                 self.send_key_press(key, view, button, event_type)
 
@@ -1075,7 +1082,9 @@ class Keyboard(WordSuggestions):
                action == KeyCommon.DELAYED_STROKE_ACTION:
 
                 WordSuggestions.on_before_key_press(self, key)
-                self.maybe_send_alt_press_for_key(key, view, button, event_type)
+                self._maybe_send_alt_press_for_key(key, view,
+                                                   button, event_type)
+                self._maybe_lock_temporary_modifiers(key)
 
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow  direct text insertion by AT-SPI for char keys
@@ -1095,7 +1104,7 @@ class Keyboard(WordSuggestions):
             # Update word suggestions on shift unlatch or release.
             self.invalidate_context_ui()
 
-        self._maybe_unlock_temporary_modifier()
+        self._maybe_unlock_temporary_modifiers()
         self._maybe_send_alt_release_for_key(key, view, button, event_type)
 
         # Check modifier counts for plausibility.
@@ -1115,19 +1124,36 @@ class Keyboard(WordSuggestions):
                 # Reset this too, else unlatching won't happen until restart.
                 self._external_mod_changes[mod] = 0
 
-    def _maybe_lock_temporary_modifier(self, key, modifier):
-        """ Lock modifier for a single key-press """
-        if not self.mods[Modifiers.SHIFT] and \
-           not key.modifier == Modifiers.SHIFT and \
-           not key.is_button():
-            self._locked_temporary_modifier = modifier
-            self._do_lock_modifier(Modifiers.SHIFT)
+    def _update_temporary_key_label(self, key, temp_mod_mask):
+        """ update label for temporary modifiers """
+        mod_mask = self.get_mod_mask()
+        temp_mod_mask |= mod_mask
+        if key.mod_mask != temp_mod_mask:
+            key.configure_label(temp_mod_mask)
 
-    def _maybe_unlock_temporary_modifier(self):
-        """ Lock modifier for a single key-press """
-        if self._locked_temporary_modifier:
-            self._do_unlock_modifier(self._locked_temporary_modifier)
-            self._locked_temporary_modifier = None
+    def _set_temporary_modifiers(self, mod_mask):
+        """ Announce the intention to lock these modifiers on key-press. """
+        # only some single modifiers supported at this time
+        if not mod_mask or \
+           mod_mask in (Modifiers.SHIFT, Modifiers.CAPS, Modifiers.CTRL,
+                        Modifiers.SUPER, Modifiers.ALTGR):
+            self._temporary_modifiers = mod_mask
+
+    def _maybe_lock_temporary_modifiers(self, key):
+        """ Lock modifier before a single key-press """
+        modifier = self._temporary_modifiers
+        if modifier and \
+           not self.mods[modifier] and \
+           not key.modifier == modifier and \
+           not key.is_button():
+            self._locked_temporary_modifiers = modifier
+            self._do_lock_modifier(modifier)
+
+    def _maybe_unlock_temporary_modifiers(self):
+        """ Unlock modifier after a single key-press """
+        if self._locked_temporary_modifiers:
+            self._do_unlock_modifier(self._locked_temporary_modifiers)
+            self._locked_temporary_modifiers = None
 
     def _do_lock_modifier(self, modifier):
         """ Lock modifier in response to modifier presses. """
@@ -1137,7 +1163,7 @@ class Keyboard(WordSuggestions):
 
         # Alt is special because it activates the window manager's move mode.
         if modifier != Modifiers.ALT or \
-            not self._is_alt_special(): # not Alt?
+           not self._is_alt_special():  # not Alt?
             self._text_changer.lock_mod(modifier)
 
     def _do_unlock_modifier(self, modifier):
@@ -1157,7 +1183,7 @@ class Keyboard(WordSuggestions):
         """
         return not config.is_override_redirect()
 
-    def maybe_send_alt_press_for_key(self, key, view, button, event_type):
+    def _maybe_send_alt_press_for_key(self, key, view, button, event_type):
         """ handle delayed Alt press """
         if self.mods[8] and \
            self._is_alt_special() and \
@@ -1269,8 +1295,8 @@ class Keyboard(WordSuggestions):
 
     def _edit_snippet(self, view, snippet_id):
         if not config.xid_mode and \
-            not self.editing_snippet and \
-            view:
+           not self.editing_snippet and \
+           view:
             view.show_snippets_dialog(snippet_id)
             self.editing_snippet = True
 
@@ -1294,9 +1320,9 @@ class Keyboard(WordSuggestions):
         # keep them unchanged until the actual click happens.
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
-           not (key.type == KeyCommon.BUTTON_TYPE and \
+           not (key.type == KeyCommon.BUTTON_TYPE and
                 key.is_click_type_key()) and \
-           not key in self.get_text_displays():
+           key not in self.get_text_displays():
 
             # Don't release SHIFT if we're going to enable
             # capitalization anyway.
@@ -1364,7 +1390,7 @@ class Keyboard(WordSuggestions):
         for key in shift_keys:
             if not key.active:
                 key.active = True
-                if not key in self._latched_sticky_keys:
+                if key not in self._latched_sticky_keys:
                     self._latched_sticky_keys.append(key)
                 self.redraw([key])
 
@@ -1389,7 +1415,7 @@ class Keyboard(WordSuggestions):
                 self.active_layer_index = 0
                 self.invalidate_visible_layers()
                 self.invalidate_canvas()
-                self.invalidate_context_ui() # update layer button state
+                self.invalidate_context_ui()  # update layer button state
 
             return unlatch
 
@@ -1417,7 +1443,10 @@ class Keyboard(WordSuggestions):
         if self._alt_locked:
             return
 
-        for mod_bit in (1<<bit for bit in range(8)):
+        if self._temporary_modifiers:
+            return
+
+        for mod_bit in (1 << bit for bit in range(8)):
             # Directly redraw locking modifiers only. All other modifiers
             # redraw after a short delay. This is meant to prevent
             # Onboard from busily flashing keys and using CPU while
@@ -1471,11 +1500,11 @@ class Keyboard(WordSuggestions):
             # re-draw delayed?
             if active and \
                draw_delay > 0.0:
-                self._queue_pending_redraw(mod_bit, active, keys, draw_delay)
+                self._queue_pending_modifier_redraw(mod_bit, active, keys, draw_delay)
             else:
                 self._redraw_modifier_keys(keys)
 
-    def _queue_pending_redraw(self, mod_bit, active, keys, delay):
+    def _queue_pending_modifier_redraw(self, mod_bit, active, keys, delay):
         item = self._pending_modifier_redraws.get(mod_bit)
         if item is None:
             # draw affected keys delayed
@@ -1497,7 +1526,7 @@ class Keyboard(WordSuggestions):
 
     def _redraw_pending_modifier_keys(self):
         for pending_active, keys in self._pending_modifier_redraws.values():
-             self._redraw_modifier_keys(keys)
+            self._redraw_modifier_keys(keys)
         self._pending_modifier_redraws = {}
 
     def _redraw_modifier_keys(self, keys):
@@ -1680,7 +1709,7 @@ class Keyboard(WordSuggestions):
 
         return action
 
-    def has_latched_sticky_keys(self, except_keys = None):
+    def has_latched_sticky_keys(self, except_keys=None):
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
 
@@ -1887,6 +1916,8 @@ class Keyboard(WordSuggestions):
 
     def on_key_unpressed(self, key):
         """ pressed state of a key instance was cleard """
+        self._set_temporary_modifiers(0)
+        self._update_temporary_key_label(key, 0)
         self.redraw([key])
         self._touch_feedback.hide(key)
 
@@ -2127,7 +2158,7 @@ class ButtonController(object):
         return False
 
     def is_activated_on_press(self):
-        """ Cannot already called press() without consequences? """
+        """ Cannot cancel already called press() without consequences? """
         return False
 
     def set_visible(self, visible):
@@ -2346,7 +2377,7 @@ class BCMove(ButtonController):
                          Handle.MOVE in config.window.window_handles)
 
     def is_activated_on_press(self):
-        return True # cannot undo on press, dragging is already in progress
+        return True  # cannot undo on press, dragging is already in progress
 
 
 class BCLayer(ButtonController):
