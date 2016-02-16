@@ -62,7 +62,7 @@ class WordSuggestions:
         self._learn_strategy = LearnStrategyLRU(self)
         self._languagedb = LanguageDB(self)
         self._spell_checker = SpellChecker(self._languagedb)
-        self._punctuator = None
+        self._punctuator = PunctuatorImmediateSeparators(self)
         self._pending_separator_popup = PendingSeparatorPopup()
         self._pending_separator_popup_timer = Timer()
         self._load_error_recovery = ModelErrorRecovery(self)
@@ -81,8 +81,6 @@ class WordSuggestions:
         self._text_displays = []
 
         self._focusable_count = 0
-
-        self._update_punctuator()
 
     def reset(self):
         self.commit_changes()
