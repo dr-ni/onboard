@@ -111,10 +111,25 @@ const Onboard = new Lang.Class({
                     return;
 
                 Main.layoutManager.keyboardIndex = monitor;
-                // keep the default keyboard hidden
-                this._hideSubkeys();
-                Main.layoutManager.hideKeyboard();
-                this._keyboardVisible = true;
+
+                // In the normal desktop?
+                if (Main.actionMode == Shell.ActionMode.NORMAL)
+                {
+                    // Keep built-in keyboard hidden
+                    this._hideSubkeys();
+                    Main.layoutManager.hideKeyboard();
+                    this._keyboardVisible = true;
+                }
+                // In overview or modal (password) dialog
+                else
+                {
+                    // hide Onboard
+                    outer_this.Hide();
+
+                    // Show built-in keyboard
+                    this._redraw();
+                    Main.layoutManager.showKeyboard();
+                }
                 this._destroySource();
             });
         };
@@ -136,8 +151,15 @@ const Onboard = new Lang.Class({
         Keyboard.prototype['_show'] = KeyboardShow(this);
         Keyboard.prototype['_hide'] = KeyboardHide(this);
 
-        // Start Onboard
-        GLib.spawn_command_line_async('onboard', null);
+        // enable auto-show
+        let auto_show = new Gio.Settings({ schema_id: 'org.onboard.auto-show'});
+        if (auto_show)
+            auto_show.set_boolean('enabled', true);
+
+        // Start Onboard to overcome --not-show-in=GNOME
+        // in onboard-autostart.desktop.
+        if (!this.proxy.g_name_owner)  // not yet running?
+            GLib.spawn_command_line_async('onboard', null);
     },
 
     disable: function() {
