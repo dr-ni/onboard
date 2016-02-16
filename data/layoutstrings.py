@@ -297,7 +297,10 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     # translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
     _("Preferences"),
 
-    # translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
+    # translators: this is a 'tooltip' of the key 'previous-predictions.wordlist' in keyboard layout 'word_suggestions.xml'
+    _("Previous suggestions"),
+
+    # translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard.onboard'
     _("Quit Keyboard"),
 
     # translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
