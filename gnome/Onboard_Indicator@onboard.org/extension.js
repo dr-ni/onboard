@@ -44,6 +44,8 @@ const OnboardIndicator = new Lang.Class({
     _init: function() {
         this.parent(0.0, _('Onboard'));
 
+        this._last_event_time = 0;
+
         this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         this._hbox.add_child(new St.Icon({icon_name: 'onboard-panel',
                                           style_class: 'system-status-icon',
@@ -62,10 +64,17 @@ const OnboardIndicator = new Lang.Class({
     },
 
     _onEvent: function(actor, event) {
-        if (event.type() == Clutter.EventType.BUTTON_PRESS &&
+        if (event.type() == Clutter.EventType.TOUCH_BEGIN ||
+            event.type() == Clutter.EventType.BUTTON_PRESS &&
             event.get_button() == 1)
         {
-            _onboard.ToggleVisible();
+            // TOUCH_BEGIN and BUTTON_PRESS may come together.
+            // Act only on the first one.
+            if (event.get_time() - this._last_event_time > 500) {
+                _onboard.launch(); // make sure it's running
+                _onboard.ToggleVisible();
+                this._last_event_time = event.get_time();
+            }
             return Clutter.EVENT_PROPAGATE;
         }
         else
@@ -105,6 +114,15 @@ const Onboard = new Lang.Class({
     },
 
     enable: function() {
+        // enable auto-show
+        let auto_show = new Gio.Settings({ schema_id: 'org.onboard.auto-show'});
+        if (auto_show)
+            auto_show.set_boolean('enabled', true);
+
+        // Start Onboard to overcome --not-show-in=GNOME
+        // in onboard-autostart.desktop.
+        this.launch();
+
         function KeyboardShow(outer_this) {
             return (function(monitor) {
                 if (!this._keyboardRequested)
@@ -150,16 +168,6 @@ const Onboard = new Lang.Class({
         this._oldKeyboardHide = Keyboard.prototype['_hide'];
         Keyboard.prototype['_show'] = KeyboardShow(this);
         Keyboard.prototype['_hide'] = KeyboardHide(this);
-
-        // enable auto-show
-        let auto_show = new Gio.Settings({ schema_id: 'org.onboard.auto-show'});
-        if (auto_show)
-            auto_show.set_boolean('enabled', true);
-
-        // Start Onboard to overcome --not-show-in=GNOME
-        // in onboard-autostart.desktop.
-        if (!this.proxy.g_name_owner)  // not yet running?
-            GLib.spawn_command_line_async('onboard', null);
     },
 
     disable: function() {
@@ -170,6 +178,10 @@ const Onboard = new Lang.Class({
         GLib.spawn_command_line_async('killall onboard', null);
     },
 
+    launch: function() {
+        if (!this.proxy.g_name_owner)  // not yet running?
+            GLib.spawn_command_line_async('onboard', null);
+    },
     Show: function() {
         this.proxy.ShowSync();
     },
