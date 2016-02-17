@@ -305,7 +305,10 @@ class TestCommand(Command):
         if nose.run(argv=[__file__,
                           "--with-doctest",
                           "--logging-level=WARNING",
-                          "--verbosity=1",
+                          "--verbosity=3",
+                          "--ignore-files='^\\.', '^_', '^setup\\.py$'",
+                          "--ignore-files=layoutstrings.py",
+                          #"--collect-only",
                           ]):
             sys.exit(0)
         else:
