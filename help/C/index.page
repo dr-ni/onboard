@@ -19,7 +19,7 @@
       <link href="http://www.gnu.org/licenses/gpl.html">GNU General Public License version 3 or any later version</link>.</p>
     </license>
 
-    <desc>On-screen Keyboard with macros, custom layout creation and word suggestion.</desc>
+    <desc>On-screen Keyboard with macros, custom layout creation and word suggestions.</desc>
 
   </info>
 
@@ -33,7 +33,7 @@
   </section>
 
   <section id="prefs" style="2column">
-	<title><app>Onboard</app> Preferences</title>
+    <title><app>Onboard</app> Preferences</title>
   </section>
 
   <section id="advanced" style="2column">

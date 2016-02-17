@@ -2063,7 +2063,7 @@
                                     <property name="spacing">2</property>
                                     <child>
                                       <object class="GtkCheckButton" id="upper_case_on_right_click_toggle">
-                                        <property name="label" translatable="yes">On right click type in upper case</property>
+                                        <property name="label" translatable="yes">Upper case on right click</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
