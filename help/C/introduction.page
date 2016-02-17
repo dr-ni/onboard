@@ -28,7 +28,7 @@
   <figure>
     <title><gui>Onboard</gui> on-screen keyboard window</title>
     <desc><app>Onboard</app> using the Compact layout, the Nightshade theme, word suggestions and the hover click with the Swiss French system language.</desc>
-    <media type="image" src="images/onboard_compact_nightshade_prediction.png" mime="image/png" style="right">
+    <media type="image" src="figures/onboard_compact_nightshade_prediction.png" mime="image/png" style="right">
     <p>Picture of the keyboard window of <app>Onboard</app> the Compact layout, the Nightshade theme, the typing assistance and the hover click.</p>
     </media>
   </figure>
