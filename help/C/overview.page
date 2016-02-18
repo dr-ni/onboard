@@ -78,7 +78,7 @@
 
 <section>
   <title>Word Suggestions</title>
-    <p> Word Suggestions can be enabled in preferences tab "Typing Assistance".</p>
+    <p> Word Suggestions can be enabled on preferences page "Typing Assistance".</p>
     <p> Spelling suggestions like <media type="image" mime="image/png" src="figures/correction-button.png"/>
         are displayed whenever Onboard detects a potentially
         misspelled word at or before the caret.</p>
@@ -136,7 +136,7 @@
     <item><p>Press again to turn it off</p></item>
     <item><p>Hover over it for a while and it will turn on as well.</p></item>
   </list>
-  <p>Hover Click settings can be changed in preferences tab "Accessibility".</p>
+  <p>Hover Click settings can be changed on preferences page "Accessibility".</p>
   <p>Note, that the path to the Hover Click button is hover-enabled as well. Onboard's floating icon and the left-leaning arrow button  <media type="image" mime="image/png" src="figures/click-helpers-button.png"/> can be activated by hovering, too.</p>
 </section>
 
@@ -152,7 +152,7 @@
     <item><p>Press the button to insert an existing snippet, or, if still undefined, create a new one.</p></item>
     <item><p>Long-press to edit a snippet</p></item>
   </list>
-  <p>An overview of all snippets can also be found in preferences tab "Snippets".</p>
+  <p>An overview of all snippets can also be found on preferences page "Snippets".</p>
   <p>See also <link xref="snippet-definition"/>.</p>
 </section>
 </page>
