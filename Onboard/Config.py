@@ -323,9 +323,7 @@ class Config(ConfigObject):
             else:
                 if Process.was_launched_by("gnome-screensaver"):
                     self.launched_by = self.LAUNCHER_GSS
-                elif ("UNITY_GREETER_DBUS_NAME" in os.environ or
-                      "LIGHTDM_TO_SERVER_FD" in os.environ or  # Xenial
-                      os.environ.get("USER") == "lightdm"):
+                elif "UNITY_GREETER_DBUS_NAME" in os.environ:
                     self.launched_by = self.LAUNCHER_UNITY_GREETER
 
         self.is_running_from_source = self._is_running_from_source()
