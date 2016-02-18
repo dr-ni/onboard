@@ -1,13 +1,20 @@
 # Bengali translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the onboard package.
+#
+# Copyright: 
+#   Original strings: See files they where extracted from
+#   Translations: Rosetta Contributers
+#
+# License: 
+#   Original strings: GPL-3+ license
+#   Translations: BSD-3-clause license
+#
 # Zenat Rahnuma <zenat@ankur.org.bd>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-27 11:46+0100\n"
+"POT-Creation-Date: 2016-02-18 15:18+0100\n"
 "PO-Revision-Date: 2012-04-09 11:48+0000\n"
 "Last-Translator: Launchpad Translations Administrators ayesha <Unknown>\n"
 "Language-Team: Bengali <ankur-bd-l10n@googlegroups.com>\n"
@@ -15,681 +22,960 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-01-27 10:24+0000\n"
-"X-Generator: Launchpad (build 17306)\n"
+"X-Launchpad-Export-Date: 2016-02-17 14:32+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 
-#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:15 ../data/layoutstrings.py:173
-msgid "Activate Hover Click"
-msgstr "ভাসমান ক্লিক সক্রিয় করুন"
+#. Default dialog title: name of the application
+#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1063
+#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1804
+msgid "Onboard"
+msgstr "অনবোর্ড"
 
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr "আলফানিউমেরিক কী"
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Onboard পর্দার কীবোর্ড"
 
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr "অল্ট্"
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "গ্নোম এর জন্য ফ্লেক্সিবল অনস্ক্রীণ কীবোর্ড"
 
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr "Alt Gr"
+#: ../Onboard/settings.py:259
+msgid "Onboard Preferences"
+msgstr "অনবোর্ড পছন্দ"
 
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr "ক্যাপস"
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr "কন্ট্রোল"
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr "ডিলিট"
-
-#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:27 ../data/layoutstrings.py:200
-msgid "Double click"
-msgstr "দুই বার ক্লিক করুন"
-
-#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:28 ../data/layoutstrings.py:203
-msgid "Drag click"
-msgstr "ক্লিক টানুন"
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr "এন্ড"
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr "Ent"
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr "Esc"
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr "ফাংশান কী"
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr "সংখ্যার ব্লক এবং ফাংশান কী"
-
-#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:37 ../data/layoutstrings.py:227
-msgid "Hide Onboard"
-msgstr "অনবোর্ড আড়াল করুন"
-
-#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:38 ../data/layoutstrings.py:272
-msgid "Pause learning"
+#: ../Onboard/settings.py:665
+msgid "Copy layout '{}' to this new name:"
 msgstr ""
 
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:40
-msgid "Hm"
-msgstr "হোম"
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:42
-msgid "Ins"
-msgstr "ইনসার্ট"
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:43 ../data/layoutstrings.py:245
-msgid "Main keyboard"
-msgstr "প্রধান কীবোর্ড"
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:45
-msgid "Menu"
-msgstr "মেন্যু"
-
-#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:46 ../data/layoutstrings.py:254
-msgid "Middle click"
-msgstr "মধ্যবর্তী ক্লিক করুন"
-
-#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:263
-msgid "Move Onboard"
-msgstr "অনবোর্ড সরান"
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:49
-msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:50 ../data/layoutstrings.py:269
-msgid "Number block and snippets"
-msgstr "সংখ্যার ব্লক এবং স্নিপেট"
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:52
-msgid "Pause"
-msgstr "Pause"
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:54
-msgid "Pg&#10;Dn"
-msgstr "Pg&#10;Dn"
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:56
-msgid "Pg&#10;Up"
-msgstr "Pg&#10;Up"
-
-#. translators: very short label of the Preferences button
-#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:278
-msgid "Preferences"
-msgstr "পছন্দ"
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:60
-msgid "Prnt"
-msgstr "Prnt"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:62
-msgid "Quit"
-msgstr "অব্যাহতিপ্রাপ্ত"
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:64
-msgid "Return"
-msgstr "এন্টার"
-
-#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:65 ../data/layoutstrings.py:290
-msgid "Right click"
-msgstr "ডানে ক্লিক করুন"
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:67
-msgid "Scroll"
-msgstr "Scroll"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:68 ../data/layoutstrings.py:317
-#: ../settings.ui.h:13
-msgid "Snippets"
-msgstr "ছোট টুকরা"
-
-#: ../data/layoutstrings.py:69
-msgid "Space"
-msgstr "ফাঁকাস্থান"
-
-#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:341
-msgid "Toggle click helpers"
-msgstr "টগল সাহায্যকারী ক্লিক করুন"
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:72
-msgid "Tab"
-msgstr "ট্যাব"
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:74
-msgid "Win"
-msgstr "উইন্ডোজ"
-
-#. translators: description of unicode character U+2602
-#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:76 ../data/layoutstrings.py:344
-msgid "Umbrella"
+#: ../Onboard/settings.py:678
+msgid "Delete layout '{}'?"
 msgstr ""
 
-#. translators: description of unicode character U+2606
-#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:350
-msgid "White star"
+#: ../Onboard/settings.py:726
+msgid "System settings not found ({}): {}"
+msgstr "সিস্টেম সেটিং পাওয়া যায়নি ({}): {}"
+
+#. Window handles: None
+#: ../Onboard/settings.py:739 ../settings_auto_show_dialog.ui.h:9
+msgid "None"
+msgstr "কোনটি না"
+
+#. Window handles: None
+#: ../Onboard/settings.py:741
+msgid "Movement only"
 msgstr ""
 
-#. translators: description of unicode character U+260F
-#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:80 ../data/layoutstrings.py:356
-msgid "White telephone"
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:743
+msgid "Corners"
 msgstr ""
 
-#. translators: description of unicode character U+2615
-#: ../data/layoutstrings.py:82
-msgid "Hot beverage"
+#. Frame resize handles: All
+#: ../Onboard/settings.py:745
+msgid "All corners and edges"
+msgstr "সব কোণ এবং প্রান্ত"
+
+#: ../Onboard/settings.py:786
+msgid "Core layouts"
 msgstr ""
 
-#. translators: description of unicode character U+2620
-#: ../data/layoutstrings.py:84
-msgid "Skull and crossbones"
+#: ../Onboard/settings.py:787
+msgid "Contributions"
 msgstr ""
 
-#. translators: description of unicode character U+2622
-#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:86 ../data/layoutstrings.py:287
-msgid "Radioactive sign"
+#: ../Onboard/settings.py:788
+#, fuzzy
+msgid "My layouts"
+msgstr "লেআউট"
+
+#: ../Onboard/settings.py:823
+msgid "Author: {}"
 msgstr ""
 
-#. translators: description of unicode character U+262E
-#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:88 ../data/layoutstrings.py:275
-msgid "Peace symbol"
+#: ../Onboard/settings.py:827
+msgid "About Layout"
 msgstr ""
 
-#. translators: description of unicode character U+262F
-#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:362
-msgid "Yin yang"
-msgstr ""
+#: ../Onboard/settings.py:932
+msgid "Enter a name for the new theme:"
+msgstr "নতুন থীমের জন্য নাম দিন:"
 
-#. translators: description of unicode character U+2639
-#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:92 ../data/layoutstrings.py:218
-msgid "Frowning face"
-msgstr ""
-
-#. translators: description of unicode character U+263A
-#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:94 ../data/layoutstrings.py:299
-msgid "Smiling face"
-msgstr ""
-
-#. translators: description of unicode character U+263C
-#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:353
-msgid "White sun with rays"
-msgstr ""
-
-#. translators: description of unicode character U+263E
-#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:242
-msgid "Last quarter moon"
-msgstr ""
-
-#. translators: description of unicode character U+2640
-#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:215
-msgid "Female sign"
-msgstr ""
-
-#. translators: description of unicode character U+2642
-#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:102 ../data/layoutstrings.py:248
-msgid "Male sign"
-msgstr ""
-
-#. translators: description of unicode character U+2661
-#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:104 ../data/layoutstrings.py:347
-msgid "White heart suit"
-msgstr ""
-
-#. translators: description of unicode character U+2662
-#: ../data/layoutstrings.py:106
-msgid "White diamond suit"
-msgstr ""
-
-#. translators: description of unicode character U+2664
-#: ../data/layoutstrings.py:108
-msgid "White spade suit"
-msgstr ""
-
-#. translators: description of unicode character U+2667
-#: ../data/layoutstrings.py:110
-msgid "White club suit"
-msgstr ""
-
-#. translators: description of unicode character U+266B
-#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:185
-msgid "Beamed eighth note"
-msgstr ""
-
-#. translators: description of unicode character U+2709
-#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:206
-msgid "Envelope"
-msgstr ""
-
-#. translators: description of unicode character U+270C
-#: ../data/layoutstrings.py:116
-msgid "Victory hand"
-msgstr ""
-
-#. translators: description of unicode character U+270D
-#: ../data/layoutstrings.py:118
-msgid "Writing hand"
-msgstr ""
-
-#. translators: description of unicode character U+1F604
-#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:308
-msgid "Smiling face with open mouth and smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F607
-#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:302
-msgid "Smiling face with halo"
-msgstr ""
-
-#. translators: description of unicode character U+1F608
-#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:305
-msgid "Smiling face with horns"
-msgstr ""
-
-#. translators: description of unicode character U+1F609
-#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:126 ../data/layoutstrings.py:359
-msgid "Winking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F60A
-#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:128 ../data/layoutstrings.py:311
-msgid "Smiling face with smiling eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60B
-#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:130 ../data/layoutstrings.py:209
-msgid "Face savouring delicious food"
-msgstr ""
-
-#. translators: description of unicode character U+1F60D
-#: ../data/layoutstrings.py:132
-msgid "Smiling face with heart-shaped eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F60E
-#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:314
-msgid "Smiling face with sunglasses"
-msgstr ""
-
-#. translators: description of unicode character U+1F60F
-#: ../data/layoutstrings.py:136
-msgid "Smirking face"
-msgstr ""
-
-#. translators: description of unicode character U+1F610
-#: ../data/layoutstrings.py:138
-msgid "Neutral face"
-msgstr ""
-
-#. translators: description of unicode character U+1F612
-#: ../data/layoutstrings.py:140
-msgid "Unamused face"
-msgstr ""
-
-#. translators: description of unicode character U+1F616
-#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:188
-msgid "Confounded face"
-msgstr ""
-
-#. translators: description of unicode character U+1F618
-#: ../data/layoutstrings.py:144
-msgid "Face throwing a kiss"
-msgstr ""
-
-#. translators: description of unicode character U+1F61A
-#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:239
-msgid "Kissing face with closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61C
-#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:212
-msgid "Face with stuck-out tongue and winking eye"
-msgstr ""
-
-#. translators: description of unicode character U+1F61D
-#: ../data/layoutstrings.py:150
-msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr ""
-
-#. translators: description of unicode character U+1F61E
-#: ../data/layoutstrings.py:152
-msgid "Disappointed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F620
-#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:176
-msgid "Angry face"
-msgstr ""
-
-#. translators: description of unicode character U+1F621
-#: ../data/layoutstrings.py:156
-msgid "Pouting face"
-msgstr ""
-
-#. translators: description of unicode character U+1F622
-#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:158 ../data/layoutstrings.py:191
-msgid "Crying face"
-msgstr ""
-
-#. translators: description of unicode character U+1F623
-#: ../data/layoutstrings.py:160
-msgid "Persevering face"
-msgstr ""
-
-#. translators: description of unicode character U+1F629
-#: ../data/layoutstrings.py:162
-msgid "Weary face"
-msgstr ""
-
-#. translators: description of unicode character U+1F62B
-#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:164 ../data/layoutstrings.py:338
-msgid "Tired face"
-msgstr ""
-
-#. translators: description of unicode character U+1F632
-#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:182
-msgid "Astonished face"
-msgstr ""
-
-#. translators: description of unicode character U+1F633
-#: ../data/layoutstrings.py:168
-msgid "Flushed face"
-msgstr ""
-
-#. translators: description of unicode character U+1F635
-#: ../data/layoutstrings.py:170
-msgid "Dizzy face"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:179
-msgid "Arrows"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:194
-msgid "Custom"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
-#: ../data/layoutstrings.py:197
-msgid "Desktop keyboard with edit and function keys"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:221
-msgid "Greek"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
-#: ../data/layoutstrings.py:224
-msgid "Grid of keys, suitable for keyboard scanning"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:230
-msgid "Hide keyboard"
-msgstr ""
-
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:233
+#: ../Onboard/settings.py:940
+#, python-brace-format
 msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard."
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
+msgstr ""
+"এই থীম ইতোমধ্যে বিদ্যমান।\n"
+"'{filename}'\n"
+"\n"
+" এটি অতিরিক্তমাত্রায় লেখা যাবে কি?"
+
+#: ../Onboard/settings.py:957
+msgid "Reset selected theme to Onboard defaults?"
+msgstr "Onboard পূর্বনির্ধারিততে  নির্বাচিত থীম রিসেট করা হবে কি?"
+
+#: ../Onboard/settings.py:959
+msgid "Delete selected theme?"
+msgstr "নির্বাচিত থীম মুছে ফেলা হবে কি?"
+
+#. Translators: reset button of Preferences->Theme.
+#: ../Onboard/settings.py:1088
+msgid "_Reset"
 msgstr ""
 
-#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:236
-msgid ""
-"Keyboard layout with Greek literals, arrows and more, for math and physics "
-"education on an interactive Whiteboard.\n"
-"This layout places all keys on a single, very wide layer."
+#. Translators: delete button of Preferences->Theme. It used to be
+#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
+#: ../Onboard/settings.py:1092
+msgid "_Delete"
 msgstr ""
 
-#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
-#: ../data/layoutstrings.py:251
-msgid "Medium size desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
-#: ../data/layoutstrings.py:257
-msgid "Mobile keyboard for small screens"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:260
-msgid "More suggestions"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:266
-msgid "Move keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:281
-msgid "Quit Keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
-#: ../data/layoutstrings.py:284
-msgid "Quit Onboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:293
-msgid "Set and Settings"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:296
-msgid "Settings"
-msgstr "সেটিংস"
-
-#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
-#: ../data/layoutstrings.py:320
-msgid "Space efficient desktop keyboard"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:323
-msgid "Special Characters"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
-#: ../data/layoutstrings.py:326
-msgid "Special characters for interactive whiteboards, wide"
-msgstr ""
-
-#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:329
-msgid "Special characters for interactive whiteboards"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
-#: ../data/layoutstrings.py:332
-msgid "Spelling suggestion"
-msgstr ""
-
-#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
-#: ../data/layoutstrings.py:335
-msgid "Sub-, Superscripts; Fractions"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "স্বনির্ধারিত থীম"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "রংয়ের স্কীম (_m)"
-
-#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:59
-msgid "_Background:"
-msgstr "পটভূমি (_B):"
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1424
+msgid "Flat"
+msgstr "সমতল"
 
 #. Key style with simple gradients
-#: ../settings_theme_dialog.ui.h:4 ../Onboard/settings.py:1361
+#: ../Onboard/settings.py:1426 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
 msgstr "গ্রেডিয়েন্ট"
 
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1428
+msgid "Dish"
+msgstr "ডিশ"
+
+#: ../Onboard/settings.py:1477 ../Onboard/settings.py:1534
+msgid "Default"
+msgstr "পূর্বনির্ধারিত"
+
+#: ../Onboard/settings.py:1518
+msgid "Bold"
+msgstr "গাঢ়"
+
+#: ../Onboard/settings.py:1520
+msgid "Italic"
+msgstr "তির্যক"
+
+#: ../Onboard/settings.py:1522
+msgid "Condensed"
+msgstr "সংক্ষিপ্ত"
+
+#: ../Onboard/settings.py:1535
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1535
+msgid "Ubuntu Logo"
+msgstr "উবুন্টুর লোগো"
+
+#: ../Onboard/settings.py:1669
+msgid "Step"
+msgstr "ধাপ"
+
+#: ../Onboard/settings.py:1670
+msgid "Left"
+msgstr "বাম"
+
+#: ../Onboard/settings.py:1671
+msgid "Right"
+msgstr "ডান"
+
+#: ../Onboard/settings.py:1672
+msgid "Up"
+msgstr "উপরে"
+
+#: ../Onboard/settings.py:1673
+msgid "Down"
+msgstr "নিচে"
+
+#: ../Onboard/settings.py:1674
+msgid "Activate"
+msgstr "সক্রিয়"
+
+#: ../Onboard/settings.py:1843
+msgid "Action:"
+msgstr "অ্যাকশন:"
+
+#: ../Onboard/settings.py:2007
+msgid "Disabled"
+msgstr "নিস্ক্রিয়"
+
+#: ../Onboard/settings.py:2013
+msgid "Button"
+msgstr "বোতাম"
+
+#: ../Onboard/settings.py:2068 ../Onboard/settings.py:2113
+msgid "Press a button..."
+msgstr "বোতাম চাপুন..."
+
+#: ../Onboard/settings.py:2115
+msgid "Press a key..."
+msgstr "কী চাপুন..."
+
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:7 ../settings.ui.h:14
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:15
+msgid "Shrink workarea"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink the available space for maximized windows."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:17
+msgid "Expand on landscape screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand keyboard to the width of the workarea."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand on portrait screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:20
+msgid "Dock to screen edge:"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to monitor:"
+msgstr ""
+
+#: ../settings.ui.h:1
+msgid "Key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "International character selection"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "XTest"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "AT-SPI"
+msgstr ""
+
+#: ../settings.ui.h:7
+msgid "Remember nothing"
+msgstr ""
+
+#: ../settings.ui.h:8
+msgid "Don't remember new words"
+msgstr ""
+
+#: ../settings.ui.h:9
+msgid "General"
+msgstr "সাধারণ"
+
+#: ../settings.ui.h:10
+msgid "Window"
+msgstr "উইন্ডো"
+
+#: ../settings.ui.h:11
+msgid "Layout"
+msgstr "লেআউট"
+
+#: ../settings.ui.h:12
+msgid "Theme"
+msgstr "থীম"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
+msgid "Snippets"
+msgstr "ছোট টুকরা"
+
+#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
 msgid "Keyboard"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "শৈলী (_S):"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "গোলকত্ব (_o):"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "আকার (_i):"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
+#: ../settings.ui.h:15
+msgid "Typing Assistance"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "কীয়ের শৈলী"
+#: ../settings.ui.h:16
+msgid "Universal Access"
+msgstr "সার্বজনীন প্রবেশাধিকার"
 
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "কী (_K):"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "সীমানা (_B):"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "গ্রেডিয়েন্ট"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
+#: ../settings.ui.h:17
+msgid "Latch, then lock"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
+#: ../settings.ui.h:18
+msgid "Latch, double-click to lock"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
+#: ../settings.ui.h:19
+msgid "Latch only"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "ফন্ট (_F):"
+#: ../settings.ui.h:20
+msgid "Lock only"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "বৈশিষ্ট্য (_A):"
+#: ../settings.ui.h:21
+msgid "Push button"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "ফন্ট"
+#: ../settings.ui.h:22
+msgid "none"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "স্বতন্ত্র আকার (_n)"
+#: ../settings.ui.h:23
+msgid "single-touch"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "সুপার কী (_S):"
+#: ../settings.ui.h:24
+msgid "multi-touch"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "লেবেল উপেক্ষা করুন"
+#: ../settings.ui.h:25
+msgid "column"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "লেবেল"
+#: ../settings.ui.h:26
+msgid "_Auto-show when editing text"
+msgstr "টেক্সট সম্পাদনার সময় স্বয়ংক্রিয়-প্রদর্শন করুন (_A)"
+
+#: ../settings.ui.h:27
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"অনবোর্ড প্রদর্শন করুন যখন একটি স্বীকৃত ফোকাস টেক্সট উইন্ডো আছে। জিনোম প্রবেশযোগ্যতা "
+"আবশ্যক।"
+
+#: ../settings.ui.h:28
+msgid "_Settings"
+msgstr ""
+
+#: ../settings.ui.h:29
+msgid "Start Onboard _hidden"
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর (_h)"
+
+#: ../settings.ui.h:30
+msgid "Start Onboard hidden."
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
+
+#: ../settings.ui.h:31
+msgid "Show/Hide options"
+msgstr ""
+
+#: ../settings.ui.h:32
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Onboard আড়ালে থাকার সময় ফ্লোটিং চিহ্ন প্রদর্শন (_i)"
+
+#: ../settings.ui.h:33
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Onboard লুকানো থাকলে ডেস্কটপে একটি ভাসমান আইকন প্রদর্শন করবে। আইকনে ক্লিক করলে "
+"Onboard ফিরে আসবে।"
+
+#: ../settings.ui.h:34
+msgid "Show when _unlocking the screen"
+msgstr "পর্দা আনলক করার সময় প্রদর্শন (_u)"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"যখন পর্দা অনবরুদ্ধ করার ডায়ালগ দৃশ্যমান হয় তখন অনবোর্ড প্রদর্শন; এভাবে যখন বলা হয় "
+"তখন স্ক্রীনসেভার নিস্ক্রিয় করার জন্য পাসওয়ার্ড দেয়ার জন্য উদাহরণ হিসাবে অনবোর্ড "
+"ব্যবহার করা যায়।"
+
+#: ../settings.ui.h:36
+msgid "Show _tooltips"
+msgstr "টুলটিপ প্রদর্শন করুন (_t)"
+
+#: ../settings.ui.h:37
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "কীবোর্ড&apos;s বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
+
+#: ../settings.ui.h:38
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "কীবোর্ডের বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
+
+#: ../settings.ui.h:39
+msgid "_Show status icon"
+msgstr "অবস্থান আইকন প্রদর্শন (_S)"
+
+#: ../settings.ui.h:40
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়াল অথবা প্রদর্শিত হয়।"
+
+#: ../settings.ui.h:41
+msgid "Status icon _provider:"
+msgstr ""
+
+#: ../settings.ui.h:42
+msgid ""
+"AppIndicater (default) is recommend for broadest compatibility. "
+"GtkStatusIcon isn't supported well anymore by various desktop environments, "
+"but allows to show Onboard on left click. Requires restart."
+msgstr ""
+
+#: ../settings.ui.h:43
+msgid "Desktop Integration"
+msgstr "ডেস্কটপ ইন্টিগ্রেশন"
+
+#: ../settings.ui.h:44
+msgid "Dock to screen edge"
+msgstr ""
+
+#: ../settings.ui.h:45
+msgid "Dock the keyboard to the edge of the screen."
+msgstr ""
+
+#: ../settings.ui.h:46
+msgid "Docking"
+msgstr ""
+
+#: ../settings.ui.h:47
+msgid "Show window _decoration"
+msgstr "উইন্ডোর সজ্জা প্রদর্শন করুন (_d)"
+
+#: ../settings.ui.h:48
+msgid "Show window caption and frame."
+msgstr "উইন্ডো ক্যাপশন এবং ফ্রেম দেখুন"
+
+#: ../settings.ui.h:49
+msgid "Show always on visible _workspace"
+msgstr "সর্বদা দৃশ্যমান কর্মক্ষেত্র প্রদর্শন করুন (_w)"
+
+#: ../settings.ui.h:50
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "&quot;স্টিকি&quot; মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
+
+#: ../settings.ui.h:51
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "\"স্টিকি\" মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
+
+#: ../settings.ui.h:52
+msgid "_Force window to top"
+msgstr "শীর্ষ হতে উইন্ডো বাধ্য করুন (_F)"
+
+#: ../settings.ui.h:53
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "স্ক্রীণে সবার ওপরে Onboard করে রাখতে চেষ্টা কর"
+
+#: ../settings.ui.h:54
+msgid "Keep _aspect ratio"
+msgstr "দৃষ্টিকোণের অনুপাত রাখুন (_a)"
+
+#: ../settings.ui.h:55
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr ""
+
+#: ../settings.ui.h:56
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "বহির্বিন্যাসের দৃষ্টিকোণের অনুপাত হতে উইন্ডোর আকার রূদ্ধ করুন।"
+
+#: ../settings.ui.h:57
+msgid "Floating Window Options"
+msgstr ""
+
+#: ../settings.ui.h:58
+msgid "Window options"
+msgstr ""
+
+#: ../settings.ui.h:59
+msgid "Wind_ow:"
+msgstr "উইন্ডো (_o)"
+
+#: ../settings.ui.h:60
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "সম্পূর্ণ কীবোর্ড উইন্ডোর স্বচ্ছতা। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:61 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "পটভূমি (_B):"
+
+#: ../settings.ui.h:62
+msgid "Transparency of the keyboard background"
+msgstr "কীবোর্ড পটভূমির স্বচ্ছতা"
+
+#: ../settings.ui.h:63
+msgid "_No background"
+msgstr "কোনো পটভূমি নেই (_N)"
+
+#: ../settings.ui.h:64
+msgid "Show the desktop through the gaps between keys."
+msgstr "কী গুলোর ফাঁক দিয়ে ডেস্কটপ দেখাও"
+
+#: ../settings.ui.h:65
+msgid "Transparency"
+msgstr "স্বচ্ছতা"
+
+#: ../settings.ui.h:66
+msgid "Set _transparency to"
+msgstr "স্বচ্ছতা নির্দিষ্ট করুন (_t)"
+
+#: ../settings.ui.h:67
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "নিষ্ক্রিয় স্বচ্ছতা সক্রিয়। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:68
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "স্বচ্ছতা যখন নির্দেশকের পাতা কীবোর্ড। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:69
+msgid "after"
+msgstr "পরে"
+
+#: ../settings.ui.h:70
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "সেকেন্ডে বিলম্ব যতক্ষণ পর্যন্ত নিস্ক্রিয় স্বচ্ছতা প্রভাব নিন।"
+
+#: ../settings.ui.h:71
+msgid "seconds"
+msgstr "সেকেন্ড"
+
+#: ../settings.ui.h:72
+msgid "When Inactive"
+msgstr "নিষ্ক্রিয়তার সময়"
+
+#: ../settings.ui.h:73
+msgid "_Window handles:"
+msgstr ""
+
+#: ../settings.ui.h:74
+msgid "Resize Protection"
+msgstr "সুরক্ষার আকার পরিবর্তন"
+
+#: ../settings.ui.h:75
+msgid "Name"
+msgstr ""
+
+#: ../settings.ui.h:76
+msgid "Description"
+msgstr ""
+
+#: ../settings.ui.h:77
+msgid "_Open layouts folder"
+msgstr "বহির্বিন্যাস ফোল্ডার খুলুন (_O)"
+
+#: ../settings.ui.h:78
+msgid "C_ustomize theme"
+msgstr "থীম কাস্টমাইজ করুন (_u)"
+
+#: ../settings.ui.h:79
+msgid "Follow _system theme"
+msgstr "সিস্টেমের থীম অনুসরণ করুন (_s)"
+
+#: ../settings.ui.h:80
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"প্রতিটি সিস্টেমের থীমের জন্য অনবোর্ডের কোন থীম সর্বশেষ ব্যবহৃত হয়েছিল মনে রাখুন।"
+
+#: ../settings.ui.h:81
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "Onboard এর উপযুক্ত বোতাম চাপা হলে টেক্সটের যে ছোট ছোট অংশ দেয়া হয়।"
+
+#: ../settings.ui.h:82
+msgid "Show label popups"
+msgstr ""
+
+#: ../settings.ui.h:83
+msgid "Show label popups above pressed keys."
+msgstr ""
+
+#: ../settings.ui.h:84
+msgid "Play sound"
+msgstr ""
+
+#: ../settings.ui.h:85
+msgid "Play click sound on keypress."
+msgstr ""
+
+#: ../settings.ui.h:86
+msgid "Place sound in space"
+msgstr ""
+
+#: ../settings.ui.h:87
+msgid ""
+"Place sound in space between speakers depending on the key's position on "
+"screen"
+msgstr ""
+
+#: ../settings.ui.h:88
+msgid "Key-press Feedback"
+msgstr ""
+
+#: ../settings.ui.h:89
+msgid "Show secondary labels"
+msgstr ""
+
+#: ../settings.ui.h:90
+msgid "Show characters reachable with or without the shift key."
+msgstr ""
+
+#: ../settings.ui.h:91
+msgid "Key Labels"
+msgstr ""
+
+#: ../settings.ui.h:92
+msgid "Upper case on right click"
+msgstr ""
+
+#: ../settings.ui.h:93
+msgid "Temporarily enable SHIFT when clicking with the secondary button."
+msgstr ""
+
+#: ../settings.ui.h:94
+msgid "Key Behaviour"
+msgstr ""
+
+#: ../settings.ui.h:95
+msgid "_Long press action:"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:97
+msgid "Modifier _behavior:"
+msgstr ""
+
+#: ../settings.ui.h:98
+msgid "Behavior of modifier and layer keys."
+msgstr ""
+
+#: ../settings.ui.h:99
+msgid "Modifier auto-release delay in seconds:"
+msgstr ""
+
+#: ../settings.ui.h:100
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+
+#: ../settings.ui.h:101
+msgid "Modifier auto-release after hide in seconds:"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid ""
+"Time after hiding the keyboard in seconds until latched and locked modifiers "
+"and layer keys are released automatically. Leave at 0.0 to not automatically "
+"release them."
+msgstr ""
+
+#: ../settings.ui.h:103
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:104
+msgid "Key Behavior"
+msgstr ""
+
+#: ../settings.ui.h:105
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:106
+msgid "_Input event source:"
+msgstr ""
+
+#: ../settings.ui.h:107
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+
+#: ../settings.ui.h:108
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+
+#: ../settings.ui.h:109
+msgid "Input Options"
+msgstr ""
+
+#: ../settings.ui.h:110
+msgid "Keystroke _generation:"
+msgstr ""
+
+#: ../settings.ui.h:111
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:112
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:113
+msgid "Keystroke Generation"
+msgstr ""
+
+#: ../settings.ui.h:114
+msgid "Advanced"
+msgstr ""
+
+#: ../settings.ui.h:115
+msgid "Show _suggestions"
+msgstr ""
+
+#: ../settings.ui.h:116
+msgid "Enable word completion and prediction."
+msgstr ""
+
+#: ../settings.ui.h:117
+msgid "Show spelling suggestions"
+msgstr ""
+
+#: ../settings.ui.h:118
+msgid "Check spelling of the word at or before the cursor."
+msgstr ""
+
+#: ../settings.ui.h:119
+msgid "_Learn from typed text"
+msgstr ""
+
+#: ../settings.ui.h:120
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+
+#: ../settings.ui.h:121
+msgid "Insert word _separators"
+msgstr ""
+
+#: ../settings.ui.h:122
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+
+#: ../settings.ui.h:123
+msgid "Options"
+msgstr ""
+
+#: ../settings.ui.h:124
+msgid "Show more suggestions arrow"
+msgstr ""
+
+#: ../settings.ui.h:125
+msgid "Step forward and backward through the available suggestions."
+msgstr ""
+
+#: ../settings.ui.h:126
+msgid "Show button to pause learning"
+msgstr ""
+
+#: ../settings.ui.h:127
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr ""
+
+#: ../settings.ui.h:128
+msgid "Show lan_guage switcher"
+msgstr ""
+
+#: ../settings.ui.h:129
+msgid "Show a button for language selection."
+msgstr ""
+
+#: ../settings.ui.h:130
+msgid "Buttons"
+msgstr ""
+
+#: ../settings.ui.h:131
+msgid "Word Suggestions"
+msgstr ""
+
+#: ../settings.ui.h:132
+msgid "Auto-capitalize while typing"
+msgstr ""
+
+#: ../settings.ui.h:133
+msgid "Automatically capitalize sentence begins and name words."
+msgstr ""
+
+#: ../settings.ui.h:134
+msgid "Auto-correct spelling"
+msgstr ""
+
+#: ../settings.ui.h:135
+msgid "Automatically correct the last word."
+msgstr ""
+
+#: ../settings.ui.h:136
+msgid "The spell check engine to use."
+msgstr ""
+
+#: ../settings.ui.h:137
+msgid "Spell-check backend:"
+msgstr ""
+
+#: ../settings.ui.h:138
+msgid "Auto-correction"
+msgstr ""
+
+#: ../settings.ui.h:139
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:140
+msgid "Learning"
+msgstr ""
+
+#: ../settings.ui.h:141
+msgid "Enable  keyboard _scanning"
+msgstr "কীবোর্ড স্ক্যানিং সক্রিয় (_s)"
+
+#: ../settings.ui.h:142
+msgid "Sc_anner Settings"
+msgstr "স্ক্যানার সেটিং (_a)"
+
+#: ../settings.ui.h:143
+msgid "Keyboard Scanning"
+msgstr "কীবোর্ড স্ক্যানিং"
+
+#: ../settings.ui.h:144
+msgid "_Delay:"
+msgstr ""
+
+#: ../settings.ui.h:145
+msgid "_Motion threshold:"
+msgstr ""
+
+#: ../settings.ui.h:146
+msgid "Time in seconds before a click is triggered."
+msgstr ""
+
+#: ../settings.ui.h:147
+msgid "Distance in pixels before movement will be recognized."
+msgstr ""
+
+#: ../settings.ui.h:148
+msgid "Hide hover click window"
+msgstr ""
+
+#: ../settings.ui.h:149
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "অনবোর্ড চলাকালীন সময়ে সিস্টেম-প্রদানকারী বিলম্বিত ক্লিক উইন্ডো আড়াল করুন।"
+
+#: ../settings.ui.h:150
+msgid "Enable click type window on exit"
+msgstr ""
+
+#: ../settings.ui.h:151
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr "অনবোর্ড বন্ধ করার সময় সর্বদা সিস্টেমের- বিলম্বিত ক্লিক উইন্ডো কার্যকর করা হবে।"
+
+#: ../settings.ui.h:152
+msgid "Hover Click"
+msgstr "হোভার ক্লিক"
+
+#: ../Onboard/WindowUtils.py:1083
+msgid "New Input Device"
+msgstr "নতুন ইনপুট ডিভাইস"
+
+#: ../Onboard/WindowUtils.py:1084
+msgid "Onboard has detected a new input device"
+msgstr "অনবোর্ড নতুন ইনপুট ডিভাইস সনাক্ত করেছে"
+
+#: ../Onboard/WindowUtils.py:1093
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "কীবোর্ড স্ক্যানিংয়ের জন্য আপনি কি এই ডিভাইস ব্যবহার করতে চান?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/WindowUtils.py:1099 ../Onboard/KeyboardWidget.py:1518
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1100
+msgid "Use device"
+msgstr "ডিভাইস ব্যবহার করুন"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -703,84 +989,9 @@ msgstr "Onboard পর্দার কীবোর্ডের সেটিং"
 msgid "Change Onboard settings"
 msgstr "অনবোর্ড সেটিং পরিবর্তন করুন"
 
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "gsettings পারিলেখ '{}' এর জন্য ইন্সটলকৃত নয়"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:418
-#, python-brace-format
-msgid "{description} '{filename}' not found yet, retrying in default paths"
+#: ../Onboard/WPEngine.py:483
+msgid "Failed to load language model '{}': {} ({})"
 msgstr ""
-"{description} '{filename}' এখনও পাওয়া যায়নি, পূর্বনির্ধারিত পাথে পুনরায় চেষ্টা "
-"করা হচ্ছে"
-
-#: ../Onboard/ConfigUtils.py:427
-#, python-brace-format
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-"'{filename}' অবস্থান চিহ্নিতকরতে অসমর্থ, পূর্বনির্ধারিত {description} এর পরিবর্তে "
-"লোড করা হচ্ছে"
-
-#: ../Onboard/ConfigUtils.py:436 ../Onboard/ConfigUtils.py:492
-#, python-brace-format
-msgid "failed to find {description} '{filename}'"
-msgstr "খুঁজতে ব্যর্থ {description} '{filename}'"
-
-#: ../Onboard/ConfigUtils.py:440 ../Onboard/ConfigUtils.py:496
-#, python-brace-format
-msgid "{description} '{filepath}' found."
-msgstr "{description} '{filepath}' পাওয়া গেছে।"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:475
-#, fuzzy, python-brace-format
-msgid "{description} '{filename}' not found yet, searching in paths {paths}"
-msgstr ""
-"{description} '{filename}' এখনও পাওয়া যায়নি, পূর্বনির্ধারিত পাথে পুনরায় চেষ্টা "
-"করা হচ্ছে"
-
-#: ../Onboard/ConfigUtils.py:568
-#, python-brace-format
-msgid "Looking for system defaults in {paths}"
-msgstr "{paths} এর পূর্বনির্ধারিত সিস্টেমের জন্য খোঁজা হচ্ছে"
-
-#: ../Onboard/ConfigUtils.py:579
-msgid "Failed to read system defaults. "
-msgstr "পূর্বনির্ধারিত সিস্টেম পড়তে ব্যর্থ। "
-
-#: ../Onboard/ConfigUtils.py:583
-msgid "No system defaults found."
-msgstr "কোন সিস্টেম পূর্বনির্ধারন পাওয়া যায়নি।"
-
-#: ../Onboard/ConfigUtils.py:585
-#, python-brace-format
-msgid "Loading system defaults from {filename}"
-msgstr "{filename} থেকে পূর্বনির্ধারিত সিস্টেম লোড করা হচ্ছে"
-
-#: ../Onboard/ConfigUtils.py:609
-msgid "Found system default '[{}] {}={}'"
-msgstr "পূর্বনির্ধারিত '[{}] {}={}' সিস্টেম খুঁজে পাওয়া গেছে"
-
-#: ../Onboard/ConfigUtils.py:627
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr "সিস্টেম পূর্বনির্ধারিত: সেকশন '{}' তে অজানা কী '{}'"
-
-#: ../Onboard/ConfigUtils.py:634
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:647
-msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
-msgstr ""
-"সিস্টেম পূর্বনির্ধারিত: কী '{}' এর জন্য অকার্যকর মান সেকশন '{}'\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:710
-msgid "Failed to get gsettings value. "
-msgstr "gsettings মান পেতে ব্যর্থ। "
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Automatic scan for 1 switch"
@@ -892,7 +1103,38 @@ msgstr "নির্বাচিত ডিভাইস সিস্টেম ম
 msgid "Input Device"
 msgstr "ইনপুট ডিভাইস"
 
-#: ../Onboard/OnboardGtk.py:357
+#: ../Onboard/LayoutLoaderSVG.py:158
+msgid ""
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:397
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "উপেক্ষিত কী '{}'। কোনো svg ফাইলের নাম সংজ্ঞায়িত নয়।"
+
+#: ../Onboard/LayoutLoaderSVG.py:618
+msgid "Snippet {}"
+msgstr "স্নিপেট {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:622
+msgid ", unassigned"
+msgstr ", অনির্ধারিত করুন"
+
+#: ../Onboard/LayoutLoaderSVG.py:931
+msgid "copying layout '{}' to '{}'"
+msgstr "'{}' হতে '{}' তে বহির্বিন্যাস অনুলিপি করা হচ্ছে"
+
+#: ../Onboard/LayoutLoaderSVG.py:951
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "বহির্বিন্যাসের অনুলিপি ব্যর্থ, অসমর্থিত বহির্বিন্যাসের ফরম্যাট '{}' (_l)।"
+
+#: ../Onboard/LayoutLoaderSVG.py:994
+msgid "copying svg file '{}' to '{}'"
+msgstr "'{}' হতে '{}' তে svg ফাইল অনুলিপি করা হচ্ছে"
+
+#: ../Onboard/OnboardGtk.py:397
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -914,7 +1156,7 @@ msgstr ""
 "আপনি কি সিস্টেম পুনরায় কনফিগার করতে চান যাতে করে পর্দা অনবরুদ্ধ করার সময় Onboard "
 "প্রদর্শন করা হবে?"
 
-#: ../Onboard/OnboardGtk.py:376
+#: ../Onboard/OnboardGtk.py:416
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -930,162 +1172,576 @@ msgstr ""
 "\n"
 "আপনি কি এটা সক্রিয় করতে চান?"
 
-#. Default dialog title: name of the application """
-#: ../Onboard/utils.py:366 ../data/onboard.desktop.in.h:1
-#: ../Onboard/KeyboardWidget.py:1707 ../Onboard/KbdWindow.py:83
-msgid "Onboard"
-msgstr "অনবোর্ড"
+#. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
+msgid "Activate Hover Click"
+msgstr "ভাসমান ক্লিক সক্রিয় করুন"
 
-#: ../Onboard/utils.py:386
-msgid "New Input Device"
-msgstr "নতুন ইনপুট ডিভাইস"
+#: ../data/layoutstrings.py:36
+msgid "Alphanumeric keys"
+msgstr "আলফানিউমেরিক কী"
 
-#: ../Onboard/utils.py:387
-msgid "Onboard has detected a new input device"
-msgstr "অনবোর্ড নতুন ইনপুট ডিভাইস সনাক্ত করেছে"
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:38
+msgid "Alt"
+msgstr "অল্ট্"
 
-#: ../Onboard/utils.py:396
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "কীবোর্ড স্ক্যানিংয়ের জন্য আপনি কি এই ডিভাইস ব্যবহার করতে চান?"
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:40
+msgid "Alt Gr"
+msgstr "Alt Gr"
 
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/utils.py:402 ../Onboard/KeyboardWidget.py:1429
-msgid "_Cancel"
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:42
+msgid "CAPS"
+msgstr "ক্যাপস"
+
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:44
+msgid "Ctrl"
+msgstr "কন্ট্রোল"
+
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:46
+msgid "Del"
+msgstr "ডিলিট"
+
+#. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:47 ../data/layoutstrings.py:220
+msgid "Double click"
+msgstr "দুই বার ক্লিক করুন"
+
+#. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:48 ../data/layoutstrings.py:223
+msgid "Drag click"
+msgstr "ক্লিক টানুন"
+
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:50
+msgid "End"
+msgstr "এন্ড"
+
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:52
+msgid "Ent"
+msgstr "Ent"
+
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:54
+msgid "Esc"
+msgstr "Esc"
+
+#: ../data/layoutstrings.py:55
+msgid "Function keys"
+msgstr "ফাংশান কী"
+
+#: ../data/layoutstrings.py:56
+msgid "Number block and function keys"
+msgstr "সংখ্যার ব্লক এবং ফাংশান কী"
+
+#. translators: this is a 'tooltip' of the key_template 'hide' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:57 ../data/layoutstrings.py:247
+msgid "Hide Onboard"
+msgstr "অনবোর্ড আড়াল করুন"
+
+#. translators: this is a 'tooltip' of the key 'pause-learning.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:58 ../data/layoutstrings.py:292
+msgid "Pause learning"
 msgstr ""
 
-#: ../Onboard/utils.py:403
-msgid "Use device"
-msgstr "ডিভাইস ব্যবহার করুন"
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:60
+msgid "Hm"
+msgstr "হোম"
 
-#: ../Onboard/utils.py:1206 ../Onboard/pypredict/tools/filter.py:382
-#: ../Onboard/LanguageSupport.py:169 ../Onboard/pypredict/tools/train.py:227
-#: ../Onboard/SpellChecker.py:617 ../Onboard/SpellChecker.py:653
-#: ../Onboard/SpellChecker.py:692 ../Onboard/SpellChecker.py:706
-msgid "Failed to execute '{}', {}"
-msgstr "কার্যকর করতে ব্যর্থ '{}', {}"
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:62
+msgid "Ins"
+msgstr "ইনসার্ট"
 
-#: ../Onboard/utils.py:1808
-msgid "failed to create directory '{}': {}"
-msgstr ""
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:63 ../data/layoutstrings.py:265
+msgid "Main keyboard"
+msgstr "প্রধান কীবোর্ড"
 
-#: ../Onboard/Indicator.py:31
-msgid "_Show Onboard"
-msgstr "অনবোর্ড প্রদর্শন (_S)"
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:65
+msgid "Menu"
+msgstr "মেন্যু"
 
-#: ../Onboard/Indicator.py:32
-msgid "_Hide Onboard"
-msgstr "অনবোর্ড আড়াল (_H)"
+#. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:66 ../data/layoutstrings.py:274
+msgid "Middle click"
+msgstr "মধ্যবর্তী ক্লিক করুন"
 
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:55
-#, fuzzy
-msgid "_Preferences"
+#. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:67 ../data/layoutstrings.py:283
+msgid "Move Onboard"
+msgstr "অনবোর্ড সরান"
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:69
+msgid "Nm&#10;Lk"
+msgstr "Nm&#10;Lk"
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
+msgid "Number block and snippets"
+msgstr "সংখ্যার ব্লক এবং স্নিপেট"
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:72
+msgid "Pause"
+msgstr "Pause"
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:74
+msgid "Pg&#10;Dn"
+msgstr "Pg&#10;Dn"
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:76
+msgid "Pg&#10;Up"
+msgstr "Pg&#10;Up"
+
+#. translators: very short label of the Preferences button
+#. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:78 ../data/layoutstrings.py:298
+msgid "Preferences"
 msgstr "পছন্দ"
 
-#. Translators: label of a menu item. It used to be stock item
-#. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:66
-#, fuzzy
-msgid "_Quit"
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:80
+msgid "Prnt"
+msgstr "Prnt"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:82
+msgid "Quit"
 msgstr "অব্যাহতিপ্রাপ্ত"
 
-#: ../Onboard/Indicator.py:160
-msgid "Onboard on-screen keyboard"
-msgstr "অনবোর্ড পর্দার-সচল কীবোর্ড"
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:84
+msgid "Return"
+msgstr "এন্টার"
 
-#: ../Onboard/WordSuggestions.py:2102
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
+#. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:85 ../data/layoutstrings.py:313
+msgid "Right click"
+msgstr "ডানে ক্লিক করুন"
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:87
+msgid "Scroll"
+msgstr "Scroll"
+
+#: ../data/layoutstrings.py:89
+msgid "Space"
+msgstr "ফাঁকাস্থান"
+
+#. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:90 ../data/layoutstrings.py:364
+msgid "Toggle click helpers"
+msgstr "টগল সাহায্যকারী ক্লিক করুন"
+
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:92
+msgid "Tab"
+msgstr "ট্যাব"
+
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:94
+msgid "Win"
+msgstr "উইন্ডোজ"
+
+#. translators: description of unicode character U+2602
+#. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:96 ../data/layoutstrings.py:367
+msgid "Umbrella"
 msgstr ""
 
-#: ../Onboard/WordSuggestions.py:2121
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
+#. translators: description of unicode character U+2606
+#. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:98 ../data/layoutstrings.py:373
+msgid "White star"
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Onboard পর্দার কীবোর্ড"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "গ্নোম এর জন্য ফ্লেক্সিবল অনস্ক্রীণ কীবোর্ড"
-
-#: ../Onboard/LayoutLoaderSVG.py:139
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
+#. translators: description of unicode character U+260F
+#. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:100 ../data/layoutstrings.py:379
+msgid "White telephone"
 msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:378
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "উপেক্ষিত কী '{}'। কোনো svg ফাইলের নাম সংজ্ঞায়িত নয়।"
+#. translators: description of unicode character U+2615
+#: ../data/layoutstrings.py:102
+msgid "Hot beverage"
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:606
-msgid "Snippet {}"
-msgstr "স্নিপেট {}"
+#. translators: description of unicode character U+2620
+#: ../data/layoutstrings.py:104
+msgid "Skull and crossbones"
+msgstr ""
 
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:610
-msgid ", unassigned"
-msgstr ", অনির্ধারিত করুন"
+#. translators: description of unicode character U+2622
+#. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:106 ../data/layoutstrings.py:310
+msgid "Radioactive sign"
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:919
-msgid "copying layout '{}' to '{}'"
-msgstr "'{}' হতে '{}' তে বহির্বিন্যাস অনুলিপি করা হচ্ছে"
+#. translators: description of unicode character U+262E
+#. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
+msgid "Peace symbol"
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:939
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "বহির্বিন্যাসের অনুলিপি ব্যর্থ, অসমর্থিত বহির্বিন্যাসের ফরম্যাট '{}' (_l)।"
+#. translators: description of unicode character U+262F
+#. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:110 ../data/layoutstrings.py:385
+msgid "Yin yang"
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:982
-msgid "copying svg file '{}' to '{}'"
-msgstr "'{}' হতে '{}' তে svg ফাইল অনুলিপি করা হচ্ছে"
+#. translators: description of unicode character U+2639
+#. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
+msgid "Frowning face"
+msgstr ""
 
-#. ##############
-#: ../Onboard/SnippetView.py:19
-msgid "<Enter label>"
-msgstr "<Enter label>"
+#. translators: description of unicode character U+263A
+#. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:114 ../data/layoutstrings.py:322
+msgid "Smiling face"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter text>"
-msgstr "<Enter text>"
+#. translators: description of unicode character U+263C
+#. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:116 ../data/layoutstrings.py:376
+msgid "White sun with rays"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:32
-msgid "Button Number"
-msgstr "বোতাম সংখ্যা"
+#. translators: description of unicode character U+263E
+#. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
+msgid "Last quarter moon"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:39
-msgid "Button Label"
-msgstr "বোতাম লেবেল"
+#. translators: description of unicode character U+2640
+#. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
+msgid "Female sign"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:48
-msgid "Snippet Text"
-msgstr "টেক্সট স্নিপেট"
+#. translators: description of unicode character U+2642
+#. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
+msgid "Male sign"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:93
-msgid "Must be an integer number"
-msgstr "অবশ্যই পূর্ণসংখ্যা হতে হবে"
+#. translators: description of unicode character U+2661
+#. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:124 ../data/layoutstrings.py:370
+msgid "White heart suit"
+msgstr ""
 
-#: ../Onboard/SnippetView.py:102
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "স্নিপেট %d ইতোমধ্যে ব্যবহৃত।"
+#. translators: description of unicode character U+2662
+#: ../data/layoutstrings.py:126
+msgid "White diamond suit"
+msgstr ""
+
+#. translators: description of unicode character U+2664
+#: ../data/layoutstrings.py:128
+msgid "White spade suit"
+msgstr ""
+
+#. translators: description of unicode character U+2667
+#: ../data/layoutstrings.py:130
+msgid "White club suit"
+msgstr ""
+
+#. translators: description of unicode character U+266B
+#. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
+msgid "Beamed eighth note"
+msgstr ""
+
+#. translators: description of unicode character U+2709
+#. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
+msgid "Envelope"
+msgstr ""
+
+#. translators: description of unicode character U+270C
+#: ../data/layoutstrings.py:136
+msgid "Victory hand"
+msgstr ""
+
+#. translators: description of unicode character U+270D
+#: ../data/layoutstrings.py:138
+msgid "Writing hand"
+msgstr ""
+
+#. translators: description of unicode character U+1F604
+#. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:140 ../data/layoutstrings.py:331
+msgid "Smiling face with open mouth and smiling eyes"
+msgstr ""
+
+#. translators: description of unicode character U+1F607
+#. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:142 ../data/layoutstrings.py:325
+msgid "Smiling face with halo"
+msgstr ""
+
+#. translators: description of unicode character U+1F608
+#. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:144 ../data/layoutstrings.py:328
+msgid "Smiling face with horns"
+msgstr ""
+
+#. translators: description of unicode character U+1F609
+#. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:146 ../data/layoutstrings.py:382
+msgid "Winking face"
+msgstr ""
+
+#. translators: description of unicode character U+1F60A
+#. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:148 ../data/layoutstrings.py:334
+msgid "Smiling face with smiling eyes"
+msgstr ""
+
+#. translators: description of unicode character U+1F60B
+#. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
+msgid "Face savouring delicious food"
+msgstr ""
+
+#. translators: description of unicode character U+1F60D
+#: ../data/layoutstrings.py:152
+msgid "Smiling face with heart-shaped eyes"
+msgstr ""
+
+#. translators: description of unicode character U+1F60E
+#. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:154 ../data/layoutstrings.py:337
+msgid "Smiling face with sunglasses"
+msgstr ""
+
+#. translators: description of unicode character U+1F60F
+#: ../data/layoutstrings.py:156
+msgid "Smirking face"
+msgstr ""
+
+#. translators: description of unicode character U+1F610
+#: ../data/layoutstrings.py:158
+msgid "Neutral face"
+msgstr ""
+
+#. translators: description of unicode character U+1F612
+#: ../data/layoutstrings.py:160
+msgid "Unamused face"
+msgstr ""
+
+#. translators: description of unicode character U+1F616
+#. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
+msgid "Confounded face"
+msgstr ""
+
+#. translators: description of unicode character U+1F618
+#: ../data/layoutstrings.py:164
+msgid "Face throwing a kiss"
+msgstr ""
+
+#. translators: description of unicode character U+1F61A
+#. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
+msgid "Kissing face with closed eyes"
+msgstr ""
+
+#. translators: description of unicode character U+1F61C
+#. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
+msgid "Face with stuck-out tongue and winking eye"
+msgstr ""
+
+#. translators: description of unicode character U+1F61D
+#: ../data/layoutstrings.py:170
+msgid "Face with stuck-out tongue and tightly closed eyes"
+msgstr ""
+
+#. translators: description of unicode character U+1F61E
+#: ../data/layoutstrings.py:172
+msgid "Disappointed face"
+msgstr ""
+
+#. translators: description of unicode character U+1F620
+#. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
+msgid "Angry face"
+msgstr ""
+
+#. translators: description of unicode character U+1F621
+#: ../data/layoutstrings.py:176
+msgid "Pouting face"
+msgstr ""
+
+#. translators: description of unicode character U+1F622
+#. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
+msgid "Crying face"
+msgstr ""
+
+#. translators: description of unicode character U+1F623
+#: ../data/layoutstrings.py:180
+msgid "Persevering face"
+msgstr ""
+
+#. translators: description of unicode character U+1F629
+#: ../data/layoutstrings.py:182
+msgid "Weary face"
+msgstr ""
+
+#. translators: description of unicode character U+1F62B
+#. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:184 ../data/layoutstrings.py:361
+msgid "Tired face"
+msgstr ""
+
+#. translators: description of unicode character U+1F632
+#. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
+msgid "Astonished face"
+msgstr ""
+
+#. translators: description of unicode character U+1F633
+#: ../data/layoutstrings.py:188
+msgid "Flushed face"
+msgstr ""
+
+#. translators: description of unicode character U+1F635
+#: ../data/layoutstrings.py:190
+msgid "Dizzy face"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:199
+msgid "Arrows"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:214
+msgid "Custom"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
+#: ../data/layoutstrings.py:217
+msgid "Desktop keyboard with edit and function keys"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:241
+msgid "Greek"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
+#: ../data/layoutstrings.py:244
+msgid "Grid of keys, suitable for keyboard scanning"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:250
+msgid "Hide keyboard"
+msgstr ""
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:253
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard."
+msgstr ""
+
+#. translators: this is a 'description' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:256
+msgid ""
+"Keyboard layout with Greek literals, arrows and more, for math and physics "
+"education on an interactive Whiteboard.\n"
+"This layout places all keys on a single, very wide layer."
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Compact.onboard'
+#: ../data/layoutstrings.py:271
+msgid "Medium size desktop keyboard"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Phone.onboard'
+#: ../data/layoutstrings.py:277
+msgid "Mobile keyboard for small screens"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:280
+msgid "More suggestions"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:286
+msgid "Move keyboard"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'previous-predictions.wordlist' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:301
+msgid "Previous suggestions"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:304
+msgid "Quit Keyboard"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
+#: ../data/layoutstrings.py:307
+msgid "Quit Onboard"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:316
+msgid "Set and Settings"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:319
+msgid "Settings"
+msgstr "সেটিংস"
+
+#. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
+#: ../data/layoutstrings.py:343
+msgid "Space efficient desktop keyboard"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:346
+msgid "Special Characters"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
+#: ../data/layoutstrings.py:349
+msgid "Special characters for interactive whiteboards, wide"
+msgstr ""
+
+#. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:352
+msgid "Special characters for interactive whiteboards"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
+#: ../data/layoutstrings.py:355
+msgid "Spelling suggestion"
+msgstr ""
+
+#. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
+#: ../data/layoutstrings.py:358
+msgid "Sub-, Superscripts; Fractions"
+msgstr ""
 
 #: ../settings_auto_show_dialog.ui.h:1
 msgid "never"
@@ -1119,900 +1775,84 @@ msgstr ""
 msgid "forever"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:9
-#, fuzzy
-msgid "Auto-show settings"
-msgstr "টেক্সট সম্পাদনার সময় স্বয়ংক্রিয়-প্রদর্শন করুন (_A)"
-
 #: ../settings_auto_show_dialog.ui.h:10
-msgid "_Hide when using a physical keyboard"
+msgid "Only move when necessary"
 msgstr ""
 
 #: ../settings_auto_show_dialog.ui.h:11
+msgid "Follow the active window"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+msgid "Auto-show settings"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgid "Strategy:"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:14
+msgid "Chose how the keyboard window moves when a text entry is activated."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:15
+msgid "Keyboard Movement"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:16
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:17
 msgid ""
 "Hide Onboard when any key is pressed on a physical keyboard. Requires input "
 "event source \"XInput\"."
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:12
-#, fuzzy
+#: ../settings_auto_show_dialog.ui.h:18
 msgid "Stay hidden:"
-msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
+msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:13
+#: ../settings_auto_show_dialog.ui.h:19
 msgid ""
 "Once hidden by a physical key-press, auto-show is paused. Select the pause "
 "duration here."
 msgstr ""
 
-#: ../Onboard/settings.py:237
-msgid "Onboard Preferences"
-msgstr "অনবোর্ড পছন্দ"
-
-#: ../Onboard/settings.py:627
-msgid "Copy layout '{}' to this new name:"
-msgstr ""
-
-#: ../Onboard/settings.py:640
-msgid "Delete layout '{}'?"
-msgstr ""
-
-#: ../Onboard/settings.py:688
-msgid "System settings not found ({}): {}"
-msgstr "সিস্টেম সেটিং পাওয়া যায়নি ({}): {}"
-
-#. Window handles: None
-#: ../Onboard/settings.py:701
-msgid "None"
-msgstr "কোনটি না"
-
-#. Window handles: None
-#: ../Onboard/settings.py:703
-msgid "Movement only"
-msgstr ""
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:705
-#, fuzzy
-msgid "Corners"
-msgstr "শুধুমাত্র কোণ"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:707
-msgid "All corners and edges"
-msgstr "সব কোণ এবং প্রান্ত"
-
-#: ../Onboard/settings.py:748
-msgid "Core layouts"
-msgstr ""
-
-#: ../Onboard/settings.py:749
-msgid "Contributions"
-msgstr ""
-
-#: ../Onboard/settings.py:750
-msgid "User layouts"
-msgstr ""
-
-#: ../Onboard/settings.py:785
-msgid "Author: {}"
-msgstr ""
-
-#: ../Onboard/settings.py:789
-msgid "About Layout"
-msgstr ""
-
-#: ../Onboard/settings.py:894
-msgid "Enter a name for the new theme:"
-msgstr "নতুন থীমের জন্য নাম দিন:"
-
-#: ../Onboard/settings.py:902
-#, python-brace-format
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"এই থীম ইতোমধ্যে বিদ্যমান।\n"
-"'{filename}'\n"
-"\n"
-" এটি অতিরিক্তমাত্রায় লেখা যাবে কি?"
-
-#: ../Onboard/settings.py:919
-msgid "Reset selected theme to Onboard defaults?"
-msgstr "Onboard পূর্বনির্ধারিততে  নির্বাচিত থীম রিসেট করা হবে কি?"
-
-#: ../Onboard/settings.py:921
-msgid "Delete selected theme?"
-msgstr "নির্বাচিত থীম মুছে ফেলা হবে কি?"
-
-#. Translators: reset button of Preferences->Theme.
-#: ../Onboard/settings.py:1050
-#, fuzzy
-msgid "_Reset"
-msgstr "পুনঃনির্ধারণ করুন"
-
-#. Translators: delete button of Preferences->Theme. It used to be
-#. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
-#: ../Onboard/settings.py:1054
-msgid "_Delete"
-msgstr ""
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1359
-msgid "Flat"
-msgstr "সমতল"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:1363
-msgid "Dish"
-msgstr "ডিশ"
-
-#: ../Onboard/settings.py:1412 ../Onboard/settings.py:1469
-msgid "Default"
-msgstr "পূর্বনির্ধারিত"
-
-#: ../Onboard/settings.py:1453
-msgid "Bold"
-msgstr "গাঢ়"
-
-#: ../Onboard/settings.py:1455
-msgid "Italic"
-msgstr "তির্যক"
-
-#: ../Onboard/settings.py:1457
-msgid "Condensed"
-msgstr "সংক্ষিপ্ত"
-
-#: ../Onboard/settings.py:1470
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:1470
-msgid "Ubuntu Logo"
-msgstr "উবুন্টুর লোগো"
-
-#: ../Onboard/settings.py:1604
-msgid "Step"
-msgstr "ধাপ"
-
-#: ../Onboard/settings.py:1605
-msgid "Left"
-msgstr "বাম"
-
-#: ../Onboard/settings.py:1606
-msgid "Right"
-msgstr "ডান"
-
-#: ../Onboard/settings.py:1607
-msgid "Up"
-msgstr "উপরে"
-
-#: ../Onboard/settings.py:1608
-msgid "Down"
-msgstr "নিচে"
-
-#: ../Onboard/settings.py:1609
-msgid "Activate"
-msgstr "সক্রিয়"
-
-#: ../Onboard/settings.py:1778
-msgid "Action:"
-msgstr "অ্যাকশন:"
-
-#: ../Onboard/settings.py:1942
-msgid "Disabled"
-msgstr "নিস্ক্রিয়"
-
-#: ../Onboard/settings.py:1948
-msgid "Button"
-msgstr "বোতাম"
-
-#: ../Onboard/settings.py:2003 ../Onboard/settings.py:2048
-msgid "Press a button..."
-msgstr "বোতাম চাপুন..."
-
-#: ../Onboard/settings.py:2050
-msgid "Press a key..."
-msgstr "কী চাপুন..."
-
-#: ../settings.ui.h:1
-msgid "Key-repeat"
-msgstr ""
-
-#: ../settings.ui.h:2
-msgid "International character selection"
-msgstr ""
-
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr ""
-
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr ""
-
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr ""
-
-#: ../settings.ui.h:6
-msgid "AT-SPI"
-msgstr ""
-
-#: ../settings.ui.h:7
-msgid "Remember nothing"
-msgstr ""
-
-#: ../settings.ui.h:8
-msgid "Don't remember new words"
-msgstr ""
-
-#: ../settings.ui.h:9
-msgid "General"
-msgstr "সাধারণ"
-
-#: ../settings.ui.h:10
-msgid "Window"
-msgstr "উইন্ডো"
-
-#: ../settings.ui.h:11
-msgid "Layout"
-msgstr "লেআউট"
-
-#: ../settings.ui.h:12
-msgid "Theme"
-msgstr "থীম"
-
-#: ../settings.ui.h:15
-msgid "Typing Assistance"
-msgstr ""
-
-#: ../settings.ui.h:16
-msgid "Universal Access"
-msgstr "সার্বজনীন প্রবেশাধিকার"
-
-#: ../settings.ui.h:17
-msgid "Latch, then lock"
-msgstr ""
-
-#: ../settings.ui.h:18
-msgid "Latch, double-click to lock"
-msgstr ""
-
-#: ../settings.ui.h:19
-msgid "Latch only"
-msgstr ""
-
-#: ../settings.ui.h:20
-msgid "Lock only"
-msgstr ""
-
-#: ../settings.ui.h:21
-#, fuzzy
-msgid "Push button"
-msgstr "বোতাম চাপুন..."
-
-#: ../settings.ui.h:22
-msgid "none"
-msgstr ""
-
-#: ../settings.ui.h:23
-msgid "single-touch"
-msgstr ""
-
-#: ../settings.ui.h:24
-msgid "multi-touch"
-msgstr ""
-
-#: ../settings.ui.h:25
-msgid "column"
-msgstr ""
-
-#: ../settings.ui.h:26
-msgid "_Auto-show when editing text"
-msgstr "টেক্সট সম্পাদনার সময় স্বয়ংক্রিয়-প্রদর্শন করুন (_A)"
-
-#: ../settings.ui.h:27
-msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"অনবোর্ড প্রদর্শন করুন যখন একটি স্বীকৃত ফোকাস টেক্সট উইন্ডো আছে। জিনোম প্রবেশযোগ্যতা "
-"আবশ্যক।"
-
-#: ../settings.ui.h:28
-msgid "_Settings"
-msgstr ""
-
-#: ../settings.ui.h:29
-msgid "Start Onboard _hidden"
-msgstr "লুকায়িত অবস্থায় Onboard চালু কর (_h)"
-
-#: ../settings.ui.h:30
-msgid "Start Onboard hidden."
-msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
-
-#: ../settings.ui.h:31
-msgid "Show/Hide options"
-msgstr ""
-
-#: ../settings.ui.h:32
-msgid "_Show status icon"
-msgstr "অবস্থান আইকন প্রদর্শন (_S)"
-
-#: ../settings.ui.h:33
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়াল অথবা প্রদর্শিত হয়।"
-
-#: ../settings.ui.h:34
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Onboard আড়ালে থাকার সময় ফ্লোটিং চিহ্ন প্রদর্শন (_i)"
-
-#: ../settings.ui.h:35
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Onboard লুকানো থাকলে ডেস্কটপে একটি ভাসমান আইকন প্রদর্শন করবে। আইকনে ক্লিক করলে "
-"Onboard ফিরে আসবে।"
-
-#: ../settings.ui.h:36
-msgid "Show when _unlocking the screen"
-msgstr "পর্দা আনলক করার সময় প্রদর্শন (_u)"
-
-#: ../settings.ui.h:37
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"যখন পর্দা অনবরুদ্ধ করার ডায়ালগ দৃশ্যমান হয় তখন অনবোর্ড প্রদর্শন; এভাবে যখন বলা হয় "
-"তখন স্ক্রীনসেভার নিস্ক্রিয় করার জন্য পাসওয়ার্ড দেয়ার জন্য উদাহরণ হিসাবে অনবোর্ড "
-"ব্যবহার করা যায়।"
-
-#: ../settings.ui.h:38
-msgid "Show _tooltips"
-msgstr "টুলটিপ প্রদর্শন করুন (_t)"
-
-#: ../settings.ui.h:39
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "কীবোর্ড&apos;s বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
-
-#: ../settings.ui.h:40
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "কীবোর্ডের বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
-
-#: ../settings.ui.h:41
-msgid "Desktop Integration"
-msgstr "ডেস্কটপ ইন্টিগ্রেশন"
-
-#: ../settings.ui.h:42
-msgid "Dock to screen edge"
-msgstr ""
-
-#: ../settings.ui.h:43
-msgid "Dock the keyboard to the edge of the screen."
-msgstr ""
-
-#: ../settings.ui.h:44
-msgid "Docking"
-msgstr ""
-
-#: ../settings.ui.h:45
-msgid "Show window _decoration"
-msgstr "উইন্ডোর সজ্জা প্রদর্শন করুন (_d)"
-
-#: ../settings.ui.h:46
-msgid "Show window caption and frame."
-msgstr "উইন্ডো ক্যাপশন এবং ফ্রেম দেখুন"
-
-#: ../settings.ui.h:47
-msgid "Show always on visible _workspace"
-msgstr "সর্বদা দৃশ্যমান কর্মক্ষেত্র প্রদর্শন করুন (_w)"
-
-#: ../settings.ui.h:48
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "&quot;স্টিকি&quot; মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
-
-#: ../settings.ui.h:49
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "\"স্টিকি\" মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
-
-#: ../settings.ui.h:50
-msgid "_Force window to top"
-msgstr "শীর্ষ হতে উইন্ডো বাধ্য করুন (_F)"
-
-#: ../settings.ui.h:51
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "স্ক্রীণে সবার ওপরে Onboard করে রাখতে চেষ্টা কর"
-
-#: ../settings.ui.h:52
-msgid "Keep _aspect ratio"
-msgstr "দৃষ্টিকোণের অনুপাত রাখুন (_a)"
-
-#: ../settings.ui.h:53
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "বহির্বিন্যাসের দৃষ্টিকোণের অনুপাত হতে উইন্ডোর আকার রূদ্ধ করুন।"
-
-#: ../settings.ui.h:55
-msgid "Floating Window Options"
-msgstr ""
-
-#: ../settings.ui.h:56
-msgid "Window options"
-msgstr ""
-
-#: ../settings.ui.h:57
-msgid "Wind_ow:"
-msgstr "উইন্ডো (_o)"
-
-#: ../settings.ui.h:58
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "সম্পূর্ণ কীবোর্ড উইন্ডোর স্বচ্ছতা। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:60
-msgid "Transparency of the keyboard background"
-msgstr "কীবোর্ড পটভূমির স্বচ্ছতা"
-
-#: ../settings.ui.h:61
-msgid "_No background"
-msgstr "কোনো পটভূমি নেই (_N)"
-
-#: ../settings.ui.h:62
-msgid "Show the desktop through the gaps between keys."
-msgstr "কী গুলোর ফাঁক দিয়ে ডেস্কটপ দেখাও"
-
-#: ../settings.ui.h:63
-msgid "Transparency"
-msgstr "স্বচ্ছতা"
-
-#: ../settings.ui.h:64
-msgid "Set _transparency to"
-msgstr "স্বচ্ছতা নির্দিষ্ট করুন (_t)"
-
-#: ../settings.ui.h:65
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "নিষ্ক্রিয় স্বচ্ছতা সক্রিয়। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:66
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "স্বচ্ছতা যখন নির্দেশকের পাতা কীবোর্ড। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:67
-msgid "after"
-msgstr "পরে"
-
-#: ../settings.ui.h:68
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "সেকেন্ডে বিলম্ব যতক্ষণ পর্যন্ত নিস্ক্রিয় স্বচ্ছতা প্রভাব নিন।"
-
-#: ../settings.ui.h:69
-msgid "seconds"
-msgstr "সেকেন্ড"
-
-#: ../settings.ui.h:70
-msgid "When Inactive"
-msgstr "নিষ্ক্রিয়তার সময়"
-
-#: ../settings.ui.h:71
-msgid "_Window handles:"
-msgstr ""
-
-#: ../settings.ui.h:72
-msgid "Resize Protection"
-msgstr "সুরক্ষার আকার পরিবর্তন"
-
-#: ../settings.ui.h:73
-msgid "Name"
-msgstr ""
-
-#: ../settings.ui.h:74
-msgid "Description"
-msgstr ""
-
-#: ../settings.ui.h:75
-msgid "_Open layouts folder"
-msgstr "বহির্বিন্যাস ফোল্ডার খুলুন (_O)"
-
-#: ../settings.ui.h:76
-msgid "C_ustomize theme"
-msgstr "থীম কাস্টমাইজ করুন (_u)"
-
-#: ../settings.ui.h:77
-msgid "Follow _system theme"
-msgstr "সিস্টেমের থীম অনুসরণ করুন (_s)"
-
-#: ../settings.ui.h:78
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"প্রতিটি সিস্টেমের থীমের জন্য অনবোর্ডের কোন থীম সর্বশেষ ব্যবহৃত হয়েছিল মনে রাখুন।"
-
-#: ../settings.ui.h:79
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr "Onboard এর উপযুক্ত বোতাম চাপা হলে টেক্সটের যে ছোট ছোট অংশ দেয়া হয়।"
-
-#: ../settings.ui.h:80
-msgid "Show label popups"
-msgstr ""
-
-#: ../settings.ui.h:81
-msgid "Show label popups above pressed keys."
-msgstr ""
-
-#: ../settings.ui.h:82
-msgid "Play sound"
-msgstr ""
-
-#: ../settings.ui.h:83
-msgid "Play click sound on keypress."
-msgstr ""
-
-#: ../settings.ui.h:84
-msgid "Key-press Feedback"
-msgstr ""
-
-#: ../settings.ui.h:85
-msgid "Show secondary labels"
-msgstr ""
-
-#: ../settings.ui.h:86
-msgid "Show characters reachable with or without the shift key."
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid "Key Labels"
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "_Long press action:"
-msgstr ""
-
-#: ../settings.ui.h:89
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:90
-msgid "Modifier _behavior:"
-msgstr ""
-
-#: ../settings.ui.h:91
-msgid "Behavior of modifier and layer keys."
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid "Modifier auto-release delay in seconds:"
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-
-#: ../settings.ui.h:94
-msgid "Key Behavior"
-msgstr ""
-
-#: ../settings.ui.h:95
-msgid "_Touch input:"
-msgstr ""
-
-#: ../settings.ui.h:96
-msgid "_Input event source:"
-msgstr ""
-
-#: ../settings.ui.h:97
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-
-#: ../settings.ui.h:98
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-
-#: ../settings.ui.h:99
-msgid "Input Options"
-msgstr ""
-
-#: ../settings.ui.h:100
-#, fuzzy
-msgid "Keystroke _generation:"
-msgstr "ডেস্কটপ ইন্টিগ্রেশন"
-
-#: ../settings.ui.h:101
-msgid "Delay between keystrokes in milliseconds:"
-msgstr ""
-
-#: ../settings.ui.h:102
-msgid ""
-"Increase this if key-strokes get lost when inserting word suggestions or "
-"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
-"applications."
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "0,00"
-msgstr ""
-
-#: ../settings.ui.h:104
-#, fuzzy
-msgid "Keystroke Generation"
-msgstr "ডেস্কটপ ইন্টিগ্রেশন"
-
-#: ../settings.ui.h:105
-msgid "Advanced"
-msgstr ""
-
-#: ../settings.ui.h:106
-msgid "Show _suggestions"
-msgstr ""
-
-#: ../settings.ui.h:107
-msgid "Enable word completion and prediction."
-msgstr ""
-
-#: ../settings.ui.h:108
-msgid "Show spelling suggestions"
-msgstr ""
-
-#: ../settings.ui.h:109
-msgid "Check spelling of the word at or before the cursor."
-msgstr ""
-
-#: ../settings.ui.h:110
-msgid "_Learn from typed text"
-msgstr ""
-
-#: ../settings.ui.h:111
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-
-#: ../settings.ui.h:112
-msgid "Insert word _separators"
-msgstr ""
-
-#: ../settings.ui.h:113
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-
-#: ../settings.ui.h:114
-msgid "Options"
-msgstr ""
-
-#: ../settings.ui.h:115
-msgid "Show lan_guage switcher"
-msgstr ""
-
-#: ../settings.ui.h:116
-msgid "Show a button for language selection."
-msgstr ""
-
-#: ../settings.ui.h:117
-msgid "Show button to pause learning"
-msgstr ""
-
-#: ../settings.ui.h:118
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-
-#: ../settings.ui.h:119
-msgid "Buttons"
+#: ../settings_auto_show_dialog.ui.h:20
+msgid "Auto-hide"
 msgstr ""
 
-#: ../settings.ui.h:120
-msgid "Word Suggestions"
-msgstr ""
-
-#: ../settings.ui.h:121
-msgid "Auto-capitalize while typing"
-msgstr ""
-
-#: ../settings.ui.h:122
-msgid "Automatically capitalize sentence begins and name words."
-msgstr ""
-
-#: ../settings.ui.h:123
-msgid "Auto-correct spelling"
-msgstr ""
-
-#: ../settings.ui.h:124
-msgid "Automatically correct the last word."
-msgstr ""
-
-#: ../settings.ui.h:125
-msgid "The spell check engine to use."
-msgstr ""
-
-#: ../settings.ui.h:126
-msgid "Spell-check backend:"
-msgstr ""
-
-#: ../settings.ui.h:127
-msgid "Auto-correction"
-msgstr ""
-
-#: ../settings.ui.h:128
-msgid "While  learning is paused:"
-msgstr ""
-
-#: ../settings.ui.h:129
-msgid "Learning"
-msgstr ""
-
-#: ../settings.ui.h:130
-msgid "Enable  keyboard _scanning"
-msgstr "কীবোর্ড স্ক্যানিং সক্রিয় (_s)"
-
-#: ../settings.ui.h:131
-msgid "Sc_anner Settings"
-msgstr "স্ক্যানার সেটিং (_a)"
-
-#: ../settings.ui.h:132
-msgid "Keyboard Scanning"
-msgstr "কীবোর্ড স্ক্যানিং"
-
-#: ../settings.ui.h:133
-msgid "_Delay:"
-msgstr ""
-
-#: ../settings.ui.h:134
-msgid "_Motion threshold:"
-msgstr ""
-
-#: ../settings.ui.h:135
-msgid "Time in seconds before a click is triggered."
-msgstr ""
-
-#: ../settings.ui.h:136
-msgid "Distance in pixels before movement will be recognized."
-msgstr ""
-
-#: ../settings.ui.h:137
-msgid "Hide hover click window"
-msgstr ""
-
-#: ../settings.ui.h:138
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "অনবোর্ড চলাকালীন সময়ে সিস্টেম-প্রদানকারী বিলম্বিত ক্লিক উইন্ডো আড়াল করুন।"
-
-#: ../settings.ui.h:139
-msgid "Enable click type window on exit"
-msgstr ""
-
-#: ../settings.ui.h:140
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr "অনবোর্ড বন্ধ করার সময় সর্বদা সিস্টেমের- বিলম্বিত ক্লিক উইন্ডো কার্যকর করা হবে।"
-
-#: ../settings.ui.h:141
-msgid "Hover Click"
-msgstr "হোভার ক্লিক"
-
-#: ../Onboard/WPEngine.py:468
-msgid "Failed to load language model '{}': {} ({})"
-msgstr ""
+#: ../Onboard/KbdWindow.py:210
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্যমান নেই; পর্দা আলফা চ্যানেল সমর্থন করেনা"
 
-#. run again
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:3
-msgid "Active Monitor"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Primary Monitor"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Monitor 0"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Monitor 1"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Monitor 2"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Monitor 3"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Monitor 4"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Monitor 5"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:11
-msgid "Monitor 6"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:12
-msgid "Monitor 7"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:13
-msgid "Monitor 8"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:14
-msgid "Docking settings"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:15
-msgid "Shrink workarea"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:16
-msgid "Shrink the available space for maximized windows."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:17
-msgid "Expand on landscape screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:18
-msgid "Expand keyboard to the width of the workarea."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:19
-msgid "Expand on portrait screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:20
-msgid "Dock to screen edge:"
-msgstr ""
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723 ../Onboard/LanguageSupport.py:170
+#: ../Onboard/Timer.py:160 ../Onboard/pypredict/tools/filter.py:382
+msgid "Failed to execute '{}', {}"
+msgstr "কার্যকর করতে ব্যর্থ '{}', {}"
 
-#: ../settings_docking_dialog.ui.h:21
-msgid "Dock to monitor:"
+#: ../Onboard/utils.py:1535
+msgid "failed to create directory '{}': {}"
 msgstr ""
 
-#: ../Onboard/Appearance.py:112
+#: ../Onboard/Appearance.py:130
 #, python-brace-format
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "থীমের '{filename}' জন্য রং স্কীম খুঁজে পাওয়া যায়নি"
 
-#: ../Onboard/Appearance.py:332
+#: ../Onboard/Appearance.py:350
 #, python-brace-format
 msgid "Error loading theme '{filename}'. {exception}: {cause}"
 msgstr ""
 
-#: ../Onboard/Appearance.py:406
+#: ../Onboard/Appearance.py:424
 msgid "Error saving "
 msgstr "ত্রুটি সংরক্ষণ করা হচ্ছে "
 
-#: ../Onboard/Appearance.py:828
+#: ../Onboard/Appearance.py:842
 #, python-brace-format
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
@@ -2021,12 +1861,12 @@ msgstr ""
 "লিগ্যাসি রং স্কীম ফরম্যাট লোড করা হচ্ছে '{old_format}', অনুগ্রহ করে বর্তমান ফরম্যাটে "
 "উন্নীতকরণ বিবেচনা করা হচ্ছে '{new_format}': '{filename}'"
 
-#: ../Onboard/Appearance.py:848
+#: ../Onboard/Appearance.py:862
 #, python-brace-format
 msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
 msgstr ""
 
-#: ../Onboard/Appearance.py:925 ../Onboard/Appearance.py:1057
+#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -2034,147 +1874,302 @@ msgstr ""
 "রংয়ের স্কীমের ফাইলে অনুরূপ কী এর আইডি '{}' পাওয়া যায় (_i)। কীয়ের আইডি শুধুমাত্র "
 "একবার সংঘটিত হয় (_i)।"
 
-#. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1413
-#, fuzzy
-msgid "Edit snippet #{}"
-msgstr "স্নিপেট {}"
+#: ../Onboard/ConfigUtils.py:81
+msgid "gsettings schema for '{}' is not installed"
+msgstr "gsettings পারিলেখ '{}' এর জন্য ইন্সটলকৃত নয়"
 
-#. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1417
-msgid "New snippet"
-msgstr "নতুন স্নিপেট"
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:439
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+"{description} '{filename}' এখনও পাওয়া যায়নি, পূর্বনির্ধারিত পাথে পুনরায় চেষ্টা "
+"করা হচ্ছে"
 
-#. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1419
-#, fuzzy
-msgid "Enter a new snippet for button #{}:"
-msgstr "এই বোতামের জন্য নতুন স্নিপেট দিন:"
+#: ../Onboard/ConfigUtils.py:448
+#, python-brace-format
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+"'{filename}' অবস্থান চিহ্নিতকরতে অসমর্থ, পূর্বনির্ধারিত {description} এর পরিবর্তে "
+"লোড করা হচ্ছে"
 
-#: ../Onboard/KeyboardWidget.py:1430
-msgid "_Save snippet"
-msgstr "স্নিপেট সংরক্ষণ (_S)"
+#: ../Onboard/ConfigUtils.py:457 ../Onboard/ConfigUtils.py:513
+#, python-brace-format
+msgid "failed to find {description} '{filename}'"
+msgstr "খুঁজতে ব্যর্থ {description} '{filename}'"
 
-#: ../Onboard/KeyboardWidget.py:1450
-msgid "_Button label:"
-msgstr "বোতামের লেবেল (_B):"
+#: ../Onboard/ConfigUtils.py:461 ../Onboard/ConfigUtils.py:517
+#, python-brace-format
+msgid "{description} '{filepath}' found."
+msgstr "{description} '{filepath}' পাওয়া গেছে।"
 
-#: ../Onboard/KeyboardWidget.py:1454
-msgid "S_nippet:"
-msgstr "স্নিপেট (_n):"
-
-#: ../Onboard/KeyboardWidget.py:1618
-msgid "Other _Languages"
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:496
+#, python-brace-format
+msgid "{description} '{filename}' not found yet, searching in paths {paths}"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1662
-msgid "_Remove suggestion…"
+#: ../Onboard/ConfigUtils.py:591
+#, python-brace-format
+msgid "Looking for system defaults in {paths}"
+msgstr "{paths} এর পূর্বনির্ধারিত সিস্টেমের জন্য খোঁজা হচ্ছে"
+
+#: ../Onboard/ConfigUtils.py:602
+msgid "Failed to read system defaults. "
+msgstr "পূর্বনির্ধারিত সিস্টেম পড়তে ব্যর্থ। "
+
+#: ../Onboard/ConfigUtils.py:606
+msgid "No system defaults found."
+msgstr "কোন সিস্টেম পূর্বনির্ধারন পাওয়া যায়নি।"
+
+#: ../Onboard/ConfigUtils.py:608
+#, python-brace-format
+msgid "Loading system defaults from {filename}"
+msgstr "{filename} থেকে পূর্বনির্ধারিত সিস্টেম লোড করা হচ্ছে"
+
+#: ../Onboard/ConfigUtils.py:632
+msgid "Found system default '[{}] {}={}'"
+msgstr "পূর্বনির্ধারিত '[{}] {}={}' সিস্টেম খুঁজে পাওয়া গেছে"
+
+#: ../Onboard/ConfigUtils.py:649
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr "সিস্টেম পূর্বনির্ধারিত: সেকশন '{}' তে অজানা কী '{}'"
+
+#: ../Onboard/ConfigUtils.py:656
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
 msgstr ""
 
-#. Don't hide dialog behind the keyboard in force-to-top mode.
-#. if config.is_force_to_top():
-#. dialog.set_position(Gtk.WindowPosition.CENTER)
-#: ../Onboard/KeyboardWidget.py:1716
-msgid "Remove word suggestion"
+#: ../Onboard/ConfigUtils.py:669
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"সিস্টেম পূর্বনির্ধারিত: কী '{}' এর জন্য অকার্যকর মান সেকশন '{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:732
+msgid "Failed to get gsettings value. "
+msgstr "gsettings মান পেতে ব্যর্থ। "
+
+#. ##############
+#: ../Onboard/SnippetView.py:39
+msgid "<Enter label>"
+msgstr "<Enter label>"
+
+#: ../Onboard/SnippetView.py:40
+msgid "<Enter text>"
+msgstr "<Enter text>"
+
+#: ../Onboard/SnippetView.py:52
+msgid "Button Number"
+msgstr "বোতাম সংখ্যা"
+
+#: ../Onboard/SnippetView.py:59
+msgid "Button Label"
+msgstr "বোতাম লেবেল"
+
+#: ../Onboard/SnippetView.py:68
+msgid "Snippet Text"
+msgstr "টেক্সট স্নিপেট"
+
+#: ../Onboard/SnippetView.py:113
+msgid "Must be an integer number"
+msgstr "অবশ্যই পূর্ণসংখ্যা হতে হবে"
+
+#: ../Onboard/SnippetView.py:122
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "স্নিপেট %d ইতোমধ্যে ব্যবহৃত।"
+
+#: ../Onboard/Indicator.py:51
+msgid "_Show Onboard"
+msgstr "অনবোর্ড প্রদর্শন (_S)"
+
+#: ../Onboard/Indicator.py:52
+msgid "_Hide Onboard"
+msgstr "অনবোর্ড আড়াল (_H)"
+
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:78
+msgid "_Preferences"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1727
-msgid "Remove '{}' everywhere."
+#: ../Onboard/Indicator.py:86
+msgid "_Help"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1737
-msgid "This will only affect learned suggestions."
+#. Translators: label of a menu item. It used to be stock item
+#. STOCK_QUIT until Gtk 3.10 deprecated those.
+#: ../Onboard/Indicator.py:97
+msgid "_Quit"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1777
-msgid "Remove '{}' only where it occures at text begin."
+#: ../Onboard/Indicator.py:195
+msgid "Onboard on-screen keyboard"
+msgstr "অনবোর্ড পর্দার-সচল কীবোর্ড"
+
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "স্বনির্ধারিত থীম"
+
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr "রংয়ের স্কীম (_m)"
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1780
-msgid "Remove '{}' only where it occures at sentence begin."
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1783
-msgid "Remove '{}' only where it occures after numbers."
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr "শৈলী (_S):"
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr "গোলকত্ব (_o):"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr "আকার (_i):"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1786
-msgid "Remove '{}' only where it occures after '{}'."
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr "কীয়ের শৈলী"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr "কী (_K):"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr "সীমানা (_B):"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr "গ্রেডিয়েন্ট"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
 msgstr ""
 
-#: ../Onboard/Config.py:206
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr "ফন্ট (_F):"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr "বৈশিষ্ট্য (_A):"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr "ফন্ট"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr "স্বতন্ত্র আকার (_n)"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr "সুপার কী (_S):"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr "লেবেল উপেক্ষা করুন"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
+msgstr "লেবেল"
+
+#: ../Onboard/Config.py:231
 msgid "Layout file ({}) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:209
+#: ../Onboard/Config.py:234
 msgid "Theme file (.theme) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:211
+#: ../Onboard/Config.py:236
 msgid "Window size, widthxheight"
 msgstr ""
 
-#: ../Onboard/Config.py:212
+#: ../Onboard/Config.py:237
 msgid "Window x position"
 msgstr ""
 
-#: ../Onboard/Config.py:213
+#: ../Onboard/Config.py:238
 msgid "Window y position"
 msgstr ""
 
-#: ../Onboard/Config.py:218
+#: ../Onboard/Config.py:243
 msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
 msgstr ""
 
-#: ../Onboard/Config.py:221
+#: ../Onboard/Config.py:246
 msgid "Allow multiple Onboard instances"
 msgstr ""
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:249
 msgid ""
 "Silently fail to start in the given desktop environments. DESKTOPS is a "
 "comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
 msgstr ""
 
-#: ../Onboard/Config.py:230
+#: ../Onboard/Config.py:255
 msgid "Keep aspect ratio when resizing the window"
 msgstr ""
 
-#: ../Onboard/Config.py:232
+#: ../Onboard/Config.py:257
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
 msgstr ""
 
-#: ../Onboard/Config.py:320
+#: ../Onboard/Config.py:363
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "'{}' থেকে '{}' তে ব্যবহারকারী ডিরেক্টরি মাইগ্রেট করা হচ্ছে।"
 
 #. honor XDG spec
 #. python >2.5
-#: ../Onboard/Config.py:328
+#: ../Onboard/Config.py:371
 msgid "failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:794
+#: ../Onboard/Config.py:849
 #, python-brace-format
 msgid "layout '{filename}' does not exist"
 msgstr "বহির্বিন্যাস '{filename}' বিদ্যমান নয়"
 
-#: ../Onboard/Config.py:835
+#: ../Onboard/Config.py:890
 #, python-brace-format
 msgid "theme '{filename}' does not exist"
 msgstr "থীম '{filename}' বিদ্যমান নয়"
 
-#: ../Onboard/Config.py:860
+#: ../Onboard/Config.py:915
 msgid "Loading theme from '{}'"
 msgstr "'{}' থেকে থীম লোড করা হচ্ছে"
 
-#: ../Onboard/Config.py:864
+#: ../Onboard/Config.py:919
 msgid "Unable to read theme '{}'"
 msgstr "থীম '{}' পড়তে অসমর্থ"
 
-#: ../Onboard/Config.py:1047
+#: ../Onboard/Config.py:1112
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -2190,17 +2185,91 @@ msgstr ""
 "\n"
 "এখন প্রবেশযোগ্যতা সক্রিয় করা হবেকি?"
 
-#: ../Onboard/Config.py:1661
+#: ../Onboard/Config.py:1759
 #, python-brace-format
 msgid "color scheme '{filename}' does not exist"
 msgstr "রংয়ের স্কীম '{filename}' বিদ্যমান নয়"
 
-#: ../Onboard/KbdWindow.py:183
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্যমান নেই; পর্দা আলফা চ্যানেল সমর্থন করেনা"
+#. Title of the snippets dialog for existing snippets
+#: ../Onboard/KeyboardWidget.py:1502
+msgid "Edit snippet #{}"
+msgstr ""
 
-#~ msgid "_Frame resize handles:"
-#~ msgstr "ফ্রেমের আকার পরিবর্তন হ্যান্ডেল (_F):"
+#. Title of the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1506
+msgid "New snippet"
+msgstr "নতুন স্নিপেট"
 
-#~ msgid "No file manager to open layout folder"
-#~ msgstr "ফাইল লেআউট খোলার মত কোন ফাইল ম্যানেজার নেই"
+#. Message in the snippets dialog for new snippets
+#: ../Onboard/KeyboardWidget.py:1508
+msgid "Enter a new snippet for button #{}:"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1519
+msgid "_Save snippet"
+msgstr "স্নিপেট সংরক্ষণ (_S)"
+
+#: ../Onboard/KeyboardWidget.py:1539
+msgid "_Button label:"
+msgstr "বোতামের লেবেল (_B):"
+
+#: ../Onboard/KeyboardWidget.py:1543
+msgid "S_nippet:"
+msgstr "স্নিপেট (_n):"
+
+#: ../Onboard/KeyboardWidget.py:1713
+msgid "Other _Languages"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1757
+msgid "_Remove suggestion…"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1813
+msgid "Remove word suggestion"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1824
+msgid "Remove '{}' everywhere."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1834
+msgid "This will only affect learned suggestions."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1874
+msgid "Remove '{}' only where it occures at text begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1877
+msgid "Remove '{}' only where it occures at sentence begin."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1880
+msgid "Remove '{}' only where it occures after numbers."
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1883
+msgid "Remove '{}' only where it occures after '{}'."
+msgstr ""
+
+#: ../Onboard/WordSuggestions.py:2647
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"Revert word suggestions to the last backup (recommended)?"
+msgstr ""
+
+#: ../Onboard/WordSuggestions.py:2666
+msgid ""
+"<big>Onboard failed to open learned word suggestions.</big>\n"
+"\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
+"\n"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
+msgstr ""

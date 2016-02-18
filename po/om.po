@@ -1,4 +1,4 @@
-# Amharic translation for onboard
+# Oromo translation for onboard
 #
 # Copyright: 
 #   Original strings: See files they where extracted from
@@ -8,17 +8,17 @@
 #   Original strings: GPL-3+ license
 #   Translations: BSD-3-clause license
 #
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-18 15:18+0100\n"
-"PO-Revision-Date: 2016-01-09 16:09+0000\n"
-"Last-Translator: samson <Unknown>\n"
-"Language-Team: Amharic <am@li.org>\n"
-"Language: am\n"
+"PO-Revision-Date: 2015-08-25 13:36+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Oromo <om@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -58,7 +58,7 @@ msgstr ""
 #. Window handles: None
 #: ../Onboard/settings.py:739 ../settings_auto_show_dialog.ui.h:9
 msgid "None"
-msgstr "ምንም"
+msgstr ""
 
 #. Window handles: None
 #: ../Onboard/settings.py:741
@@ -89,7 +89,7 @@ msgstr ""
 
 #: ../Onboard/settings.py:823
 msgid "Author: {}"
-msgstr "ደራሲው: {}"
+msgstr ""
 
 #: ../Onboard/settings.py:827
 msgid "About Layout"
@@ -119,23 +119,23 @@ msgstr ""
 #. Translators: reset button of Preferences->Theme.
 #: ../Onboard/settings.py:1088
 msgid "_Reset"
-msgstr "_እንደ ነበር መመለሻ"
+msgstr ""
 
 #. Translators: delete button of Preferences->Theme. It used to be
 #. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
 #: ../Onboard/settings.py:1092
 msgid "_Delete"
-msgstr "_ማጥፊያ"
+msgstr ""
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1424
 msgid "Flat"
-msgstr "ጠፍጣፋ"
+msgstr ""
 
 #. Key style with simple gradients
 #: ../Onboard/settings.py:1426 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
-msgstr "ከፍታ መለኪያ"
+msgstr ""
 
 #. Key style for dish-like key caps
 #: ../Onboard/settings.py:1428
@@ -144,15 +144,15 @@ msgstr ""
 
 #: ../Onboard/settings.py:1477 ../Onboard/settings.py:1534
 msgid "Default"
-msgstr "ነባር"
+msgstr ""
 
 #: ../Onboard/settings.py:1518
 msgid "Bold"
-msgstr "ማድመቂያ"
+msgstr ""
 
 #: ../Onboard/settings.py:1520
 msgid "Italic"
-msgstr "ማዝመሚያ"
+msgstr ""
 
 #: ../Onboard/settings.py:1522
 msgid "Condensed"
@@ -160,63 +160,63 @@ msgstr ""
 
 #: ../Onboard/settings.py:1535
 msgid ""
-msgstr ""
+msgstr ""
 
 #: ../Onboard/settings.py:1535
 msgid "Ubuntu Logo"
-msgstr "የኡቡንቱ አርማ"
+msgstr ""
 
 #: ../Onboard/settings.py:1669
 msgid "Step"
-msgstr "ደረጃ"
+msgstr ""
 
 #: ../Onboard/settings.py:1670
 msgid "Left"
-msgstr "በ ግራ"
+msgstr ""
 
 #: ../Onboard/settings.py:1671
 msgid "Right"
-msgstr "በ ቀኝ"
+msgstr ""
 
 #: ../Onboard/settings.py:1672
 msgid "Up"
-msgstr "ከ ላይ"
+msgstr ""
 
 #: ../Onboard/settings.py:1673
 msgid "Down"
-msgstr "ከ ታች"
+msgstr ""
 
 #: ../Onboard/settings.py:1674
 msgid "Activate"
-msgstr "ማስነሻ"
+msgstr ""
 
 #: ../Onboard/settings.py:1843
 msgid "Action:"
-msgstr "ተግባር:"
+msgstr ""
 
 #: ../Onboard/settings.py:2007
 msgid "Disabled"
-msgstr "ተሰናክሏል"
+msgstr ""
 
 #: ../Onboard/settings.py:2013
 msgid "Button"
-msgstr "ቁልፍ"
+msgstr ""
 
 #: ../Onboard/settings.py:2068 ../Onboard/settings.py:2113
 msgid "Press a button..."
-msgstr "ቁልፍ ይጫኑ..."
+msgstr ""
 
 #: ../Onboard/settings.py:2115
 msgid "Press a key..."
-msgstr "ቁልፍ ይጫኑ..."
+msgstr ""
 
 #: ../settings_docking_dialog.ui.h:1
 msgid "Top"
-msgstr "ከ ላይ"
+msgstr ""
 
 #: ../settings_docking_dialog.ui.h:2
 msgid "Bottom"
-msgstr "ከ ታች"
+msgstr ""
 
 #: ../settings_docking_dialog.ui.h:3
 msgid "Active Monitor"
@@ -268,7 +268,7 @@ msgstr ""
 
 #: ../settings_docking_dialog.ui.h:15
 msgid "Shrink workarea"
-msgstr "የ ስራ ማሳነሻ"
+msgstr ""
 
 #: ../settings_docking_dialog.ui.h:16
 msgid "Shrink the available space for maximized windows."
@@ -328,11 +328,11 @@ msgstr ""
 
 #: ../settings.ui.h:9
 msgid "General"
-msgstr "ባጠቃላይ"
+msgstr ""
 
 #: ../settings.ui.h:10
 msgid "Window"
-msgstr "መስኮት"
+msgstr ""
 
 #: ../settings.ui.h:11
 msgid "Layout"
@@ -340,16 +340,16 @@ msgstr ""
 
 #: ../settings.ui.h:12
 msgid "Theme"
-msgstr "ገጽታ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
 #: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
 msgid "Snippets"
-msgstr "ቁራጭ"
+msgstr ""
 
 #: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
 msgid "Keyboard"
-msgstr "የ ፊደል ገበታ"
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Typing Assistance"
@@ -357,7 +357,7 @@ msgstr ""
 
 #: ../settings.ui.h:16
 msgid "Universal Access"
-msgstr "አለም አቀፍ መድረሻ"
+msgstr ""
 
 #: ../settings.ui.h:17
 msgid "Latch, then lock"
@@ -381,7 +381,7 @@ msgstr ""
 
 #: ../settings.ui.h:22
 msgid "none"
-msgstr "ምንም"
+msgstr ""
 
 #: ../settings.ui.h:23
 msgid "single-touch"
@@ -393,7 +393,7 @@ msgstr ""
 
 #: ../settings.ui.h:25
 msgid "column"
-msgstr "አምድ"
+msgstr ""
 
 #: ../settings.ui.h:26
 msgid "_Auto-show when editing text"
@@ -407,7 +407,7 @@ msgstr ""
 
 #: ../settings.ui.h:28
 msgid "_Settings"
-msgstr "_ማሰናጃዎች"
+msgstr ""
 
 #: ../settings.ui.h:29
 msgid "Start Onboard _hidden"
@@ -419,7 +419,7 @@ msgstr ""
 
 #: ../settings.ui.h:31
 msgid "Show/Hide options"
-msgstr "ምርጫዎችን ማሳያ/መደበቂያ"
+msgstr ""
 
 #: ../settings.ui.h:32
 msgid "Show floating _icon when Onboard is hidden"
@@ -547,7 +547,7 @@ msgstr ""
 
 #: ../settings.ui.h:61 ../settings_theme_dialog.ui.h:3
 msgid "_Background:"
-msgstr "_መደብ:"
+msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Transparency of the keyboard background"
@@ -555,7 +555,7 @@ msgstr ""
 
 #: ../settings.ui.h:63
 msgid "_No background"
-msgstr "መደብ _የለም"
+msgstr ""
 
 #: ../settings.ui.h:64
 msgid "Show the desktop through the gaps between keys."
@@ -580,7 +580,7 @@ msgstr ""
 
 #: ../settings.ui.h:69
 msgid "after"
-msgstr "በኋላ"
+msgstr ""
 
 #: ../settings.ui.h:70
 msgid "Delay in seconds until the inactive transparency takes effect."
@@ -588,7 +588,7 @@ msgstr ""
 
 #: ../settings.ui.h:71
 msgid "seconds"
-msgstr "ሰከንዶች"
+msgstr ""
 
 #: ../settings.ui.h:72
 msgid "When Inactive"
@@ -604,11 +604,11 @@ msgstr ""
 
 #: ../settings.ui.h:75
 msgid "Name"
-msgstr "ስም"
+msgstr ""
 
 #: ../settings.ui.h:76
 msgid "Description"
-msgstr "መግለጫ"
+msgstr ""
 
 #: ../settings.ui.h:77
 msgid "_Open layouts folder"
@@ -821,7 +821,7 @@ msgstr ""
 
 #: ../settings.ui.h:123
 msgid "Options"
-msgstr "ምርጫዎች"
+msgstr ""
 
 #: ../settings.ui.h:124
 msgid "Show more suggestions arrow"
@@ -849,7 +849,7 @@ msgstr ""
 
 #: ../settings.ui.h:130
 msgid "Buttons"
-msgstr "ቁልፎች"
+msgstr ""
 
 #: ../settings.ui.h:131
 msgid "Word Suggestions"
@@ -905,7 +905,7 @@ msgstr ""
 
 #: ../settings.ui.h:144
 msgid "_Delay:"
-msgstr "_ማዘግያ:"
+msgstr ""
 
 #: ../settings.ui.h:145
 msgid "_Motion threshold:"
@@ -1156,32 +1156,32 @@ msgstr ""
 #. translators: very short label of the left Alt key
 #: ../data/layoutstrings.py:38
 msgid "Alt"
-msgstr "Alt"
+msgstr ""
 
 #. translators: very short label of the Alt Gr key
 #: ../data/layoutstrings.py:40
 msgid "Alt Gr"
-msgstr "Alt Gr"
+msgstr ""
 
 #. translators: very short label of the CAPS LOCK key
 #: ../data/layoutstrings.py:42
 msgid "CAPS"
-msgstr "CAPS"
+msgstr ""
 
 #. translators: very short label of the Ctrl key
 #: ../data/layoutstrings.py:44
 msgid "Ctrl"
-msgstr "Ctrl"
+msgstr ""
 
 #. translators: very short label of the DELETE key
 #: ../data/layoutstrings.py:46
 msgid "Del"
-msgstr "ማጥፊያ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'doubleclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:47 ../data/layoutstrings.py:220
 msgid "Double click"
-msgstr "ሁለት ጊዜ መጫኛ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'dragclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:48 ../data/layoutstrings.py:223
@@ -1191,21 +1191,21 @@ msgstr ""
 #. translators: very short label of the numpad END key
 #: ../data/layoutstrings.py:50
 msgid "End"
-msgstr "መጨረሻ"
+msgstr ""
 
 #. translators: very short label of the numpad ENTER key
 #: ../data/layoutstrings.py:52
 msgid "Ent"
-msgstr "ማስገቢያ"
+msgstr ""
 
 #. translators: very short label of the ESCAPE key
 #: ../data/layoutstrings.py:54
 msgid "Esc"
-msgstr "Esc"
+msgstr ""
 
 #: ../data/layoutstrings.py:55
 msgid "Function keys"
-msgstr "የ ተግባር ቁልፎች"
+msgstr ""
 
 #: ../data/layoutstrings.py:56
 msgid "Number block and function keys"
@@ -1224,27 +1224,27 @@ msgstr ""
 #. translators: very short label of the HOME key
 #: ../data/layoutstrings.py:60
 msgid "Hm"
-msgstr "Hm"
+msgstr ""
 
 #. translators: very short label of the INSERT key
 #: ../data/layoutstrings.py:62
 msgid "Ins"
-msgstr "Ins"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:63 ../data/layoutstrings.py:265
 msgid "Main keyboard"
-msgstr "ዋናው የፊደል ገበታ"
+msgstr ""
 
 #. translators: very short label of the Menu key
 #: ../data/layoutstrings.py:65
 msgid "Menu"
-msgstr "ዝርዝር"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'middleclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:66 ../data/layoutstrings.py:274
 msgid "Middle click"
-msgstr "በመሀከል መጫኛ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'move' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:67 ../data/layoutstrings.py:283
@@ -1254,7 +1254,7 @@ msgstr ""
 #. translators: very short label of the NUMLOCK key
 #: ../data/layoutstrings.py:69
 msgid "Nm&#10;Lk"
-msgstr "Nm&#10;Lk"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
@@ -1264,7 +1264,7 @@ msgstr ""
 #. translators: very short label of the PAUSE key
 #: ../data/layoutstrings.py:72
 msgid "Pause"
-msgstr "ማቆሚያ"
+msgstr ""
 
 #. translators: very short label of the PAGE DOWN key
 #: ../data/layoutstrings.py:74
@@ -1280,36 +1280,36 @@ msgstr ""
 #. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:78 ../data/layoutstrings.py:298
 msgid "Preferences"
-msgstr "ምርጫዎች"
+msgstr ""
 
 #. translators: very short label of the PRINT key
 #: ../data/layoutstrings.py:80
 msgid "Prnt"
-msgstr "ማተሚያ"
+msgstr ""
 
 #. translators: very short label of the Quit button
 #: ../data/layoutstrings.py:82
 msgid "Quit"
-msgstr "ማጥፊያ"
+msgstr ""
 
 #. translators: very short label of the RETURN key
 #: ../data/layoutstrings.py:84
 msgid "Return"
-msgstr "መመለሻ"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'secondaryclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:85 ../data/layoutstrings.py:313
 msgid "Right click"
-msgstr "በቀኝ መጫኛ"
+msgstr ""
 
 #. translators: very short label of the SCROLL key
 #: ../data/layoutstrings.py:87
 msgid "Scroll"
-msgstr "መሸብለያ"
+msgstr ""
 
 #: ../data/layoutstrings.py:89
 msgid "Space"
-msgstr "ክፍተት"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'showclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:90 ../data/layoutstrings.py:364
@@ -1324,25 +1324,25 @@ msgstr ""
 #. translators: very short label of the default SUPER key
 #: ../data/layoutstrings.py:94
 msgid "Win"
-msgstr "መስኮት"
+msgstr ""
 
 #. translators: description of unicode character U+2602
 #. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:96 ../data/layoutstrings.py:367
 msgid "Umbrella"
-msgstr "ጥላ"
+msgstr ""
 
 #. translators: description of unicode character U+2606
 #. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:98 ../data/layoutstrings.py:373
 msgid "White star"
-msgstr "ነጭ ኮከብ"
+msgstr ""
 
 #. translators: description of unicode character U+260F
 #. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:100 ../data/layoutstrings.py:379
 msgid "White telephone"
-msgstr "ነጭ ስልክ"
+msgstr ""
 
 #. translators: description of unicode character U+2615
 #: ../data/layoutstrings.py:102
@@ -1364,7 +1364,7 @@ msgstr ""
 #. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
 msgid "Peace symbol"
-msgstr "የ ሰላም ምልክት"
+msgstr ""
 
 #. translators: description of unicode character U+262F
 #. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
@@ -1683,7 +1683,7 @@ msgstr ""
 #. translators: this is a 'tooltip' of the key 'settings' in keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:319
 msgid "Settings"
-msgstr "ማሰናጃ"
+msgstr ""
 
 #. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:343
@@ -1768,9 +1768,8 @@ msgid "Chose how the keyboard window moves when a text entry is activated."
 msgstr ""
 
 #: ../settings_auto_show_dialog.ui.h:15
-#, fuzzy
 msgid "Keyboard Movement"
-msgstr "የ ፊደል ገበታ"
+msgstr ""
 
 #: ../settings_auto_show_dialog.ui.h:16
 msgid "_Hide when using a physical keyboard"
@@ -1917,11 +1916,11 @@ msgstr ""
 #. ##############
 #: ../Onboard/SnippetView.py:39
 msgid "<Enter label>"
-msgstr "<ምልክት ያስገቡ>"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:40
 msgid "<Enter text>"
-msgstr "<ጽሁፍ ያስገቡ>"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:52
 msgid "Button Number"
@@ -1990,7 +1989,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
-msgstr "_ዘዴ:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:9
 msgid "R_oundness:"
@@ -1998,23 +1997,23 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:10
 msgid "S_ize:"
-msgstr "መ_ጠን:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:11
 msgid "B_order width:"
-msgstr "የ ድ_ንበር ስፋት:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "Key Style"
-msgstr "የ ቁልፍ ዘዴ"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Key:"
-msgstr "_ቁልፍ:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "_Border:"
-msgstr "_ድንበር:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:15
 msgid "Gradients"
@@ -2022,27 +2021,27 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:16
 msgid "_Strength:"
-msgstr "_ጥንካሬ:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:17
 msgid "Shadow"
-msgstr "ጥላ"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:18
 msgid "Keys"
-msgstr "ቁልፎች"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:19
 msgid "_Font:"
-msgstr "_ፊደል:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:20
 msgid "_Attributes:"
-msgstr "_ባህሪዎች:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:21
 msgid "Font"
-msgstr "ፊደል"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:22
 msgid "I_ndependent size"
@@ -2058,7 +2057,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:25
 msgid "Labels"
-msgstr "ምልክቶች"
+msgstr ""
 
 #: ../Onboard/Config.py:231
 msgid "Layout file ({}) or name"
@@ -2176,7 +2175,7 @@ msgstr ""
 
 #: ../Onboard/KeyboardWidget.py:1713
 msgid "Other _Languages"
-msgstr "ሌሎች ቋንቋዎች"
+msgstr ""
 
 #: ../Onboard/KeyboardWidget.py:1757
 msgid "_Remove suggestion…"
