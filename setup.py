@@ -350,7 +350,7 @@ DistUtilsExtra.auto.setup(
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/onboard', glob.glob('AUTHORS')),
                   ('share/onboard', glob.glob('CHANGELOG')),
-                  ('share/onboard', glob.glob('COPYING')),
+                  ('share/onboard', glob.glob('COPYING*')),
                   ('share/onboard', glob.glob('HACKING')),
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),

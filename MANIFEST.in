@@ -1,4 +1,4 @@
-include AUTHORS CHANGELOG COPYING HACKING NEWS README
+include AUTHORS CHANGELOG COPYING* HACKING NEWS README
 include *.ui
 include onboard-defaults.conf.example
 recursive-include data *
