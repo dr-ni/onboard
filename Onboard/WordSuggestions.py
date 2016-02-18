@@ -2181,9 +2181,10 @@ class WordListPanel(LayoutPanel):
 
         # add all keys to the panel
         keys = correction_keys + prediction_keys
-        color_scheme = fixed_buttons[0].color_scheme
-        for key in keys:
-            key.color_scheme = color_scheme
+        if fixed_buttons:
+            color_scheme = fixed_buttons[0].color_scheme
+            for key in keys:
+                key.color_scheme = color_scheme
         self.set_items(fixed_background + keys +
                        fixed_buttons + hideable_buttons)
 
@@ -2249,59 +2250,58 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons
         for word correction and prediction.
         """
-        wordlist = self._get_child_button("wordlist")
-        if not wordlist:
-            return []
-
-        key_context = wordlist.context
-        wordlist_rect = wordlist.get_rect()
-        rect = wordlist_rect.copy()
-
-        # position visible buttons
-        buttons = []
-        button_spacing = self._get_button_spacing()
-        for button_id in reversed(visible_button_ids):
-            button = self._get_child_button(button_id)
-            if button and button.visible:
-                button_width = self._get_button_width(button)
-                rect.w -= button_width + button_spacing
-                buttons.append((button, button_width, 1))
-
-        # font size is based on the height of the word list background
-        font_size = WordKey().calc_font_size(key_context, rect.get_size())
-
-        # hide the wordlist background when corrections create their own
-        wordlist.set_visible(not correction_choices)
-
-        # create correction keys
-        correction_keys, used_rect = \
-            self._create_correction_keys(correction_choices,
-                                         rect, wordlist,
-                                         key_context, font_size)
-        rect.x += used_rect.w
-        rect.w -= used_rect.w
-
-        # create prediction keys
+        correction_keys = []
         prediction_keys = []
-        if not self.are_corrections_expanded():
-            prediction_keys = self._create_prediction_keys(prediction_choices,
-                                                           rect, key_context,
-                                                           font_size)
+        wordlist = self._get_child_button("wordlist")
+        if wordlist:
+            key_context = wordlist.context
+            wordlist_rect = wordlist.get_rect()
+            rect = wordlist_rect.copy()
 
-        # move the buttons to the end of the bar
-        if buttons:
-            rw = wordlist_rect.copy()
-            for button, button_width, align in buttons:
-                r = rw.copy()
-                r.w = button_width
-                if align == -1:   # left align
-                    r.x = rw.left() - button_width
-                    rw.x += button_width
-                    rw.w -= button_width + button_spacing
-                elif align == 1:  # right align
-                    r.x = rw.right() - button_width
-                    rw.w -= button_width + button_spacing
-                button.set_border_rect(r)
+            # position visible buttons
+            buttons = []
+            button_spacing = self._get_button_spacing()
+            for button_id in reversed(visible_button_ids):
+                button = self._get_child_button(button_id)
+                if button and button.visible:
+                    button_width = self._get_button_width(button)
+                    rect.w -= button_width + button_spacing
+                    buttons.append((button, button_width, 1))
+
+            # font size is based on the height of the word list background
+            font_size = WordKey().calc_font_size(key_context, rect.get_size())
+
+            # hide the wordlist background when corrections create their own
+            wordlist.set_visible(not correction_choices)
+
+            # create correction keys
+            correction_keys, used_rect = \
+                self._create_correction_keys(correction_choices,
+                                            rect, wordlist,
+                                            key_context, font_size)
+            rect.x += used_rect.w
+            rect.w -= used_rect.w
+
+            # create prediction keys
+            if not self.are_corrections_expanded():
+                prediction_keys = self._create_prediction_keys(prediction_choices,
+                                                            rect, key_context,
+                                                            font_size)
+
+            # move the buttons to the end of the bar
+            if buttons:
+                rw = wordlist_rect.copy()
+                for button, button_width, align in buttons:
+                    r = rw.copy()
+                    r.w = button_width
+                    if align == -1:   # left align
+                        r.x = rw.left() - button_width
+                        rw.x += button_width
+                        rw.w -= button_width + button_spacing
+                    elif align == 1:  # right align
+                        r.x = rw.right() - button_width
+                        rw.w -= button_width + button_spacing
+                    button.set_border_rect(r)
 
         return correction_keys, prediction_keys
 
