@@ -1386,7 +1386,15 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         rects = []
         for key in keys:
             r = key.get_canvas_border_rect()
-            rects.append(canvas_to_root_window_rect(self, r))
+            r = canvas_to_root_window_rect(self, r)
+
+            # scale coordinates in response to changes to
+            # org.gnome.desktop.interface scaling-factor
+            scale = config.window_scaling_factor
+            if scale and scale != 1.0:
+                r = r.scale(scale)
+
+            rects.append(r)
 
         return rects
 
