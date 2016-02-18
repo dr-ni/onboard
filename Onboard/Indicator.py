@@ -210,15 +210,22 @@ class Indicator():
         self._menu.update_items()
 
     def _menu_position_func(self, menu, *args):
+        gtk_menu = self._menu.get_gtk_menu()
+
         # Work around gi annotation bug in gtk-3.0:
         # gtk_status_icon_position_menu() doesn't mark 'push_in' as inout
         # which is required for any (*GtkMenuPositionFunc)
+        # Precise: args = (status_icon,)
         if len(args) == 1:    # in Precise
             status_icon, = args
+            return Gtk.StatusIcon.position_menu(gtk_menu, status_icon)
         elif len(args) == 2:  # in <=Oneiric?
             push_in, status_icon = args
-        gtk_menu = self._menu.get_gtk_menu()
-        return Gtk.StatusIcon.position_menu(gtk_menu, status_icon)
+            return Gtk.StatusIcon.position_menu(gtk_menu, status_icon)
+        elif len(args) == 3:  # in <=Xenial?
+            x, y, status_icon = args
+            return Gtk.StatusIcon.position_menu(gtk_menu, x, y, status_icon,
+                                                )
 
     def set_visible(self, visible):
         if self._status_icon:
