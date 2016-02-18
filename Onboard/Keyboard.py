@@ -1445,6 +1445,11 @@ class Keyboard(WordSuggestions):
         if self._temporary_modifiers:
             return
 
+        # SHIFT doesn't unlatch in Firefox, launchpad question entry, typing
+        # "?" after inserting "collection" with Small layout, Xenial,
+        if self.is_typing():
+            return
+
         for mod_bit in (1 << bit for bit in range(8)):
             # Directly redraw locking modifiers only. All other modifiers
             # redraw after a short delay. This is meant to prevent
