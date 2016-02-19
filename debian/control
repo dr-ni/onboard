@@ -55,7 +55,7 @@ Description: Language model files for the word suggestion feature of Onboard
 Package: gnome-shell-extension-onboard
 Architecture: all
 Depends: ${misc:Depends},
-         gnome-shell (>= 3.4)
+         gnome-shell (>= 3.16)
 Description: GNOME-Shell extension for the on-screen keyboard Onboard
  This package hides the official GNOME3 keyboard and provides an icon to
  show/hide Onboard. It is only an initial extension that does not show

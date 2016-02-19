@@ -1,3 +1,113 @@
+onboard (1.2.0-0ubuntu1) xenial; urgency=medium
+
+  * Request for sponsorship for new upstream release (LP: #1547054)
+  * debian/control: add gnome-shell-extension-onboard package
+  * debian/copyright: rewrite to use machine readable DEP-5 format
+  * debian/onboard.lintian-overrides: remove
+  * debian/source.lintian-overrides: 
+    - false missing license warnings: the license texts are in separate files
+  * debian/onboard.install:
+    - remove usr/share/dbus-1 entry
+    - replace usr/share/onboard/COPYING with usr/share/onboard/COPYING*
+    - add usr/share/onboard/HACKING entry
+    - add usr/share/help/C/onboard entry
+    - add usr/share/man/man1 entry
+  * debian/gnome-shell-extension-onboard.install: create
+  * Word suggestions and auto-correction:
+    - Add arrows to page through more suggestions and option to turn them off
+    - Show capitalized suggestions even when SHIFT is off
+    - Don't place the remove suggestion dialog behind Onboard
+    - Improve behaviour of auto-punctuation
+    - Begin preparations for lazy word separator insertion
+    - Disable punctuation assistance when entering commands in the terminal
+    - Disable spelling suggestions for URLs and file names
+    - Disable auto-capitalization of URLs and file names
+    - Add Bulgarian system language model
+  * Layouts:
+    - Improve Phone layout for cyrillic languages
+    - Improve Small layout for cyrillic languages (LP: #1534210)
+    - Shorten key label "horiz\nconn" to Gdk provided "ho"
+    - If the layout contains a keysym error, show full hexcode of keysym
+  * License and copyright information: (LP: #1412647)
+    - Clarify the information
+    - Update the information
+    - Make it all available in the COPYING file
+  * Unit tests:
+    - Add test for modifier unlatching
+    - Fix regression when importing Gtk without first specifying the version
+    - Adapt to the removal of onboard-defaults.conf.nexus7
+  * Preferences dialog:
+    - Make Preferences->Keyboard->Advanced scrollable
+    - Add status-icon-provider setting to Preferences (LP: #1454405)
+    - Show sticky-key-release-on-hide-delay setting in Preferences
+    - Rename "User layouts" to "My layouts"
+  * Add initial GNOME Shell extension for Onboard
+  * Replace old documentation with initial documentation in mallard format
+  * Add man pages (thanks Mike Gabriel)
+  * Detect default prompt of fish interactive shell in DomainTerminal
+  * Add support for flake8
+  * Type SHIFT+key on right click for uppercase letters, etc.
+  * Add new auto-show repositioning method for reduced pointer travel
+  * Add command to the licensing tool for writing licensing headers to files
+  * Update tools/licensing list-committers to skip binary and unversioned files
+  * Disable click sound in space feature, but keep gsettings key (LP: #1529140)
+  * Remove copyright sign from service file to appease pbuilder
+  * Allow the letter_frequencies tool to take a filename of a language model
+  * Make builds on debian reproducible, thanks Mike Gabriel (LP: #1530519)
+  * Update and improve the description of a number of gsettings keys
+  * Don't auto-save language models while keys are being pressed
+  * Remove unnecessary special treatment of ALT in override redirect mode
+  * Remove fall-back to old virtkey API. Virtkey is part of Onboard now
+  * Improve PEP8 compliance of various python files
+  * Attempt to auto-show and keep Onboard visible in unity dash
+  * Correctly position the language menu also in wily
+  * Show rounded corners and transparency of the icon palette also in wily
+  * Return transparency effects of the keyboard in wily
+  * Don't invert the case of auto-typed suggestions when CAPS is enabled
+  * Improve auto-show logic in the presence of text popups
+  * Automatically insert a slash after the top level domain co
+  * Improve window movement with enabled decoration when dragging the titlebar
+  * Keep the keyboard active while moving by title bar (LP: #1461823)
+  * Stop synchronisation of modifiers when Alt is active
+  * Recognize a touch device with reception of a touch event
+  * Enhance cleaning command of source tree
+  * Trap the occasional X error BadDrawable causing Onboard to exit
+  * Fix LibreOffice Writer losing text color on suggestions before a space
+  * Fix Compiz wall plugin's viewport not always closing (LP: #1532254)
+  * Fix some labels not being displayed in uppercase on Caps-Lock (LP: #1513773)
+  * Fix extra space being inserted when replacing selection with suggestion
+  * Fix auto-hide not extending delay while typing on physical keyboard
+  * Fix D-Bus getting tripped up by zero bytes in hex label string
+  * Fix Onboard stretching across width of unity-greeter in xenial
+  * Fix start failure on xenial when D-Bus session is not available
+  * Fix warnings about missing gi.require_version with python3-gi 3.18
+  * Fix several depreciation warnings
+  * Fix touch input with event source GTK and multi-touch mode, thanks J Wiegman
+  * Fix touch events not being received in Kwin (LP:1470825)
+  * Fix spurious backtrace on suggestions when accessible becomes invalid
+  * Fix status icon size with lxpanel-indicator-applet-plugin (LP: #1467723)
+  * Fix re.split() FutureWarning for python 3.5
+  * Fix internat. character selection offset on high-dpi screen (LP: #1421840)
+  * Fix left click on GtkStatusIcon fallback not working (LP: #1421972)
+  * Fix stuck keys in keyboard popups with event source GTK
+  * Fix auto-inserting separator Ĩ instead of space when NumLock is enabled
+  * Fix initial Py_None not being dereferenced when copying OskDeviceEvents
+  * Fix traceback when showing keyboard popups in Precise
+  * Fix display of key popups for compiz and metacity in Precise
+  * Fix segfault in the osk extension for Precise
+  * Fix transparency effects on Precise
+  * Fix stack smashing error with GCC 4.6.3 on Precise
+  * Remove outdated files
+  * Update HACKING file
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 18 Feb 2016 16:02:00 +0100
+
+onboard (1.1.2-0ubuntu2) xenial; urgency=medium
+
+  * No-change rebuild to drop python3.4 support.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 19 Jan 2016 11:46:24 +0000
+
 onboard (1.1.2-0ubuntu1) wily; urgency=medium
 
   * Request for sponsorship for new upstream release (LP: #1487009)

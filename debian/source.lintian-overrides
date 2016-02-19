@@ -1,0 +1,5 @@
+# Override false missing license warnings
+# The license texts are in separate files
+#
+missing-license-paragraph-in-dep5-copyright bsd-3-clause (paragraph at line 254)
+missing-license-paragraph-in-dep5-copyright gpl-3+ (paragraph at line 332)
