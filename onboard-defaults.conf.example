@@ -28,6 +28,14 @@
 # Keys have to start in column 0. A whitespace in column 0 indicates
 # a line continuation.
 #
+# More complete descriptions of the keys and their allowed values can be 
+# found in Onboard's gsettings schemas. Navigate to 'org.onboard' in 
+# dconf-editor, or read the schema definitions at
+# /usr/share/glib-2.0/schemas/org.onboard.gschema.xml.
+#
+# In general, any of the available keys in gsettings below 'org.onboard'
+# can be added here.
+#
 
 [main]
 
@@ -122,42 +130,44 @@ xembed-background-image-enabled=True
 #key-label-overrides={"LWIN": ["win", "super"]}
 
 [window]
-# Show always on visible workspace
-# Show keyboard and icon palette always on visible workspace.
-#
-# Examples:
-#window-state-sticky=True
-
 #background-transparency=10.0
+#docking-edge=bottom
+#docking-enabled=False
+#docking-monitor=active
+#docking-shrink-workarea=True
 #enable-inactive-transparency=False
 force-to-top=True
 #inactive-transparency=50.0
 #inactive-transparency-delay=1.0
-#window-handles=E SE S SW W NW N NE M
+#keep-aspect-ratio=False
 #transparency=0.0
 #transparent-background=False
 #window-decoration=False
+#window-handles=E SE S SW W NW N NE M
+#window-state-sticky=True
 
+# Settings of the keyboard window on landscape screens.
 [window.landscape]
-# Position and size of the keyboard window on landscape screens.
-#
-# Examples:
 #x=40
 #y=40
 #width=800
 #height=300
+#dock-width=700
+#dock-height=205
+#dock-expand=False
 
+# Settings of the keyboard window on portrait screens.
 [window.portrait]
-# Position and size of the keyboard window on portrait screens.
-#
-# Examples:
 #x=40
 #y=40
 #width=800
 #height=300
+#dock-width=600
+#dock-height=200
+#dock-expand=True
 
 [icon-palette]
-#in-use = False
+#in-use=False
 #window-handles=E SE S SW W NW N NE M
 
 [icon-palette.landscape]
