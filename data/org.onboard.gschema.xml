@@ -404,7 +404,7 @@ Modifiers can only be "SHIFT" at the moment.
             <description>Height of the docked keyboard window.</description>
         </key>
         <key name="dock-expand" type="b">
-            <default>false</default>
+            <default>true</default>
             <summary>Docked expansion</summary>
             <description>Expand the keyboard to the edges of the workarea when docked.</description>
         </key>

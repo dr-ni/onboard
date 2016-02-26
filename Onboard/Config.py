@@ -1594,7 +1594,7 @@ class ConfigWindow(ConfigObject):
             self.add_key("height", DEFAULT_HEIGHT)
             self.add_key("dock-width", DEFAULT_WIDTH)
             self.add_key("dock-height", DEFAULT_HEIGHT)
-            self.add_key("dock-expand", False)
+            self.add_key("dock-expand", True)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
