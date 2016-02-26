@@ -1164,11 +1164,13 @@ class Config(ConfigObject):
         return self.window.enable_inactive_transparency and \
                not self.scanner.enabled
 
-    def is_keep_aspect_ratio_enabled(self):
+    def is_keep_aspect_ratio_enabled(self, orientation_co):
         return self.window.keep_aspect_ratio or \
                self.options.keep_aspect_ratio or \
-               (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and \
-                not self.system_defaults.get("xembed_aspect_change_range") is None)
+               (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and
+                self.system_defaults.get("xembed_aspect_change_range") is not None) or \
+               (self.is_docking_enabled() and \
+                self.is_dock_expanded(orientation_co))
 
     def is_mousetweaks_active(self):
         return self.mousetweaks and self.mousetweaks.is_active()
@@ -1520,6 +1522,7 @@ class ConfigWindow(ConfigObject):
                                            "monitor8" : DockingMonitor.MONITOR8,
                                           })
         self.add_key("docking-shrink-workarea", True)
+        self.add_key("docking-aspect-change-range", [0, 1.6], "ad")
 
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)

@@ -428,7 +428,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         and gnome-screen-saver. Else we would potentially disrupt embedding
         in existing kiosk applications.
         """
-        keep_aspect = config.is_keep_aspect_ratio_enabled()
+        orientation_co = self.get_kbd_window().get_orientation_config_object()
+        keep_aspect = config.is_keep_aspect_ratio_enabled(orientation_co)
         xembedding = config.xid_mode
         unity_greeter = config.launched_by == config.LAUNCHER_UNITY_GREETER
 
@@ -438,6 +439,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         if keep_aspect:
             if xembedding:
                 aspect_change_range = config.get_xembed_aspect_change_range()
+            elif (config.is_docking_enabled() and
+                  config.is_dock_expanded(orientation_co)):
+                aspect_change_range = config.window.docking_aspect_change_range
 
             ra = rect.resize_to_aspect_range(base_aspect_rect,
                                              aspect_change_range)
@@ -1333,6 +1337,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         co = self.get_kbd_window().get_orientation_config_object()
         return not config.is_dock_expanded(co)
 
+    def can_draw_sidebars(self):
+        """ Overload for LayoutView """
+        co = self.get_kbd_window().get_orientation_config_object()
+        return (not config.xid_mode and
+                config.is_docking_enabled() and
+                config.is_dock_expanded(co))
+
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
         return physical_to_monitor_pixel_size(self, min_mm, (150, 100))
@@ -1415,7 +1426,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         layout = self.get_layout()
 
         aspect_ratio = None
-        if config.is_keep_aspect_ratio_enabled():
+        co = self.get_kbd_window().get_orientation_config_object()
+        if config.is_keep_aspect_ratio_enabled(co):
             log_rect = layout.get_border_rect()
             aspect_ratio = log_rect.w / float(log_rect.h)
             aspect_ratio = layout.get_log_aspect_ratio()

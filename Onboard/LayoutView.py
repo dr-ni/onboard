@@ -327,7 +327,7 @@ class LayoutView:
         plain_bg = False
 
         if config.xid_mode and \
-           config.is_keep_aspect_ratio_enabled():
+           config.is_keep_aspect_ratio_enabled(None):
             if self.supports_alpha:
                 self._clear_xembed_background(context)
                 transparent_bg = True
@@ -437,6 +437,9 @@ class LayoutView:
         rect = self.get_keyboard_frame_rect()
         fill = self.get_background_rgba()
 
+        if self.can_draw_sidebars():
+            self._draw_side_bars(context)
+
         fill_gradient = config.theme_settings.background_gradient
         if lod == LOD.MINIMAL or \
            fill_gradient == 0:
@@ -463,15 +466,47 @@ class LayoutView:
             roundrect_arc(context, rect, corner_radius)
         else:
             context.rectangle(*rect)
+
         context.fill()
 
         if frame:
             self.draw_window_frame(context, lod)
             self.draw_keyboard_frame(context, lod)
 
+    def _draw_side_bars(self, context):
+        """
+        Transparent bars left and right of the aspect corrected
+        keyboard frame.
+        """
+        rgba = self.get_background_rgba()
+        rgba[3] = 0.5
+        rwin = Rect(0, 0,
+                    self.get_allocated_width(),
+                    self.get_allocated_height())
+        rframe = self.get_keyboard_frame_rect()
+
+        if rwin.w > rframe.w:
+            r = rframe.copy()
+            context.set_source_rgba(*rgba)
+            context.set_line_width(0)
+
+            r.x = rwin.left()
+            r.w = rframe.left() - rwin.left()
+            context.rectangle(*r)
+            context.fill()
+
+            r.x = rframe.right()
+            r.w = rwin.right() - rframe.right()
+            context.rectangle(*r)
+            context.fill()
+
     def can_draw_frame(self):
-        """ overloaded in popups """
+        """ overloaded in KeyboardWidget """
         return True
+
+    def can_draw_sidebars(self):
+        """ overloaded in KeyboardWidget """
+        return False
 
     def draw_window_frame(self, context, lod):
         pass
@@ -684,7 +719,7 @@ class LayoutView:
         else:
             rect = Rect(0, 0, self.get_allocated_width(),
                               self.get_allocated_height())
-        return rect
+        return rect.int()
 
     def is_docking_expanded(self):
         return self.window.docking_enabled and self.window.docking_expanded

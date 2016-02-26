@@ -362,6 +362,11 @@ Modifiers can only be "SHIFT" at the moment.
             <summary>Docking monitor</summary>
             <description>Monitor where the keyboard docks.</description>
         </key>
+        <key name="docking-aspect-change-range" type="ad">
+            <default>[0.0, 1.6]</default>
+            <summary>Aspect range while docked and expanded</summary>
+            <description>Limits of the keyboard's aspect ratio when it is docked and expanded.</description>
+        </key>
 
         <child name="landscape" schema="org.onboard.window.landscape"/>
         <child name="portrait"  schema="org.onboard.window.portrait"/>
