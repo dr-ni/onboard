@@ -25,8 +25,17 @@ def require_gi_versions():
     gi.require_version('Gdk', '3.0')
     gi.require_version('GdkX11', '3.0')
     gi.require_version('Pango', '1.0')
-    gi.require_version('Atspi', '2.0')
     gi.require_version('PangoCairo', '1.0')
-    gi.require_version('AppIndicator3', '0.1')
 
+    # Atspi is not required
+    try:
+        gi.require_version('Atspi', '2.0')
+    except ValueError:
+        pass
+
+    # AppIndicator3 is not required
+    try:
+        gi.require_version('AppIndicator3', '0.1')
+    except ValueError:
+        pass
 
