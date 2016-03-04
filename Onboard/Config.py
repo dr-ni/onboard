@@ -1164,12 +1164,34 @@ class Config(ConfigObject):
         return self.window.enable_inactive_transparency and \
                not self.scanner.enabled
 
-    def is_keep_aspect_ratio_enabled(self, orientation_co):
-        return self.window.keep_aspect_ratio or \
-               self.options.keep_aspect_ratio or \
-               (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and
-                self.system_defaults.get("xembed_aspect_change_range") is not None) or \
-               (self.is_docking_enabled() and \
+    def is_keep_window_aspect_ratio_enabled(self, orientation_co):
+        """
+        Keep aspect ratio of the whole keyboard window?
+        Not recommended, no effect in MATE and elsewhere the
+        keyboard tends to shrink with each interaction.
+        """
+        return ((self.window.keep_aspect_ratio or
+                 self.options.keep_aspect_ratio) and
+                not self.xid_mode and
+                not self.is_docking_enabled())
+
+    def is_keep_frame_aspect_ratio_enabled(self, orientation_co):
+        """
+        Keep aspect ratio of only the frame (keyboard area)
+        inside the keyboard window?
+        """
+        return \
+            self.is_keep_xembed_frame_aspect_ratio_enabled() or \
+            self.is_keep_docking_frame_aspect_ratio_enabled(orientation_co)
+
+    def is_keep_xembed_frame_aspect_ratio_enabled(self):
+        return (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and
+                self.system_defaults.get("xembed_aspect_change_range")
+                is not None)
+
+    def is_keep_docking_frame_aspect_ratio_enabled(self, orientation_co):
+        return (not self.xid_mode and
+                self.is_docking_enabled() and
                 self.is_dock_expanded(orientation_co))
 
     def is_mousetweaks_active(self):

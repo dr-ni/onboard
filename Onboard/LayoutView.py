@@ -326,8 +326,7 @@ class LayoutView:
         transparent_bg = False
         plain_bg = False
 
-        if config.xid_mode and \
-           config.is_keep_aspect_ratio_enabled(None):
+        if config.is_keep_xembed_frame_aspect_ratio_enabled():
             if self.supports_alpha:
                 self._clear_xembed_background(context)
                 transparent_bg = True

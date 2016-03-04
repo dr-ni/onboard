@@ -429,7 +429,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         in existing kiosk applications.
         """
         orientation_co = self.get_kbd_window().get_orientation_config_object()
-        keep_aspect = config.is_keep_aspect_ratio_enabled(orientation_co)
+        keep_aspect = config.is_keep_frame_aspect_ratio_enabled(orientation_co)
         xembedding = config.xid_mode
         unity_greeter = config.launched_by == config.LAUNCHER_UNITY_GREETER
 
@@ -1340,9 +1340,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
     def can_draw_sidebars(self):
         """ Overload for LayoutView """
         co = self.get_kbd_window().get_orientation_config_object()
-        return (not config.xid_mode and
-                config.is_docking_enabled() and
-                config.is_dock_expanded(co))
+        return config.is_keep_docking_frame_aspect_ratio_enabled(co)
 
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
@@ -1427,7 +1425,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
         aspect_ratio = None
         co = self.get_kbd_window().get_orientation_config_object()
-        if config.is_keep_aspect_ratio_enabled(co):
+        if config.is_keep_window_aspect_ratio_enabled(co):
             log_rect = layout.get_border_rect()
             aspect_ratio = log_rect.w / float(log_rect.h)
             aspect_ratio = layout.get_log_aspect_ratio()
