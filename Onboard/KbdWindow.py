@@ -525,6 +525,10 @@ class KbdWindowBase:
            not config.is_docking_enabled()
 
 
+    def get_orientation_config_object(self):
+        return None
+
+
 class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     # Minimum window size (for resizing in system mode, see handle_motion())
