@@ -39,6 +39,7 @@ try:
     import dbus
     import dbus.service
     import dbus.mainloop.glib
+    from Onboard.DBusUtils import ServiceBase, dbus_property
 except ImportError:
     pass
 
@@ -795,100 +796,50 @@ class OnboardGtk(object):
 
 
 if "dbus" in globals():
-    class ServiceOnboardKeyboard(dbus.service.Object):
+    class ServiceOnboardKeyboard(ServiceBase):
         """
-        Onboard's D-Bus service.
+        Onboard's main D-Bus service.
         """
 
         PATH = "/org/onboard/Onboard/Keyboard"
         IFACE = "org.onboard.Onboard.Keyboard"
 
-        class ServiceOnboardException(dbus.DBusException):
-            _dbus_error_name = 'org.onboard.Exception'
-
-
         def __init__(self, app):
-            super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
+            ServiceBase.__init__(self, self.IFACE, self.PATH)
             self._keyboard = app.keyboard
             self._keyboard_widget = app.keyboard_widget
 
         @dbus.service.method(dbus_interface=IFACE)
-        def Show(self):
+        def Show(self):  # noqa: flake8
             self._keyboard.set_visible(True)
 
         @dbus.service.method(dbus_interface=IFACE)
-        def Hide(self):
+        def Hide(self):  # noqa: flake8
             self._keyboard.set_visible(False)
 
         @dbus.service.method(dbus_interface=IFACE)
-        def ToggleVisible(self):
+        def ToggleVisible(self):  # noqa: flake8
             self._keyboard.toggle_visible()
 
         # private method, for unit-testing only
         if config.is_running_from_source:
             @dbus.service.method(dbus_interface=IFACE,
-                                 out_signature='a(sada{is}a{sb})')
+                                 out_signature='a(sada{is}a{sb})')  # noqa: flake8
             def GetKeyState(self):
                 result = []
                 for key in self._keyboard.iter_keys():
                     r = self._keyboard_widget.get_key_screen_rect(key)
                     if not r.is_empty() and key.is_path_visible():
-                        labels = {m:l for m, l in key.labels.items() if l}  # -None
+                        labels = {m : l for m, l in key.labels.items() if l}
                         result.append([key.get_id(),
-                                    list(r),
-                                    labels,
-                                    key.get_state()])
+                                       list(r),
+                                       labels,
+                                       key.get_state()])
                 return result
 
-        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
-                             in_signature='ss', out_signature='v')
-        def Get(self, iface, prop):
-            if iface == self.IFACE:
-                if prop == 'Visible':
-                    return self._keyboard.is_visible()
-                else:
-                    raise self.ServiceOnboardException(\
-                        ('Unknown property \'{0}\'').format(prop))
-            else:
-                raise self.ServiceOnboardException(\
-                    ('Unknown interface \'{0}\'').format(iface))
-
-        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE, in_signature='ssv')
-        def Set(self, iface, prop, value):
-            if iface == self.IFACE:
-                if prop == 'Visible':
-                    raise self.ServiceOnboardException(\
-                        ('Property \'{0}\' is read-only').format(prop))
-                else:
-                    raise self.ServiceOnboardException(\
-                        ('Unknown property \'{0}\'').format(prop))
-            else:
-                raise self.ServiceOnboardException(\
-                    ('Unknown interface \'{0}\'').format(iface))
-
-        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
-                             in_signature='s', out_signature='a{sv}')
-        def GetAll(self, iface):
-            if iface == self.IFACE:
-                return { 'Visible': self._keyboard.is_visible() }
-            else:
-                raise self.ServiceOnboardException(\
-                    ('Unknown interface \'{0}\'').format(iface))
-
-        @dbus.service.method(dbus_interface=dbus.INTROSPECTABLE_IFACE, out_signature='s')
-        def Introspect(self):
-            ref = dbus.service.Object.Introspect(self, self._object_path, self.connection)
-
-            iface = '  <interface name="{}">\n' \
-                    '      <property name="Visible" type="b" access="read"/>\n' \
-                    '  </interface>\n' \
-                    .format(self.IFACE)
-
-            return ref[:-8] + iface + '</node>\n'
-
-        @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE, signature='sa{sv}as')
-        def PropertiesChanged(self, iface, changed, invalidated):
-            return iface, changed, invalidated
+        @dbus_property(dbus_interface=IFACE, signature='b')
+        def Visible(self):  # noqa: flake8
+            return self._keyboard.is_visible()
 
 
 def cb_any_event(event, onboard):
@@ -900,7 +851,7 @@ def cb_any_event(event, onboard):
     except ValueError:
         type = None
 
-    if 0: # debug
+    if 0:  # debug
         a = [event, event.type]
         if type == Gdk.EventType.VISIBILITY_NOTIFY:
             a += [event.state]
