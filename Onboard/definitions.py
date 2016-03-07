@@ -25,11 +25,14 @@ from __future__ import division, print_function, unicode_literals
 
 from gi.repository import Gdk
 
+
 class StatusIconProviderEnum:
     (
         GtkStatusIcon,
         AppIndicator,
-    ) = range(2)
+        StatusNotifier,
+    ) = range(3)
+
 
 class InputEventSourceEnum:
     (

@@ -180,11 +180,15 @@
     <data>
       <row>
         <col id="0">0</col>
-        <col id="1">GtkStatusIcon</col>
+        <col id="1">GtkStatusIcon (MATE)</col>
       </row>
       <row>
         <col id="0">1</col>
-        <col id="1">AppIndicator</col>
+        <col id="1">AppIndicator (Unity)</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1">StatusNotifier (KDE)</col>
       </row>
     </data>
   </object>
