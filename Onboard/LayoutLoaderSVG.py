@@ -134,8 +134,9 @@ class LayoutLoaderSVG:
         layout = None
 
         f = open_utf8(layout_filename)
-        try:
-            dom = minidom.parse(f).documentElement
+
+        # make sure unlink is called
+        with minidom.parse(f).documentElement as dom:
 
             # check layout format, no format version means legacy layout
             format = self.LAYOUT_FORMAT_LEGACY
@@ -162,8 +163,8 @@ class LayoutLoaderSVG:
                 if items:
                     root.set_items(items)
                     layout = root
-        finally:
-            f.close()
+
+        f.close()
 
         self._svg_cache = {} # Free the memory
         return layout
