@@ -21,7 +21,14 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import os
 import subprocess
+
+try:
+    import dbus
+    from Onboard.DBusUtils import ServiceBase, dbus_property
+except ImportError:
+    pass
 
 from Onboard.Version import require_gi_versions
 require_gi_versions()
@@ -138,13 +145,7 @@ class Indicator():
     "Keyboard window managed by this indicator"
     _keyboard = None
 
-    "Encapsulated appindicator instance"
-    _indicator = None
-
-    "Encapsulated GtkStatusIcon instance"
-    _status_icon = None
-
-    "Menu attached to indicator"
+    "Menu attached to backend"
     _menu = None
 
     def __new__(cls, *args, **kwargs):
@@ -167,16 +168,30 @@ class Indicator():
 
         self._menu = ContextMenu()
 
-        if config.status_icon_provider == StatusIconProviderEnum.GtkStatusIcon:
-            self._init_status_icon()
+        sip = config.status_icon_provider
+
+        if sip == StatusIconProviderEnum.GtkStatusIcon:
+            backends = [BackendGtkStatusIcon]
+        elif sip == StatusIconProviderEnum.AppIndicator:
+            backends = [BackendAppIndicator]
         else:
+            backends = [BackendAppIndicator,
+                        BackendGtkStatusIcon]
+
+        self._backend = None
+        for backend in backends:
             try:
-                self._init_indicator()
-            except ImportError as ex:
-                _logger.info("AppIndicator not available, falling back on"
-                             " GtkStatusIcon:" + unicode_str(ex))
-                self._init_status_icon()
-        self.set_visible(False)
+                self._backend = backend(self._menu)
+                break
+            except RuntimeError as ex:
+                _logger.info("Status icon provider: '{}' unavailable: {}"
+                             .format(backend.__name__, unicode_str(ex)))
+
+        _logger.info("Status icon provider: '{}' selected"
+                     .format(backend.__name__))
+
+        if self._backend:
+            self._backend.set_visible(False)
 
     def set_keyboard(self, keyboard):
         self._keyboard = keyboard
@@ -185,29 +200,53 @@ class Indicator():
     def get_menu(self):
         return self._menu
 
-    def _init_indicator(self):
-        from gi.repository import AppIndicator3 as AppIndicator
-        self._indicator = AppIndicator.Indicator.new(
-            "Onboard",
-            "onboard",
-            AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self._indicator.set_icon_full("onboard",
-                                      _("Onboard on-screen keyboard"))
+    def update_menu_items(self):
+        self._menu.update_items()
 
-        self._indicator.set_menu(self._menu._menu)
-        self._indicator.set_secondary_activate_target(
-            self._menu._menu.get_children()[0])
+    def set_visible(self, visible):
+        self._backend.set_visible(visible)
 
-    def _init_status_icon(self):
-        self._status_icon = Gtk.StatusIcon(icon_name="onboard")
+
+class BackendBase():
+
+    _menu = None
+
+    category = "ApplicationStatus"
+    icon_desc = _("Onboard on-screen keyboard")
+    icon_name = "onboard"
+    id = "Onboard"
+    title = _("Onboard on-screen keyboard")
+
+    def __init__(self, menu):
+        self._menu = menu
+
+    def get_menu(self):
+        return self._menu
+
+
+class BackendGtkStatusIcon(BackendBase):
+
+    _status_icon = None
+
+    def __init__(self, menu):
+        BackendBase.__init__(self, menu)
+
+        self._status_icon = Gtk.StatusIcon(icon_name=self.icon_name)
         self._status_icon.connect("activate",
                                   lambda x:
                                   self._menu.on_show_keyboard_toggle())
         self._status_icon.connect("popup-menu",
                                   self._on_status_icon_popup_menu)
 
-    def update_menu_items(self):
-        self._menu.update_items()
+    def set_visible(self, visible):
+        self._status_icon.set_visible(visible)
+
+    def _on_status_icon_popup_menu(self, status_icon, button, activate_time):
+        """
+        Callback called when status icon right clicked.  Produces menu.
+        """
+        self._menu.popup(button, activate_time,
+                         status_icon, self._menu_position_func)
 
     def _menu_position_func(self, menu, *args):
         gtk_menu = self._menu.get_gtk_menu()
@@ -224,22 +263,34 @@ class Indicator():
             return Gtk.StatusIcon.position_menu(gtk_menu, status_icon)
         elif len(args) == 3:  # in <=Xenial?
             x, y, status_icon = args
-            return Gtk.StatusIcon.position_menu(gtk_menu, x, y, status_icon,
-                                                )
+            return Gtk.StatusIcon.position_menu(gtk_menu, x, y, status_icon)
+
+
+class BackendAppIndicator(BackendBase):
+
+    _indicator = None
+
+    def __init__(self, menu):
+        BackendBase.__init__(self, menu)
+
+        try:
+            from gi.repository import AppIndicator3 as AppIndicator
+        except ImportError as ex:
+            raise RuntimeError(ex)
+
+        self._indicator = AppIndicator.Indicator.new(
+            self.id,
+            self.icon_name,
+            AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self._indicator.set_icon_full(self.icon_name,
+                                      self.icon_desc)
+
+        self._indicator.set_menu(menu._menu)
+        self._indicator.set_secondary_activate_target(
+            menu._menu.get_children()[0])
 
     def set_visible(self, visible):
-        if self._status_icon:
-            # Then we've falled back to using GtkStatusIcon
-            self._status_icon.set_visible(visible)
-        else:
-            self._set_indicator_active(visible)
-
-    def _on_status_icon_popup_menu(self, status_icon, button, activate_time):
-        """
-        Callback called when status icon right clicked.  Produces menu.
-        """
-        self._menu.popup(button, activate_time,
-                         status_icon, self._menu_position_func)
+        self._set_indicator_active(visible)
 
     def _set_indicator_active(self, active):
         try:
@@ -254,9 +305,5 @@ class Indicator():
                 self._indicator.set_status(
                     AppIndicator.IndicatorStatus.PASSIVE)
 
-    def is_appindicator(self):
-        if self._indicator:
-            return True
-        else:
-            return False
+
 
