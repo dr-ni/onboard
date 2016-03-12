@@ -21,7 +21,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import os
 import subprocess
 
 try:
@@ -292,26 +291,27 @@ class BackendAppIndicator(BackendBase):
         self._indicator.set_secondary_activate_target(
             menu._menu.get_children()[0])
 
-        # Watch left-click Activate() calls on desktops that send them
-        # (KDE Plasma). There is still "No such method 'Activate'" in
-        # AppIndicator.
-        try:
-            self._bus = dbus.SessionBus()
-        except dbus.exceptions.DBusException as ex:
-            _logger.warning("D-Bus session bus unavailable, "
-                            "no left-click Activate() for AppIndicator: " +
-                            unicode_str(ex))
-        else:
-            self._bus.add_match_string(
-                "type='method_call',"
-                "eavesdrop=true,"
-                "path='{}',"
-                "interface='{}',"
-                "member='{}'"
-                .format(self.STATUSNOTIFIER_OBJECT,
-                        self.STATUSNOTIFIER_IFACE,
-                        self.ACTIVATE_METHOD))
-            self._bus.add_message_filter(self._on_activate_method)
+        if "dbus" in globals():
+            # Watch left-click Activate() calls on desktops that send them
+            # (KDE Plasma). There is still "No such method 'Activate'" in
+            # AppIndicator.
+            try:
+                self._bus = dbus.SessionBus()
+            except dbus.exceptions.DBusException as ex:
+                _logger.warning("D-Bus session bus unavailable, "
+                                "no left-click Activate() for AppIndicator: " +
+                                unicode_str(ex))
+            else:
+                self._bus.add_match_string(
+                    "type='method_call',"
+                    "eavesdrop=true,"
+                    "path='{}',"
+                    "interface='{}',"
+                    "member='{}'"
+                    .format(self.STATUSNOTIFIER_OBJECT,
+                            self.STATUSNOTIFIER_IFACE,
+                            self.ACTIVATE_METHOD))
+                self._bus.add_message_filter(self._on_activate_method)
 
     def _on_activate_method(self, bus, message):
         if message.get_path() == self.STATUSNOTIFIER_OBJECT and \
