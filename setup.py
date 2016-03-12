@@ -374,7 +374,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/models', glob.glob('models/*.lm')),
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
 
-                  ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org', 
+                  ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
                                     glob.glob('gnome/Onboard_Indicator@onboard.org/*')),
                  ],
 

@@ -24,6 +24,7 @@ from xml.dom import minidom
 
 try:
     import dbus
+    import dbus.service
 except ImportError:
     pass
 
@@ -107,10 +108,12 @@ if "dbus" in globals():
         class ServiceOnboardException(dbus.DBusException):
             _dbus_error_name = 'org.onboard.Exception'
 
-        def __init__(self, service_name, object_path):
-            bus_name = dbus.service.BusName(service_name,
-                                            bus=dbus.SessionBus())
-            dbus.service.Object.__init__(self, bus_name, object_path)
+        def __init__(self, bus, service_name, object_path):
+            bus_name = None
+            if service_name:
+                bus_name = dbus.service.BusName(service_name, bus=bus)
+
+            dbus.service.Object.__init__(self, bus, object_path, bus_name)
 
         @classmethod
         def _get_class_properties(cls):
@@ -154,17 +157,17 @@ if "dbus" in globals():
             with minidom.parseString(ref.replace("\n", " ")) as dom:
                 for interface in dom.getElementsByTagName("interface"):
                     iface_name = interface.attributes["name"].value
-                    for name, property in properties.get(iface_name, {}).items():
-                        if property.dbus_interface == iface_name:
+                    for name, prop in properties.get(iface_name, {}).items():
+                        if prop.dbus_interface == iface_name:
                             node = dom.createElement("property")
-                            node.setAttribute("name", property.get_name())
-                            node.setAttribute("type", property.signature)
-                            node.setAttribute("access", property.get_access())
+                            node.setAttribute("name", prop.get_name())
+                            node.setAttribute("type", prop.signature)
+                            node.setAttribute("access", prop.get_access())
                             interface.appendChild(node)
 
-            ref = '\n'.join([line for line
-                             in dom.toprettyxml(indent='    ').split('\n')
-                             if line.strip()])
+                ref = '\n'.join([line for line
+                                 in dom.toprettyxml(indent='    ').split('\n')
+                                 if line.strip()])
             return ref
 
         @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,

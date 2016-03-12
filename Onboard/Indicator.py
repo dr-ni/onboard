@@ -26,7 +26,6 @@ import subprocess
 
 try:
     import dbus
-    from Onboard.DBusUtils import ServiceBase, dbus_property
 except ImportError:
     pass
 
@@ -174,11 +173,8 @@ class Indicator():
             backends = [BackendGtkStatusIcon]
         elif sip == StatusIconProviderEnum.AppIndicator:
             backends = [BackendAppIndicator]
-        elif sip == StatusIconProviderEnum.StatusNotifier:
-            backends = [BackendStatusNotifier]
         else:
-            backends = [BackendStatusNotifier,
-                        BackendAppIndicator,
+            backends = [BackendAppIndicator,
                         BackendGtkStatusIcon]
 
         self._backend = None
@@ -273,6 +269,10 @@ class BackendAppIndicator(BackendBase):
 
     _indicator = None
 
+    STATUSNOTIFIER_OBJECT = "/org/ayatana/NotificationItem/Onboard"
+    STATUSNOTIFIER_IFACE = "org.kde.StatusNotifierItem"
+    ACTIVATE_METHOD = "Activate"
+
     def __init__(self, menu):
         BackendBase.__init__(self, menu)
 
@@ -292,6 +292,33 @@ class BackendAppIndicator(BackendBase):
         self._indicator.set_secondary_activate_target(
             menu._menu.get_children()[0])
 
+        # Watch left-click Activate() calls on desktops that send them
+        # (KDE Plasma). There is still "No such method 'Activate'" in
+        # AppIndicator.
+        try:
+            self._bus = dbus.SessionBus()
+        except dbus.exceptions.DBusException as ex:
+            _logger.warning("D-Bus session bus unavailable, "
+                            "no left-click Activate() for AppIndicator: " +
+                            unicode_str(ex))
+        else:
+            self._bus.add_match_string(
+                "type='method_call',"
+                "eavesdrop=true,"
+                "path='{}',"
+                "interface='{}',"
+                "member='{}'"
+                .format(self.STATUSNOTIFIER_OBJECT,
+                        self.STATUSNOTIFIER_IFACE,
+                        self.ACTIVATE_METHOD))
+            self._bus.add_message_filter(self._on_activate_method)
+
+    def _on_activate_method(self, bus, message):
+        if message.get_path() == self.STATUSNOTIFIER_OBJECT and \
+           message.get_member() == self.ACTIVATE_METHOD:
+            self._menu.on_show_keyboard_toggle()
+        return dbus.connection.HANDLER_RESULT_NOT_YET_HANDLED
+
     def set_visible(self, visible):
         self._set_indicator_active(visible)
 
@@ -308,113 +335,4 @@ class BackendAppIndicator(BackendBase):
                 self._indicator.set_status(
                     AppIndicator.IndicatorStatus.PASSIVE)
 
-
-class BackendStatusNotifier(BackendBase):
-    """
-    Direct D-Bus implementation of a KDE StatusNotifier.
-    Very similar to AppIndicator, but with support for
-    left-click activation in KDE Plasma.
-
-    References:
-    https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem
-    """
-
-    WATCHER_NAME = "org.kde.StatusNotifierWatcher"
-    WATCHER_OBJECT = "/StatusNotifierWatcher"
-    WATCHER_INTERFACE = "org.kde.StatusNotifierWatcher"
-
-    def __init__(self, menu):
-        BackendBase.__init__(self, menu)
-
-        if "dbus" not in globals():
-            raise RuntimeError("python-dbus unavailable")
-
-        try:
-            self._bus = dbus.SessionBus()
-        except dbus.exceptions.DBusException as ex:
-            raise RuntimeError("D-Bus session bus unavailable: " +
-                               unicode_str(ex))
-
-        self._service = ServiceNotificationItem(self)
-
-        self._bus.add_signal_receiver(self._on_name_owner_changed,
-                                      "NameOwnerChanged",
-                                      dbus.BUS_DAEMON_IFACE,
-                                      arg0=self.WATCHER_NAME)
-
-        proxy = self._bus.get_object(dbus.BUS_DAEMON_NAME, dbus.BUS_DAEMON_PATH)
-        result = proxy.NameHasOwner(self.WATCHER_NAME, dbus_interface=dbus.BUS_DAEMON_IFACE)
-        self._set_connection(bool(result))
-
-    def _on_name_owner_changed(self, name, old, new):
-        active = old == ""
-        if active:
-            self.launcher.stop()
-        self._set_connection(active)
-
-    def _set_connection(self, active):
-        if active:
-            proxy = self._bus.get_object(self.WATCHER_NAME, self.WATCHER_OBJECT)
-            proxy.RegisterStatusNotifierItem(self._service.bus_name)
-        else:
-            self._iface = None
-
-    def set_visible(self, visible):
-        pass
-
-
-if "dbus" in globals():
-    class ServiceNotificationItem(ServiceBase):
-
-        ITEM_NAME = "org.kde.StatusNotifierItem"
-        ITEM_OBJECT = "/StatusNotifierItem"
-        ITEM_IFACE = "org.kde.StatusNotifierItem"
-
-        def __init__(self, backend):
-            self._backend = backend
-
-            # Bus name according to
-            # https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem
-            pid = os.getpid()
-            id_ = 1
-            self.bus_name = "{}-{}-{}".format(self.ITEM_NAME, pid, id_)
-
-            ServiceBase.__init__(self, self.bus_name, self.ITEM_OBJECT)
-
-        @dbus.service.method(dbus_interface=ITEM_IFACE, in_signature="ii")
-        def Activate(self, x, y):  # noqa: flake8
-            menu = self._backend.get_menu()
-            menu.on_show_keyboard_toggle()
-
-        @dbus_property(dbus_interface=ITEM_IFACE, signature="s")
-        def Category(self):  # noqa: flake8
-            return self._backend.category
-
-        @dbus_property(dbus_interface=ITEM_IFACE, signature="s")
-        def IconName(self):  # noqa: flake8
-            return self._backend.icon_name
-
-        @dbus_property(dbus_interface=ITEM_IFACE, signature="s")
-        def Id(self):  # noqa: flake8
-            return self._backend.id
-
-        @dbus_property(dbus_interface=ITEM_IFACE, signature="b")
-        def ItemIsMenu(self):  # noqa: flake8
-            return False
-
-        #@dbus_property(dbus_interface=ITEM_IFACE, signature="o")
-        #def Menu(self):  # noqa: flake8
-        #    return "/StatusNotifierItem/menu"
-
-        @dbus_property(dbus_interface=ITEM_IFACE, signature="s")
-        def Title(self):  # noqa: flake8
-            return self._backend.title
-
-        if 0:
-            @dbus_property(dbus_interface=ITEM_IFACE, signature="(sa(iiay)ss)")
-            def ToolTip(self):  # noqa: flake8
-                return (self._backend.icon_name,
-                        [],
-                        "",
-                        "")
 

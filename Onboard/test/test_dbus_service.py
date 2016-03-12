@@ -22,6 +22,7 @@ import subprocess
 from contextlib import contextmanager
 
 import dbus
+import time
 from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository import GLib
@@ -46,6 +47,7 @@ class TestDBusService(unittest.TestCase):
             keyboard_props = dbus.Interface(proxy, dbus.PROPERTIES_IFACE)
 
             keyboard.Show()
+            time.sleep(0.5)
             self.assertEqual(keyboard_props.Get(DBUS_IFACE, "Visible"), True)
 
             with self.wait_property_changed(keyboard_props, "Visible"):

@@ -184,11 +184,7 @@
       </row>
       <row>
         <col id="0">1</col>
-        <col id="1">AppIndicator (Unity)</col>
-      </row>
-      <row>
-        <col id="0">2</col>
-        <col id="1">StatusNotifier (KDE)</col>
+        <col id="1">AppIndicator (Unity, KDE)</col>
       </row>
     </data>
   </object>
@@ -628,7 +624,7 @@
                                           <object class="GtkComboBox" id="status_icon_provider_combobox">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="tooltip_text" translatable="yes">AppIndicater (default) is recommend for broadest compatibility. GtkStatusIcon isn't supported well anymore by various desktop environments, but allows to show Onboard on left click. Requires restart.</property>
+                                            <property name="tooltip_markup" translatable="yes">&lt;b&gt;AppIndicater&lt;/b&gt; (default) is recommend for broadest compatibility. Left-clicking/tapping to show the keyboard is supported in KDE Plasma. Unity requires middle-clicks. &lt;b&gt;GtkStatusIcon&lt;/b&gt; isn't supported well anymore by various desktop environments, but allows to show Onboard on left click. Requires restart.</property>
                                             <property name="model">_status_icon_provider_model</property>
                                             <property name="id_column">0</property>
                                             <child>

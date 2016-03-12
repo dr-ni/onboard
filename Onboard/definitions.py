@@ -30,8 +30,7 @@ class StatusIconProviderEnum:
     (
         GtkStatusIcon,
         AppIndicator,
-        StatusNotifier,
-    ) = range(3)
+    ) = range(2)
 
 
 class InputEventSourceEnum:

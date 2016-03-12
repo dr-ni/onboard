@@ -72,8 +72,6 @@ class OnboardGtk(object):
     Main controller class for Onboard using GTK+
     """
 
-    DBUS_NAME = "org.onboard.Onboard"
-
     keyboard = None
 
     def __init__(self):
@@ -93,8 +91,8 @@ class OnboardGtk(object):
             # Use D-bus main loop by default
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-            # Don't fail to start in Xenial's lightdm due
-            # to D-Bus not available.
+            # Don't fail to start in Xenial's lightdm when
+            # D-Bus isn't available.
             try:
                 bus = dbus.SessionBus()
             except dbus.exceptions.DBusException:
@@ -115,7 +113,8 @@ class OnboardGtk(object):
 
         if bus:
             # Check if there is already an Onboard instance running
-            has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
+            has_remote_instance = \
+                bus.name_has_owner(ServiceOnboardKeyboard.NAME)
 
             # Onboard in Ubuntu on first start silently embeds itself into
             # gnome-screensaver and stays like this until embedding is manually
@@ -135,14 +134,15 @@ class OnboardGtk(object):
                 if has_remote_instance and \
                    not config.options.allow_multiple_instances:
                     # Present remote instance
-                    remote = bus.get_object(self.DBUS_NAME,
+                    remote = bus.get_object(ServiceOnboardKeyboard.NAME,
                                             ServiceOnboardKeyboard.PATH)
                     remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
                     _logger.info("Exiting: Not the primary instance.")
                     sys.exit(0)
 
                 # Register our dbus name
-                self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
+                self._bus_name = \
+                    dbus.service.BusName(ServiceOnboardKeyboard.NAME, bus)
 
         self.init()
 
@@ -801,11 +801,12 @@ if "dbus" in globals():
         Onboard's main D-Bus service.
         """
 
+        NAME = "org.onboard.Onboard"
         PATH = "/org/onboard/Onboard/Keyboard"
         IFACE = "org.onboard.Onboard.Keyboard"
 
         def __init__(self, app):
-            ServiceBase.__init__(self, self.IFACE, self.PATH)
+            ServiceBase.__init__(self, dbus.SessionBus(), self.NAME, self.PATH)
             self._keyboard = app.keyboard
             self._keyboard_widget = app.keyboard_widget
 

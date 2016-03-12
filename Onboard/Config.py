@@ -607,7 +607,6 @@ class Config(ConfigObject):
         self.add_key("status-icon-provider", StatusIconProviderEnum.AppIndicator,
                                              enum={"GtkStatusIcon" : 0,
                                                    "AppIndicator" : 1,
-                                                   "StatusNotifier" : 2,
                                                   })
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, prop="onboard_xembed_enabled")
