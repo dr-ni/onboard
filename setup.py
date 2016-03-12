@@ -357,6 +357,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('onboard-defaults.conf.example')),
                   ('share/icons/hicolor/16x16/apps', glob.glob('icons/hicolor/16/*')),
                   ('share/icons/hicolor/22x22/apps', glob.glob('icons/hicolor/22/*')),
+                  ('share/icons/hicolor/24x24/apps', glob.glob('icons/hicolor/24/*')),
                   ('share/icons/hicolor/28x28/apps', glob.glob('icons/hicolor/28/*')),
                   ('share/icons/hicolor/32x32/apps', glob.glob('icons/hicolor/32/*')),
                   ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/scalable/*')),
