@@ -23,14 +23,30 @@ Global definitions.
 
 from __future__ import division, print_function, unicode_literals
 
+from enum import Enum
 from gi.repository import Gdk
+
+
+class DesktopEnvironmentEnum(Enum):
+    (
+        Unknown,
+        Cinnamon,
+        GNOME_Shell,
+        GNOME_Classic,
+        KDE,
+        LXDE,
+        MATE,
+        Unity,
+        XFCE,
+    ) = range(9)
 
 
 class StatusIconProviderEnum:
     (
+        auto,
         GtkStatusIcon,
         AppIndicator,
-    ) = range(2)
+    ) = range(3)
 
 
 class InputEventSourceEnum:

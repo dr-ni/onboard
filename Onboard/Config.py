@@ -40,7 +40,8 @@ from Onboard.WindowUtils    import show_confirmation_dialog
 from Onboard.utils          import Version, \
                                    unicode_str, XDGDirs, chmodtree, \
                                    Process, hexcolor_to_rgba, TermColors
-from Onboard.definitions    import StatusIconProviderEnum, \
+from Onboard.definitions    import DesktopEnvironmentEnum, \
+                                   StatusIconProviderEnum, \
                                    InputEventSourceEnum, \
                                    TouchInputEnum, \
                                    LearningBehavior, \
@@ -201,6 +202,8 @@ class Config(ConfigObject):
     _xembed_background_rgba = None
     _xembed_background_image_enabled = None
 
+    _desktop_environment = None
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -340,6 +343,10 @@ class Config(ConfigObject):
         except SchemaError as e:
             _logger.error(unicode_str(e))
             sys.exit()
+
+        # log desktop environment
+        _logger.debug("Desktop environment: {}"
+                      .format(self.get_desktop_environment().name))
 
         # log how we were launched
         if _logger.isEnabledFor(logging.DEBUG):
@@ -605,8 +612,9 @@ class Config(ConfigObject):
         self.add_key("snippets", {}, "as")
         self.add_key("show-status-icon", True)
         self.add_key("status-icon-provider", StatusIconProviderEnum.AppIndicator,
-                                             enum={"GtkStatusIcon" : 0,
-                                                   "AppIndicator" : 1,
+                                             enum={"auto" : 0,
+                                                   "GtkStatusIcon" : 1,
+                                                   "AppIndicator" : 2,
                                                   })
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, prop="onboard_xembed_enabled")
@@ -1441,6 +1449,71 @@ class Config(ConfigObject):
         if not lang_id: # None e.g. with LANG=C
             lang_id = "en_US"
         return lang_id
+
+    def get_desktop_environment(self):
+        """
+        Return current desktop environment.
+        """
+        if not self._desktop_environment:
+            self._desktop_environment = self._detect_desktop_environment()
+        return self._desktop_environment
+
+    @staticmethod
+    def _detect_desktop_environment():
+        """
+        Detect current desktop environment. Extend as needed.
+        """
+        xdg_desktop = os.environ.get("XDG_CURRENT_DESKTOP", "")
+        desktop = os.environ.get("DESKTOP_SESSION", "")
+
+        def istrcmp(s1, s2):
+            return s1.casefold() == s2.casefold()
+
+        def isdesktop(id):
+            return istrcmp(xdg_desktop, id) or istrcmp(desktop, id)
+
+        if isdesktop("X-Cinnamon") or isdesktop("cinnamon"):
+            return DesktopEnvironmentEnum.Cinnamon
+        if isdesktop("GNOME"):
+            return DesktopEnvironmentEnum.GNOME_Shell
+        if isdesktop("GNOME-Classic:GNOME"):
+            return DesktopEnvironmentEnum.GNOME_Classic
+        if isdesktop("KDE"):
+            return DesktopEnvironmentEnum.KDE
+        if isdesktop("lxde"):
+            return DesktopEnvironmentEnum.LXDE
+        if isdesktop("mate"):
+            return DesktopEnvironmentEnum.MATE
+        if isdesktop("Unity"):
+            return DesktopEnvironmentEnum.Unity
+        if isdesktop("xfce"):
+            return DesktopEnvironmentEnum.XFCE
+
+        return DesktopEnvironmentEnum.Unknown
+
+    def prefer_gtkstatusicon(self):
+        """
+        Auto-detect if we should fall back to GtkStatusIcon.
+        """
+        de = self.get_desktop_environment()
+        if de in (
+            # AppIndicator is supported in XUbuntu 16.04, but w/o left click
+            # activation. GtkStatusIcon works well and allows left click.
+            DesktopEnvironmentEnum.Cinnamon,
+
+            # AppIndicator does nothing in 16.04.
+            DesktopEnvironmentEnum.MATE,
+
+            # AppIndicator does nothing in 16.04.
+            DesktopEnvironmentEnum.XFCE,
+
+            # AppIndicator is supported in Lubuntu 16.04, but w/o left
+            # click activation. GtkStatusIcon works well, but is placed
+            # into a legacy system tray applet with tiny 16x16 icon.
+            # DesktopEnvironmentEnum.LXDE,
+        ):
+            return True
+        return False
 
 
 class ConfigKeyboard(ConfigObject):

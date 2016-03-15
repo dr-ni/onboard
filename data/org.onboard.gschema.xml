@@ -20,8 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 <schemalist>
     <enum id="org.onboard.keyboard.StatusIconProvider">
-        <value nick="GtkStatusIcon" value="0"/>
-        <value nick="AppIndicator" value="1"/>
+        <value nick="auto" value="0"/>
+        <value nick="GtkStatusIcon" value="1"/>
+        <value nick="AppIndicator" value="2"/>
     </enum>
 
     <schema id="org.onboard" path="/org/onboard/">
@@ -61,7 +62,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <description>Display an icon in the notification area to hide and show onboard.</description>
         </key>
         <key name="status-icon-provider" enum="org.onboard.keyboard.StatusIconProvider">
-            <default>"AppIndicator"</default>
+            <default>"auto"</default>
             <summary>Status icon provider</summary>
             <description>Choose between status icon implementations. AppIndicator shows Onboard on middle-click activation, GtkStatusIcon on left-click.
 If unavailable, 'AppIndicator' falls back to GtkStatusIcon.

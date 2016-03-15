@@ -168,6 +168,13 @@ class Indicator():
 
         sip = config.status_icon_provider
 
+        if sip == StatusIconProviderEnum.auto:
+            # auto-detection
+            if config.prefer_gtkstatusicon():
+                sip = StatusIconProviderEnum.GtkStatusIcon
+            else:
+                sip = StatusIconProviderEnum.AppIndicator
+
         if sip == StatusIconProviderEnum.GtkStatusIcon:
             backends = [BackendGtkStatusIcon]
         elif sip == StatusIconProviderEnum.AppIndicator:
@@ -190,6 +197,7 @@ class Indicator():
 
         if self._backend:
             self._backend.set_visible(False)
+
 
     def set_keyboard(self, keyboard):
         self._keyboard = keyboard
