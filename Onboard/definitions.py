@@ -35,10 +35,11 @@ class DesktopEnvironmentEnum(Enum):
         GNOME_Classic,
         KDE,
         LXDE,
+        LXQT,
         MATE,
         Unity,
         XFCE,
-    ) = range(9)
+    ) = range(10)
 
 
 class StatusIconProviderEnum:

@@ -1482,6 +1482,8 @@ class Config(ConfigObject):
             return DesktopEnvironmentEnum.KDE
         if isdesktop("lxde"):
             return DesktopEnvironmentEnum.LXDE
+        if isdesktop("LXQt"):
+            return DesktopEnvironmentEnum.LXQT
         if isdesktop("mate"):
             return DesktopEnvironmentEnum.MATE
         if isdesktop("Unity"):
@@ -1511,6 +1513,10 @@ class Config(ConfigObject):
             # click activation. GtkStatusIcon works well, but is placed
             # into a legacy system tray applet with tiny 16x16 icon.
             # DesktopEnvironmentEnum.LXDE,
+
+            # AppIndicator is supported in LXQt 16.04, including left
+            # click activation. GtkStatusIcon works well too.
+            # DesktopEnvironmentEnum.LXQT,
         ):
             return True
         return False
