@@ -178,7 +178,7 @@ class Indicator():
         if sip == StatusIconProviderEnum.GtkStatusIcon:
             backends = [BackendGtkStatusIcon]
         elif sip == StatusIconProviderEnum.AppIndicator:
-            backends = [BackendAppIndicator]
+            backends = [BackendAppIndicator, BackendGtkStatusIcon]
         else:
             backends = [BackendAppIndicator,
                         BackendGtkStatusIcon]
