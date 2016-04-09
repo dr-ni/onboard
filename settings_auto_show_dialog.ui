@@ -81,7 +81,7 @@
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="dialog_close_button">
-                <property name="label">_Close</property>
+                <property name="label" translatable="yes" context="Label of the close button of the auto-show settings dialog.">_Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

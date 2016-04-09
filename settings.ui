@@ -277,7 +277,7 @@
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="close_button">
-                <property name="label">_Close</property>
+                <property name="label" translatable="yes" context="Label of the main close button of the preferences dialog.">_Close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -327,7 +327,6 @@
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                         <property name="sizing">autosize</property>
-                        <property name="title" translatable="yes">column</property>
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext1">
                             <property name="ypad">4</property>
@@ -441,9 +440,8 @@
                                         <property name="can_focus">False</property>
                                         <property name="margin_left">6</property>
                                         <property name="margin_right">6</property>
-                                        <property name="label" translatable="yes">_Settings</property>
+                                        <property name="label" translatable="yes" context="Label of settings button on preferences page General.">_Settings</property>
                                         <property name="use_underline">True</property>
-                                        <property name="mnemonic_widget">scanner_settings</property>
                                       </object>
                                     </child>
                                   </object>
@@ -787,9 +785,8 @@
                                                 <property name="can_focus">False</property>
                                                 <property name="margin_left">6</property>
                                                 <property name="margin_right">6</property>
-                                                <property name="label" translatable="yes">_Settings</property>
+                                                <property name="label" translatable="yes" context="Label of settings button on preferences page Window.">_Settings</property>
                                                 <property name="use_underline">True</property>
-                                                <property name="mnemonic_widget">scanner_settings</property>
                                               </object>
                                             </child>
                                           </object>
@@ -1462,7 +1459,7 @@
                         <property name="layout_style">start</property>
                         <child>
                           <object class="GtkButton" id="layout_new_button">
-                            <property name="label">_New</property>
+                            <property name="label" translatable="yes" context="Label of new layout button on preferences page Layout.">_New</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1477,7 +1474,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="layout_remove_button">
-                            <property name="label">_Delete</property>
+                            <property name="label" translatable="yes" context="Label of delete layout button on preferences page Layout.">_Delete</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1492,7 +1489,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="layout_folder_button">
-                            <property name="label" translatable="yes">_Open layouts folder</property>
+                            <property name="label" translatable="yes" context="Label of open folder button on preferences page Layout.">_Open layouts folder</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1507,7 +1504,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="layout_about_button">
-                            <property name="label">_About</property>
+                            <property name="label" translatable="yes" context="Label of about layout button on preferences page Layout.">_About</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1617,7 +1614,7 @@
                             <property name="layout_style">start</property>
                             <child>
                               <object class="GtkButton" id="new_theme_button">
-                                <property name="label">_New</property>
+                                <property name="label" translatable="yes" context="Label of new theme button on preferences page Theme.">_New</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1632,7 +1629,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="delete_theme_button">
-                                <property name="label">_Delete</property>
+                                <property name="label" translatable="yes" context="Label of delete theme  button on preferences page Theme.">_Delete</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1647,7 +1644,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="customize_theme_button">
-                                <property name="label" translatable="yes">C_ustomize theme</property>
+                                <property name="label" translatable="yes" context="Label of customize theme button on preferences page Theme.">C_ustomize theme</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
@@ -1781,7 +1778,7 @@
                         <property name="layout_style">start</property>
                         <child>
                           <object class="GtkButton" id="snippet_add_button">
-                            <property name="label">_Add</property>
+                            <property name="label" translatable="yes" context="Label of add snippet button on preferences page Snippets.">_Add</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -1796,7 +1793,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="snippet_remove_button">
-                            <property name="label">_Remove</property>
+                            <property name="label" translatable="yes" context="Label of remove snippet button on preferences page Snippets.">_Remove</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -3273,7 +3270,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="margin_left">6</property>
                                         <property name="margin_right">6</property>
-                                        <property name="label" translatable="yes">Sc_anner Settings</property>
+                                        <property name="label" translatable="yes" context="Label of keyboard scanning settings button on preferences page Universal Access.">Sc_anner Settings</property>
                                         <property name="use_underline">True</property>
                                         <property name="mnemonic_widget">scanner_settings</property>
                                       </object>
