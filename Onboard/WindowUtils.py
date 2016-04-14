@@ -684,6 +684,19 @@ class WindowRectTracker:
                 values = (values[0] * scale, values[1] * scale)
         return values
 
+    def get_screen_orientation(self):
+        """
+        Current orientation of the screen (tablet rotation).
+        Only the aspect ratio is taken into account at this time.
+        This appears to cover more cases than looking at monitor rotation,
+        in particular with multi-monitor screens.
+        """
+        screen = self.get_screen()
+        if screen.get_width() >= screen.get_height():
+            return Orientation.LANDSCAPE
+        else:
+            return Orientation.PORTRAIT
+
 
 class WindowRectPersist(WindowRectTracker):
     """
@@ -716,19 +729,6 @@ class WindowRectPersist(WindowRectTracker):
 
     def on_screen_size_changed_delayed(self, screen):
         self.restore_window_rect()
-
-    def get_screen_orientation(self):
-        """
-        Current orientation of the screen (tablet rotation).
-        Only the aspect ratio is taken into account at this time.
-        This appears to cover more cases than looking at monitor rotation,
-        in particular with multi-monitor screens.
-        """
-        screen = self.get_screen()
-        if screen.get_width() >= screen.get_height():
-            return Orientation.LANDSCAPE
-        else:
-            return Orientation.PORTRAIT
 
     def restore_window_rect(self, startup = False):
         """

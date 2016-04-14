@@ -32,7 +32,7 @@ from Onboard.definitions import DockingMonitor
 from Onboard.utils       import Rect, Version
 from Onboard.Timer       import CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
-                                set_unity_property, \
+                                WindowRectTracker, set_unity_property, \
                                 gtk_has_resize_grip_support
 import Onboard.osk as osk
 
@@ -111,6 +111,7 @@ class KbdWindowBase:
         self.connect('composited-changed',      self._cb_composited_changed)
         self.connect("realize",                 self._cb_realize_event)
         self.connect("unrealize",               self._cb_unrealize_event)
+        self.connect("configure-event",         self._on_configure_event)
 
         self.detect_window_manager()
         self.check_alpha_support()
@@ -327,6 +328,40 @@ class KbdWindowBase:
     def update_taskbar_hint(self):
         config.quirks.update_taskbar_hint(self)
 
+    def _on_configure_event(self, widget, event):
+        self.update_window_rect()
+        self.update_window_scaling_factor()
+
+        _logger.debug(
+            "configure-event: {}, scaling factor {}"
+            .format(self.get_rect(), config.window_scaling_factor))
+
+    def update_window_scaling_factor(self, startup = False):
+        """ check for changes to the window-scaling-factor """
+        scale = self.get_scale_factor()
+        if not scale is None and \
+           config.window_scaling_factor != scale:
+            config.window_scaling_factor = scale
+            _logger.info("new window-scaling-factor '{}'".format(scale))
+
+            keyboard = self.keyboard_widget.keyboard
+
+            # In override redirect mode the window gets stuck with
+            # the old scale -> recreate it
+            if config.is_override_redirect() and \
+               not startup and \
+               not config.xid_mode:
+                self._recreate_window()
+
+                # Release pressed keys in case the switch was initiated
+                # by Onboard, e.g. with the Return key in the terminal.
+                keyboard.release_pressed_keys()
+
+            # invalidate all images and key surfaces
+            self.keyboard_widget.invalidate_images()
+            keyboard.invalidate_ui()
+            keyboard.commit_ui_updates()
+
     def is_visible(self):
         if not self.get_mapped():
             return False
@@ -415,7 +450,7 @@ class KbdWindowBase:
         Fails to be called when iconifying in unity (Precise).
         Still keep it around for sticky changes.
         """
-        _logger.debug("window_state_event: {}, {}" \
+        _logger.debug("window-state-event: {}, {}"
                       .format(event.changed_mask, event.new_window_state))
 
         if event.changed_mask & Gdk.WindowState.MAXIMIZED:
@@ -561,7 +596,6 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self.connect("map",                     self._on_map_event)
         self.connect("unmap",                   self._on_unmap_event)
         self.connect("delete-event", self._on_delete_event)
-        self.connect("configure-event", self._on_configure_event)
         # Connect_after seems broken in Quantal, the callback is never called.
         #self.connect_after("configure-event", self._on_configure_event_after)
 
@@ -698,35 +732,8 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         if self.keyboard_widget.was_moving():
             config.window.docking_enabled = False
 
-    def update_window_scaling_factor(self, startup = False):
-        """ check for changes to the window-scaling-factor """
-        scale = self.get_scale_factor()
-        if not scale is None and \
-           config.window_scaling_factor != scale:
-            config.window_scaling_factor = scale
-            _logger.info("new window-scaling-factor '{}'".format(scale))
-
-            keyboard = self.keyboard_widget.keyboard
-
-            # In override redirect mode the window gets stuck with
-            # the old scale -> recreate it
-            if config.is_override_redirect() and \
-               not startup and \
-               not config.xid_mode:
-                self._recreate_window()
-
-                # Release pressed keys in case the switch was initiated
-                # by Onboard, e.g. with the Return key in the terminal.
-                keyboard.release_pressed_keys()
-
-            # invalidate all images and key surfaces
-            self.keyboard_widget.invalidate_images()
-            keyboard.invalidate_ui()
-            keyboard.commit_ui_updates()
-
     def _on_configure_event(self, widget, event):
-        self.update_window_rect()
-        self.update_window_scaling_factor()
+        KbdWindowBase._on_configure_event(self, widget, event)
 
         if not config.is_docking_enabled():
             # Connect_after seems broken in Quantal, but we still need to
@@ -1442,10 +1449,10 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             win.raise_()
 
 
-class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
+class KbdPlugWindow(KbdWindowBase, WindowRectTracker, Gtk.Plug):
     def __init__(self, keyboard_widget, icp = None):
         Gtk.Plug.__init__(self)
-
+        WindowRectTracker.__init__(self)
         KbdWindowBase.__init__(self, keyboard_widget, icp)
 
     def toggle_visible(self):
