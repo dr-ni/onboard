@@ -626,7 +626,11 @@
                                           <object class="GtkComboBox" id="status_icon_provider_combobox">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="tooltip_markup" translatable="yes">&lt;b&gt;AppIndicater&lt;/b&gt; (default) is recommend for broadest compatibility. Left-clicking/tapping to show the keyboard is supported in KDE Plasma. Unity requires middle-clicks. &lt;b&gt;GtkStatusIcon&lt;/b&gt; isn't supported well anymore by various desktop environments, but allows to show Onboard on left click. Requires restart.</property>
+                                            <property name="tooltip_markup" translatable="yes">&lt;b&gt;AppIndicator&lt;/b&gt; (default) is recommended for broadest compatibility. A middle click on the icon shows the keyboard. In KDE Plasma a left click does the same.
+
+&lt;b&gt;GtkStatusIcon&lt;/b&gt; isn't supported well anymore by various desktop environments, but generally allows to show the keyboard on left click.
+
+Requires restart.</property>
                                             <property name="model">_status_icon_provider_model</property>
                                             <property name="id_column">0</property>
                                             <child>
