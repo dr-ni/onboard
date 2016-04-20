@@ -607,12 +607,22 @@ class WindowRectTracker:
             if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                 origin = origin[1:]
 
+            if _logger.isEnabledFor(logging.DEBUG):
+                _logger.debug("update_window_rect1: pos {}, size {}, origin {}"
+                         .format(pos, size, origin))
             pos = self._apply_window_scaling_factor(pos)
 
             self._window_rect = Rect.from_position_size(pos, size)
             self._origin = origin
             self._client_offset = (origin[0] - pos[0], origin[1] - pos[1])
             self._screen_orientation = self.get_screen_orientation()
+
+            if _logger.isEnabledFor(logging.DEBUG):
+                _logger.debug("update_window_rect2: pos {}, client_offset {}, "
+                              "screen_orientation {}"
+                              .format(pos,
+                                      self._client_offset,
+                                      self._screen_orientation))
 
     def move(self, x, y):
         Gtk.Window.move(self, x, y)

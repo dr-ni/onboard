@@ -332,13 +332,22 @@ class KbdWindowBase:
         self.update_window_rect()
         self.update_window_scaling_factor()
 
-        _logger.debug(
-            "configure-event: {}, scaling factor {}"
-            .format(self.get_rect(), config.window_scaling_factor))
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug(
+                "configure-event: event {}, allocated {}, "
+                "window {}, scaling factor {}"
+                .format(Rect(event.x, event.y, event.width, event.height),
+                        (self.get_allocated_width(),
+                        self.get_allocated_height()),
+                        self.get_rect(),
+                        config.window_scaling_factor))
 
     def update_window_scaling_factor(self, startup = False):
         """ check for changes to the window-scaling-factor """
         scale = self.get_scale_factor()
+        _logger.debug("update_window_scaling_factor: scale {}"
+                      .format(scale))
+
         if not scale is None and \
            config.window_scaling_factor != scale:
             config.window_scaling_factor = scale
@@ -1454,6 +1463,9 @@ class KbdPlugWindow(KbdWindowBase, WindowRectTracker, Gtk.Plug):
         Gtk.Plug.__init__(self)
         WindowRectTracker.__init__(self)
         KbdWindowBase.__init__(self, keyboard_widget, icp)
+
+    def _on_configure_event(self, widget, event):
+        KbdWindowBase._on_configure_event(self, widget, event)
 
     def toggle_visible(self):
         pass
