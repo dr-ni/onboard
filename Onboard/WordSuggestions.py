@@ -1254,21 +1254,30 @@ class WordSuggestions:
         Doctests:
         >>> wp = WordSuggestions()
 
+        # If input span intersects a word anywhere, return the whole word
         >>> wp._get_section_before_span(TextSpan(6, 1, "abc def"))
         TextSpan(4, 3, 'def', 0, None)
 
+        # If input span lies just past a word, return the whole word
         >>> wp._get_section_before_span(TextSpan(7, 1, "abc def "))
         TextSpan(4, 3, 'def', 0, None)
 
+        # If input span intersects a URL anywhere, return the whole URL
         >>> wp._get_section_before_span(TextSpan(56, 6,
         ...     "abc http://user:pass@www.do-mai_n.nl/path/name.ext/"
         ...     "?p=1#anchor"))
         TextSpan(4, 58, 'http://user:pass@www.do-mai_n.nl/path/name.ext/\
 ?p=1#anchor', 0, None)
 
+        # If input span intersects a URL anywhere, return the whole URL
         >>> wp._get_section_before_span(TextSpan(6, 2,
         ...     "abc http://www.domain.org"))
         TextSpan(4, 21, 'http://www.domain.org', 0, None)
+
+        # Still return section before span if text_pos != 0
+        >>> wp._get_section_before_span(TextSpan(10+32, 1,
+        ...     "http://www.domain.org/index.html ", 10))
+        TextSpan(10, 32, 'http://www.domain.org/index.html', 10, None)
         """
         text = insertion_span.get_text_until_span()
         match = self._section_begin_pattern.search(text)
@@ -1279,7 +1288,7 @@ class WordSuggestions:
             if match:
                 span = insertion_span.copy()
                 span.length = match.end() - match.start()
-                span.pos = begin + match.start()
+                span.pos = span.text_pos + begin + match.start()
                 return span
         return None
 
