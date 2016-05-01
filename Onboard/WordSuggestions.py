@@ -2277,7 +2277,7 @@ class WordListPanel(LayoutPanel):
                     rect.w -= button_width + button_spacing
                     buttons.append((button, button_width, 1))
 
-            # font size is based on the height of the word list background
+            # font size is based on the height of the wordlist background
             font_size = WordKey().calc_font_size(key_context, rect.get_size())
 
             # hide the wordlist background when corrections create their own
@@ -2286,16 +2286,17 @@ class WordListPanel(LayoutPanel):
             # create correction keys
             correction_keys, used_rect = \
                 self._create_correction_keys(correction_choices,
-                                            rect, wordlist,
-                                            key_context, font_size)
+                                             rect, wordlist,
+                                             key_context, font_size)
             rect.x += used_rect.w
             rect.w -= used_rect.w
 
             # create prediction keys
             if not self.are_corrections_expanded():
-                prediction_keys = self._create_prediction_keys(prediction_choices,
-                                                            rect, key_context,
-                                                            font_size)
+                prediction_keys = \
+                    self._create_prediction_keys(prediction_choices,
+                                                 rect, key_context,
+                                                 font_size)
 
             # move the buttons to the end of the bar
             if buttons:
@@ -2516,15 +2517,18 @@ class WordListPanel(LayoutPanel):
         pango_layout = WordKey.get_pango_layout(None, font_size)
         button_infos = []
         filled_up = False
+        margins = config.WORDLIST_LABEL_MARGIN[0] * 2
+        scale = key_context.scale_log_to_canvas_x(Pango.SCALE)
+
         for i, choice in enumerate(choices):
+            # text extent in Pango units, button size in logical units
+            max_width = (rect.w - margins) * scale
+            label, label_width = \
+                self._ellipsize(pango_layout, choice, max_width)
+            w = label_width / scale + margins
 
-            # text extent in Pango units -> button size in logical units
-            pango_layout.set_text(choice, -1)
-            label_width, _label_height = pango_layout.get_size()
-            label_width = \
-                key_context.scale_canvas_to_log_x(label_width / Pango.SCALE)
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
-
+            # Long words are allowed to expand their widths into the
+            # remaining space. Short ones stay short.
             expand = w >= rect.h
             if not expand:
                 w = rect.h
@@ -2541,7 +2545,7 @@ class WordListPanel(LayoutPanel):
             bi.x = x
             bi.w = w
             bi.expand = expand  # can stretch into available space?
-            bi.label = choice[:]
+            bi.label = label[:]
 
             button_infos.append(bi)
 
@@ -2551,6 +2555,30 @@ class WordListPanel(LayoutPanel):
             x -= spacing
 
         return button_infos, filled_up, x
+
+    @staticmethod
+    def _ellipsize(pango_layout, text, max_width):
+        """ Shorten very long words and add an ellipsis. """
+        ellipsized_text = text
+        w = WordListPanel._get_text_size(pango_layout, text)
+        if w > max_width:
+            # Grow one char a time. Inefficient, but it isn't done often
+            # anyway. PangoLayout introspection is too broken to use its
+            # built-in ellipsizing capability (Xenial).
+            w = 0
+            for i, c in enumerate(text, start=0):
+                ellipsized_text = text[:i] + "..."
+                wt = WordListPanel._get_text_size(pango_layout, ellipsized_text)
+                if wt > max_width:
+                    break
+                w = wt
+        return ellipsized_text, w
+
+    @staticmethod
+    def _get_text_size(pango_layout, text):
+        pango_layout.set_text(text, -1)
+        label_width, _label_height = pango_layout.get_size()
+        return label_width
 
 
 class ModelErrorRecovery:
