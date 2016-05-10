@@ -53,11 +53,14 @@ from Onboard.Timer                 import Timer, ProgressiveDelayTimer
 from Onboard.utils                 import Modifiers, LABEL_MODIFIERS, \
                                           parse_key_combination, \
                                           unicode_str
-from Onboard.definitions           import Handle, UIMask
+from Onboard.definitions           import Handle, UIMask, KeySynthEnum, \
+                                          UINPUT_DEVICE_NAME
 from Onboard.AutoShow              import AutoShow
 from Onboard.AutoHide              import AutoHide
 from Onboard.WordSuggestions       import WordSuggestions
 from Onboard.canonical_equivalents import canonical_equivalents
+
+import Onboard.osk as osk
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -284,10 +287,41 @@ class TextChanger():
         self._key_synth_virtkey = KeySynthVirtkey(vk)
         self._key_synth_atspi = KeySynthAtspi(vk)
 
-        if config.keyboard.key_synth: # == KeySynth.ATSPI:
-            self._key_synth = self._key_synth_atspi
-        else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
-            self._key_synth = self._key_synth_virtkey
+        key_synth_id = KeySynthEnum(config.keyboard.key_synth)
+        if key_synth_id == KeySynthEnum.AUTO:
+            key_synth_candidates = [
+                KeySynthEnum.XTEST,
+                KeySynthEnum.UINPUT,
+                KeySynthEnum.ATSPI]
+        else:
+            key_synth_candidates = [key_synth_id]
+
+        _logger.debug("Key-synth candidates: {}"
+                      .format(key_synth_candidates))
+
+        key_synth_id = None
+        key_synth = None
+        for id_ in key_synth_candidates:
+            if id_ == KeySynthEnum.ATSPI:
+                key_synth = self._key_synth_atspi
+                key_synth_id = id_
+                break
+            else:
+                key_synth = self._key_synth_virtkey
+                try:
+                    if id_ == KeySynthEnum.XTEST:
+                        vk.select_backend(vk.BACKEND_XTEST)
+                    elif id_ == KeySynthEnum.UINPUT:
+                        vk.select_backend(vk.BACKEND_UINPUT, UINPUT_DEVICE_NAME)
+                    key_synth_id = id_
+                    break
+                except osk.error as ex:
+                    _logger.debug("Key-synth '{}' unavailable: {}"
+                                  .format(id_, ex))
+        _logger.info("Using key-synth '{}'"
+                     .format(key_synth_id))
+
+        self._key_synth = key_synth
 
     def cleanup(self):
         # Somehow keyboard objects don't get released
@@ -490,8 +524,6 @@ class Keyboard(WordSuggestions):
         self._auto_hide.enable(config.is_auto_hide_enabled())
 
         self._text_changer = None
-        self._key_synth_virtkey = None
-        self._key_synth_atspi = None
 
         self._invalidated_ui = 0
 

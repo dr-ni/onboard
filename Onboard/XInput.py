@@ -22,11 +22,12 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import copy
 
-from Onboard.Version import require_gi_versions
+from Onboard.Version        import require_gi_versions
 require_gi_versions()
-from gi.repository import Gdk
+from gi.repository          import Gdk
 
-from Onboard.utils import EventSource, unicode_str
+from Onboard.utils          import EventSource, unicode_str
+from Onboard.definitions    import UINPUT_DEVICE_NAME
 
 import Onboard.osk as osk
 
@@ -124,7 +125,9 @@ class XIDeviceManager(EventSource):
     XInput device manager singleton.
     """
 
-    blacklist = ("Virtual core XTEST keyboard", "Power Button")
+    blacklist = ("Virtual core XTEST keyboard",
+                 UINPUT_DEVICE_NAME,
+                 "Power Button")
     last_device_blacklist = ("Virtual core XTEST pointer")
 
     def __new__(cls, *args, **kwargs):

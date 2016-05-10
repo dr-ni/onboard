@@ -27,6 +27,10 @@ from enum import Enum
 from gi.repository import Gdk
 
 
+# Name of the /dev/uinput device when key-synth is set to uinput.
+UINPUT_DEVICE_NAME = "Onboard on-screen keyboard"
+
+
 class DesktopEnvironmentEnum(Enum):
     (
         Unknown,
@@ -48,6 +52,15 @@ class StatusIconProviderEnum:
         GtkStatusIcon,
         AppIndicator,
     ) = range(3)
+
+
+class KeySynthEnum(Enum):
+    (
+        AUTO,
+        XTEST,
+        UINPUT,
+        ATSPI,
+    ) = range(4)
 
 
 class InputEventSourceEnum:

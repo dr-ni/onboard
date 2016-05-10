@@ -158,8 +158,10 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
         <value nick="delayed-stroke" value="1"/>
     </enum>
     <enum id="org.onboard.keyboard.KeySynth">
-        <value nick="XTest" value="0"/>
-        <value nick="AT-SPI" value="1"/>
+        <value nick="auto" value="0"/>
+        <value nick="XTest" value="1"/>
+        <value nick="uinput" value="2"/>
+        <value nick="AT-SPI" value="3"/>
     </enum>
     <enum id="org.onboard.keyboard.TouchInput">
         <value nick="none" value="0"/>
@@ -205,7 +207,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             </description>
         </key>
         <key name="key-synth" enum="org.onboard.keyboard.KeySynth">
-            <default>"XTest"</default>
+            <default>"auto"</default>
             <summary>Key synthesizer</summary>
             <description>The key-stroke generator to use.</description>
         </key>

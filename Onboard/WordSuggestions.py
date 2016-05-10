@@ -2562,7 +2562,7 @@ class WordListPanel(LayoutPanel):
         ellipsized_text = text
         w = WordListPanel._get_text_size(pango_layout, text)
         if w > max_width:
-            # Grow one char a time. Inefficient, but it isn't done often
+            # Grow one char at a time. Inefficient, but it isn't done often
             # anyway. PangoLayout introspection is too broken to use its
             # built-in ellipsizing capability (Xenial).
             w = 0

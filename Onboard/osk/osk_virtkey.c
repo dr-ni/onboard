@@ -20,8 +20,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "osk_module.h"
-
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -30,7 +28,17 @@
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XKBrules.h>
 
+#include "osk_module.h"
+#include "osk_uinput.h"
+
 #define N_MOD_INDICES (Mod5MapIndex + 1)
+
+typedef enum
+{
+    VIRTKEY_BACKEND_NONE,
+    VIRTKEY_BACKEND_XTEST,
+    VIRTKEY_BACKEND_UINPUT,
+} VirtkeyBackend;
 
 typedef struct {
     PyObject_HEAD
@@ -38,6 +46,7 @@ typedef struct {
     Display   *display;
     KeySym    *keysyms;
     XkbDescPtr kbd;
+    VirtkeyBackend backend;
 
     KeyCode    modifier_table[N_MOD_INDICES];
     int        n_keysyms_per_keycode;
@@ -60,6 +69,10 @@ enum {
 };
 
 OSK_REGISTER_TYPE (OskVirtkey, osk_virtkey, "Virtkey")
+
+static int  select_backend(OskVirtkey* vk, VirtkeyBackend backend, const char* device_name);
+static void close_backend(OskVirtkey* vk);
+static void send_key_event(OskVirtkey* vk, int keycode, bool press);
 
 static int
 vk_init_keyboard (OskVirtkey *vk)
@@ -88,10 +101,11 @@ vk_init_keyboard (OskVirtkey *vk)
         PyErr_SetString (OSK_EXCEPTION, "XkbGetNames failed.");
         return -1;
     }
+
     return 0;
 }
 
-static Bool
+static bool
 vk_get_current_group (OskVirtkey *vk, int *group)
 {
     XkbStateRec state;
@@ -99,11 +113,11 @@ vk_get_current_group (OskVirtkey *vk, int *group)
     if (XkbGetState (vk->display, XkbUseCoreKbd, &state) != Success)
     {
         PyErr_SetString (OSK_EXCEPTION, "XkbGetState failed");
-        return False;
+        return false;
     }
     *group = state.locked_group;
 
-    return True;
+    return true;
 }
 
 static int
@@ -177,12 +191,23 @@ osk_virtkey_init (OskVirtkey *vk, PyObject *args, PyObject *kwds)
             }
         }
     }
+
+    vk->backend = VIRTKEY_BACKEND_NONE;
+    select_backend(vk, VIRTKEY_BACKEND_XTEST, NULL);
+
+    // add constants
+    PyDict_SetItemString(osk_virtkey_type.tp_dict, "BACKEND_XTEST",
+                         PyInt_FromLong(VIRTKEY_BACKEND_XTEST));
+    PyDict_SetItemString(osk_virtkey_type.tp_dict, "BACKEND_UINPUT",
+                         PyInt_FromLong(VIRTKEY_BACKEND_UINPUT));
     return 0;
 }
 
 static void
 osk_virtkey_dealloc (OskVirtkey *vk)
 {
+    close_backend(vk);
+
     if (vk->kbd)
         XkbFreeKeyboard (vk->kbd, XkbAllComponentsMask, True);
 
@@ -1066,15 +1091,15 @@ vk_send (PyObject *self, PyObject *args, int mode)
     unsigned int input;
     unsigned int keycode = 0;
     unsigned int mod_mask = 0;
-    Bool         press = False;
-    Bool         lock = False;
+    bool         press = false;
+    bool         lock = false;
 
     if (!PyArg_ParseTuple (args, "i", &input))
         return NULL;
 
     switch (mode) {
         case VK_SEND_KEYCODE_PRESS:
-            press = True;
+            press = true;
             keycode = input;
             break;
 
@@ -1083,7 +1108,7 @@ vk_send (PyObject *self, PyObject *args, int mode)
             break;
 
         case VK_SEND_KEYSYM_PRESS:
-            press = True;
+            press = true;
             keycode = keysym2keycode (vk, input, &mod_mask);
             break;
 
@@ -1092,7 +1117,7 @@ vk_send (PyObject *self, PyObject *args, int mode)
             break;
 
         case VK_SEND_UNICODE_PRESS:
-            press = True;
+            press = true;
             keycode = keysym2keycode (vk, ucs2keysym (input), &mod_mask);
             break;
 
@@ -1101,7 +1126,7 @@ vk_send (PyObject *self, PyObject *args, int mode)
             break;
 
         case VK_SEND_MOD_LATCH:
-            press = True;
+            press = true;
             mod_mask = input;
             break;
 
@@ -1110,13 +1135,13 @@ vk_send (PyObject *self, PyObject *args, int mode)
             break;
 
         case VK_SEND_MOD_LOCK:
-            press = True;
-            lock = True;
+            press = true;
+            lock = true;
             mod_mask = input;
             break;
 
         case VK_SEND_MOD_UNLOCK:
-            lock = True;
+            lock = true;
             mod_mask = input;
             break;
     }
@@ -1131,11 +1156,10 @@ vk_send (PyObject *self, PyObject *args, int mode)
 
         XSync (vk->display, False);
     }
+
     if (keycode)
-    {
-        XTestFakeKeyEvent (vk->display, keycode, press, CurrentTime);
-        XSync (vk->display, False);
-    }
+        send_key_event(vk, keycode, press);
+
     Py_RETURN_NONE;
 }
 
@@ -1385,7 +1409,7 @@ vk_get_label_from_keysym (KeySym keyval)
             else
             {
                 const char *name = gdk_keyval_name (keyval);
-                if (!name)		
+                if (!name)
                 {
                     label = PyString_FromString("");
                 }
@@ -1694,7 +1718,83 @@ osk_virtkey_get_layout_symbols (PyObject *self, PyObject *noargs)
     return result;
 }
 
+static int
+select_backend (OskVirtkey *vk, VirtkeyBackend backend, 
+                const char* device_name)
+{
+    int ret = 0;
+    if (vk->backend != backend)
+    {
+        close_backend(vk);
+        switch (backend)
+        {
+            case VIRTKEY_BACKEND_UINPUT:
+                ret = uinput_init(device_name);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (ret >= 0)
+        vk->backend = backend;
+
+    return ret;
+}
+
+static void
+close_backend(OskVirtkey* vk)
+{
+    switch (vk->backend)
+    {
+        case VIRTKEY_BACKEND_UINPUT:
+            uinput_destruct();
+            break;
+
+        default:
+            break;
+    }
+};
+
+static void 
+send_key_event(OskVirtkey* vk, int keycode, bool press)
+{
+    switch (vk->backend)
+    {
+        case VIRTKEY_BACKEND_XTEST:
+            XTestFakeKeyEvent (vk->display, keycode, press, CurrentTime);
+            XSync (vk->display, False);
+            break;
+
+        case VIRTKEY_BACKEND_UINPUT:
+            uinput_send_key_event(keycode, press);
+            break;
+
+        default:
+            break;
+    }
+}
+
+static PyObject *
+osk_virtkey_select_backend (PyObject *self, PyObject *args)
+{
+    OskVirtkey *vk = (OskVirtkey *) self;
+    int backend;
+    char* device_name;
+
+    if (!PyArg_ParseTuple (args, "i|s", &backend, &device_name))
+        return NULL;
+
+    if (select_backend(vk, backend, device_name) < 0)
+        return NULL;
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_virtkey_methods[] = {
+    { "select_backend",  osk_virtkey_select_backend,  METH_VARARGS, NULL },
+
     { "press_unicode",   osk_virtkey_press_unicode,   METH_VARARGS, NULL },
     { "release_unicode", osk_virtkey_release_unicode, METH_VARARGS, NULL },
     { "press_keysym",    osk_virtkey_press_keysym,    METH_VARARGS, NULL },

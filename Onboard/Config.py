@@ -1525,7 +1525,7 @@ class Config(ConfigObject):
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
-    DEFAULT_KEY_SYNTH  = 0 # XTest
+    DEFAULT_KEY_SYNTH  = 0 # Auto
     DEFAULT_TOUCH_INPUT = TouchInputEnum.MULTI
     DEFAULT_INPUT_EVENT_SOURCE = InputEventSourceEnum.XINPUT
 
@@ -1543,8 +1543,10 @@ class ConfigKeyboard(ConfigObject):
                                                  "delayed-stroke" : 1,
                                                 })
         self.add_key("key-synth", self.DEFAULT_KEY_SYNTH,
-                                           enum={"XTest" : 0,
-                                                 "AT-SPI" : 1,
+                                           enum={"auto" : 0,
+                                                 "XTest" : 1,
+                                                 "uinput" : 2,
+                                                 "AT-SPI" : 3,
                                                 })
         self.add_key("touch-input", self.DEFAULT_TOUCH_INPUT,
                                            enum={"none" : 0,

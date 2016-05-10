@@ -73,6 +73,7 @@ moduleinit (void)
     __osk_struts_register_type (module);
     __osk_audio_register_type (module);
     __osk_hunspell_register_type (module);
+    __osk_uinput_register_type (module);
 
     return module;
 }

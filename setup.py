@@ -188,6 +188,7 @@ class Extension_osk(Extension):
                'osk_audio.c',
                'osk_hunspell.c',
                'osk_click_mapper.c',
+               'osk_uinput.c',
               ]
 
     depends = ['osk_module.h']

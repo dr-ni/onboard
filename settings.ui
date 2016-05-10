@@ -78,10 +78,18 @@
     <data>
       <row>
         <col id="0">0</col>
-        <col id="1" translatable="yes">XTest</col>
+        <col id="1" translatable="yes">Auto</col>
       </row>
       <row>
         <col id="0">1</col>
+        <col id="1" translatable="yes">XTest</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1" translatable="yes">uinput</col>
+      </row>
+      <row>
+        <col id="0">3</col>
         <col id="1" translatable="yes">AT-SPI</col>
       </row>
     </data>
@@ -2505,52 +2513,6 @@ Requires restart.</property>
                                             <property name="orientation">vertical</property>
                                             <property name="spacing">2</property>
                                             <child>
-                                              <object class="GtkBox" id="box7">
-                                                <property name="can_focus">False</property>
-                                                <property name="no_show_all">True</property>
-                                                <property name="spacing">12</property>
-                                                <child>
-                                                  <object class="GtkLabel" id="label36">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Keystroke _generation:</property>
-                                                    <property name="use_underline">True</property>
-                                                    <property name="single_line_mode">True</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkComboBox" id="key_synth_combobox">
-                                                    <property name="can_focus">False</property>
-                                                    <property name="has_tooltip">True</property>
-                                                    <property name="model">_key_synth_liststore</property>
-                                                    <property name="id_column">0</property>
-                                                    <child>
-                                                      <object class="GtkCellRendererText" id="docking_screen_edge_cellrenderer1"/>
-                                                      <attributes>
-                                                        <attribute name="text">1</attribute>
-                                                      </attributes>
-                                                    </child>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
                                               <object class="GtkBox" id="box38">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
@@ -2595,6 +2557,58 @@ Requires restart.</property>
                                               <packing>
                                                 <property name="expand">False</property>
                                                 <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox" id="box7">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="spacing">12</property>
+                                                <child>
+                                                  <object class="GtkLabel" id="label36">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">False</property>
+                                                    <property name="label" translatable="yes">Key-stroke generator</property>
+                                                    <property name="use_underline">True</property>
+                                                    <property name="single_line_mode">True</property>
+                                                    <property name="xalign">0</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkComboBox" id="key_synth_combobox">
+                                                    <property name="can_focus">False</property>
+                                                    <property name="tooltip_markup" translatable="yes">&lt;b&gt;Auto&lt;/b&gt;: let Onboard decide, recommended.
+
+&lt;b&gt;XTest&lt;/b&gt; is the default for all X based desktop environments.
+
+&lt;b&gt;uinput&lt;/b&gt; should be available on all linux-based systems, including X, Wayland and MIR-based desktops, but requires write permission for /dev/uinput.
+
+&lt;b&gt;AT-SPI&lt;/b&gt; has limited support for key-stroke generation, and is only recommended for testing.</property>
+                                                    <property name="model">_key_synth_liststore</property>
+                                                    <property name="id_column">0</property>
+                                                    <child>
+                                                      <object class="GtkCellRendererText" id="docking_screen_edge_cellrenderer1"/>
+                                                      <attributes>
+                                                        <attribute name="text">1</attribute>
+                                                      </attributes>
+                                                    </child>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
                                                 <property name="position">1</property>
                                               </packing>
                                             </child>
@@ -2604,7 +2618,7 @@ Requires restart.</property>
                                           <object class="GtkLabel" id="label61">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">Keystroke Generation</property>
+                                            <property name="label" translatable="yes">Key-stroke Generation</property>
                                             <property name="use_markup">True</property>
                                             <attributes>
                                               <attribute name="weight" value="bold"/>
