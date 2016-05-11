@@ -307,17 +307,22 @@ class TextChanger():
                 key_synth_id = id_
                 break
             else:
-                key_synth = self._key_synth_virtkey
-                try:
-                    if id_ == KeySynthEnum.XTEST:
-                        vk.select_backend(vk.BACKEND_XTEST)
-                    elif id_ == KeySynthEnum.UINPUT:
-                        vk.select_backend(vk.BACKEND_UINPUT, UINPUT_DEVICE_NAME)
-                    key_synth_id = id_
-                    break
-                except osk.error as ex:
-                    _logger.debug("Key-synth '{}' unavailable: {}"
-                                  .format(id_, ex))
+                if not vk:
+                    _logger.debug("Key-synth '{}' unavailable: vk is None")
+                else:
+                    key_synth = self._key_synth_virtkey
+                    try:
+                        if id_ == KeySynthEnum.XTEST:
+                            vk.select_backend(vk.BACKEND_XTEST)
+                        elif id_ == KeySynthEnum.UINPUT:
+                            vk.select_backend(vk.BACKEND_UINPUT,
+                                              UINPUT_DEVICE_NAME)
+                        key_synth_id = id_
+                        break
+                    except osk.error as ex:
+                        _logger.debug("Key-synth '{}' unavailable: {}"
+                                      .format(id_, ex))
+
         _logger.info("Using key-synth '{}'"
                      .format(key_synth_id))
 

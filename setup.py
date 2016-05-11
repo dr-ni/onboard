@@ -181,6 +181,7 @@ MODULE_NAME_OSK = 'Onboard.osk'
 class Extension_osk(Extension):
     sources = ['osk_module.c',
                'osk_virtkey.c',
+               'osk_virtkey_x.c',
                'osk_devices.c',
                'osk_util.c',
                'osk_dconf.c',
