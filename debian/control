@@ -10,7 +10,9 @@ Build-Depends: debhelper (>=7.0.50~),
                libxkbfile-dev,
                libdconf-dev (>= 0.12.0),
                libcanberra-dev,
-               libhunspell-dev
+               libhunspell-dev,
+               libwayland-dev,
+               libxkbcommon-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: https://launchpad.net/~onboard/+contactuser
 Standards-Version: 3.9.6

@@ -164,6 +164,7 @@ class OnboardGtk(object):
 
     def init(self):
         self.keyboard_state = None
+        self._last_mod_mask = 0
         self.vk_timer = None
         self.reset_vk()
         self._connections = []
@@ -527,7 +528,15 @@ class OnboardGtk(object):
         mod_mask = keymap.get_modifier_state()
         _logger.debug("keyboard state changed to 0x{:x}" \
                       .format(mod_mask))
-        self.keyboard.set_modifiers(mod_mask)
+        if self._last_mod_mask == mod_mask:
+            # Must be something other than changed modifiers,
+            # group change on wayland, for example.
+            self.reload_layout_delayed()
+        else:
+            self.keyboard.set_modifiers(mod_mask)
+
+        self._last_mod_mask = mod_mask
+
 
     def cb_vk_timer(self):
         """
@@ -655,7 +664,7 @@ class OnboardGtk(object):
         if vk:
             try:
                 vk.reload() # reload keyboard names
-                keyboard_state = (vk.get_layout_symbols(),
+                keyboard_state = (vk.get_layout_as_string(),
                                   vk.get_current_group_name())
             except osk.error:
                 self.reset_vk()

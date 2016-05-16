@@ -22,6 +22,15 @@
 
 #include "osk_module.h"  // bool
 
+struct RulesNames
+{
+    char* rules_file;
+    char* model;
+    char* layout;
+    char* variant;
+    char* options;
+};
+
 typedef struct VirtkeyBase VirtkeyBase;
 struct VirtkeyBase {
     int     (*init)(VirtkeyBase* base);
@@ -37,9 +46,11 @@ struct VirtkeyBase {
     int     (*get_keysym_from_keycode)(VirtkeyBase* base,
                 int keycode, int modmask, int group);
     char**  (*get_rules_names)(VirtkeyBase* base, int* numentries);
-    char*   (*get_layout_symbols)(VirtkeyBase* base);
+    char*   (*get_layout_as_string)(VirtkeyBase* base);
     void    (*set_modifiers) (VirtkeyBase* base,
             int mod_mask, bool lock, bool press);
 };
+
+char* virtkey_get_label_from_keysym (int keyval);
 
 #endif

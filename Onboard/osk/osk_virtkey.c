@@ -21,12 +21,13 @@
  */
 
 #include <gdk/gdkx.h>
-
+#include <gdk/gdkwayland.h>
 #include <X11/extensions/XTest.h>
 
 #include "osk_module.h"
 #include "osk_uinput.h"
 #include "osk_virtkey_x.h"
+#include "osk_virtkey_wayland.h"
 
 typedef enum
 {
@@ -67,24 +68,28 @@ osk_virtkey_init (OskVirtkey *self, PyObject *args, PyObject *kwds)
     VirtkeyBase* this;
     GdkDisplay* display = gdk_display_get_default ();
 
+    #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
     {
         self->xdisplay = GDK_DISPLAY_XDISPLAY (display);
         self->vk = virtkey_x_new();
     }
     else
+    #endif
+    #ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_DISPLAY (display))
     {
-        //osk_virtkey_gtk_init(vk);
+        self->vk = virtkey_wayland_new();
+    }
+    else
+    #endif
+    {
+        PyErr_SetString (OSK_EXCEPTION, "Virtkey: unsupported GDK backend");
+        return -1;
     }
     self->backend = VIRTKEY_BACKEND_NONE;
 
     this = self->vk;
-    if (!this)
-    {
-        PyErr_SetString (OSK_EXCEPTION, "Virtkey not supported");
-        return -1;
-    }
-
     if (this->init(this) < 0)
         return -1;
 
@@ -917,6 +922,194 @@ ucs2keysym (long ucs)
     return ucs | 0x01000000;
 }
 
+/**
+ * based on code from libgnomekbd
+ * gkbd-keyboard-drawing.c, set_key_label_in_layout
+ */
+char*
+virtkey_get_label_from_keysym (int keysym)
+{
+    char* label;
+
+    switch (keysym) {
+        case GDK_KEY_Scroll_Lock:
+            label = "Scroll\nLock";
+            break;
+
+        case GDK_KEY_space:
+            label = " ";
+            break;
+
+        case GDK_KEY_Sys_Req:
+            label = "Sys Rq";
+            break;
+
+        case GDK_KEY_Page_Up:
+            label = "Page\nUp";
+            break;
+
+        case GDK_KEY_Page_Down:
+            label = "Page\nDown";
+            break;
+
+        case GDK_KEY_Num_Lock:
+            label = "Num\nLock";
+            break;
+
+        case GDK_KEY_KP_Page_Up:
+            label = "Pg Up";
+            break;
+
+        case GDK_KEY_KP_Page_Down:
+            label = "Pg Dn";
+            break;
+
+        case GDK_KEY_KP_Home:
+            label = "Home";
+            break;
+
+        case GDK_KEY_KP_Left:
+            label = "Left";
+            break;
+
+        case GDK_KEY_KP_End:
+            label = "End";
+            break;
+
+        case GDK_KEY_KP_Up:
+            label = "Up";
+            break;
+
+        case GDK_KEY_KP_Begin:
+            label = "Begin";
+            break;
+
+        case GDK_KEY_KP_Right:
+            label = "Right";
+            break;
+
+        case GDK_KEY_KP_Enter:
+            label = "Enter";
+            break;
+
+        case GDK_KEY_KP_Down:
+            label = "Down";
+            break;
+
+        case GDK_KEY_KP_Insert:
+            label = "Ins";
+            break;
+
+        case GDK_KEY_KP_Delete:
+            label = "Del";
+            break;
+
+        case GDK_KEY_dead_grave:
+            label = "ˋ";
+            break;
+
+        case GDK_KEY_dead_acute:
+            label = "ˊ";
+            break;
+
+        case GDK_KEY_dead_circumflex:
+            label = "ˆ";
+            break;
+
+        case GDK_KEY_dead_tilde:
+            label = "~";
+            break;
+
+        case GDK_KEY_dead_macron:
+            label = "ˉ";
+            break;
+
+        case GDK_KEY_dead_breve:
+            label = "˘";
+            break;
+
+        case GDK_KEY_dead_abovedot:
+            label = "˙";
+            break;
+
+        case GDK_KEY_dead_diaeresis:
+            label = "¨";
+            break;
+
+        case GDK_KEY_dead_abovering:
+            label = "˚";
+            break;
+
+        case GDK_KEY_dead_doubleacute:
+            label = "˝";
+            break;
+
+        case GDK_KEY_dead_caron:
+            label = "ˇ";
+            break;
+
+        case GDK_KEY_dead_cedilla:
+            label = "¸";
+            break;
+
+        case GDK_KEY_dead_ogonek:
+            label = "˛";
+            break;
+
+        case GDK_KEY_dead_belowdot:
+            label = ".";
+            break;
+
+        case GDK_KEY_Mode_switch:
+            label = "AltGr";
+            break;
+
+        case GDK_KEY_Multi_key:
+            label = "Compose";
+            break;
+
+        default:
+        {
+            static char buf[256];
+            const gunichar uc = gdk_keyval_to_unicode (keysym);
+            if (uc && g_unichar_isgraph (uc))
+            {
+                int l = MIN(g_unichar_to_utf8 (uc, buf), sizeof(buf)-1);
+                buf[l] = '\0';
+                label = buf;
+            }
+            else
+            {
+                const char *name = gdk_keyval_name (keysym);
+                if (!name)
+                {
+                    label = "";
+                }
+                else
+                {
+                    size_t l = MIN(strlen(name), sizeof(buf)-1);
+                    strncpy(buf, name, l);
+                    buf[l] = '\0';
+                    if (l > 2 && name[0] == '0' && name[1] == 'x') // hex number?
+                    {
+                        // Most likely an erroneous keysym and not Onboard's fault.
+                        // Show the hex number fully as label for easier debugging.
+                        // Happend with Belgian CapsLock+keycode 51,
+                        // keysym 0x039c on Xenial.
+                        buf[MIN(l, 10)] = '\0';
+                    }
+                    else
+                    {
+                        buf[MIN(l, 2)] = '\0';
+                    }
+                    label = buf;
+                }
+            }
+        }
+    }
+    return label;
+}
+
 static PyObject *
 vk_send (PyObject *_self, PyObject *args, int mode)
 {
@@ -1264,12 +1457,12 @@ osk_virtkey_get_rules_names (PyObject *self, PyObject *noargs)
  * returns a plus-sign separated string of all keyboard layouts
  */
 static PyObject *
-osk_virtkey_get_layout_symbols (PyObject *self, PyObject *noargs)
+osk_virtkey_get_layout_as_string (PyObject *self, PyObject *noargs)
 {
     VirtkeyBase* this = ((OskVirtkey*) self)->vk;
     PyObject *result = NULL;
 
-    char* symbols = this->get_layout_symbols(this);
+    char* symbols = this->get_layout_as_string(this);
     if (symbols)
     {
         result = PyString_FromString (symbols);
@@ -1372,6 +1565,6 @@ static PyMethodDef osk_virtkey_methods[] = {
     { "get_current_group",      osk_virtkey_get_current_group,      METH_NOARGS, NULL },
     { "get_current_group_name", osk_virtkey_get_current_group_name, METH_NOARGS, NULL },
     { "get_rules_names",        osk_virtkey_get_rules_names,        METH_NOARGS, NULL },
-    { "get_layout_symbols",     osk_virtkey_get_layout_symbols,     METH_NOARGS, NULL },
+    { "get_layout_as_string",   osk_virtkey_get_layout_as_string,   METH_NOARGS, NULL },
     { NULL, NULL, 0, NULL },
 };

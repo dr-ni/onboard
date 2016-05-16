@@ -59,6 +59,7 @@ virtkey_x_get_current_group (VirtkeyBase *base)
         PyErr_SetString (OSK_EXCEPTION, "XkbGetState failed");
         return -1;
     }
+    printf("base_group %d, latched_group %d, locked_group %d \n", state.base_group, state.latched_group, state.locked_group);
     return state.locked_group;
 }
 
@@ -157,194 +158,6 @@ virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *
     return code;
 }
 
-/**
- * based on code from libgnomekbd
- * gkbd-keyboard-drawing.c, set_key_label_in_layout
- */
-char*
-virtkey_gdk_get_label_from_keysym (KeySym keyval)
-{
-    char* label;
-
-    switch (keyval) {
-        case GDK_KEY_Scroll_Lock:
-            label = "Scroll\nLock";
-            break;
-
-        case GDK_KEY_space:
-            label = " ";
-            break;
-
-        case GDK_KEY_Sys_Req:
-            label = "Sys Rq";
-            break;
-
-        case GDK_KEY_Page_Up:
-            label = "Page\nUp";
-            break;
-
-        case GDK_KEY_Page_Down:
-            label = "Page\nDown";
-            break;
-
-        case GDK_KEY_Num_Lock:
-            label = "Num\nLock";
-            break;
-
-        case GDK_KEY_KP_Page_Up:
-            label = "Pg Up";
-            break;
-
-        case GDK_KEY_KP_Page_Down:
-            label = "Pg Dn";
-            break;
-
-        case GDK_KEY_KP_Home:
-            label = "Home";
-            break;
-
-        case GDK_KEY_KP_Left:
-            label = "Left";
-            break;
-
-        case GDK_KEY_KP_End:
-            label = "End";
-            break;
-
-        case GDK_KEY_KP_Up:
-            label = "Up";
-            break;
-
-        case GDK_KEY_KP_Begin:
-            label = "Begin";
-            break;
-
-        case GDK_KEY_KP_Right:
-            label = "Right";
-            break;
-
-        case GDK_KEY_KP_Enter:
-            label = "Enter";
-            break;
-
-        case GDK_KEY_KP_Down:
-            label = "Down";
-            break;
-
-        case GDK_KEY_KP_Insert:
-            label = "Ins";
-            break;
-
-        case GDK_KEY_KP_Delete:
-            label = "Del";
-            break;
-
-        case GDK_KEY_dead_grave:
-            label = "ˋ";
-            break;
-
-        case GDK_KEY_dead_acute:
-            label = "ˊ";
-            break;
-
-        case GDK_KEY_dead_circumflex:
-            label = "ˆ";
-            break;
-
-        case GDK_KEY_dead_tilde:
-            label = "~";
-            break;
-
-        case GDK_KEY_dead_macron:
-            label = "ˉ";
-            break;
-
-        case GDK_KEY_dead_breve:
-            label = "˘";
-            break;
-
-        case GDK_KEY_dead_abovedot:
-            label = "˙";
-            break;
-
-        case GDK_KEY_dead_diaeresis:
-            label = "¨";
-            break;
-
-        case GDK_KEY_dead_abovering:
-            label = "˚";
-            break;
-
-        case GDK_KEY_dead_doubleacute:
-            label = "˝";
-            break;
-
-        case GDK_KEY_dead_caron:
-            label = "ˇ";
-            break;
-
-        case GDK_KEY_dead_cedilla:
-            label = "¸";
-            break;
-
-        case GDK_KEY_dead_ogonek:
-            label = "˛";
-            break;
-
-        case GDK_KEY_dead_belowdot:
-            label = ".";
-            break;
-
-        case GDK_KEY_Mode_switch:
-            label = "AltGr";
-            break;
-
-        case GDK_KEY_Multi_key:
-            label = "Compose";
-            break;
-
-        default:
-        {
-            static char buf[256];
-            const gunichar uc = gdk_keyval_to_unicode (keyval);
-            if (uc && g_unichar_isgraph (uc))
-            {
-                int l = MIN(g_unichar_to_utf8 (uc, buf), sizeof(buf)-1);
-                buf[l] = '\0';
-                label = buf;
-            }
-            else
-            {
-                const char *name = gdk_keyval_name (keyval);
-                if (!name)
-                {
-                    label = "";
-                }
-                else
-                {
-                    size_t l = MIN(strlen(name), sizeof(buf)-1);
-                    strncpy(buf, name, l);
-                    buf[l] = '\0';
-                    if (l > 2 && name[0] == '0' && name[1] == 'x') // hex number?
-                    {
-                        // Most likely an erroneous keysym and not Onboard's fault.
-                        // Show the hex number fully as label for easier debugging.
-                        // Happend with Belgian CapsLock+keycode 51,
-                        // keysym 0x039c on Xenial.
-                        buf[MIN(l, 10)] = '\0';
-                    }
-                    else
-                    {
-                        buf[MIN(l, 2)] = '\0';
-                    }
-                    label = buf;
-                }
-            }
-        }
-    }
-    return label;
-}
-
 static void
 virtkey_x_get_label_from_keycode(VirtkeyBase* base,
     int keycode, int modmask, int group,
@@ -369,8 +182,7 @@ virtkey_x_get_label_from_keycode(VirtkeyBase* base,
 
     if (keysym)
     {
-        strncpy(virtkey_gdk_get_label_from_keysym (keysym), 
-                label, max_label_size);
+        strncpy(label, virtkey_get_label_from_keysym(keysym), max_label_size);
         label[max_label_size] = '\0';
     }
 }
@@ -395,15 +207,6 @@ virtkey_x_get_keysym_from_keycode(VirtkeyBase* base,
 /**
  * Reads the contents of the root window property _XKB_RULES_NAMES.
  */
-struct RulesNames
-{
-    char* rules_file;
-    char* model;
-    char* layout;
-    char* variant;
-    char* options;
-};
-
 static char**
 virtkey_x_get_rules_names(VirtkeyBase* base, int* numentries)
 {
@@ -453,7 +256,7 @@ virtkey_x_get_rules_names(VirtkeyBase* base, int* numentries)
     }
     else
         results[3] = strdup("");
- 
+
     if (vd.options)
     {
         results[4] = strdup(vd.options);
@@ -465,11 +268,12 @@ virtkey_x_get_rules_names(VirtkeyBase* base, int* numentries)
     return results;
 }
 
-/**
- * returns a plus-sign separated string of all keyboard layouts
+/*
+ * Return a string representative of the whole layout including all groups.
+ * Caller takes ownership, call free() on the result.
  */
 static char*
-virtkey_x_get_layout_symbols (VirtkeyBase* base)
+virtkey_x_get_layout_as_string (VirtkeyBase* base)
 {
     VirtkeyX* this = (VirtkeyX*) base;
     char* result = NULL;
@@ -623,7 +427,7 @@ virtkey_x_reload (VirtkeyBase* base)
         this->kbd = NULL;
     }
 
-    if (virtkey_x_init (base) < 0)
+    if (virtkey_x_init_keyboard (this) < 0)
         return -1;
 
     return 0;
@@ -654,7 +458,7 @@ virtkey_x_new(void)
    this->get_keysym_from_keycode = virtkey_x_get_keysym_from_keycode;
    this->get_keycode_from_keysym = virtkey_x_get_keycode_from_keysym;
    this->get_rules_names = virtkey_x_get_rules_names;
-   this->get_layout_symbols = virtkey_x_get_layout_symbols;
+   this->get_layout_as_string = virtkey_x_get_layout_as_string;
    this->set_modifiers = virtkey_x_set_modifiers;
    return this;
 }

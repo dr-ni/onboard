@@ -184,4 +184,10 @@ void    __osk_uinput_register_type       (PyObject *module);
 
 void osk_util_idle_call (PyObject *callback, PyObject *arglist);
 
+static inline void *
+zalloc(size_t size)
+{
+    return calloc(1, size);
+}
+
 #endif /* __OSK_MODULE__ */
