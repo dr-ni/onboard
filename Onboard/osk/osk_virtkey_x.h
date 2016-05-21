@@ -24,7 +24,8 @@
 
 VirtkeyBase* virtkey_x_new(void);
 
-void virtkey_x_set_modifiers (VirtkeyBase* base,
-                              int mod_mask, bool lock, bool press);
+void virtkey_x_apply_state (VirtkeyBase* base,
+                            int group, unsigned int mod_mask,
+                            bool lock, bool press);
 
 #endif

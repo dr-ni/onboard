@@ -131,13 +131,15 @@ virtkey_wayland_get_current_group_name (VirtkeyBase* base)
 }
 
 static int
-virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *modmask)
+virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
+                                         int *group_inout,
+                                         unsigned int *mod_mask_out)
 {
     int keycode = 0;
     GdkKeymap* gdk_keymap = get_gdk_keymap(base);
     GdkKeymapKey* keys;
     gint n_keys;
-    int group = virtkey_wayland_get_current_group(base);
+    int group = *group_inout;
 
     g_debug("virtkey_wayland_get_keycode_from_keysym: keysym %d, group %d\n", keysym, group);
     if (gdk_keymap_get_entries_for_keyval(gdk_keymap, keysym, &keys, &n_keys))
@@ -180,6 +182,10 @@ virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned
         g_free(keys);
     }
     g_debug("    final     keycode %d\n", keycode);
+
+    *group_inout = -1;  // -1 indicates no group change necessary
+    *mod_mask_out = 0;
+
     return keycode;
 }
 
@@ -257,8 +263,9 @@ virtkey_wayland_get_layout_as_string (VirtkeyBase* base)
 }
 
 void
-virtkey_wayland_set_modifiers (VirtkeyBase* base,
-                         int mod_mask, bool lock, bool press)
+virtkey_wayland_apply_state (VirtkeyBase* base,
+                             int group, unsigned int mod_mask,
+                             bool lock, bool press)
 {
 }
 
@@ -525,7 +532,7 @@ virtkey_wayland_new(void)
    this->get_keycode_from_keysym = virtkey_wayland_get_keycode_from_keysym;
    this->get_rules_names = virtkey_wayland_get_rules_names;
    this->get_layout_as_string = virtkey_wayland_get_layout_as_string;
-   this->set_modifiers = virtkey_wayland_set_modifiers;
+   this->apply_state = virtkey_wayland_apply_state;
    return this;
 }
 

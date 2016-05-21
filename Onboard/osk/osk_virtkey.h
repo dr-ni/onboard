@@ -42,13 +42,13 @@ struct VirtkeyBase {
                 int keycode, int modmask, int group,
                 char* label, int max_label_size);
     int     (*get_keycode_from_keysym)(VirtkeyBase* base,
-                int keysym, unsigned int *mod_mask);
+                int keysym, int *group_inout, unsigned int *mod_mask_out);
     int     (*get_keysym_from_keycode)(VirtkeyBase* base,
                 int keycode, int modmask, int group);
     char**  (*get_rules_names)(VirtkeyBase* base, int* numentries);
     char*   (*get_layout_as_string)(VirtkeyBase* base);
-    void    (*set_modifiers) (VirtkeyBase* base,
-            int mod_mask, bool lock, bool press);
+    void    (*apply_state) (VirtkeyBase* base,
+            int group, unsigned int mod_mask, bool lock, bool press);
 };
 
 char* virtkey_get_label_from_keysym (int keyval);

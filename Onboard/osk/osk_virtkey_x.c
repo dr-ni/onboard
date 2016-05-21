@@ -93,52 +93,62 @@ virtkey_x_get_current_group_name (VirtkeyBase* base)
     return result;
 }
 
+/*
+ * Return group for keycode with out-of-range action applied.
+ * */
+static int
+get_effective_group(XkbDescPtr kbd, KeyCode keycode, int group)
+{
+    int num_groups = XkbKeyNumGroups(kbd, keycode);
+    int key_group = group;
+
+    if (num_groups == 0)
+    {
+        key_group = 0;
+    }
+    else if (num_groups == 1)
+    {
+        key_group = 0;
+    }
+    else if (key_group >= num_groups)
+    {
+        unsigned int group_info = XkbKeyGroupInfo(kbd, keycode);
+
+        switch (XkbOutOfRangeGroupAction(group_info))
+        {
+            case XkbClampIntoRange:
+                key_group = num_groups - 1;
+                break;
+
+            case XkbRedirectIntoRange:
+                key_group = XkbOutOfRangeGroupNumber(group_info);
+                if (key_group >= num_groups)
+                    key_group = 0;
+                break;
+
+            case XkbWrapIntoRange:
+            default:
+                key_group %= num_groups;
+                break;
+        }
+    }
+
+    return key_group;
+}
 
 static KeyCode
 keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
 {
     KeyCode result = 0;
     KeyCode keycode = 0;
-    int num_groups;
     int key_group;
     int num_levels;
     int level;
+    unsigned int new_mask = 0;
 
     for (keycode = kbd->min_key_code; keycode < kbd->max_key_code; keycode++)
     {
-        num_groups = XkbKeyNumGroups(kbd, keycode);
-        key_group = group;
-
-        if (num_groups == 0)
-        {
-            key_group = 0;
-        }
-        else if (num_groups == 1)
-        {
-            key_group = 0;
-        }
-        else if (key_group >= num_groups)
-        {
-            unsigned int group_info = XkbKeyGroupInfo(kbd, keycode);
-
-            switch (XkbOutOfRangeGroupAction(group_info))
-            {
-                case XkbClampIntoRange:
-                    key_group = num_groups - 1;
-                    break;
-
-                case XkbRedirectIntoRange:
-                    key_group = XkbOutOfRangeGroupNumber(group_info);
-                    if (key_group >= num_groups)
-                        key_group = 0;
-                    break;
-
-                case XkbWrapIntoRange:
-                default:
-                    key_group %= num_groups;
-                    break;
-            }
-        }
+        key_group = get_effective_group(kbd, keycode, group);
 
         num_levels = XkbKeyGroupWidth(kbd, keycode, key_group);
         for (level = 0; level < num_levels; level++)
@@ -164,7 +174,7 @@ keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
                 if (level == 0)
                 {
                     result = keycode;
-                    *mod_mask = 0;
+                    new_mask = 0;
                 }
                 else
                 {
@@ -174,7 +184,7 @@ keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
                         if (entry->level == level)
                         {
                             result = keycode;
-                            *mod_mask = entry->mods.mask;
+                            new_mask = entry->mods.mask;
                             break;
                         }
                     }
@@ -188,27 +198,51 @@ keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
             break;
     }
 
+    if (mod_mask)
+        *mod_mask = new_mask;
+
     return result;
 }
 
 static int
-virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *mod_mask)
+virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
+                                   int *group_inout,
+                                   unsigned int *mod_mask_out)
 {
     static int modified_key = 0;
     KeyCode keycode;
     VirtkeyX* this = (VirtkeyX*) base;
-    int group = virtkey_x_get_current_group(base);
-    if (group < 0)
-        return 0;
+    int group = *group_inout;
+    int new_group = -1;  // -1 indicates no group change necessary
 
-    keycode = keysym_to_keycode(this->kbd, keysym, group, mod_mask);
+    // Look keysym up in current group.
+    keycode = keysym_to_keycode(this->kbd, keysym,
+                                group, mod_mask_out);
+    if (!keycode)
+    {
+        // If that fails try all the other groups.
+        int g;
+        for (g=0; g<XkbMaxKbdGroup; g++)
+        {
+            if (g != group)
+            {
+                keycode = keysym_to_keycode(this->kbd, keysym,
+                                            g, mod_mask_out);
+                if (keycode)
+                {
+                    new_group = g;
+                    break;
+                }
+            }
+        }
+    }
 
     if (!keycode)
     {
         int index;
         /* Change one of the last 10 keysyms to our converted utf8,
          * remapping the x keyboard on the fly. This make assumption
-         * the last 10 arn't already used.
+         * the last 10 aren't already used.
          */
         modified_key = (modified_key + 1) % 10;
 
@@ -239,6 +273,8 @@ virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *
          */
         keycode = this->kbd->max_key_code - modified_key - 1;
     }
+
+    *group_inout = new_group;
 
     return keycode;
 }
@@ -381,16 +417,28 @@ virtkey_x_get_layout_as_string (VirtkeyBase* base)
 }
 
 void
-virtkey_x_set_modifiers (VirtkeyBase* base,
-                         int mod_mask, bool lock, bool press)
+virtkey_x_apply_state (VirtkeyBase* base,
+                       int group, unsigned int mod_mask,
+                       bool lock, bool press)
 {
     VirtkeyX* this = (VirtkeyX*) base;
+
+    // apply group change
+    if (group >= 0)
+    {
+        if (lock)
+            XkbLockGroup (this->xdisplay, XkbUseCoreKbd, group);
+        else
+            XkbLatchGroup (this->xdisplay, XkbUseCoreKbd, group);
+    }
+
+    // apply modifier change
     if (lock)
         XkbLockModifiers (this->xdisplay, XkbUseCoreKbd,
-                            mod_mask, press ? mod_mask : 0);
+                          mod_mask, press ? mod_mask : 0);
     else
         XkbLatchModifiers (this->xdisplay, XkbUseCoreKbd,
-                            mod_mask, press ? mod_mask : 0);
+                           mod_mask, press ? mod_mask : 0);
 
     XSync (this->xdisplay, False);
 }
@@ -544,7 +592,7 @@ virtkey_x_new(void)
    this->get_keycode_from_keysym = virtkey_x_get_keycode_from_keysym;
    this->get_rules_names = virtkey_x_get_rules_names;
    this->get_layout_as_string = virtkey_x_get_layout_as_string;
-   this->set_modifiers = virtkey_x_set_modifiers;
+   this->apply_state = virtkey_x_apply_state;
    return this;
 }
 
