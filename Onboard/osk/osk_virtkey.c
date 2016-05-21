@@ -1174,6 +1174,7 @@ vk_send (PyObject *_self, PyObject *args, int mode)
             mod_mask = input;
             break;
     }
+    printf("vk_send mode %d input %d keysym %d keycode %d mod_mask %d\n", mode, input, ucs2keysym(input), keycode, mod_mask);
 
     switch (self->backend)
     {

@@ -59,7 +59,6 @@ virtkey_x_get_current_group (VirtkeyBase *base)
         PyErr_SetString (OSK_EXCEPTION, "XkbGetState failed");
         return -1;
     }
-    printf("base_group %d, latched_group %d, locked_group %d \n", state.base_group, state.latched_group, state.locked_group);
     return state.locked_group;
 }
 
@@ -94,32 +93,117 @@ virtkey_x_get_current_group_name (VirtkeyBase* base)
     return result;
 }
 
+
+static KeyCode
+keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
+{
+    KeyCode result = 0;
+    KeyCode keycode = 0;
+    int num_groups;
+    int key_group;
+    int num_levels;
+    int level;
+
+    for (keycode = kbd->min_key_code; keycode < kbd->max_key_code; keycode++)
+    {
+        num_groups = XkbKeyNumGroups(kbd, keycode);
+        key_group = group;
+
+        if (num_groups == 0)
+        {
+            key_group = 0;
+        }
+        else if (num_groups == 1)
+        {
+            key_group = 0;
+        }
+        else if (key_group >= num_groups)
+        {
+            unsigned int group_info = XkbKeyGroupInfo(kbd, keycode);
+
+            switch (XkbOutOfRangeGroupAction(group_info))
+            {
+                case XkbClampIntoRange:
+                    key_group = num_groups - 1;
+                    break;
+
+                case XkbRedirectIntoRange:
+                    key_group = XkbOutOfRangeGroupNumber(group_info);
+                    if (key_group >= num_groups)
+                        key_group = 0;
+                    break;
+
+                case XkbWrapIntoRange:
+                default:
+                    key_group %= num_groups;
+                    break;
+            }
+        }
+
+        num_levels = XkbKeyGroupWidth(kbd, keycode, key_group);
+        for (level = 0; level < num_levels; level++)
+        {
+            KeySym ks = XkbKeySymEntry(kbd, keycode, level, group);
+            if (ks == keysym)
+            {
+                int i;
+                XkbKeyTypePtr key_type = XkbKeyKeyType(kbd, keycode, group);
+                int map_count = key_type->map_count;
+
+                #ifdef DEBUG_OUTPUT
+                printf("kc %d level %d ks %ld key_type->num_levels %d, key_type->map_count %d, mods m %d r %d v %d\n",
+                        keycode, level, ks, key_type->num_levels, key_type->map_count, key_type->mods.mask, key_type->mods.real_mods, key_type->mods.vmods);
+                for (i = 0; i < map_count; i++)
+                {
+                    XkbKTMapEntryPtr entry = key_type->map + i;
+                    printf("xxx i %d: level %d entry->level %d entry->modsmask %d \n",
+                            i, level, entry->level, entry->mods.mask);
+                }
+                #endif
+
+                if (level == 0)
+                {
+                    result = keycode;
+                    *mod_mask = 0;
+                }
+                else
+                {
+                    for (i = 0; i < map_count; i++)
+                    {
+                        XkbKTMapEntryPtr entry = key_type->map + i;
+                        if (entry->level == level)
+                        {
+                            result = keycode;
+                            *mod_mask = entry->mods.mask;
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        if (result)
+            break;
+    }
+
+    return result;
+}
+
 static int
 virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *mod_mask)
 {
-    VirtkeyX* this = (VirtkeyX*) base;
     static int modified_key = 0;
-    KeyCode code = 0;
+    KeyCode keycode;
+    VirtkeyX* this = (VirtkeyX*) base;
+    int group = virtkey_x_get_current_group(base);
+    if (group < 0)
+        return 0;
 
-    code = XKeysymToKeycode (this->xdisplay, keysym);
-    if (code)
-    {
-        int group;
+    keycode = keysym_to_keycode(this->kbd, keysym, group, mod_mask);
 
-        group = virtkey_x_get_current_group(base);
-        if (group < 0)
-            return 0;
-
-        if (XkbKeycodeToKeysym (this->xdisplay, code, group, 0) != keysym)
-        {
-            /* try shift modifier */
-            if (XkbKeycodeToKeysym (this->xdisplay, code, group, 1) == keysym)
-                *mod_mask |= 1;
-            else
-                code = 0;
-        }
-    }
-    if (!code)
+    if (!keycode)
     {
         int index;
         /* Change one of the last 10 keysyms to our converted utf8,
@@ -146,16 +230,17 @@ virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym, unsigned int *
          *
          * The below is lightly safer:
          *
-         * code = XKeysymToKeycode(fk->xdisplay, keysym);
+         * keycode = XKeysymToKeycode(fk->xdisplay, keysym);
          *
          * but this appears to break in that the new mapping is not immediatly
          * put to work. It would seem a MappingNotify event is needed so
          * Xlib can do some changes internally? (xlib is doing something
          * related to above?)
          */
-        code = this->kbd->max_key_code - modified_key - 1;
+        keycode = this->kbd->max_key_code - modified_key - 1;
     }
-    return code;
+
+    return keycode;
 }
 
 static void
