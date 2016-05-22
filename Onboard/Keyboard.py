@@ -28,7 +28,7 @@ import weakref
 import gc
 from contextlib import contextmanager
 
-from gi.repository import Gdk
+from gi.repository import Gdk, GLib
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -1385,8 +1385,8 @@ class Keyboard(WordSuggestions):
         if self.mods[8] and \
            self._is_alt_special() and \
            not key.active and \
-           not self.is_key_disabled(key):
            not key.type == KeyCommon.BUTTON_TYPE and \
+           not self.is_key_disabled(key):
             self.maybe_send_alt_press(view, button, event_type)
 
     def _maybe_send_alt_release_for_key(self, key, view, button, event_type):
@@ -1888,7 +1888,7 @@ class Keyboard(WordSuggestions):
             else:
                 _logger.warning("ignoring unrecognized key combination '{}' "
                                 "in lockdown.disable-keys"
-                                .format(key_str))
+                                .format(combo))
         return disabled_keys
 
     def get_key_action(self, key):
@@ -2272,9 +2272,6 @@ class Keyboard(WordSuggestions):
             test_clearance, move_clearance,
             horizontal, vertical)
 
-    def is_visible(self):
-        return self._broadcast_to_first_view("is_visible", default=False)
-
     def transition_visible_to(self, show):
         return self._broadcast_to_views("transition_visible_to", show)
 
@@ -2304,12 +2301,6 @@ class Keyboard(WordSuggestions):
         for view in self._layout_views:
             if hasattr(view, func_name):
                 getattr(view, func_name)(*params)
-
-    def _broadcast_to_first_view(self, func_name, default, *params):
-        for view in self._layout_views:
-            if hasattr(view, func_name):
-                return getattr(view, func_name)(*params)
-        return default
 
     def find_items_from_ids(self, ids):
         if self.layout is None:
