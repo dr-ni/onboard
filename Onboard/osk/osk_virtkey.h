@@ -47,8 +47,10 @@ struct VirtkeyBase {
                 int keycode, int modmask, int group);
     char**  (*get_rules_names)(VirtkeyBase* base, int* numentries);
     char*   (*get_layout_as_string)(VirtkeyBase* base);
-    void    (*apply_state) (VirtkeyBase* base,
-            int group, unsigned int mod_mask, bool lock, bool press);
+    void    (*set_group) (VirtkeyBase* base,
+            int group, bool lock);
+    void    (*set_modifiers) (VirtkeyBase* base,
+            unsigned int mod_mask, bool lock, bool press);
 };
 
 char* virtkey_get_label_from_keysym (int keyval);

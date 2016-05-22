@@ -493,7 +493,7 @@ class WordSuggestions:
                               selection_span.begin(),
                               insertion)
         if auto_separator:
-            self._text_changer.insert_string_at_caret(auto_separator)
+            self.get_text_changer().insert_string_at_caret(auto_separator)
             if delete_existing_separator:
                 pos = selection_span.begin() - len(deletion) + \
                     len(insertion) + len(auto_separator)
@@ -960,19 +960,19 @@ class WordSuggestions:
 
             # delete the old word
             if offset >= 0:
-                self._text_changer.press_keysyms("left", offset)
-                self._text_changer.press_keysyms("backspace", length)
+                self.get_text_changer().press_keysyms("left", offset)
+                self.get_text_changer().press_keysyms("backspace", length)
             else:
-                self._text_changer.press_keysyms("delete", abs(offset))
-                self._text_changer.press_keysyms("backspace",
+                self.get_text_changer().press_keysyms("delete", abs(offset))
+                self.get_text_changer().press_keysyms("backspace",
                                                  length - abs(offset))
 
             # insert the new word
-            self._text_changer.press_key_string(new_text)
+            self.get_text_changer().press_key_string(new_text)
 
             # move caret back
             if offset >= 0:
-                self._text_changer.press_keysyms("right", offset)
+                self.get_text_changer().press_keysyms("right", offset)
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -1807,8 +1807,7 @@ class Punctuator:
             # Don't use direct insertion here, because many keys
             # always generate key-strokes and are likely to arrive
             # after the separator.
-            self._wp._text_changer.insert_string_at_caret(
-                string, allow_insertion=False)
+            self._wp.get_text_changer().insert_string_at_caret(string)
 
     def insert_separator_at_distance(self, separator_span):
         """
@@ -1833,7 +1832,7 @@ class Punctuator:
         self._wp.text_context.on_text_context_changed()
 
     def _delete_at_caret(self):
-        self._wp._text_changer.delete_at_caret()
+        self._wp.get_text_changer().delete_at_caret()
 
     def _get_span_at_caret(self):
         text_context = self._wp.text_context
@@ -1904,7 +1903,7 @@ class PunctuatorImmediateSeparators(Punctuator):
             self._separator_removed = False
             # No direct insertion here. Space must always arrive
             # last, i.e. after the released key was generated.
-            self._wp._text_changer.press_keysyms("space")
+            self._wp.get_text_changer().press_keysyms("space")
 
 
 class PunctuatorDelayedSeparators(Punctuator):

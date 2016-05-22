@@ -23,7 +23,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import sys
 import time
 import weakref
 import gc
@@ -89,6 +88,14 @@ class DockMode:
         BOTTOM,
         TOP,
     ) = range(3)
+
+
+class ModSource:
+    """ enum of sources of modifier changes """
+    (
+        KEYBOARD,
+        KEYSYNTH,
+    ) = range(2)
 
 
 class UnpressTimers:
@@ -172,44 +179,59 @@ class KeySynth(object):
 class KeySynthVirtkey(KeySynth):
     """ Synthesize key strokes with python-virtkey """
 
-    def __init__(self, vk):
+    def __init__(self, keyboard, vk):
+        self._keyboard = keyboard
         self._vk = vk
 
     def cleanup(self):
         self._vk = None
 
-    def press_unicode(self, char):
-        if self._vk:
-            if sys.version_info.major == 2:
-                char = unicode_str(char)[0]
-            code_point = ord(char)
-            self._delay_keypress()
-            self._vk.press_unicode(code_point)
-
-    def release_unicode(self, char):
-        if self._vk:
-            if sys.version_info.major == 2:
-                char = unicode_str(char)[0]
-            code_point = ord(char)
-            self._vk.release_unicode(code_point)
-
-    def press_keysym(self, keysym):
-        if self._vk:
-            self._delay_keypress()
-            self._vk.press_keysym(keysym)
-
-    def release_keysym(self, keysym):
-        if self._vk:
-            self._vk.release_keysym(keysym)
-
     def press_keycode(self, keycode):
+        print("press_keycode", keycode)
         if self._vk:
             self._delay_keypress()
             self._vk.press_keycode(keycode)
 
     def release_keycode(self, keycode):
+        print("release_keycode", keycode)
         if self._vk:
             self._vk.release_keycode(keycode)
+
+    def press_unicode(self, char):
+        print("press_unicode", repr(char))
+        if self._vk:
+            keysym = self._vk.keysym_from_unicode(char)
+            self.press_keysym(keysym)
+
+    def press_keysym(self, keysym):
+        print("press_keysym", keysym)
+        if self._vk:
+            keycode, group, mod_mask = self._vk.keycode_from_keysym(keysym)
+
+            # need modifiers for this keysym?
+            if mod_mask:
+                self._keyboard.lock_temporary_modifiers(
+                    ModSource.KEYSYNTH, mod_mask)
+
+            # Need a different layout group for this keysym?
+            if group >= 0:
+                pass
+
+            self.press_keycode(keycode)
+
+    def release_keysym(self, keysym):
+        print("release_keysym", keysym)
+        if self._vk:
+            keycode, group, mod_mask = self._vk.keycode_from_keysym(keysym)
+            self.release_keycode(keycode)
+
+            self._keyboard.unlock_temporary_modifiers(ModSource.KEYSYNTH)
+
+    def release_unicode(self, char):
+        print("release_unicode", repr(char))
+        if self._vk:
+            keysym = self._vk.keysym_from_unicode(char)
+            self.release_keysym(keysym)
 
     def lock_mod(self, mod_mask):
         if self._vk:
@@ -254,13 +276,8 @@ class KeySynthAtspi(KeySynthVirtkey):
     Also some unexpected key sequences are not faithfully reproduced.
     """
 
-    def __init__(self, vk):
-        super(KeySynthAtspi, self).__init__(vk)
-
-    def press_key_string(self, string):
-        if not "Atspi" in globals():
-            return
-        Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
+    def __init__(self, keyboard, vk):
+        super(KeySynthAtspi, self).__init__(keyboard, vk)
 
     def press_keycode(self, keycode):
         if not "Atspi" in globals():
@@ -273,20 +290,43 @@ class KeySynthAtspi(KeySynthVirtkey):
             return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
 
+    def press_key_string(self, string):
+        if not "Atspi" in globals():
+            return
+        Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
+
 
 class TextChanger():
     """
-    Insert and delete text by all means available to Onboard.
-    - KeySynthVirtkey
-    - KeySynthAtspi (not used by default)
-    - Direct insertion/deletion via AtspiTextContext
+    Abstract base class of TextChangers.
     """
 
     def __init__(self, keyboard, vk):
-        self._keyboard = weakref.ref(keyboard)
-        self._key_synth_virtkey = KeySynthVirtkey(vk)
-        self._key_synth_atspi = KeySynthAtspi(vk)
+        self.keyboard = keyboard
+        self.vk = vk
 
+    def cleanup(self):
+        self.keyboard = None
+        self.vk = None
+
+
+class TextChangerKeyStroke(TextChanger):
+    """
+    Insert and delete text with key-strokes.
+    - KeySynthVirtkey
+    - uinput
+    - KeySynthAtspi (not used by default)
+    """
+
+    def __init__(self, keyboard, vk):
+        TextChanger.__init__(self, keyboard, vk)
+
+        self._key_synth_virtkey = KeySynthVirtkey(keyboard, vk)
+        self._key_synth_atspi = KeySynthAtspi(keyboard, vk)
+
+        self._update_key_synth()
+
+    def _update_key_synth(self):
         key_synth_id = KeySynthEnum(config.keyboard.key_synth)
         if key_synth_id == KeySynthEnum.AUTO:
             key_synth_candidates = [
@@ -301,6 +341,7 @@ class TextChanger():
 
         key_synth_id = None
         key_synth = None
+        vk = self.vk
         for id_ in key_synth_candidates:
             if id_ == KeySynthEnum.ATSPI:
                 key_synth = self._key_synth_atspi
@@ -342,8 +383,7 @@ class TextChanger():
             self._key_synth_atspi.cleanup()
             self._key_synth_atspi = None
 
-    def get_keyboard(self):
-        return self._keyboard()
+        TextChanger.cleanup(self)
 
     # KeySynth interface
     def press_unicode(self, char):
@@ -351,9 +391,6 @@ class TextChanger():
 
     def release_unicode(self, char):
         self._key_synth.release_unicode(char)
-
-    def press_key_string(self, string):
-        self._key_synth.press_key_string(string)
 
     def press_keycode(self, keycode):
         self._key_synth.press_keycode(keycode)
@@ -374,6 +411,9 @@ class TextChanger():
         self._key_synth.unlock_mod(mod)
 
     # Higher-level functions
+    def press_key_string(self, string):
+        self._key_synth.press_key_string(string)
+
     def press_keysyms(self, key_name, count=1):
         """
         Generate any number of full key-strokes for the given named key symbol.
@@ -383,50 +423,110 @@ class TextChanger():
             self.press_keysym(keysym)
             self.release_keysym(keysym)
 
-    def insert_string_at_caret(self, text, allow_insertion=True):
+    def insert_string_at_caret(self, text):
         """
         Insert text at the caret position.
         """
-        text_context = self.get_keyboard().text_context
-        if allow_insertion and text_context.can_insert_text():
-            text = text.replace("\\n", "\n")
-            text_context.insert_text_at_caret(text)
-        else:
-            self._key_synth.press_key_string(text)
+        self._key_synth.press_key_string(text)
 
     def delete_at_caret(self):
-        keyboard = self.get_keyboard()
-        text_context = keyboard.text_context
-        if text_context.can_insert_text():
-            text_context.delete_text_before_caret()
-        else:
-            with keyboard.suppress_modifiers():
-                self.press_keysyms("backspace")
+        with self.keyboard.suppress_modifiers():
+            self.press_keysyms("backspace")
+
+
+class TextChangerDirectInsert(TextChanger):
+    """
+    Insert and delete text by direct insertion/deletion.
+    - Direct insertion/deletion via AtspiTextContext
+    """
+
+    def __init__(self, keyboard, vk, tcks):
+        TextChanger.__init__(self, keyboard, vk)
+        self._text_changer_key_stroke = tcks
+
+    def cleanup(self):
+        TextChanger.cleanup(self)
+
+    def get_text_context(self):
+        return self.keyboard.text_context
+
+    # KeySynth interface
+    def press_keycode(self, keycode):
+        self._text_changer_key_stroke.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        self._text_changer_key_stroke.release_keycode(keycode)
+
+    def press_keysym(self, keysym):
+        self._text_changer_key_stroke.press_keysym(keysym)
+
+    def release_keysym(self, keysym):
+        self._text_changer_key_stroke.release_keysym(keysym)
+
+    def press_unicode(self, char):
+        self._text_changer_key_stroke.press_unicode(char)
+
+    def release_unicode(self, char):
+        self._text_changer_key_stroke.release_unicode(char)
+
+    def lock_mod(self, mod):
+        """ We still have to lock mods for pointer clicks with modifiers. """
+        self._text_changer_key_stroke.lock_mod(mod)
+
+    def unlock_mod(self, mod):
+        self._text_changer_key_stroke.unlock_mod(mod)
+
+    # Higher-level functions
+    def press_key_string(self, string):
+        pass
+
+    def press_keysyms(self, key_name, count=1):
+        """
+        Generate any number of full key-strokes for the given named key symbol.
+        """
+        keysym = get_keysym_from_name(key_name)
+        for i in range(count):
+            self.press_keysym(keysym)
+            self.release_keysym(keysym)
+
+    def insert_string_at_caret(self, text):
+        """
+        Insert text at the caret position.
+        """
+        text_context = self.get_text_context()
+        text = text.replace("\\n", "\n")
+        text_context.insert_text_at_caret(text)
+
+    def delete_at_caret(self):
+        text_context = self.get_text_context()
+        text_context.delete_text_before_caret(1)
 
 
 class Keyboard(WordSuggestions):
-    """ Cairo based keyboard widget """
+    """ Central keyboard model """
 
     color_scheme = None
 
     _layer_locked = False
     _last_alt_key = None
     _alt_locked   = False
-    _text_changer = None
     _click_sim    = None
 
-### Properties ###
+    # Properties
 
     # The number of pressed keys per modifier
-    _mods                 = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+    _mods = {1: 0, 2: 0, 4: 0, 8: 0,
+             16: 0, 32: 0, 64: 0, 128: 0}
 
-    # Same to keep track of modifier changes triggerd from the outside.
+    # Same to keep track of modifier changes triggered from the outside.
     # Doesn't include modifier changes caused by Onboard itself, so this is
     # not a complete representation of the modifier state.
-    _external_mod_changes = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+    _external_mod_changes = {1: 0, 2: 0, 4: 0, 8: 0,
+                             16: 0, 32: 0, 64: 0, 128: 0}
 
     def _get_mod(self, key):
         return self._mods[key]
+
     def _set_mod(self, key, value):
         self._mods[key] = value
         self.on_mods_changed()
@@ -437,11 +537,11 @@ class Keyboard(WordSuggestions):
 
     def get_mod_mask(self):
         """ Bit-mask of curently active modifers. """
-        return sum(mask for mask in (1<<bit for bit in range(8)) \
+        return sum(mask for mask in (1 << bit for bit in range(8))
                    if self.mods[mask])  # bit mask of current modifiers
 
     @contextmanager
-    def suppress_modifiers(self, modifiers = LABEL_MODIFIERS):
+    def suppress_modifiers(self, modifiers=LABEL_MODIFIERS):
         """ Turn modifiers off temporarily. May be nested. """
         self._push_and_clear_modifiers(modifiers)
         yield None
@@ -454,18 +554,19 @@ class Keyboard(WordSuggestions):
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = 0
-                self._text_changer.unlock_mod(mod)
+                self.get_text_changer().unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
         mods = self._suppress_modifiers_stack.pop()
         for mod, nkeys in mods.items():
             if nkeys:
                 self._mods[mod] = nkeys
-                self._text_changer.lock_mod(mod)
+                self.get_text_changer().lock_mod(mod)
 
     # currently active layer
     def _get_active_layer_index(self):
         return config.active_layer_index
+
     def _set_active_layer_index(self, index):
         config.active_layer_index = index
     active_layer_index = property(_get_active_layer_index,
@@ -479,6 +580,7 @@ class Keyboard(WordSuggestions):
         if index < 0 or index >= len(layers):
             index = 0
         return layers[index]
+
     def _set_active_layer(self, layer):
         index = 0
         for i, layer in enumerate(self.get_layers()):
@@ -507,7 +609,7 @@ class Keyboard(WordSuggestions):
         self._last_typing_time = 0
 
         self._temporary_modifiers = None
-        self._locked_temporary_modifiers = None
+        self._locked_temporary_modifiers = {}
         self._suppress_modifiers_stack = []
         self._capitalization_requested = False
 
@@ -528,7 +630,8 @@ class Keyboard(WordSuggestions):
         self._auto_hide = AutoHide(self)
         self._auto_hide.enable(config.is_auto_hide_enabled())
 
-        self._text_changer = None
+        self._text_changer_key_stroke = None
+        self._text_changer_direct_insert = None
 
         self._invalidated_ui = 0
 
@@ -596,9 +699,13 @@ class Keyboard(WordSuggestions):
             self._auto_hide.cleanup()
             self._auto_hide = None
 
-        if self._text_changer:
-            self._text_changer.cleanup()
-            self._text_changer = None
+        if self._text_changer_key_stroke:
+            self._text_changer_key_stroke.cleanup()
+            self._text_changer_key_stroke = None
+
+        if self._text_changer_direct_insert:
+            self._text_changer_direct_insert.cleanup()
+            self._text_changer_direct_insert = None
 
         if self._click_sim:
             self._click_sim.cleanup()
@@ -623,7 +730,7 @@ class Keyboard(WordSuggestions):
     def is_visible(self):
         for view in self._layout_views:
             visible = view.is_visible()
-            if not visible is None:
+            if visible is not None:
                 return visible
 
     def set_visible(self, visible):
@@ -635,7 +742,7 @@ class Keyboard(WordSuggestions):
         """ main method to show/hide onboard manually """
         self.set_visible(not self.is_visible())
 
-    def redraw(self, keys = None, invalidate = True):
+    def redraw(self, keys=None, invalidate=True):
         for view in self._layout_views:
             view.redraw(keys, invalidate)
 
@@ -643,7 +750,7 @@ class Keyboard(WordSuggestions):
         for view in self._layout_views:
             view.process_updates()
 
-    def redraw_labels(self, invalidate = True):
+    def redraw_labels(self, invalidate=True):
         for view in self._layout_views:
             view.redraw_labels(invalidate)
 
@@ -692,14 +799,14 @@ class Keyboard(WordSuggestions):
         self._click_sim = clicksim
         self._click_sim.state_notify_add(self._on_click_sim_state_notify)
 
-        _logger.info("using click simulator '{}'" \
+        _logger.info("using click simulator '{}'"
                      .format(type(self._click_sim).__name__))
 
     def _on_click_sim_state_notify(self, x):
         self.invalidate_context_ui()
         self.commit_ui_updates()
 
-    def show_touch_handles(self, show, auto_hide = True):
+    def show_touch_handles(self, show, auto_hide=True):
         for view in self._layout_views:
             view.show_touch_handles(show, auto_hide)
 
@@ -735,7 +842,20 @@ class Keyboard(WordSuggestions):
         self.commit_ui_updates()
 
     def set_virtkey(self, vk):
-        self._text_changer = TextChanger(self, vk)
+        self._init_text_changers(vk)
+
+    def _init_text_changers(self, vk):
+        self._text_changer_key_stroke = \
+            TextChangerKeyStroke(self, vk)
+        self._text_changer_direct_insert = \
+            TextChangerDirectInsert(self, vk, self._text_changer_key_stroke)
+
+    def get_text_changer(self):
+        text_context = self.text_context
+        if text_context.can_insert_text():
+            return self._text_changer_direct_insert
+        else:
+            return self._text_changer_key_stroke
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
@@ -822,7 +942,7 @@ class Keyboard(WordSuggestions):
         """ Is Onboard currently or was it just recently sending any text? """
         key = self.get_pressed_key()
         return key and self._is_text_insertion_key(key) or \
-               time.time() - self._last_typing_time <= 0.3
+               time.time() - self._last_typing_time <= 0.5
 
     def _is_text_insertion_key(self, key):
         """ Does key actually insert any characters (not a navigation key)? """
@@ -875,6 +995,13 @@ class Keyboard(WordSuggestions):
             # perform key action (not just dragging)?
             if action:
                 self._do_key_down_action(key, view, button, event_type)
+
+                # Make note that it was us who just sent text
+                # (vs. at-spi update due to scrolling, physical typing, ...).
+                # -> disables set_modifiers() for the case that virtkey
+                # just locked temporary modifiers.
+                if self._is_text_insertion_key(key):
+                    self.set_currently_typing()
 
             # remember as pressed key
             if key not in self._pressed_keys:
@@ -1072,7 +1199,7 @@ class Keyboard(WordSuggestions):
                 WordSuggestions.on_before_key_press(self, key)
                 self._maybe_send_alt_press_for_key(key, view,
                                                    button, event_type)
-                self._maybe_lock_temporary_modifiers(key)
+                self._maybe_lock_temporary_modifiers_for_key(key)
 
                 self.send_key_press(key, view, button, event_type)
 
@@ -1080,7 +1207,7 @@ class Keyboard(WordSuggestions):
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:
-            self._do_lock_modifier(modifier)
+            self._do_lock_modifiers(modifier)
 
             # Update word suggestions on shift press.
             self.invalidate_context_ui()
@@ -1104,7 +1231,7 @@ class Keyboard(WordSuggestions):
         # Alt+Ctrl+Up/Down (LP: #1532254).
         if modifier and \
            action != KeyCommon.DOUBLE_STROKE_ACTION: # not NumLock, CAPS
-            self._do_unlock_modifier(modifier)
+            self._do_unlock_modifiers(modifier)
 
             # Update word suggestions on shift unlatch or release.
             self.invalidate_context_ui()
@@ -1120,11 +1247,11 @@ class Keyboard(WordSuggestions):
                 WordSuggestions.on_before_key_press(self, key)
                 self._maybe_send_alt_press_for_key(key, view,
                                                    button, event_type)
-                self._maybe_lock_temporary_modifiers(key)
+                self._maybe_lock_temporary_modifiers_for_key(key)
 
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow  direct text insertion by AT-SPI for char keys
-                    self._text_changer.insert_string_at_caret(key.code)
+                    self.get_text_changer().insert_string_at_caret(key.code)
                 else:
                     self.send_key_press(key, view, button, event_type)
                     self.send_key_release(key, view, button, event_type)
@@ -1135,7 +1262,7 @@ class Keyboard(WordSuggestions):
         # else they are toggled right back on.
         if modifier and \
            action == KeyCommon.DOUBLE_STROKE_ACTION:
-            self._do_unlock_modifier(modifier)
+            self._do_unlock_modifiers(modifier)
 
             # Update word suggestions on shift unlatch or release.
             self.invalidate_context_ui()
@@ -1175,43 +1302,82 @@ class Keyboard(WordSuggestions):
                         Modifiers.SUPER, Modifiers.ALTGR):
             self._temporary_modifiers = mod_mask
 
-    def _maybe_lock_temporary_modifiers(self, key):
+    def _maybe_lock_temporary_modifiers_for_key(self, key):
         """ Lock modifier before a single key-press """
         modifier = self._temporary_modifiers
         if modifier and \
-           not self.mods[modifier] and \
            not key.modifier == modifier and \
            not key.is_button():
-            self._locked_temporary_modifiers = modifier
-            self._do_lock_modifier(modifier)
+            self.lock_temporary_modifiers(ModSource.KEYBOARD, modifier)
 
     def _maybe_unlock_temporary_modifiers(self):
         """ Unlock modifier after a single key-press """
+        self.unlock_all_temporary_modifiers()
+
+    def lock_temporary_modifiers(self, mod_source_id, mod_mask):
+        """ Lock temporary modifiers """
+        print("lock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
+        stack = self._locked_temporary_modifiers.setdefault(mod_source_id, [])
+        stack.append(mod_mask)
+        self._do_lock_modifiers(mod_mask)
+        print("lock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
+
+    def unlock_temporary_modifiers(self, mod_source_id):
+        """ Unlock temporary modifiers """
+        print("unlock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
+        stack = self._locked_temporary_modifiers.get(mod_source_id)
+        if stack:
+            mod_mask = stack.pop()
+            self._do_unlock_modifiers(mod_mask)
+        print("unlock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
+
+    def unlock_all_temporary_modifiers(self):
+        """ Unlock all temporary modifiers """
+        print("unlock_all_temporary_modifiers1", self._locked_temporary_modifiers)
         if self._locked_temporary_modifiers:
-            self._do_unlock_modifier(self._locked_temporary_modifiers)
-            self._locked_temporary_modifiers = None
+            mod_mask = 0
+            while self._locked_temporary_modifiers:
+                mod_source_id, stack = self._locked_temporary_modifiers.popitem()
+                for mm in stack:
+                    mod_mask |= mm
 
-    def _do_lock_modifier(self, modifier):
-        """ Lock modifier in response to modifier presses. """
-        # Increment this before lock_mod() to skip
-        # updating keys a second time in set_modifiers().
-        self.mods[modifier] += 1
+            self._do_unlock_modifiers(mod_mask)
+        print("unlock_all_temporary_modifiers2", self._locked_temporary_modifiers)
 
-        # Alt is special because it activates the window manager's move mode.
-        if modifier != Modifiers.ALT or \
-           not self._is_alt_special():  # not Alt?
-            self._text_changer.lock_mod(modifier)
+    def _do_lock_modifiers(self, mod_mask):
+        """ Lock modifiers and track their state. """
+        mods_to_lock = 0
+        for mod_bit in (1 << bit for bit in range(8)):
+            if mod_mask & mod_bit:
+                if not self.mods[mod_bit]:
+                    # Alt is special because it activates the
+                    # window manager's move mode.
+                    if mod_bit != Modifiers.ALT or \
+                    not self._is_alt_special():  # not Alt?
+                        mods_to_lock |= mod_bit
 
-    def _do_unlock_modifier(self, modifier):
+                self.mods[mod_bit] += 1
+
+        if mods_to_lock:
+            self.get_text_changer().lock_mod(mods_to_lock)
+
+    def _do_unlock_modifiers(self, mod_mask):
         """ Unlock modifier in response to modifier releases. """
-        # Decrement before unlock_mod() to skip updating
-        # keys a second time in set_modifiers().
-        self.mods[modifier] -= 1
+        mods_to_unlock = 0
+        for mod_bit in (1 << bit for bit in range(8)):
+            if mod_mask & mod_bit:
 
-        # Alt is special because it activates window manager's move mode.
-        if modifier != Modifiers.ALT or \
-            not self._is_alt_special(): # not Alt?
-            self._text_changer.unlock_mod(modifier)
+                self.mods[mod_bit] -= 1
+
+                if not self.mods[mod_bit]:
+                    # Alt is special because it activates the
+                    # window manager's move mode.
+                    if mod_bit != Modifiers.ALT or \
+                       not self._is_alt_special():  # not Alt?
+                        mods_to_unlock |= mod_bit
+
+        if mods_to_unlock:
+            self.get_text_changer().unlock_mod(mods_to_unlock)
 
     def _is_alt_special(self):
         """
@@ -1239,14 +1405,14 @@ class Keyboard(WordSuggestions):
             self._alt_locked = True
             if self._last_alt_key:
                 self.send_key_press(self._last_alt_key, view, button, event_type)
-            self._text_changer.lock_mod(8)
+            self.get_text_changer().lock_mod(8)
 
     def maybe_send_alt_release(self, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
                 self.send_key_release(self._last_alt_key, view, button, event_type)
-            self._text_changer.unlock_mod(8)
+            self.get_text_changer().unlock_mod(8)
 
     def send_key_press(self, key, view, button, event_type):
         """ Actually generate a fake key press """
@@ -1255,20 +1421,20 @@ class Keyboard(WordSuggestions):
 
         if key_type == KeyCommon.KEYCODE_TYPE:
             with KeySynth.no_delay():
-                self._text_changer.press_keycode(key.code)
+                self.get_text_changer().press_keycode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
             with KeySynth.no_delay():
-                self._text_changer.press_keysym(key.code)
+                self.get_text_changer().press_keysym(key.code)
 
         elif key_type == KeyCommon.CHAR_TYPE:
             if len(key.code) == 1:
                 with KeySynth.no_delay():
-                    self._text_changer.press_unicode(key.code)
+                    self.get_text_changer().press_unicode(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
             with KeySynth.no_delay():
-                self._text_changer.press_keysym(get_keysym_from_name(key.code))
+                self.get_text_changer().press_keysym(get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             activated = False
@@ -1296,18 +1462,18 @@ class Keyboard(WordSuggestions):
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
             if len(key.code) == 1:
-                self._text_changer.release_unicode(key.code)
+                self.get_text_changer().release_unicode(key.code)
             else:
-                self._text_changer.insert_string_at_caret(key.code)
+                self.get_text_changer().insert_string_at_caret(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self._text_changer.release_keysym(key.code)
+            self.get_text_changer().release_keysym(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self._text_changer.release_keysym(get_keysym_from_name(key.code))
+            self.get_text_changer().release_keysym(get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.KEYCODE_TYPE:
-            self._text_changer.release_keycode(key.code);
+            self.get_text_changer().release_keycode(key.code);
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             controller = self.button_controllers.get(key)
@@ -1339,7 +1505,7 @@ class Keyboard(WordSuggestions):
     def insert_snippet(self, snippet_id):
         mlabel, mString = config.snippets.get(snippet_id, (None, None))
         if mString:
-            self._text_changer.insert_string_at_caret(mString)
+            self.get_text_changer().insert_string_at_caret(mString)
             return True
         return False
 
@@ -1431,7 +1597,7 @@ class Keyboard(WordSuggestions):
                 self.redraw([key])
 
         self.mods[Modifiers.SHIFT] = 1
-        self._text_changer.lock_mod(1)
+        self.get_text_changer().lock_mod(1)
         self.redraw_labels(False)
 
     def maybe_switch_to_first_layer(self, key):
@@ -1470,6 +1636,7 @@ class Keyboard(WordSuggestions):
         Sync Onboard with modifiers of the given modifier mask.
         Used to sync changes of system modifier state with Onboard.
         """
+        print("set_modifiers", mod_mask, self._alt_locked, self._temporary_modifiers, self.is_typing())
         # The special handling of ALT in Onboard confuses the detection of
         # modifier presses from the outside.
         # Test case: press ALT, then LSHIFT

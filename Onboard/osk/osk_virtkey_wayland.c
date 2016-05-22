@@ -263,9 +263,13 @@ virtkey_wayland_get_layout_as_string (VirtkeyBase* base)
 }
 
 void
-virtkey_wayland_apply_state (VirtkeyBase* base,
-                             int group, unsigned int mod_mask,
-                             bool lock, bool press)
+virtkey_wayland_set_group (VirtkeyBase* base, int group, bool lock)
+{
+}
+
+void
+virtkey_wayland_set_modifiers (VirtkeyBase* base,
+                         unsigned int mod_mask, bool lock, bool press)
 {
 }
 
@@ -532,7 +536,8 @@ virtkey_wayland_new(void)
    this->get_keycode_from_keysym = virtkey_wayland_get_keycode_from_keysym;
    this->get_rules_names = virtkey_wayland_get_rules_names;
    this->get_layout_as_string = virtkey_wayland_get_layout_as_string;
-   this->apply_state = virtkey_wayland_apply_state;
+   this->set_group = virtkey_wayland_set_group;
+   this->set_modifiers = virtkey_wayland_set_modifiers;
    return this;
 }
 

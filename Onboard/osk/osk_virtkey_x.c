@@ -417,28 +417,31 @@ virtkey_x_get_layout_as_string (VirtkeyBase* base)
 }
 
 void
-virtkey_x_apply_state (VirtkeyBase* base,
-                       int group, unsigned int mod_mask,
-                       bool lock, bool press)
+virtkey_x_set_group (VirtkeyBase* base, int group, bool lock)
 {
     VirtkeyX* this = (VirtkeyX*) base;
 
-    // apply group change
-    if (group >= 0)
-    {
-        if (lock)
-            XkbLockGroup (this->xdisplay, XkbUseCoreKbd, group);
-        else
-            XkbLatchGroup (this->xdisplay, XkbUseCoreKbd, group);
-    }
+    if (lock)
+        XkbLockGroup (this->xdisplay, XkbUseCoreKbd, group);
+    else
+        XkbLatchGroup (this->xdisplay, XkbUseCoreKbd, group);
+
+    XSync (this->xdisplay, False);
+}
+
+void
+virtkey_x_set_modifiers (VirtkeyBase* base,
+                         unsigned int mod_mask, bool lock, bool press)
+{
+    VirtkeyX* this = (VirtkeyX*) base;
 
     // apply modifier change
     if (lock)
         XkbLockModifiers (this->xdisplay, XkbUseCoreKbd,
-                          mod_mask, press ? mod_mask : 0);
+                        mod_mask, press ? mod_mask : 0);
     else
         XkbLatchModifiers (this->xdisplay, XkbUseCoreKbd,
-                           mod_mask, press ? mod_mask : 0);
+                        mod_mask, press ? mod_mask : 0);
 
     XSync (this->xdisplay, False);
 }
@@ -592,7 +595,8 @@ virtkey_x_new(void)
    this->get_keycode_from_keysym = virtkey_x_get_keycode_from_keysym;
    this->get_rules_names = virtkey_x_get_rules_names;
    this->get_layout_as_string = virtkey_x_get_layout_as_string;
-   this->apply_state = virtkey_x_apply_state;
+   this->set_group = virtkey_x_set_group;
+   this->set_modifiers = virtkey_x_set_modifiers;
    return this;
 }
 

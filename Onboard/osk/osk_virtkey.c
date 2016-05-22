@@ -39,10 +39,7 @@ typedef enum
 enum {
     VK_SEND_KEYCODE_PRESS,
     VK_SEND_KEYCODE_RELEASE,
-    VK_SEND_KEYSYM_PRESS,
-    VK_SEND_KEYSYM_RELEASE,
-    VK_SEND_UNICODE_PRESS,
-    VK_SEND_UNICODE_RELEASE,
+    VK_SEND_GROUP_LOCK,
     VK_SEND_MOD_LATCH,
     VK_SEND_MOD_UNLATCH,
     VK_SEND_MOD_LOCK,
@@ -1111,8 +1108,7 @@ virtkey_get_label_from_keysym (int keysym)
 }
 
 static void
-apply_state(OskVirtkey* self, int group, unsigned int mod_mask, 
-            bool lock, bool press)
+set_group(OskVirtkey* self, int group)
 {
     VirtkeyBase* this = ((OskVirtkey *) self)->vk;
     switch (self->backend)
@@ -1120,19 +1116,35 @@ apply_state(OskVirtkey* self, int group, unsigned int mod_mask,
         case VIRTKEY_BACKEND_XTEST:
             if (self->xdisplay)
             {
-                if (mod_mask)
-                {
-                    virtkey_x_apply_state(this, group, mod_mask, lock, press);
-                }
+                virtkey_x_set_group(this, group, true);
             }
             break;
 
         case VIRTKEY_BACKEND_UINPUT:
-            if (mod_mask)
-            {
-                this->apply_state(this, group, mod_mask, lock, press);
-            }
+            this->set_group(this, group, true);
 
+        default:
+            break;
+    }
+}
+
+static void
+set_modifiers(OskVirtkey* self, unsigned int mod_mask, 
+              bool lock, bool press)
+{
+    VirtkeyBase* this = ((OskVirtkey *) self)->vk;
+    switch (self->backend)
+    {
+        case VIRTKEY_BACKEND_XTEST:
+            if (self->xdisplay)
+            {
+                virtkey_x_set_modifiers(this, mod_mask, lock, press);
+            }
+            break;
+
+        case VIRTKEY_BACKEND_UINPUT:
+            this->set_modifiers(this, mod_mask, lock, press);
+ 
         default:
             break;
     }
@@ -1141,26 +1153,23 @@ apply_state(OskVirtkey* self, int group, unsigned int mod_mask,
 static void
 send_key_event(OskVirtkey* self, int keycode, bool press)
 {
-    if (keycode)
+    switch (self->backend)
     {
-        switch (self->backend)
-        {
-            case VIRTKEY_BACKEND_XTEST:
-                if (self->xdisplay)
-                {
-                    XTestFakeKeyEvent (self->xdisplay,
-                                    keycode, press, CurrentTime);
-                    XSync (self->xdisplay, False);
-                }
-                break;
+        case VIRTKEY_BACKEND_XTEST:
+            if (self->xdisplay)
+            {
+                XTestFakeKeyEvent (self->xdisplay,
+                                keycode, press, CurrentTime);
+                XSync (self->xdisplay, False);
+            }
+            break;
 
-            case VIRTKEY_BACKEND_UINPUT:
-                uinput_send_key_event(keycode, press);
-                break;
+        case VIRTKEY_BACKEND_UINPUT:
+            uinput_send_key_event(keycode, press);
+            break;
 
-            default:
-                break;
-        }
+        default:
+            break;
     }
 }
 
@@ -1168,74 +1177,30 @@ static PyObject *
 vk_send (PyObject *_self, PyObject *args, int mode)
 {
     OskVirtkey *self = (OskVirtkey *) _self;
-    VirtkeyBase* this = ((OskVirtkey *) self)->vk;
     unsigned int        input;
     unsigned int        keycode = 0;
-    unsigned long       keysym = 0;
     bool                press = false;
     bool                lock = false;
 
     int                 group = -1;
     unsigned int        mod_mask = 0;
 
-    static int          tmp_group = -1;
-    static unsigned int tmp_mod_mask = 0;
-    static int          saved_group = -1;
-
     if (!PyArg_ParseTuple (args, "i", &input))
         return NULL;
 
     switch (mode) {
         case VK_SEND_KEYCODE_PRESS:
-        case VK_SEND_KEYSYM_PRESS:
-        case VK_SEND_UNICODE_PRESS:
             press = true;
-            lock = true;   // lock state for key-repeats
-            if (mode == VK_SEND_KEYCODE_PRESS)
-            {
-                keycode = input;
-            }
-            else
-            {
-                keysym = (mode == VK_SEND_UNICODE_PRESS) ?
-                         ucs2keysym (input) : input;
-                keycode = this->get_keycode_from_keysym (this, keysym,
-                                                        &group, &mod_mask);
-            }
-
-            tmp_group = group;
-            if (tmp_group >= 0)
-                saved_group = this->get_current_group(this);
-
-            tmp_mod_mask = mod_mask;
-
+            keycode = input;
             break;
 
         case VK_SEND_KEYCODE_RELEASE:
-        case VK_SEND_KEYSYM_RELEASE:
-        case VK_SEND_UNICODE_RELEASE:
-            if (mode == VK_SEND_KEYCODE_RELEASE)
-            {
-                keycode = input;
-            }
-            else
-            {
-                keysym = (mode == VK_SEND_UNICODE_PRESS) ?
-                        ucs2keysym (input) : input;
-                keycode = this->get_keycode_from_keysym (this, keysym,
-                                                         NULL, NULL);
-            }
+            keycode = input;
+            break;
+
+        case VK_SEND_GROUP_LOCK:
             lock = true;
-            if (tmp_group)
-            {
-                group = saved_group;
-                tmp_group = -1;
-            }
-            if (tmp_mod_mask)
-            {
-                mod_mask = tmp_mod_mask;
-                tmp_mod_mask = 0;
-            }
+            group = input;
             break;
 
         case VK_SEND_MOD_LATCH:
@@ -1257,21 +1222,17 @@ vk_send (PyObject *_self, PyObject *args, int mode)
             lock = true;
             mod_mask = input;
             break;
+
     }
 
-    printf("vk_send mode %d input %d keysym %d keycode %d group %d mod_mask %d press %d\n", mode, input, ucs2keysym(input), keycode, group, mod_mask, press);
+    printf("vk_send mode %d input %d keycode %d group %d mod_mask %d press %d\n", mode, input, keycode, group, mod_mask, press);
 
-
-    if (press)
-    {
-        apply_state(self, group, mod_mask, lock, press);
+    if (group >= 0)
+        set_group(self, group);
+    if (mod_mask)
+        set_modifiers(self, mod_mask, lock, press);
+    if (keycode)
         send_key_event(self, keycode, press);
-    }
-    else
-    {
-        send_key_event(self, keycode, press);
-        apply_state(self, group, mod_mask, lock, press);
-    }
 
     Py_RETURN_NONE;
 }
@@ -1289,27 +1250,9 @@ osk_virtkey_release_keycode (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-osk_virtkey_press_keysym (PyObject *self, PyObject *args)
+osk_virtkey_lock_group (PyObject *self, PyObject *args)
 {
-    return vk_send (self, args, VK_SEND_KEYSYM_PRESS);
-}
-
-static PyObject *
-osk_virtkey_release_keysym (PyObject *self, PyObject *args)
-{
-    return vk_send (self, args, VK_SEND_KEYSYM_RELEASE);
-}
-
-static PyObject *
-osk_virtkey_press_unicode (PyObject *self, PyObject *args)
-{
-    return vk_send (self, args, VK_SEND_UNICODE_PRESS);
-}
-
-static PyObject *
-osk_virtkey_release_unicode (PyObject *self, PyObject *args)
-{
-    return vk_send (self, args, VK_SEND_UNICODE_RELEASE);
+    return vk_send (self, args, VK_SEND_GROUP_LOCK);
 }
 
 static PyObject *
@@ -1462,6 +1405,61 @@ osk_virtkey_keysyms_from_keycode (PyObject *self, PyObject *args)
     return ret;
 }
 
+/*
+ * Translate keysym to keycode. All groups and levels are searched. If the
+ * keysym wasn't found it is added to the current group.
+ *
+ * return value: (keycode, group, mod_mask)
+ *               group = -1 if keysym was found in the current group
+ *               mod_mask = 0 if no level change is needed
+ */
+static PyObject *
+osk_virtkey_keycode_from_keysym (PyObject *self, PyObject *args)
+{
+    VirtkeyBase* this = ((OskVirtkey *) self)->vk;
+    PyObject *ret;
+    long keysym;
+    int keycode;
+    int group;
+    unsigned int mod_mask;
+
+    if (!PyArg_ParseTuple (args, "l", &keysym))
+        return NULL;
+
+    group = this->get_current_group (this);
+    if (group < 0)
+    {
+        PyErr_SetString (PyExc_ValueError,
+                         "failed to get current keyboard layout group");
+        return NULL;
+    }
+
+    keycode = this->get_keycode_from_keysym (this, keysym, &group, &mod_mask);
+
+    ret = PyTuple_New (3);
+    PyTuple_SET_ITEM (ret, 0, PyLong_FromLong (keycode));
+    PyTuple_SET_ITEM (ret, 1, PyLong_FromLong (group));
+    PyTuple_SET_ITEM (ret, 2, PyLong_FromLong (mod_mask));
+
+    return ret;
+}
+
+/*
+ * Translate unicode character to keysym.
+ * return value: keysym
+ */
+static PyObject *
+osk_virtkey_keysym_from_unicode (PyObject *self, PyObject *args)
+{
+    long keysym;
+    Py_UNICODE* ucs;
+
+    if (!PyArg_ParseTuple (args, "u", &ucs))
+        return NULL;
+
+    keysym = ucs2keysym(*ucs);
+    return PyLong_FromLong (keysym);
+}
 
 static PyObject *
 osk_virtkey_get_current_group_name (PyObject *self, PyObject *noargs)
@@ -1611,21 +1609,21 @@ osk_virtkey_select_backend (PyObject *_self, PyObject *args)
 static PyMethodDef osk_virtkey_methods[] = {
     { "select_backend",  osk_virtkey_select_backend,  METH_VARARGS, NULL },
 
-    { "press_unicode",   osk_virtkey_press_unicode,   METH_VARARGS, NULL },
-    { "release_unicode", osk_virtkey_release_unicode, METH_VARARGS, NULL },
-    { "press_keysym",    osk_virtkey_press_keysym,    METH_VARARGS, NULL },
-    { "release_keysym",  osk_virtkey_release_keysym,  METH_VARARGS, NULL },
     { "press_keycode",   osk_virtkey_press_keycode,   METH_VARARGS, NULL },
     { "release_keycode", osk_virtkey_release_keycode, METH_VARARGS, NULL },
+    { "lock_group",      osk_virtkey_lock_group,      METH_VARARGS, NULL },
     { "latch_mod",       osk_virtkey_latch_mod,       METH_VARARGS, NULL },
     { "lock_mod",        osk_virtkey_lock_mod,        METH_VARARGS, NULL },
     { "unlatch_mod",     osk_virtkey_unlatch_mod,     METH_VARARGS, NULL },
     { "unlock_mod",      osk_virtkey_unlock_mod,      METH_VARARGS, NULL },
+
     { "reload",          osk_virtkey_reload,          METH_VARARGS, NULL },
 
     { "labels_from_keycode",  osk_virtkey_labels_from_keycode,  METH_VARARGS, NULL },
     { "keysyms_from_keycode", osk_virtkey_keysyms_from_keycode, METH_VARARGS, NULL },
- 
+    { "keysym_from_unicode",  osk_virtkey_keysym_from_unicode, METH_VARARGS, NULL },
+    { "keycode_from_keysym",  osk_virtkey_keycode_from_keysym, METH_VARARGS, NULL },
+
     { "get_current_group",      osk_virtkey_get_current_group,      METH_NOARGS, NULL },
     { "get_current_group_name", osk_virtkey_get_current_group_name, METH_NOARGS, NULL },
     { "get_rules_names",        osk_virtkey_get_rules_names,        METH_NOARGS, NULL },
