@@ -438,7 +438,7 @@ class TextChangerDirectInsert(TextChanger):
 
     def __init__(self, keyboard, vk, tcks):
         TextChanger.__init__(self, keyboard, vk)
-        self._text_changer_key_stroke = tcks
+        self.text_changer_key_stroke = tcks
 
     def cleanup(self):
         TextChanger.cleanup(self)
@@ -448,29 +448,34 @@ class TextChangerDirectInsert(TextChanger):
 
     # KeySynth interface
     def press_keycode(self, keycode):
-        self._text_changer_key_stroke.press_keycode(keycode)
+        """ Use key-strokes because of dead keys, hot keys and editing keys. """
+        self.text_changer_key_stroke.press_keycode(keycode)
 
     def release_keycode(self, keycode):
-        self._text_changer_key_stroke.release_keycode(keycode)
+        self.text_changer_key_stroke.release_keycode(keycode)
 
     def press_keysym(self, keysym):
-        self._text_changer_key_stroke.press_keysym(keysym)
+        """ Use key-strokes because of dead keys, hot keys and editing keys. """
+        self.text_changer_key_stroke.press_keysym(keysym)
 
     def release_keysym(self, keysym):
-        self._text_changer_key_stroke.release_keysym(keysym)
+        self.text_changer_key_stroke.release_keysym(keysym)
 
     def press_unicode(self, char):
-        self._text_changer_key_stroke.press_unicode(char)
+        self.get_text_context().insert_text_at_caret(char)
 
     def release_unicode(self, char):
-        self._text_changer_key_stroke.release_unicode(char)
+        pass
 
     def lock_mod(self, mod):
-        """ We still have to lock mods for pointer clicks with modifiers. """
-        self._text_changer_key_stroke.lock_mod(mod)
+        """
+        We still have to lock mods for pointer clicks with modifiers
+        and hot-keys.
+        """
+        self.text_changer_key_stroke.lock_mod(mod)
 
     def unlock_mod(self, mod):
-        self._text_changer_key_stroke.unlock_mod(mod)
+        self.text_changer_key_stroke.unlock_mod(mod)
 
     # Higher-level functions
     def press_key_string(self, string):
@@ -626,7 +631,7 @@ class Keyboard(WordSuggestions):
         self._auto_hide = AutoHide(self)
         self._auto_hide.enable(config.is_auto_hide_enabled())
 
-        self._text_changer_key_stroke = None
+        self.text_changer_key_stroke = None
         self._text_changer_direct_insert = None
 
         self._invalidated_ui = 0
@@ -695,9 +700,9 @@ class Keyboard(WordSuggestions):
             self._auto_hide.cleanup()
             self._auto_hide = None
 
-        if self._text_changer_key_stroke:
-            self._text_changer_key_stroke.cleanup()
-            self._text_changer_key_stroke = None
+        if self.text_changer_key_stroke:
+            self.text_changer_key_stroke.cleanup()
+            self.text_changer_key_stroke = None
 
         if self._text_changer_direct_insert:
             self._text_changer_direct_insert.cleanup()
@@ -841,17 +846,17 @@ class Keyboard(WordSuggestions):
         self._init_text_changers(vk)
 
     def _init_text_changers(self, vk):
-        self._text_changer_key_stroke = \
+        self.text_changer_key_stroke = \
             TextChangerKeyStroke(self, vk)
         self._text_changer_direct_insert = \
-            TextChangerDirectInsert(self, vk, self._text_changer_key_stroke)
+            TextChangerDirectInsert(self, vk, self.text_changer_key_stroke)
 
     def get_text_changer(self):
         text_context = self.text_context
         if text_context.can_insert_text():
             return self._text_changer_direct_insert
         else:
-            return self._text_changer_key_stroke
+            return self.text_changer_key_stroke
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """

@@ -960,19 +960,20 @@ class WordSuggestions:
 
             # delete the old word
             if offset >= 0:
-                self.get_text_changer().press_keysyms("left", offset)
-                self.get_text_changer().press_keysyms("backspace", length)
+                self.text_changer_key_stroke.press_keysyms("left", offset)
+                self.text_changer_key_stroke.press_keysyms("backspace", length)
             else:
-                self.get_text_changer().press_keysyms("delete", abs(offset))
-                self.get_text_changer().press_keysyms("backspace",
-                                                 length - abs(offset))
+                self.text_changer_key_stroke.press_keysyms(
+                    "delete", abs(offset))
+                self.text_changer_key_stroke.press_keysyms(
+                    "backspace", length - abs(offset))
 
             # insert the new word
-            self.get_text_changer().press_key_string(new_text)
+            self.text_changer_key_stroke.press_key_string(new_text)
 
             # move caret back
             if offset >= 0:
-                self.get_text_changer().press_keysyms("right", offset)
+                self.text_changer_key_stroke.press_keysyms("right", offset)
 
     def on_text_entry_deactivated(self):
         """ The current accessible lost focus. """
@@ -1903,7 +1904,7 @@ class PunctuatorImmediateSeparators(Punctuator):
             self._separator_removed = False
             # No direct insertion here. Space must always arrive
             # last, i.e. after the released key was generated.
-            self._wp.get_text_changer().press_keysyms("space")
+            self._wp.text_changer_key_stroke.press_keysyms("space")
 
 
 class PunctuatorDelayedSeparators(Punctuator):
@@ -2567,7 +2568,8 @@ class WordListPanel(LayoutPanel):
             w = 0
             for i, c in enumerate(text, start=0):
                 ellipsized_text = text[:i] + "..."
-                wt = WordListPanel._get_text_size(pango_layout, ellipsized_text)
+                wt = WordListPanel._get_text_size(pango_layout,
+                                                  ellipsized_text)
                 if wt > max_width:
                     break
                 w = wt
