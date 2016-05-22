@@ -40,20 +40,18 @@ try:
 except ImportError as e:
     _logger.warning("Atspi typelib missing, at-spi key-synth unavailable")
 
-from Onboard.KeyGtk                import *
 from Onboard                       import KeyCommon
 from Onboard.KeyCommon             import StickyBehavior
 from Onboard.KeyboardPopups        import TouchFeedback
 from Onboard.Sound                 import Sound
-from Onboard.ClickSimulator        import ClickSimulator, \
-                                          CSButtonMapper, CSFloatingSlave
+from Onboard.ClickSimulator        import (ClickSimulator,
+                                           CSButtonMapper, CSFloatingSlave)
 from Onboard.Scanner               import Scanner
 from Onboard.Timer                 import Timer, ProgressiveDelayTimer
-from Onboard.utils                 import Modifiers, LABEL_MODIFIERS, \
-                                          parse_key_combination, \
-                                          unicode_str
-from Onboard.definitions           import Handle, UIMask, KeySynthEnum, \
-                                          UINPUT_DEVICE_NAME
+from Onboard.utils                 import (Modifiers, LABEL_MODIFIERS,
+                                           parse_key_combination)
+from Onboard.definitions           import (Handle, UIMask, KeySynthEnum,
+                                           UINPUT_DEVICE_NAME)
 from Onboard.AutoShow              import AutoShow
 from Onboard.AutoHide              import AutoHide
 from Onboard.WordSuggestions       import WordSuggestions
@@ -66,10 +64,8 @@ try:
 except DeprecationWarning:
     pass
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class EventType:
@@ -167,7 +163,8 @@ class KeySynth(object):
         """
         delay = config.keyboard.inter_key_stroke_delay
         if delay:
-            if not KeySynth._suppress_keypress_delay: # not just single presses?
+            # not just single presses?
+            if not KeySynth._suppress_keypress_delay:
                 elapsed = time.time() - KeySynth._last_press_time
                 remaining = delay - elapsed
                 if remaining > 0.0:
@@ -280,18 +277,18 @@ class KeySynthAtspi(KeySynthVirtkey):
         super(KeySynthAtspi, self).__init__(keyboard, vk)
 
     def press_keycode(self, keycode):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
         self._delay_keypress()
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
 
     def release_keycode(self, keycode):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
 
     def press_key_string(self, string):
-        if not "Atspi" in globals():
+        if "Atspi" not in globals():
             return
         Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
 
@@ -314,7 +311,6 @@ class TextChangerKeyStroke(TextChanger):
     """
     Insert and delete text with key-strokes.
     - KeySynthVirtkey
-    - uinput
     - KeySynthAtspi (not used by default)
     """
 
@@ -862,15 +858,14 @@ class Keyboard(WordSuggestions):
         self.button_controllers = {}
 
         # connect button controllers to button keys
-        types = { type.id : type for type in \
-                   [BCMiddleClick, BCSingleClick, BCSecondaryClick,
-                    BCDoubleClick, BCDragClick, BCHoverClick,
-                    BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
-                    BCExpandCorrections, BCPreviousPredictions,
-                    BCNextPredictions, BCPauseLearning, BCLanguage,
-                    BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
-                   ]
-                }
+        types = {type.id : type for type in
+                 [BCMiddleClick, BCSingleClick, BCSecondaryClick,
+                  BCDoubleClick, BCDragClick, BCHoverClick,
+                  BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
+                  BCExpandCorrections, BCPreviousPredictions,
+                  BCNextPredictions, BCPauseLearning, BCLanguage,
+                  BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
+                  ]}
         for key in self.layout.iter_global_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
@@ -942,12 +937,11 @@ class Keyboard(WordSuggestions):
         """ Is Onboard currently or was it just recently sending any text? """
         key = self.get_pressed_key()
         return key and self._is_text_insertion_key(key) or \
-               time.time() - self._last_typing_time <= 0.5
+            time.time() - self._last_typing_time <= 0.5
 
     def _is_text_insertion_key(self, key):
         """ Does key actually insert any characters (not a navigation key)? """
-        return key and \
-               key.is_text_changing()
+        return key and key.is_text_changing()
 
     def key_down(self, key, view=None, sequence=None, action=True):
         """
@@ -1043,9 +1037,9 @@ class Keyboard(WordSuggestions):
                     self.maybe_switch_to_first_layer(key)
 
             # Is the key still nothing but pressed?
-            extend_pressed_state = extend_pressed_state and \
-                                   key.is_pressed_only() and \
-                                   action
+            extend_pressed_state = (extend_pressed_state and
+                                    key.is_pressed_only() and
+                                    action)
 
             # Draw key unpressed to remove the visual feedback.
             if extend_pressed_state and \
@@ -1214,11 +1208,11 @@ class Keyboard(WordSuggestions):
 
             key.activated = True  # modifiers set -> can't undo press anymore
 
-    def send_key_up(self, key, view = None, button = 1,
-                    event_type = EventType.CLICK):
+    def send_key_up(self, key, view=None, button=1,
+                    event_type=EventType.CLICK):
         if self.is_key_disabled(key):
             _logger.debug("send_key_up: "
-                          "rejecting blacklisted key action for '{}'" \
+                          "rejecting blacklisted key action for '{}'"
                           .format(key.id))
             return
 
@@ -1230,7 +1224,7 @@ class Keyboard(WordSuggestions):
         # plugin's viewport switcher window doesn't close after
         # Alt+Ctrl+Up/Down (LP: #1532254).
         if modifier and \
-           action != KeyCommon.DOUBLE_STROKE_ACTION: # not NumLock, CAPS
+           action != KeyCommon.DOUBLE_STROKE_ACTION:  # not NumLock, CAPS
             self._do_unlock_modifiers(modifier)
 
             # Update word suggestions on shift unlatch or release.
@@ -1280,7 +1274,7 @@ class Keyboard(WordSuggestions):
         # modifier change originated from.
         for mod, nkeys in self._mods.items():
             if nkeys < 0:
-                _logger.warning("Negative count {} for modifier {}, reset." \
+                _logger.warning("Negative count {} for modifier {}, reset."
                                 .format(self.mods[modifier], modifier))
                 self.mods[mod] = 0
 
@@ -1337,7 +1331,8 @@ class Keyboard(WordSuggestions):
         if self._locked_temporary_modifiers:
             mod_mask = 0
             while self._locked_temporary_modifiers:
-                mod_source_id, stack = self._locked_temporary_modifiers.popitem()
+                mod_source_id, stack = \
+                    self._locked_temporary_modifiers.popitem()
                 for mm in stack:
                     mod_mask |= mm
 
@@ -1353,7 +1348,7 @@ class Keyboard(WordSuggestions):
                     # Alt is special because it activates the
                     # window manager's move mode.
                     if mod_bit != Modifiers.ALT or \
-                    not self._is_alt_special():  # not Alt?
+                       not self._is_alt_special():  # not Alt?
                         mods_to_lock |= mod_bit
 
                 self.mods[mod_bit] += 1
@@ -1404,14 +1399,16 @@ class Keyboard(WordSuggestions):
            not self._alt_locked:
             self._alt_locked = True
             if self._last_alt_key:
-                self.send_key_press(self._last_alt_key, view, button, event_type)
+                self.send_key_press(self._last_alt_key, view,
+                                    button, event_type)
             self.get_text_changer().lock_mod(8)
 
     def maybe_send_alt_release(self, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
-                self.send_key_release(self._last_alt_key, view, button, event_type)
+                self.send_key_release(self._last_alt_key,
+                                      view, button, event_type)
             self.get_text_changer().unlock_mod(8)
 
     def send_key_press(self, key, view, button, event_type):
@@ -1434,7 +1431,8 @@ class Keyboard(WordSuggestions):
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
             with KeySynth.no_delay():
-                self.get_text_changer().press_keysym(get_keysym_from_name(key.code))
+                self.get_text_changer().press_keysym(
+                    get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             activated = False
@@ -1457,7 +1455,8 @@ class Keyboard(WordSuggestions):
 
         key.activated = activated
 
-    def send_key_release(self, key, view, button = 1, event_type = EventType.CLICK):
+    def send_key_release(self, key, view, button=1,
+                         event_type=EventType.CLICK):
         """ Actually generate a fake key release """
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
@@ -1470,10 +1469,11 @@ class Keyboard(WordSuggestions):
             self.get_text_changer().release_keysym(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self.get_text_changer().release_keysym(get_keysym_from_name(key.code))
+            self.get_text_changer().release_keysym(
+                get_keysym_from_name(key.code))
 
         elif key_type == KeyCommon.KEYCODE_TYPE:
-            self.get_text_changer().release_keycode(key.code);
+            self.get_text_changer().release_keycode(key.code)
 
         elif key_type == KeyCommon.BUTTON_TYPE:
             controller = self.button_controllers.get(key)
@@ -1610,8 +1610,8 @@ class Keyboard(WordSuggestions):
             unlatch = key.can_unlatch_layer()
             if unlatch is None:
                 # for backwards compatibility with Onboard <0.99
-                unlatch = not key.is_layer_button() and \
-                          not key.id in ["move", "showclick"]
+                unlatch = (not key.is_layer_button() and
+                           key.id not in ["move", "showclick"])
 
             if unlatch:
                 self.active_layer_index = 0
@@ -1708,7 +1708,8 @@ class Keyboard(WordSuggestions):
             # re-draw delayed?
             if active and \
                draw_delay > 0.0:
-                self._queue_pending_modifier_redraw(mod_bit, active, keys, draw_delay)
+                self._queue_pending_modifier_redraw(mod_bit, active,
+                                                    keys, draw_delay)
             else:
                 self._redraw_modifier_keys(keys)
 
@@ -1760,10 +1761,10 @@ class Keyboard(WordSuggestions):
             if locked:
                 if key in self._latched_sticky_keys:
                     self._latched_sticky_keys.remove(key)
-                if not key in self._locked_sticky_keys:
+                if key not in self._locked_sticky_keys:
                     self._locked_sticky_keys.append(key)
             else:
-                if not key in self._latched_sticky_keys:
+                if key not in self._latched_sticky_keys:
                     self._latched_sticky_keys.append(key)
                 if key in self._locked_sticky_keys:
                     self._locked_sticky_keys.remove(key)
@@ -1773,16 +1774,16 @@ class Keyboard(WordSuggestions):
             if key in self._locked_sticky_keys:
                 self._locked_sticky_keys.remove(key)
 
-            deactivated = was_active or \
-                          not self.can_activate_key(key) # push-button
+            deactivated = (was_active or
+                           not self.can_activate_key(key))  # push-button
 
         return deactivated
 
     def can_activate_key(self, key):
         """ Can key be latched or locked? """
         behavior = self._get_sticky_key_behavior(key)
-        return StickyBehavior.can_latch(behavior) or \
-               StickyBehavior.can_lock(behavior)
+        return (StickyBehavior.can_latch(behavior) or
+                StickyBehavior.can_lock(behavior))
 
     def step_sticky_key_state(self, key, active, locked, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
@@ -1810,8 +1811,8 @@ class Keyboard(WordSuggestions):
                     locked = True
 
             # latched -> locked
-            elif not key.locked and \
-                 StickyBehavior.can_lock_on_single_click(behavior):
+            elif (not key.locked and
+                  StickyBehavior.can_lock_on_single_click(behavior)):
                 locked = True
 
             # latched or locked -> off
@@ -1828,8 +1829,8 @@ class Keyboard(WordSuggestions):
 
         # default to the layout's behavior
         # CAPS was hard-coded here to LOCK_ONLY until v0.98.
-        if behavior is None and \
-           not key.sticky_behavior is None:
+        if (behavior is None and
+            key.sticky_behavior is not None):
             behavior = key.sticky_behavior
 
         # try the key group
@@ -1856,7 +1857,7 @@ class Keyboard(WordSuggestions):
             try:
                 behavior = StickyBehavior.from_string(value)
             except KeyError:
-                _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
+                _logger.warning("Invalid sticky behavior '{}' for group '{}'"
                                 .format(value, group))
         return behavior
 
@@ -1867,7 +1868,8 @@ class Keyboard(WordSuggestions):
         """ Check for blacklisted key combinations """
         if self._disabled_keys is None:
             self._disabled_keys = self.create_disabled_keys_set()
-            _logger.debug("disabled keys: {}".format(repr(self._disabled_keys)))
+            _logger.debug("disabled keys: {}"
+                          .format(repr(self._disabled_keys)))
 
         set_key = (key.id, self.get_mod_mask())
         return set_key in self._disabled_keys
@@ -1881,11 +1883,11 @@ class Keyboard(WordSuggestions):
         available_key_ids = [key.id for key in self.layout.iter_keys()]
         for combo in config.lockdown.disable_keys:
             results = parse_key_combination(combo, available_key_ids)
-            if not results is None:
+            if results is not None:
                 disabled_keys.update(results)
             else:
-                _logger.warning("ignoring unrecognized key combination '{}' in "
-                                "lockdown.disable-keys" \
+                _logger.warning("ignoring unrecognized key combination '{}' "
+                                "in lockdown.disable-keys"
                                 .format(key_str))
         return disabled_keys
 
@@ -1921,13 +1923,13 @@ class Keyboard(WordSuggestions):
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
 
-    def release_latched_sticky_keys(self, except_keys = None,
-                                    only_unpressed = False,
-                                    skip_externally_set_modifiers = True):
+    def release_latched_sticky_keys(self, except_keys=None,
+                                    only_unpressed=False,
+                                    skip_externally_set_modifiers=True):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
             for key in self._latched_sticky_keys[:]:
-                if not except_keys or not key in except_keys:
+                if not except_keys or key not in except_keys:
 
                     # Don't release still pressed modifiers, they may be
                     # part of a multi-touch key combination.
@@ -1961,7 +1963,7 @@ class Keyboard(WordSuggestions):
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)
 
-    def release_locked_sticky_keys(self, release_all = False):
+    def release_locked_sticky_keys(self, release_all=False):
         """ release locked sticky (modifier) keys """
         if len(self._locked_sticky_keys) > 0:
             for key in self._locked_sticky_keys[:]:
@@ -2014,9 +2016,9 @@ class Keyboard(WordSuggestions):
 
     def invalidate_context_ui(self):
         """ Update text-context dependent ui """
-        self._invalidated_ui |= UIMask.CONTROLLERS | \
-                                UIMask.SUGGESTIONS | \
-                                UIMask.LAYOUT
+        self._invalidated_ui |= (UIMask.CONTROLLERS |
+                                 UIMask.SUGGESTIONS |
+                                 UIMask.LAYOUT)
 
     def invalidate_layout(self):
         """
@@ -2101,17 +2103,17 @@ class Keyboard(WordSuggestions):
 
     def on_key_pressed(self, key, view, sequence, action):
         """ pressed state of a key instance was set """
-        if sequence: # Not a simulated key press, scanner?
+        if sequence:  # Not a simulated key press, scanner?
             feedback = self.can_give_keypress_feedback()
 
             # audio feedback
             if action and \
                config.keyboard.audio_feedback_enabled:
                 pt = sequence.root_point \
-                     if feedback else (-1, -1) # keep passwords privat
+                    if feedback else (-1, -1)  # keep passwords privat
                 pts = pt \
-                      if config.keyboard.audio_feedback_place_in_space \
-                      else (-1, -1)
+                    if config.keyboard.audio_feedback_place_in_space \
+                    else (-1, -1)
                 Sound().play(Sound.key_feedback, pt[0], pt[1], pts[0], pts[1])
 
             # key label popup
@@ -2161,7 +2163,7 @@ class Keyboard(WordSuggestions):
                 if key in self._locked_sticky_keys:
                     self._locked_sticky_keys.remove(key)
 
-    def release_pressed_keys(self, redraw = False):
+    def release_pressed_keys(self, redraw=False):
         """
         Release pressed keys on exit, or when recreating the main window.
         """
@@ -2181,8 +2183,8 @@ class Keyboard(WordSuggestions):
 
                 # Release still pressed enter key when onboard gets killed
                 # on enter key press.
-                _logger.warning("Releasing still pressed key '{}'" \
-                              .format(key.id))
+                _logger.warning("Releasing still pressed key '{}'"
+                                .format(key.id))
                 self.send_key_up(key)
                 key.pressed = False
 
@@ -2227,7 +2229,7 @@ class Keyboard(WordSuggestions):
     def is_auto_show_paused(self):
         return self._auto_show.is_paused()
 
-    def pause_auto_show(self, duration = None):
+    def pause_auto_show(self, duration=None):
         """
         Stop both, hiding and showing long term.
         """
@@ -2241,14 +2243,14 @@ class Keyboard(WordSuggestions):
         if config.is_auto_show_enabled():
             self._auto_show.resume()
 
-    def freeze_auto_show(self, thaw_time = None):
+    def freeze_auto_show(self, thaw_time=None):
         """
         Stop both, hiding and showing short term.
         """
         if config.is_auto_show_enabled():
             self._auto_show.freeze(thaw_time)
 
-    def thaw_auto_show(self, thaw_time = None):
+    def thaw_auto_show(self, thaw_time=None):
         """
         Reenable both, hiding and showing.
         """
@@ -2262,12 +2264,13 @@ class Keyboard(WordSuggestions):
         self._broadcast_to_views("stop_auto_positioning")
 
     def get_auto_show_repositioned_window_rect(self, view, home, limit_rects,
-                                           test_clearance, move_clearance,
-                                           horizontal = True, vertical = True):
+                                               test_clearance, move_clearance,
+                                               horizontal=True,
+                                               vertical=True):
         return self._auto_show.get_repositioned_window_rect(
-                                           view, home, limit_rects,
-                                           test_clearance, move_clearance,
-                                           horizontal, vertical)
+            view, home, limit_rects,
+            test_clearance, move_clearance,
+            horizontal, vertical)
 
     def is_visible(self):
         return self._broadcast_to_first_view("is_visible", default=False)
@@ -2288,7 +2291,7 @@ class Keyboard(WordSuggestions):
         self._raise_timer.start(0.1, self._on_raise_timer)
 
     def _on_raise_timer(self):
-        _logger.warning("raising window - current delay {}s" \
+        _logger.warning("raising window - current delay {}s"
                         .format(self._raise_timer._current_delay))
         self._broadcast_to_views("raise_to_top")
         self._touch_feedback.raise_all()
@@ -2371,7 +2374,7 @@ class ButtonController(object):
 
     def set_visible(self, visible):
         if self.key.visible != visible:
-            _logger.debug("ButtonController: {}.visible = {}" \
+            _logger.debug("ButtonController: {}.visible = {}"
                           .format(self.key, visible))
             layout = self.keyboard.layout
             layout.set_item_visible(self.key, visible)
@@ -2379,21 +2382,21 @@ class ButtonController(object):
 
     def set_sensitive(self, sensitive):
         if self.key.sensitive != sensitive:
-            _logger.debug("ButtonController: {}.sensitive = {}" \
+            _logger.debug("ButtonController: {}.sensitive = {}"
                           .format(self.key, sensitive))
             self.key.sensitive = sensitive
             self.keyboard.redraw([self.key])
 
-    def set_active(self, active = None):
-        if not active is None and self.key.active != active:
-            _logger.debug("ButtonController: {}.active = {}" \
+    def set_active(self, active=None):
+        if active is not None and self.key.active != active:
+            _logger.debug("ButtonController: {}.active = {}"
                           .format(self.key, active))
             self.key.active = active
             self.keyboard.redraw([self.key])
 
-    def set_locked(self, locked = None):
-        if not locked is None and self.key.locked != locked:
-            _logger.debug("ButtonController: {}.locked = {}" \
+    def set_locked(self, locked=None):
+        if locked is not None and self.key.locked != locked:
+            _logger.debug("ButtonController: {}.locked = {}"
                           .format(self.key, locked))
             self.key.active = locked
             self.key.locked = locked
@@ -2408,8 +2411,9 @@ class BCClick(ButtonController):
             return
         if self.is_active():
             # stop click mapping, reset to primary button and single click
-            cs.map_primary_click(view, ClickSimulator.PRIMARY_BUTTON,
-                                       ClickSimulator.CLICK_TYPE_SINGLE)
+            cs.map_primary_click(view,
+                                 ClickSimulator.PRIMARY_BUTTON,
+                                 ClickSimulator.CLICK_TYPE_SINGLE)
         else:
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
@@ -2432,29 +2436,34 @@ class BCClick(ButtonController):
 
     def is_active(self):
         cs = self.keyboard.get_click_simulator()
-        return cs and \
-               cs.get_click_button() == self.button and \
-               cs.get_click_type() == self.click_type
+        return (cs and
+                cs.get_click_button() == self.button and
+                cs.get_click_type() == self.click_type)
+
 
 class BCSingleClick(BCClick):
     id = "singleclick"
     button = ClickSimulator.PRIMARY_BUTTON
     click_type = ClickSimulator.CLICK_TYPE_SINGLE
 
+
 class BCMiddleClick(BCClick):
     id = "middleclick"
     button = ClickSimulator.MIDDLE_BUTTON
     click_type = ClickSimulator.CLICK_TYPE_SINGLE
+
 
 class BCSecondaryClick(BCClick):
     id = "secondaryclick"
     button = ClickSimulator.SECONDARY_BUTTON
     click_type = ClickSimulator.CLICK_TYPE_SINGLE
 
+
 class BCDoubleClick(BCClick):
     id = "doubleclick"
     button = ClickSimulator.PRIMARY_BUTTON
     click_type = ClickSimulator.CLICK_TYPE_DOUBLE
+
 
 class BCDragClick(BCClick):
     id = "dragclick"
@@ -2463,8 +2472,8 @@ class BCDragClick(BCClick):
 
     def release(self, view, button, event_type):
         BCClick.release(self, view, button, event_type)
-        self.keyboard.show_touch_handles(show = self._can_show_handles(),
-                                         auto_hide = False)
+        self.keyboard.show_touch_handles(show=self._can_show_handles(),
+                                         auto_hide=False)
 
     def update(self):
         active_before = self.key.active
@@ -2476,9 +2485,9 @@ class BCDragClick(BCClick):
             self.keyboard.show_touch_handles(self._can_show_handles())
 
     def _can_show_handles(self):
-        return self.is_active() and \
-               config.is_mousetweaks_active() and \
-               not config.xid_mode
+        return (self.is_active() and
+                config.is_mousetweaks_active() and
+                not config.xid_mode)
 
 
 class BCHoverClick(ButtonController):
@@ -2491,13 +2500,12 @@ class BCHoverClick(ButtonController):
     def update(self):
         available = bool(config.mousetweaks)
         active    = config.mousetweaks.is_active() \
-                    if available else False
+                    if available else False  # noqa: flake8
 
-        self.set_sensitive(available and \
+        self.set_sensitive(available and
                            not config.lockdown.disable_hover_click)
         # force locked color for better visibility
         self.set_locked(active)
-        #self.set_active(config.mousetweaks.is_active())
 
     def can_dwell(self):
         return not (config.mousetweaks and config.mousetweaks.is_active())
@@ -2515,7 +2523,7 @@ class BCHide(ButtonController):
 
     def update(self):
         # insensitive in XEmbed mode except in unity-greeter
-        self.set_sensitive(not config.xid_mode or \
+        self.set_sensitive(not config.xid_mode or
                            config.unity_greeter)
 
 
@@ -2524,7 +2532,8 @@ class BCShowClick(ButtonController):
     id = "showclick"
 
     def release(self, view, button, event_type):
-        config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
+        config.keyboard.show_click_buttons = \
+            not config.keyboard.show_click_buttons
 
         # enable hover click when the key was dwell-activated
         # disabled for now, seems too confusing
@@ -2541,7 +2550,7 @@ class BCShowClick(ButtonController):
 
         # Don't show active state. Toggling the click column
         # should be enough feedback.
-        #self.set_active(config.keyboard.show_click_buttons)
+        # self.set_active(config.keyboard.show_click_buttons)
 
         # show/hide click buttons
         show_click = config.keyboard.show_click_buttons and allowed
@@ -2580,8 +2589,8 @@ class BCMove(ButtonController):
                 self.keyboard.show_touch_handles(True)
 
     def update(self):
-        self.set_visible(not config.has_window_decoration() and \
-                         not config.xid_mode and \
+        self.set_visible(not config.has_window_decoration() and
+                         not config.xid_mode and
                          Handle.MOVE in config.window.window_handles)
 
     def is_activated_on_press(self):
@@ -2603,20 +2612,20 @@ class BCLayer(ButtonController):
         active_before = keyboard.active_layer_index == self.layer_index
         locked_before = active_before and keyboard._layer_locked
 
-        active, locked = keyboard.step_sticky_key_state(
-                                       self.key,
-                                       active_before, locked_before,
-                                       button, event_type)
+        active, locked = \
+            keyboard.step_sticky_key_state(self.key,
+                                           active_before, locked_before,
+                                           button, event_type)
 
         # push buttons switch layers even though they don't activate the key
         if not keyboard.can_activate_key(self.key):
             active = True
 
-        keyboard.active_layer_index = self.layer_index \
-                                      if active else 0
+        keyboard.active_layer_index = (self.layer_index
+                                       if active else 0)
 
-        keyboard._layer_locked       = locked \
-                                      if self.layer_index else False
+        keyboard._layer_locked       = (locked
+                                        if self.layer_index else False)
 
         if active_before != active:
             keyboard.invalidate_visible_layers()
@@ -2625,7 +2634,7 @@ class BCLayer(ButtonController):
     def update(self):
         # don't show active state for layer 0, it'd be visible all the time
         active = self.key.show_active and \
-                 self.key.get_layer_index() == self.keyboard.active_layer_index
+            self.key.get_layer_index() == self.keyboard.active_layer_index
         if active:
             active = self.keyboard.can_activate_key(self.key)
 
@@ -2641,8 +2650,8 @@ class BCPreferences(ButtonController):
         run_script("sokSettings")
 
     def update(self):
-        self.set_visible(not config.xid_mode and \
-                         not config.running_under_gdm and \
+        self.set_visible(not config.xid_mode and
+                         not config.running_under_gdm and
                          not config.lockdown.disable_preferences)
 
 
@@ -2719,8 +2728,8 @@ class BCPauseLearning(ButtonController):
         if locked:
             value += 1
 
-        pause_started = config.word_suggestions.get_pause_learning() == 0 and \
-                        value > 0
+        pause_started = (config.word_suggestions.get_pause_learning() == 0 and
+                         value > 0)
 
         config.word_suggestions.set_pause_learning(value)
 
@@ -2772,9 +2781,8 @@ class BCLanguage(ButtonController):
                 key.tooltip = langdb.get_language_full_name(lang_id)
                 keyboard.invalidate_ui()
 
-#---------------------------------------------------------
+
 # deprecated buttons
-#---------------------------------------------------------
 
 class BCInputline(ButtonController):
 
@@ -2829,6 +2837,4 @@ class BCStealthMode(ButtonController):
 
     def update(self):
         self.set_active(config.wp.stealth_mode)
-
-
 
