@@ -1486,6 +1486,29 @@ osk_virtkey_get_current_group_name (PyObject *self, PyObject *noargs)
     return result;
 }
 
+/*
+ * Return current key auto-repeat delay and rate.
+ *
+ * return value: (delay, interval)
+ */
+static PyObject *
+osk_virtkey_get_auto_repeat_rate (PyObject *self, PyObject *noargs)
+{
+    VirtkeyBase* this = ((OskVirtkey *) self)->vk;
+    PyObject *ret;
+    unsigned int delay;
+    unsigned int interval;
+
+    if (!this->get_auto_repeat_rate (this, &delay, &interval))
+        return NULL;
+
+    ret = PyTuple_New (2);
+    PyTuple_SET_ITEM (ret, 0, PyLong_FromLong (delay));
+    PyTuple_SET_ITEM (ret, 1, PyLong_FromLong (interval));
+
+    return ret;
+}
+
 /**
  * Reads the contents of the root window property _XKB_RULES_NAMES.
  */
@@ -1626,6 +1649,9 @@ static PyMethodDef osk_virtkey_methods[] = {
 
     { "get_current_group",      osk_virtkey_get_current_group,      METH_NOARGS, NULL },
     { "get_current_group_name", osk_virtkey_get_current_group_name, METH_NOARGS, NULL },
+
+    { "get_auto_repeat_rate", osk_virtkey_get_auto_repeat_rate, METH_NOARGS, NULL },
+
     { "get_rules_names",        osk_virtkey_get_rules_names,        METH_NOARGS, NULL },
     { "get_layout_as_string",   osk_virtkey_get_layout_as_string,   METH_NOARGS, NULL },
     { NULL, NULL, 0, NULL },

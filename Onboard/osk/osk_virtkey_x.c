@@ -93,6 +93,20 @@ virtkey_x_get_current_group_name (VirtkeyBase* base)
     return result;
 }
 
+static bool
+virtkey_x_get_auto_repeat_rate (VirtkeyBase *base, 
+                                unsigned int *delay, unsigned int *interval)
+{
+    VirtkeyX* this = (VirtkeyX*) base;
+
+    if (!XkbGetAutoRepeatRate (this->xdisplay, XkbUseCoreKbd, delay, interval))
+    {
+        PyErr_SetString (OSK_EXCEPTION, "XkbGetAutoRepeatRate failed");
+        return false;
+    }
+    return true;
+}
+
 /*
  * Return group for keycode with out-of-range action applied.
  * */
@@ -590,6 +604,7 @@ virtkey_x_new(void)
    this->reload = virtkey_x_reload;
    this->get_current_group = virtkey_x_get_current_group;
    this->get_current_group_name = virtkey_x_get_current_group_name;
+   this->get_auto_repeat_rate = virtkey_x_get_auto_repeat_rate;
    this->get_label_from_keycode = virtkey_x_get_label_from_keycode;
    this->get_keysym_from_keycode = virtkey_x_get_keysym_from_keycode;
    this->get_keycode_from_keysym = virtkey_x_get_keycode_from_keysym;

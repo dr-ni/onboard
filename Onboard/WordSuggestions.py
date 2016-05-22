@@ -985,6 +985,8 @@ class WordSuggestions:
 
         self.text_context.set_pending_separator(None)
 
+        self.text_changer_direct_insert.stop_auto_repeat()
+
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
         self._learn_strategy.on_text_entry_activated()

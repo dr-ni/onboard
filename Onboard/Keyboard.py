@@ -440,32 +440,73 @@ class TextChangerDirectInsert(TextChanger):
         TextChanger.__init__(self, keyboard, vk)
         self.text_changer_key_stroke = tcks
 
+        delay, interval = vk.get_auto_repeat_rate()
+        self._auto_repeat_delay = delay * 0.001
+        self._auto_repeat_interval = interval * 0.001
+
+        self._auto_repeat_delay_timer = Timer()
+        self._auto_repeat_timer = Timer()
+
+        _logger.debug("keyboard auto-repeat: delay {}, interval {}",
+                      self._auto_repeat_delay, self._auto_repeat_interval)
+
     def cleanup(self):
+        self.stop_auto_repeat()
         TextChanger.cleanup(self)
 
     def get_text_context(self):
         return self.keyboard.text_context
 
+    def _insert_unicode(self, char):
+        text_context = self.get_text_context()
+        if text_context:
+            text_context.insert_text_at_caret(char)
+
+    def _start_auto_repeat(self, char):
+        self._auto_repeat_delay_timer.start(self._auto_repeat_delay,
+                                            self._on_auto_repeat_delay_timer,
+                                            char)
+
+    def stop_auto_repeat(self):
+        self._auto_repeat_delay_timer.stop()
+        self._auto_repeat_timer.stop()
+
+    def _on_auto_repeat_delay_timer(self, char):
+        self._auto_repeat_timer.start(self._auto_repeat_interval,
+                                      self._on_auto_repeat_timer, char)
+        return False
+
+    def _on_auto_repeat_timer(self, char):
+        self._insert_unicode(char)
+        return True
+
     # KeySynth interface
     def press_keycode(self, keycode):
-        """ Use key-strokes because of dead keys, hot keys and editing keys. """
+        """
+        Use key-strokes because of dead keys, hot keys and editing keys.
+        """
+        self.stop_auto_repeat()
         self.text_changer_key_stroke.press_keycode(keycode)
 
     def release_keycode(self, keycode):
         self.text_changer_key_stroke.release_keycode(keycode)
 
     def press_keysym(self, keysym):
-        """ Use key-strokes because of dead keys, hot keys and editing keys. """
+        """
+        Use key-strokes because of dead keys, hot keys and editing keys.
+        """
+        self.stop_auto_repeat()
         self.text_changer_key_stroke.press_keysym(keysym)
 
     def release_keysym(self, keysym):
         self.text_changer_key_stroke.release_keysym(keysym)
 
     def press_unicode(self, char):
-        self.get_text_context().insert_text_at_caret(char)
+        self._insert_unicode(char)
+        self._start_auto_repeat(char)
 
     def release_unicode(self, char):
-        pass
+        self.stop_auto_repeat()
 
     def lock_mod(self, mod):
         """
@@ -485,10 +526,7 @@ class TextChangerDirectInsert(TextChanger):
         """
         Generate any number of full key-strokes for the given named key symbol.
         """
-        keysym = get_keysym_from_name(key_name)
-        for i in range(count):
-            self.press_keysym(keysym)
-            self.release_keysym(keysym)
+        self.text_changer_key_stroke.press_keysyms(key_name, count)
 
     def insert_string_at_caret(self, text):
         """
@@ -632,7 +670,7 @@ class Keyboard(WordSuggestions):
         self._auto_hide.enable(config.is_auto_hide_enabled())
 
         self.text_changer_key_stroke = None
-        self._text_changer_direct_insert = None
+        self.text_changer_direct_insert = None
 
         self._invalidated_ui = 0
 
@@ -704,9 +742,9 @@ class Keyboard(WordSuggestions):
             self.text_changer_key_stroke.cleanup()
             self.text_changer_key_stroke = None
 
-        if self._text_changer_direct_insert:
-            self._text_changer_direct_insert.cleanup()
-            self._text_changer_direct_insert = None
+        if self.text_changer_direct_insert:
+            self.text_changer_direct_insert.cleanup()
+            self.text_changer_direct_insert = None
 
         if self._click_sim:
             self._click_sim.cleanup()
@@ -848,13 +886,13 @@ class Keyboard(WordSuggestions):
     def _init_text_changers(self, vk):
         self.text_changer_key_stroke = \
             TextChangerKeyStroke(self, vk)
-        self._text_changer_direct_insert = \
+        self.text_changer_direct_insert = \
             TextChangerDirectInsert(self, vk, self.text_changer_key_stroke)
 
     def get_text_changer(self):
         text_context = self.text_context
         if text_context.can_insert_text():
-            return self._text_changer_direct_insert
+            return self.text_changer_direct_insert
         else:
             return self.text_changer_key_stroke
 

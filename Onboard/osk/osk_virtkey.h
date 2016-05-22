@@ -38,6 +38,8 @@ struct VirtkeyBase {
     int     (*reload)(VirtkeyBase* base);
     int     (*get_current_group)(VirtkeyBase* base);
     char*   (*get_current_group_name)(VirtkeyBase* base);
+    bool    (*get_auto_repeat_rate) (VirtkeyBase *base,
+                unsigned int *delay, unsigned int *interval);
     void    (*get_label_from_keycode)(VirtkeyBase* base,
                 int keycode, int modmask, int group,
                 char* label, int max_label_size);

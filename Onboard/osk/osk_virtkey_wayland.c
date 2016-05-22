@@ -130,6 +130,16 @@ virtkey_wayland_get_current_group_name (VirtkeyBase* base)
     return strdup(name);
 }
 
+static bool
+virtkey_wayland_get_auto_repeat_rate (VirtkeyBase *base,
+                                      unsigned int *delay, 
+                                      unsigned int *interval)
+{
+    *delay = 500;
+    *interval = 30;
+    return true;
+}
+
 static int
 virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
                                          int *group_inout,
@@ -531,6 +541,7 @@ virtkey_wayland_new(void)
    this->reload = virtkey_wayland_reload;
    this->get_current_group = virtkey_wayland_get_current_group;
    this->get_current_group_name = virtkey_wayland_get_current_group_name;
+   this->get_auto_repeat_rate = virtkey_wayland_get_auto_repeat_rate;
    this->get_label_from_keycode = virtkey_wayland_get_label_from_keycode;
    this->get_keysym_from_keycode = virtkey_wayland_get_keysym_from_keycode;
    this->get_keycode_from_keysym = virtkey_wayland_get_keycode_from_keysym;
