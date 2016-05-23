@@ -38,15 +38,10 @@ struct VirtkeyX {
     VirtkeyBase base;
 
     Display   *xdisplay;
-    KeySym    *keysyms;
     XkbDescPtr kbd;
-
-    KeyCode    modifier_table[N_MOD_INDICES];
-    int        n_keysyms_per_keycode;
-    int        shift_mod_index;
-    int        alt_mod_index;
-    int        meta_mod_index;
 };
+
+static int virtkey_x_reload (VirtkeyBase* base);
 
 static int
 virtkey_x_get_current_group (VirtkeyBase *base)
@@ -94,7 +89,7 @@ virtkey_x_get_current_group_name (VirtkeyBase* base)
 }
 
 static bool
-virtkey_x_get_auto_repeat_rate (VirtkeyBase *base, 
+virtkey_x_get_auto_repeat_rate (VirtkeyBase *base,
                                 unsigned int *delay, unsigned int *interval)
 {
     VirtkeyX* this = (VirtkeyX*) base;
@@ -118,7 +113,7 @@ get_effective_group(XkbDescPtr kbd, KeyCode keycode, int group)
 
     if (num_groups == 0)
     {
-        key_group = 0;
+        key_group = -1;
     }
     else if (num_groups == 1)
     {
@@ -163,48 +158,49 @@ keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
     for (keycode = kbd->min_key_code; keycode < kbd->max_key_code; keycode++)
     {
         key_group = get_effective_group(kbd, keycode, group);
-
-        num_levels = XkbKeyGroupWidth(kbd, keycode, key_group);
-        for (level = 0; level < num_levels; level++)
+        if (key_group >= 0)  // valid key, i.e. not unused?
         {
-            KeySym ks = XkbKeySymEntry(kbd, keycode, level, group);
-            if (ks == keysym)
+            num_levels = XkbKeyGroupWidth(kbd, keycode, key_group);
+            for (level = 0; level < num_levels; level++)
             {
-                int i;
-                XkbKeyTypePtr key_type = XkbKeyKeyType(kbd, keycode, group);
-                int map_count = key_type->map_count;
-
-                #ifdef DEBUG_OUTPUT
-                printf("kc %d level %d ks %ld key_type->num_levels %d, key_type->map_count %d, mods m %d r %d v %d\n",
-                        keycode, level, ks, key_type->num_levels, key_type->map_count, key_type->mods.mask, key_type->mods.real_mods, key_type->mods.vmods);
-                for (i = 0; i < map_count; i++)
+                KeySym ks = XkbKeySymEntry(kbd, keycode, level, group);
+                if (ks == keysym)
                 {
-                    XkbKTMapEntryPtr entry = key_type->map + i;
-                    printf("xxx i %d: level %d entry->level %d entry->modsmask %d \n",
-                            i, level, entry->level, entry->mods.mask);
-                }
-                #endif
-
-                if (level == 0)
-                {
-                    result = keycode;
-                    new_mask = 0;
-                }
-                else
-                {
+                    int i;
+                    XkbKeyTypePtr key_type = XkbKeyKeyType(kbd, keycode, group);
+                    int map_count = key_type->map_count;
+                    #ifdef DEBUG_OUTPUT
+                    printf("kc %d level %d ks %ld key_type->num_levels %d, key_type->map_count %d, mods m %d r %d v %d\n",
+                            keycode, level, ks, key_type->num_levels, key_type->map_count, key_type->mods.mask, key_type->mods.real_mods, key_type->mods.vmods);
                     for (i = 0; i < map_count; i++)
                     {
                         XkbKTMapEntryPtr entry = key_type->map + i;
-                        if (entry->level == level)
+                        printf("xxx i %d: level %d entry->level %d entry->modsmask %d \n",
+                                i, level, entry->level, entry->mods.mask);
+                    }
+                    #endif
+
+                    if (level == 0)
+                    {
+                        result = keycode;
+                        new_mask = 0;
+                    }
+                    else
+                    {
+                        for (i = 0; i < map_count; i++)
                         {
-                            result = keycode;
-                            new_mask = entry->mods.mask;
-                            break;
+                            XkbKTMapEntryPtr entry = key_type->map + i;
+                            if (entry->level == level)
+                            {
+                                result = keycode;
+                                new_mask = entry->mods.mask;
+                                break;
+                            }
                         }
                     }
-                }
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -218,12 +214,75 @@ keysym_to_keycode(XkbDescPtr kbd, KeySym keysym, int group, unsigned *mod_mask)
     return result;
 }
 
+static KeyCode
+map_keysym_xkb(VirtkeyBase* base, KeySym keysym, int group)
+{
+    VirtkeyX* this = (VirtkeyX*) base;
+    static int modified_key = 0;
+    KeyCode keycode;
+    Status status;
+
+    // Change one of the last 10 keysyms, remapping the keyboard map
+    // on the fly. This assumes the last 10 aren't already used.
+    const int n = 10;
+    keycode = this->kbd->max_key_code - modified_key - 1;
+    modified_key = (modified_key + 1) % n;
+
+    // Make sure symbols are correctly allocated.
+    // Consecutive keycodes that are unused share the same keysym offset!
+    {
+        int n_groups = 1;
+        int new_types[XkbNumKbdGroups] = {XkbOneLevelIndex};
+        XkbMapChangesRec changes;  // man XkbSetMap
+        memset(&changes, 0, sizeof(changes));
+
+        changes.changed = XkbKeySymsMask;
+        changes.first_key_sym = keycode;
+        changes.num_key_syms = 1;
+
+        status = XkbChangeTypesOfKey (this->kbd, keycode,
+                                      n_groups, XkbGroup1Mask,
+                                      new_types, &changes);
+        if (status != Success)
+        {
+            return 0;
+        }
+    }
+
+    // Patch in our new symbol
+    XkbKeySymEntry(this->kbd, keycode, 0, group) = keysym;
+
+    {
+        int ga = group;
+        unsigned int ma;
+        int kca;
+
+        for (int i=240; i<=this->kbd->max_key_code;i++)
+        {
+            KeySym* pks = &XkbKeySymEntry(this->kbd, i, 0, group);
+            printf("    %d pkeysym 0x%p keysym %ld num_groups %d\n", i, pks,
+                    XkbKeySymEntry(this->kbd, i, 0, group),
+                    XkbKeyNumGroups(this->kbd, i));
+        }
+
+
+        kca = keysym_to_keycode(this->kbd, keysym, ga, &ma);
+        printf("    Remapping keysym %ld to keycode %d found keycode %d, min_key_code %d max_key_code %d\n",
+                keysym, keycode, kca, this->kbd->min_key_code, this->kbd->max_key_code);
+    }
+
+    // Tell the server
+    XkbSetMap(this->xdisplay, XkbKeySymsMask, this->kbd);
+    XSync (this->xdisplay, False);
+
+    return keycode;
+}
+
 static int
 virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
                                    int *group_inout,
                                    unsigned int *mod_mask_out)
 {
-    static int modified_key = 0;
     KeyCode keycode;
     VirtkeyX* this = (VirtkeyX*) base;
     int group = *group_inout;
@@ -253,39 +312,7 @@ virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
 
     if (!keycode)
     {
-        int index;
-        /* Change one of the last 10 keysyms to our converted utf8,
-         * remapping the x keyboard on the fly. This make assumption
-         * the last 10 aren't already used.
-         */
-        modified_key = (modified_key + 1) % 10;
-
-        /* Point at the end of keysyms, modifier 0 */
-        index = (this->kbd->max_key_code - this->kbd->min_key_code - modified_key - 1) *
-                 this->n_keysyms_per_keycode;
-
-        this->keysyms[index] = keysym;
-
-        XChangeKeyboardMapping (this->xdisplay,
-                                this->kbd->min_key_code,
-                                this->n_keysyms_per_keycode,
-                                this->keysyms,
-                                this->kbd->max_key_code - this->kbd->min_key_code);
-        XSync (this->xdisplay, False);
-        /* From dasher src:
-         * There's no way whatsoever that this could ever possibly
-         * be guaranteed to work (ever), but it does.
-         *
-         * The below is lightly safer:
-         *
-         * keycode = XKeysymToKeycode(fk->xdisplay, keysym);
-         *
-         * but this appears to break in that the new mapping is not immediatly
-         * put to work. It would seem a MappingNotify event is needed so
-         * Xlib can do some changes internally? (xlib is doing something
-         * related to above?)
-         */
-        keycode = this->kbd->max_key_code - modified_key - 1;
+        keycode = map_keysym_xkb(base, keysym, group);
     }
 
     *group_inout = new_group;
@@ -461,28 +488,29 @@ virtkey_x_set_modifiers (VirtkeyBase* base,
 }
 
 static int
-virtkey_x_init_keyboard (VirtkeyX *self)
+virtkey_x_init_keyboard (VirtkeyX *this)
 {
-    self->kbd = XkbGetKeyboard (self->xdisplay,
+
+    this->kbd = XkbGetKeyboard (this->xdisplay,
                               XkbCompatMapMask | XkbNamesMask | XkbGeometryMask,
                               XkbUseCoreKbd);
 #ifndef NDEBUG
     /* test missing keyboard (LP:#526791) keyboard on/off every 10 seconds */
     if (getenv ("VIRTKEY_DEBUG"))
     {
-        if (self->kbd && time(NULL) % 20 < 10)
+        if (this->kbd && time(NULL) % 20 < 10)
         {
-            XkbFreeKeyboard (self->kbd, XkbAllComponentsMask, True);
-            self->kbd = NULL;
+            XkbFreeKeyboard (this->kbd, XkbAllComponentsMask, True);
+            this->kbd = NULL;
         }
     }
 #endif
-    if (!self->kbd)
+    if (!this->kbd)
     {
         PyErr_SetString (OSK_EXCEPTION, "XkbGetKeyboard failed.");
         return -1;
     }
-    if (XkbGetNames (self->xdisplay, XkbAllNamesMask, self->kbd) != Success)
+    if (XkbGetNames (this->xdisplay, XkbAllNamesMask, this->kbd) != Success)
     {
         PyErr_SetString (OSK_EXCEPTION, "XkbGetNames failed.");
         return -1;
@@ -495,8 +523,6 @@ static int
 virtkey_x_init (VirtkeyBase *base)
 {
     VirtkeyX* this = (VirtkeyX*) base;
-    XModifierKeymap *modifiers;
-    int mod_index, mod_key;
 
     GdkDisplay* display = gdk_display_get_default ();
     if (!GDK_IS_X11_DISPLAY (display)) // Wayland, MIR?
@@ -508,60 +534,6 @@ virtkey_x_init (VirtkeyBase *base)
 
     if (virtkey_x_init_keyboard (this) < 0)
         return -1;
-
-    /* init modifiers */
-    this->keysyms = XGetKeyboardMapping (this->xdisplay,
-                                       this->kbd->min_key_code,
-                                       this->kbd->max_key_code - this->kbd->min_key_code + 1,
-                                       &this->n_keysyms_per_keycode);
-
-    modifiers = XGetModifierMapping (this->xdisplay);
-    for (mod_index = 0; mod_index < 8; mod_index++)
-    {
-        this->modifier_table[mod_index] = 0;
-
-        for (mod_key = 0; mod_key < modifiers->max_keypermod; mod_key++)
-        {
-            int keycode = modifiers->modifiermap[mod_index *
-                                                 modifiers->max_keypermod +
-                                                 mod_key];
-            if (keycode)
-            {
-                this->modifier_table[mod_index] = keycode;
-                break;
-            }
-        }
-    }
-
-    XFreeModifiermap (modifiers);
-
-    for (mod_index = Mod1MapIndex; mod_index <= Mod5MapIndex; mod_index++)
-    {
-        if (this->modifier_table[mod_index])
-        {
-            KeySym ks = XkbKeycodeToKeysym (this->xdisplay,
-                                            this->modifier_table[mod_index],
-                                            0, 0);
-
-            /* Note: ControlMapIndex is already defined by xlib */
-            switch (ks) {
-                case XK_Meta_R:
-                case XK_Meta_L:
-                    this->meta_mod_index = mod_index;
-                    break;
-
-                case XK_Alt_R:
-                case XK_Alt_L:
-                    this->alt_mod_index = mod_index;
-                    break;
-
-                case XK_Shift_R:
-                case XK_Shift_L:
-                    this->shift_mod_index = mod_index;
-                    break;
-            }
-        }
-    }
 
     return 0;
 }
@@ -590,9 +562,6 @@ virtkey_x_destruct (VirtkeyBase *base)
 
     if (this->kbd)
         XkbFreeKeyboard (this->kbd, XkbAllComponentsMask, True);
-
-    if (this->keysyms)
-        XFree (this->keysyms);
 }
 
 VirtkeyBase*
