@@ -205,14 +205,14 @@ class KeySynthVirtkey(KeySynth):
         if self._vk:
             keycode, group, mod_mask = self._vk.keycode_from_keysym(keysym)
 
+            # Need a different layout group for this keysym?
+            if group >= 0:
+                self._keyboard.lock_temporary_group(group)
+
             # need modifiers for this keysym?
             if mod_mask:
                 self._keyboard.lock_temporary_modifiers(
                     ModSource.KEYSYNTH, mod_mask)
-
-            # Need a different layout group for this keysym?
-            if group >= 0:
-                pass
 
             self.press_keycode(keycode)
 
@@ -223,12 +223,20 @@ class KeySynthVirtkey(KeySynth):
             self.release_keycode(keycode)
 
             self._keyboard.unlock_temporary_modifiers(ModSource.KEYSYNTH)
+            self._keyboard.unlock_temporary_group()
 
     def release_unicode(self, char):
         print("release_unicode", repr(char))
         if self._vk:
             keysym = self._vk.keysym_from_unicode(char)
             self.release_keysym(keysym)
+
+    def get_current_group(self):
+        return self._vk.get_current_group()
+
+    def lock_group(self, group):
+        if self._vk:
+            self._vk.lock_group(group)
 
     def lock_mod(self, mod_mask):
         if self._vk:
@@ -400,6 +408,12 @@ class TextChangerKeyStroke(TextChanger):
     def release_keysym(self, keysym):
         self._key_synth.release_keysym(keysym)
 
+    def get_current_group(self):
+        return self._key_synth.get_current_group()
+
+    def lock_group(self, group):
+        self._key_synth.lock_group(group)
+
     def lock_mod(self, mod):
         self._key_synth.lock_mod(mod)
 
@@ -507,6 +521,12 @@ class TextChangerDirectInsert(TextChanger):
 
     def release_unicode(self, char):
         self.stop_auto_repeat()
+
+    def get_current_group(self):
+        return self.text_changer_key_stroke.get_current_group()
+
+    def lock_group(self, group):
+        self.text_changer_key_stroke.lock_group(group)
 
     def lock_mod(self, mod):
         """
@@ -646,6 +666,8 @@ class Keyboard(WordSuggestions):
         self._application = weakref.ref(application)
         self._pressed_key = None
         self._last_typing_time = 0
+
+        self._saved_keymap_group = -1
 
         self._temporary_modifiers = None
         self._locked_temporary_modifiers = {}
@@ -1324,6 +1346,23 @@ class Keyboard(WordSuggestions):
                 # Reset this too, else unlatching won't happen until restart.
                 self._external_mod_changes[mod] = 0
 
+    def lock_temporary_group(self, group):
+        text_changer = self.get_text_changer()
+        current_group = text_changer.get_current_group()
+        if current_group != group:
+            print("lock_temporary_group", group)
+            self._saved_keymap_group = current_group
+            text_changer.lock_group(group)
+
+    def unlock_temporary_group(self):
+        if self._saved_keymap_group >= 0:
+            print("unlock_temporary_group", self._saved_keymap_group)
+            self.get_text_changer().lock_group(self._saved_keymap_group)
+            self._saved_keymap_group = -1
+
+    def is_temporary_group_active(self):
+        return self._saved_keymap_group >= 0
+
     def _update_temporary_key_label(self, key, temp_mod_mask):
         """ update label for temporary modifiers """
         mod_mask = self.get_mod_mask()
@@ -1349,6 +1388,7 @@ class Keyboard(WordSuggestions):
 
     def _maybe_unlock_temporary_modifiers(self):
         """ Unlock modifier after a single key-press """
+        self.unlock_temporary_group()
         self.unlock_all_temporary_modifiers()
 
     def lock_temporary_modifiers(self, mod_source_id, mod_mask):

@@ -517,7 +517,8 @@ class OnboardGtk(object):
 
     def cb_group_changed(self):
         """ keyboard group change """
-        self.reload_layout_delayed()
+        if not self.keyboard.is_temporary_group_active():
+            self.reload_layout_delayed()
 
     def cb_keys_changed(self, keymap):
         """ keyboard map change """
