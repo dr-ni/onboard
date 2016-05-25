@@ -1148,6 +1148,7 @@ class Keyboard(WordSuggestions):
             self._pressed_key = None
             self.on_all_keys_up()
             gc.enable()
+            print()
 
         # Process pending UI updates
         self.commit_ui_updates()
@@ -1401,26 +1402,31 @@ class Keyboard(WordSuggestions):
 
     def unlock_temporary_modifiers(self, mod_source_id):
         """ Unlock temporary modifiers """
-        print("unlock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
         stack = self._locked_temporary_modifiers.get(mod_source_id)
         if stack:
+            print("unlock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
             mod_mask = stack.pop()
             self._do_unlock_modifiers(mod_mask)
-        print("unlock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
+            print("unlock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
 
     def unlock_all_temporary_modifiers(self):
         """ Unlock all temporary modifiers """
-        print("unlock_all_temporary_modifiers1", self._locked_temporary_modifiers)
         if self._locked_temporary_modifiers:
-            mod_mask = 0
-            while self._locked_temporary_modifiers:
-                mod_source_id, stack = \
-                    self._locked_temporary_modifiers.popitem()
-                for mm in stack:
-                    mod_mask |= mm
+            print("unlock_all_temporary_modifiers1", self._locked_temporary_modifiers)
+            mod_counts = {}
+            for mod_source_id, stack in \
+                    self._locked_temporary_modifiers.items():
+                for mod_mask in stack:
+                    for mod_bit in (1 << bit for bit in range(8)):
+                        if mod_mask & mod_bit:
+                            mod_counts[mod_bit] = \
+                                mod_counts.setdefault(mod_bit, 0) + 1
 
-            self._do_unlock_modifiers(mod_mask)
-        print("unlock_all_temporary_modifiers2", self._locked_temporary_modifiers)
+            self._locked_temporary_modifiers = {}
+
+            self._do_unlock_modifier_counts(mod_counts)
+
+            print("unlock_all_temporary_modifiers2", self._locked_temporary_modifiers)
 
     def _do_lock_modifiers(self, mod_mask):
         """ Lock modifiers and track their state. """
@@ -1436,24 +1442,36 @@ class Keyboard(WordSuggestions):
 
                 self.mods[mod_bit] += 1
 
+        print("_do_lock_modifiers", mods_to_lock, self._mods)
         if mods_to_lock:
             self.get_text_changer().lock_mod(mods_to_lock)
 
     def _do_unlock_modifiers(self, mod_mask):
         """ Unlock modifier in response to modifier releases. """
-        mods_to_unlock = 0
+        mod_counts = {}
         for mod_bit in (1 << bit for bit in range(8)):
             if mod_mask & mod_bit:
+                mod_counts[mod_bit] = 1
 
-                self.mods[mod_bit] -= 1
+        print("_do_unlock_modifiers", mod_counts, self._mods)
+        if mod_counts:
+            self._do_unlock_modifier_counts(mod_counts)
 
-                if not self.mods[mod_bit]:
-                    # Alt is special because it activates the
-                    # window manager's move mode.
-                    if mod_bit != Modifiers.ALT or \
-                       not self._is_alt_special():  # not Alt?
-                        mods_to_unlock |= mod_bit
+    def _do_unlock_modifier_counts(self, mod_counts):
+        """ Unlock modifier in response to modifier releases. """
+        mods_to_unlock = 0
+        for mod_bit, count in mod_counts.items():
 
+            self.mods[mod_bit] -= count
+
+            if not self.mods[mod_bit]:
+                # Alt is special because it activates the
+                # window manager's move mode.
+                if mod_bit != Modifiers.ALT or \
+                   not self._is_alt_special():  # not Alt?
+                    mods_to_unlock |= mod_bit
+
+        print("_do_unlock_modifier_counts", mod_counts, self._mods, mods_to_unlock)
         if mods_to_unlock:
             self.get_text_changer().unlock_mod(mods_to_unlock)
 
