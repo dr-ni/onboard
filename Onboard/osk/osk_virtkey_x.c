@@ -593,12 +593,6 @@ virtkey_x_init_keyboard (VirtkeyX *this)
         return -1;
     }
 
-    if (XkbGetNames (this->xdisplay, XkbAllNamesMask, this->kbd) != Success)
-    {
-        PyErr_SetString (OSK_EXCEPTION, "XkbGetNames failed.");
-        return -1;
-    }
-
     return 0;
 }
 
