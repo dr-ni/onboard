@@ -454,7 +454,8 @@ class TextChangerDirectInsert(TextChanger):
         TextChanger.__init__(self, keyboard, vk)
         self.text_changer_key_stroke = tcks
 
-        delay, interval = vk.get_auto_repeat_rate()
+        delay, interval = vk.get_auto_repeat_rate() \
+            if vk else (500, 30)
         self._auto_repeat_delay = delay * 0.001
         self._auto_repeat_interval = interval * 0.001
 
