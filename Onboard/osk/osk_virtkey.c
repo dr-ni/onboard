@@ -1434,12 +1434,11 @@ osk_virtkey_keycode_from_keysym (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    keycode = this->get_keycode_from_keysym (this, keysym, &group, &mod_mask);
+    keycode = this->get_keycode_from_keysym (this, keysym, group, &mod_mask);
 
-    ret = PyTuple_New (3);
+    ret = PyTuple_New (2);
     PyTuple_SET_ITEM (ret, 0, PyLong_FromLong (keycode));
-    PyTuple_SET_ITEM (ret, 1, PyLong_FromLong (group));
-    PyTuple_SET_ITEM (ret, 2, PyLong_FromLong (mod_mask));
+    PyTuple_SET_ITEM (ret, 1, PyLong_FromLong (mod_mask));
 
     return ret;
 }

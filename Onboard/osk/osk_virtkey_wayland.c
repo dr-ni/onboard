@@ -142,14 +142,13 @@ virtkey_wayland_get_auto_repeat_rate (VirtkeyBase *base,
 
 static int
 virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
-                                         int *group_inout,
+                                         int group,
                                          unsigned int *mod_mask_out)
 {
     int keycode = 0;
     GdkKeymap* gdk_keymap = get_gdk_keymap(base);
     GdkKeymapKey* keys;
     gint n_keys;
-    int group = *group_inout;
 
     g_debug("virtkey_wayland_get_keycode_from_keysym: keysym %d, group %d\n", keysym, group);
     if (gdk_keymap_get_entries_for_keyval(gdk_keymap, keysym, &keys, &n_keys))
@@ -193,7 +192,6 @@ virtkey_wayland_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
     }
     g_debug("    final     keycode %d\n", keycode);
 
-    *group_inout = -1;  // -1 indicates no group change necessary
     *mod_mask_out = 0;
 
     return keycode;

@@ -44,7 +44,7 @@ struct VirtkeyBase {
                 int keycode, int modmask, int group,
                 char* label, int max_label_size);
     int     (*get_keycode_from_keysym)(VirtkeyBase* base,
-                int keysym, int *group_inout, unsigned int *mod_mask_out);
+                int keysym, int group, unsigned int *mod_mask_out);
     int     (*get_keysym_from_keycode)(VirtkeyBase* base,
                 int keycode, int modmask, int group);
     char**  (*get_rules_names)(VirtkeyBase* base, int* numentries);

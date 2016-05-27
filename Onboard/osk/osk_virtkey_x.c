@@ -357,42 +357,17 @@ map_keysym_xkb(VirtkeyBase* base, KeySym keysym, int group)
 
 static int
 virtkey_x_get_keycode_from_keysym (VirtkeyBase* base, int keysym,
-                                   int *group_inout,
+                                   int group,
                                    unsigned int *mod_mask_out)
 {
     KeyCode keycode;
     VirtkeyX* this = (VirtkeyX*) base;
-    int group = *group_inout;
-    int new_group = -1;  // -1 indicates no group change necessary
 
     // Look keysym up in current group.
     keycode = keysym_to_keycode(this->kbd, keysym,
                                 group, mod_mask_out);
     if (!keycode)
-    {
-        // If that fails try all the other groups.
-        int g;
-        for (g=0; g<XkbMaxKbdGroup; g++)
-        {
-            if (g != group)
-            {
-                keycode = keysym_to_keycode(this->kbd, keysym,
-                                            g, mod_mask_out);
-                if (keycode)
-                {
-                    new_group = g;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (!keycode)
-    {
         keycode = map_keysym_xkb(base, keysym, group);
-    }
-
-    *group_inout = new_group;
 
     return keycode;
 }
