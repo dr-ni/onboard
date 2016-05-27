@@ -183,25 +183,20 @@ class KeySynthVirtkey(KeySynth):
     def cleanup(self):
         self._vk = None
 
-    def press_keycode(self, keycode):
-        print("press_keycode", keycode)
-        if self._vk:
-            self._delay_keypress()
-            self._vk.press_keycode(keycode)
-
-    def release_keycode(self, keycode):
-        print("release_keycode", keycode)
-        if self._vk:
-            self._vk.release_keycode(keycode)
-
     def press_unicode(self, char):
-        print("press_unicode", repr(char))
+        _logger.debug("KeySynthVirtkey.press_unicode({})".format(repr(char)))
         if self._vk:
             keysym = self._vk.keysym_from_unicode(char)
             self.press_keysym(keysym)
 
+    def release_unicode(self, char):
+        _logger.debug("KeySynthVirtkey.release_unicode({})".format(repr(char)))
+        if self._vk:
+            keysym = self._vk.keysym_from_unicode(char)
+            self.release_keysym(keysym)
+
     def press_keysym(self, keysym):
-        print("press_keysym", keysym)
+        _logger.debug("KeySynthVirtkey.press_keysym({})".format(keysym))
         if self._vk:
             keycode, mod_mask = self._vk.keycode_from_keysym(keysym)
 
@@ -213,18 +208,23 @@ class KeySynthVirtkey(KeySynth):
             self.press_keycode(keycode)
 
     def release_keysym(self, keysym):
-        print("release_keysym", keysym)
+        _logger.debug("KeySynthVirtkey.release_keysym({})".format(keysym))
         if self._vk:
             keycode, mod_mask = self._vk.keycode_from_keysym(keysym)
             self.release_keycode(keycode)
 
             self._keyboard.unlock_temporary_modifiers(ModSource.KEYSYNTH)
 
-    def release_unicode(self, char):
-        print("release_unicode", repr(char))
+    def press_keycode(self, keycode):
+        _logger.debug("KeySynthVirtkey.press_keycode({})".format(keycode))
         if self._vk:
-            keysym = self._vk.keysym_from_unicode(char)
-            self.release_keysym(keysym)
+            self._delay_keypress()
+            self._vk.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        _logger.debug("KeySynthVirtkey.release_keycode({})".format(keycode))
+        if self._vk:
+            self._vk.release_keycode(keycode)
 
     def get_current_group(self):
         return self._vk.get_current_group()
@@ -1142,7 +1142,6 @@ class Keyboard(WordSuggestions):
             self._pressed_key = None
             self.on_all_keys_up()
             gc.enable()
-            print()
 
         # Process pending UI updates
         self.commit_ui_updates()
@@ -1370,25 +1369,26 @@ class Keyboard(WordSuggestions):
 
     def lock_temporary_modifiers(self, mod_source_id, mod_mask):
         """ Lock temporary modifiers """
-        print("lock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
         stack = self._locked_temporary_modifiers.setdefault(mod_source_id, [])
         stack.append(mod_mask)
+        _logger.debug("lock_temporary_modifiers({}, {}) {}"
+                      .format(mod_source_id, mod_mask,
+                              self._locked_temporary_modifiers))
         self._do_lock_modifiers(mod_mask)
-        print("lock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
 
     def unlock_temporary_modifiers(self, mod_source_id):
         """ Unlock temporary modifiers """
         stack = self._locked_temporary_modifiers.get(mod_source_id)
         if stack:
-            print("unlock_temporary_modifiers1", mod_source_id, self._locked_temporary_modifiers)
             mod_mask = stack.pop()
+            _logger.debug("unlock_temporary_modifiers({}, {}) {}"
+                          .format(mod_source_id, mod_mask,
+                                  self._locked_temporary_modifiers))
             self._do_unlock_modifiers(mod_mask)
-            print("unlock_temporary_modifiers2", mod_source_id, self._locked_temporary_modifiers)
 
     def unlock_all_temporary_modifiers(self):
         """ Unlock all temporary modifiers """
         if self._locked_temporary_modifiers:
-            print("unlock_all_temporary_modifiers1", self._locked_temporary_modifiers)
             mod_counts = {}
             for mod_source_id, stack in \
                     self._locked_temporary_modifiers.items():
@@ -1400,9 +1400,10 @@ class Keyboard(WordSuggestions):
 
             self._locked_temporary_modifiers = {}
 
-            self._do_unlock_modifier_counts(mod_counts)
+            _logger.debug("unlock_all_temporary_modifiers() {}"
+                          .format(self._locked_temporary_modifiers))
 
-            print("unlock_all_temporary_modifiers2", self._locked_temporary_modifiers)
+            self._do_unlock_modifier_counts(mod_counts)
 
     def _do_lock_modifiers(self, mod_mask):
         """ Lock modifiers and track their state. """
@@ -1418,8 +1419,9 @@ class Keyboard(WordSuggestions):
 
                 self.mods[mod_bit] += 1
 
-        print("_do_lock_modifiers", mods_to_lock, self._mods)
         if mods_to_lock:
+            _logger.debug("_do_lock_modifiers({}) {} {}"
+                          .format(mod_mask, self._mods, mods_to_lock))
             self.get_text_changer().lock_mod(mods_to_lock)
 
     def _do_unlock_modifiers(self, mod_mask):
@@ -1429,7 +1431,6 @@ class Keyboard(WordSuggestions):
             if mod_mask & mod_bit:
                 mod_counts[mod_bit] = 1
 
-        print("_do_unlock_modifiers", mod_counts, self._mods)
         if mod_counts:
             self._do_unlock_modifier_counts(mod_counts)
 
@@ -1447,8 +1448,9 @@ class Keyboard(WordSuggestions):
                    not self._is_alt_special():  # not Alt?
                     mods_to_unlock |= mod_bit
 
-        print("_do_unlock_modifier_counts", mod_counts, self._mods, mods_to_unlock)
         if mods_to_unlock:
+            _logger.debug("_do_unlock_modifier_counts({}) {} {}"
+                          .format(mod_counts, self._mods, mods_to_unlock))
             self.get_text_changer().unlock_mod(mods_to_unlock)
 
     def _is_alt_special(self):
@@ -1713,7 +1715,11 @@ class Keyboard(WordSuggestions):
         Sync Onboard with modifiers of the given modifier mask.
         Used to sync changes of system modifier state with Onboard.
         """
-        print("set_modifiers", mod_mask, self._alt_locked, self._temporary_modifiers, self.is_typing())
+        _logger.debug("set_modifiers({}) {} {} {}"
+                      .format(mod_mask, self._alt_locked,
+                              self._temporary_modifiers,
+                              self.is_typing()))
+
         # The special handling of ALT in Onboard confuses the detection of
         # modifier presses from the outside.
         # Test case: press ALT, then LSHIFT

@@ -1225,7 +1225,11 @@ vk_send (PyObject *_self, PyObject *args, int mode)
 
     }
 
-    printf("vk_send mode %d input %d keycode %d group %d mod_mask %d press %d\n", mode, input, keycode, group, mod_mask, press);
+    #ifdef DEBUG_OUTPUT
+    printf("vk_send mode %d input %d keycode %d group %d "
+           "mod_mask %d press %d\n",
+           mode, input, keycode, group, mod_mask, press);
+    #endif
 
     if (group >= 0)
         set_group(self, group);
