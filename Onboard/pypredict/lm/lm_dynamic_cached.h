@@ -224,7 +224,7 @@ class _CachedDynamicModel : public _DynamicModelKN<TNGRAMS>
     public:
         typedef _DynamicModelKN<TNGRAMS> Base;
         static const Smoothing DEFAULT_SMOOTHING = ABS_DISC_I;
-        static const double DEFAULT_LAMBDA = 0.3;  // Jelinek-Mercer weights
+        const double DEFAULT_LAMBDA = 0.3;  // Jelinek-Mercer weights
 
     public:
         _CachedDynamicModel()
