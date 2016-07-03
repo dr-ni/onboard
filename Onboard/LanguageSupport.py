@@ -44,6 +44,7 @@ class LanguageDB:
                        "de" : "DE",
                        "el" : "GR",
                        "en" : "US",
+                       "eo" : "XX",  # Esperanto
                        "es" : "ES",
                        "eu" : "ES",
                        "fr" : "FR",
@@ -88,7 +89,9 @@ class LanguageDB:
             country = self._iso_codes.get_translated_country_name(country_code)
             if not country:
                 country = country_code
-            name += " (" + country + ")"
+            if country and \
+               country != "XX":   # Esperanto has no native country
+                name += " (" + country + ")"
         return name
 
     def get_language_name(self, lang_id):
@@ -137,7 +140,7 @@ class LanguageDB:
 
     def get_main_lang_id(self, lang_code):
         """
-        Complete given language code to the language id of the main lanugage.
+        Complete given language code to the language id of the main language.
         """
         lang_id = ""
         country_code = self._main_languages.get(lang_code, "")

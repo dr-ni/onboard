@@ -37,7 +37,7 @@
 #
 # - Ubuntu 15.04 Vivid Vervet:
 #     Partial list:
-#     sudo apt-get install hunspell-en-us hunspell-de-de hunspell-de-ch hunspell-de-at myspell-es myspell-pt-pt hunspell-fr hunspell-ru myspell-it myspell-bg
+#     sudo apt-get install hunspell-en-us hunspell-de-de hunspell-de-ch hunspell-de-at myspell-es myspell-pt-pt hunspell-fr hunspell-ru myspell-it myspell-bg myspell-eo
 #
 
 LANGUAGES=
@@ -62,6 +62,7 @@ LANGUAGES+="el_GR "
 LANGUAGES+="sv_SE "
 LANGUAGES+="lb_LU "
 LANGUAGES+="bg_BG "
+LANGUAGES+="eo_XX "
 
 MODELDIR="models"
 RAWMODELDIR="../training/raw_models"
@@ -222,6 +223,10 @@ for lang in $LANGUAGES; do
 
         bg)
             PRUNE_FREQ=40,40,-1
+            ;;
+
+        eo)
+            PRUNE_FREQ=10,10,-1
             ;;
 
        *)
