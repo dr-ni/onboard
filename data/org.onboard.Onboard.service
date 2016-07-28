@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.onboard.Onboard
+Exec=/usr/bin/onboard
+
