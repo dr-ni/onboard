@@ -42,32 +42,32 @@ D-Bus Service:
         or by starting a second instance.
 
         Example:
-            dbus-send --type=method_call --dest=org.onboard.Onboard 
-            /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
+        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
+        /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
 
     Hide(), method
         Hide the keyboard window.
         Return value: None
 
         Example:
-            dbus-send --type=method_call --dest=org.onboard.Onboard 
-            /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
+        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
+        /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
 
     ToggleVisible(), method
         Show the keyboard window if it was hidden, else hide it.
         Return value: None
 
         Example:
-            dbus-send --type=method_call --dest=org.onboard.Onboard 
-            /org/onboard/Onboard/Keyboard
-            org.onboard.Onboard.Keyboard.ToggleVisible
+        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
+        /org/onboard/Onboard/Keyboard 
+        org.onboard.Onboard.Keyboard.ToggleVisible
 
     Visible, Boolean property, read-only
         True if the window is currently visible, False otherwise.
         Signal: org.freedesktop.DBus.Properties.PropertiesChanged
 
         Example:
-        dbus-send --print-reply --type=method_call --dest=org.onboard.Onboard 
+        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
         /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get 
         string:"org.onboard.Onboard.Keyboard" string:"Visible"
 
