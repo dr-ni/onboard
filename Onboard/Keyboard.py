@@ -457,8 +457,9 @@ class TextChangerDirectInsert(TextChanger):
         self._auto_repeat_delay_timer = Timer()
         self._auto_repeat_timer = Timer()
 
-        _logger.debug("keyboard auto-repeat: delay {}, interval {}",
-                      self._auto_repeat_delay, self._auto_repeat_interval)
+        _logger.debug("keyboard auto-repeat: delay {}, interval {}"
+                      .format(self._auto_repeat_delay,
+                              self._auto_repeat_interval))
 
     def cleanup(self):
         self.stop_auto_repeat()
