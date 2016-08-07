@@ -23,8 +23,59 @@ Global definitions.
 
 from __future__ import division, print_function, unicode_literals
 
-from enum import Enum
 from gi.repository import Gdk
+
+try:
+    from enum import Enum
+except ImportError as e:
+    # Fallback class for python versions before 3.4 (Precise).
+    class _EnumMeta(type):
+
+        def __new__(cls, name, bases, namespace):
+            class EnumValue(int):
+                def __repr__(self):
+                    return "<%s.%s: %r>" % (
+                        self.__class__.__name__, self.name,
+                        int(self))
+
+                def __str__(self):
+                    return "%s.%s" % (
+                        self.__class__.__name__, self.name)
+
+            members = {}
+            for name, value in namespace.items():
+                if isinstance(value, int) and not name.startswith("_"):
+                    ev = EnumValue(value)
+                    ev.name = name
+                    namespace[name] = ev
+                    members[name] = ev
+            result = type.__new__(cls, name, bases, dict(namespace))
+            result.__members__ = members
+            return result
+
+        def __call__(cls, value):   # noqa: flake8, no self here
+            for ev in cls.__members__.values():
+                if value == ev:
+                    return ev
+
+    class Enum(metaclass=_EnumMeta):
+        """
+        Simple Enum implementation that emulates python 3.4's Enum interface.
+
+        Supports:
+        - class style enum definition
+            class xyz(Enum):
+                value1 = 1
+                value2 = 2
+
+        - name retrieval from enum value
+            name = KeySynthEnum.AUTO.name
+
+        - conversion from int to enum value
+                enum_value = KeySynthEnum(3)
+        """
+        pass
+
 
 
 # Name of the /dev/uinput device when key-synth is set to uinput.
