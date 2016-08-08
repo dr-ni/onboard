@@ -20,14 +20,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <gdk/gdk.h>
+
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
-#include <gdk/gdkwayland.h>
 #include <X11/extensions/XTest.h>
+#include "osk_virtkey_x.h"
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#include "osk_virtkey_wayland.h"
+#endif
 
 #include "osk_module.h"
 #include "osk_uinput.h"
-#include "osk_virtkey_x.h"
-#include "osk_virtkey_wayland.h"
 
 typedef enum
 {

@@ -1467,7 +1467,10 @@ class Config(ConfigObject):
         desktop = os.environ.get("DESKTOP_SESSION", "")
 
         def istrcmp(s1, s2):
+            if sys.version_info < (3,3):
+                return s1.lower() == s2.lower()
             return s1.casefold() == s2.casefold()
+            
 
         def isdesktop(id):
             return istrcmp(xdg_desktop, id) or istrcmp(desktop, id)

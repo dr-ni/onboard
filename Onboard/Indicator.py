@@ -310,16 +310,21 @@ class BackendAppIndicator(BackendBase):
                                 "no left-click Activate() for AppIndicator: " +
                                 unicode_str(ex))
             else:
-                self._bus.add_match_string(
-                    "type='method_call',"
-                    "eavesdrop=true,"
-                    "path='{}',"
-                    "interface='{}',"
-                    "member='{}'"
-                    .format(self.STATUSNOTIFIER_OBJECT,
-                            self.STATUSNOTIFIER_IFACE,
-                            self.ACTIVATE_METHOD))
-                self._bus.add_message_filter(self._on_activate_method)
+                try:
+                    self._bus.add_match_string(
+                        "type='method_call',"
+                        "eavesdrop=true,"
+                        "path='{}',"
+                        "interface='{}',"
+                        "member='{}'"
+                        .format(self.STATUSNOTIFIER_OBJECT,
+                                self.STATUSNOTIFIER_IFACE,
+                                self.ACTIVATE_METHOD))
+                    self._bus.add_message_filter(self._on_activate_method)
+                except dbus.exceptions.DBusException as ex:
+                    _logger.warning("Failed to setup D-Bus match rule, "
+                                    "no left-click Activate() for AppIndicator: " +
+                                    unicode_str(ex))
 
     def _on_activate_method(self, bus, message):
         if message.get_path() == self.STATUSNOTIFIER_OBJECT and \

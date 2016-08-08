@@ -22,7 +22,10 @@
 
 #include <glib.h>
 #include <glib/gprintf.h>
+
 #include <gdk/gdk.h>
+
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #include <gdk/gdkkeysyms.h>
 #include <wayland-client.h>
@@ -549,4 +552,6 @@ virtkey_wayland_new(void)
    this->set_modifiers = virtkey_wayland_set_modifiers;
    return this;
 }
+
+#endif  /* GDK_WINDOWING_WAYLAND */
 
