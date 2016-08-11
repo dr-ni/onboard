@@ -839,13 +839,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             pass
         else:
             keys = self.keyboard.find_items_from_ids(["move"])
+            keys = [k for k in keys if k.is_path_visible()]
+            if not keys:   # no visible move key (Small, Phone layout)?
+                keys = self.keyboard.find_items_from_ids(["RTRN"])
+                keys = [k for k in keys if k.is_path_visible()]
             for key in keys:
-                if key.is_visible():
-                    r = key.get_canvas_border_rect()
-                    if not bounds:
-                        bounds = r
-                    else:
-                        bounds = bounds.union(r)
+                r = key.get_canvas_border_rect()
+                if not bounds:
+                    bounds = r
+                else:
+                    bounds = bounds.union(r)
 
         if bounds is None:
             bounds = self.canvas_rect
