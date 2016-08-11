@@ -584,6 +584,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
         self._was_visible = False
+        self._user_positioning_begin_rect = Rect()
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
@@ -721,6 +722,8 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         keyboard.stop_raise_attempts()
         keyboard.freeze_auto_show()
 
+        self._user_positioning_begin_rect = self.get_rect()
+
     def on_user_positioning_done(self):
         self.update_window_rect()
 
@@ -730,9 +733,19 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
                                     self.get_size())
             self.update_docking()
         else:
-            self.update_home_rect()
+            # Attempt to filter out accidental resize frame clicks to prevent
+            # losing the home position without clear user intention.
+            proximity = 30
+            rh = self.get_home_rect()
+            began_near_home = \
+                self._user_positioning_begin_rect.inflate(proximity) \
+                .intersection(rh) == rh
+            moved = self.keyboard_widget.was_moving()
+            update_home_position = began_near_home or moved
 
-        # Thaw auto show after a short delay to stop the window
+            self.update_home_rect(update_home_position)
+
+        # Thaw auto show only after a short delay to stop the window
         # from hiding due to spurios focus events after a system resize.
         keyboard = self.keyboard_widget.keyboard
         keyboard.thaw_auto_show(1.0)
@@ -907,12 +920,16 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         if _x != x or _y != y:
             self.update_home_rect()
 
-    def update_home_rect(self):
+    def update_home_rect(self, update_home_position=True):
         if config.is_docking_enabled():
             return
 
         # update home rect
         rect = self._window_rect.copy()
+        if not update_home_position:
+            rh = self.home_rect
+            rect.x = rh.x
+            rect.y = rh.y
 
         # Make sure the move button stays visible
         if self.can_move_into_view():
