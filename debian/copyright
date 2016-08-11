@@ -4,8 +4,8 @@ Upstream-Contact: https://launchpad.net/~onboard/+contactuser
 Source: https://launchpad.net/onboard
 
 Files: debian/*
-Copyright: 2009-2015, marmuta <marmvta@gmail.com>
-  2009-2015, Francesco Fumanti <francesco.fumanti@gmx.net>
+Copyright: 2009-2016, marmuta <marmvta@gmail.com>
+  2009-2016, Francesco Fumanti <francesco.fumanti@gmx.net>
   2008, 2012, 2014, 2015, Matthias Klose <doko@ubuntu.com>
   2015, Adam Conrad <adconrad@ubuntu.com>
   2015, Steve Langasek <steve.langasek@ubuntu.com>
@@ -130,6 +130,11 @@ Copyright: 2009, 2011-2014, marmuta <marmvta@gmail.com>
   2010, 2013, Francesco Fumanti <francesco.fumanti@gmx.net>
 License: GPL-3+
 
+Files: Onboard/pypredict/lm/lm_dynamic_cached.h
+Copyright: 2010, 2012-2013, marmuta <marmvta@gmail.com>
+  2016, Jeremy Bicha <jbicha@ubuntu.com>
+License: GPL-3+
+
 Files: Onboard/settings.py
 Copyright: 2011-2016, marmuta <marmvta@gmail.com>
   2011, 2012, Gerd Kohlberger <lowfi@chello.at>
@@ -156,11 +161,26 @@ License: GPL-3+
 
 Files: data/onboard.desktop.in
   data/onboard-settings.desktop.in
-Copyright: 2012, 2015, marmuta <marmvta@gmail.com>
+Copyright: 2016, Jeremy Bicha <jbicha@ubuntu.com>
+  2012, 2015, marmuta <marmvta@gmail.com>
   2010-2011, Francesco Fumanti <francesco.fumanti@gmx.net>
   2011, Gerd Kohlberger <lowfi@chello.at>
   2008, Luke Yelavitch <luke.yelavich@canonical.com>
   2007-2010, Chris Jones <tortoise@tortuga>
+License: GPL-3+
+
+Files: gnome/*
+Copyright: 2016, marmuta <marmvta@gmail.com>
+License: GPL-3+
+
+Files: gnome/Onboard_Indicator@onboard.org/extension.js
+Copyright: 2016, marmuta <marmvta@gmail.com>
+  2016, Simon Schumann <simon.schumann@web.de>
+License: GPL-3+
+
+Files: gnome/Onboard_Indicator@onboard.org/metadata.json
+Copyright: 2016, marmuta <marmvta@gmail.com>
+  2016, Jeremy Bicha <jbicha@ubuntu.com>
 License: GPL-3+
 
 Files: help/C/*
@@ -273,6 +293,7 @@ License: GPL-3+
 
 Files: settings.ui
 Copyright: 2011-2014, 2016, marmuta <marmvta@gmail.com>
+  2016, Ubuntu-QC-1 https://launchpad.net/~ubuntu-qc-1
   2010-2012, Francesco Fumanti <francesco.fumanti@gmx.net>
   2011-2012, Gerd Kohlberger <lowfi@chello.at>
   2009, Chris Jones <tortoise@tortuga>
