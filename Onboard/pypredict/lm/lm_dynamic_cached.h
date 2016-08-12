@@ -1,6 +1,5 @@
 /*
  * Copyright © 2010, 2012-2013 marmuta <marmvta@gmail.com>
- * Copyright © 2016 Jeremy Bicha <jbicha@ubuntu.com>
  *
  * This file is part of Onboard.
  *

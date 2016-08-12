@@ -22,6 +22,11 @@ Copyright: 2009-2016, marmuta <marmvta@gmail.com>
   2006, Chris Jones <cej105@soton.ac.uk>
 License: GPL-3+
 
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Onboard
+Upstream-Contact: https://launchpad.net/~onboard/+contactuser
+Source: https://launchpad.net/onboard
+
 Files: *
 Copyright: 2009-2016, marmuta <marmvta@gmail.com>
 License: GPL-3+
@@ -130,11 +135,6 @@ Copyright: 2009, 2011-2014, marmuta <marmvta@gmail.com>
   2010, 2013, Francesco Fumanti <francesco.fumanti@gmx.net>
 License: GPL-3+
 
-Files: Onboard/pypredict/lm/lm_dynamic_cached.h
-Copyright: 2010, 2012-2013, marmuta <marmvta@gmail.com>
-  2016, Jeremy Bicha <jbicha@ubuntu.com>
-License: GPL-3+
-
 Files: Onboard/settings.py
 Copyright: 2011-2016, marmuta <marmvta@gmail.com>
   2011, 2012, Gerd Kohlberger <lowfi@chello.at>
@@ -161,7 +161,7 @@ License: GPL-3+
 
 Files: data/onboard.desktop.in
   data/onboard-settings.desktop.in
-Copyright: 2016, Jeremy Bicha <jbicha@ubuntu.com>
+Copyright: 2016, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
   2012, 2015, marmuta <marmvta@gmail.com>
   2010-2011, Francesco Fumanti <francesco.fumanti@gmx.net>
   2011, Gerd Kohlberger <lowfi@chello.at>
@@ -293,7 +293,6 @@ License: GPL-3+
 
 Files: settings.ui
 Copyright: 2011-2014, 2016, marmuta <marmvta@gmail.com>
-  2016, Ubuntu-QC-1 https://launchpad.net/~ubuntu-qc-1
   2010-2012, Francesco Fumanti <francesco.fumanti@gmx.net>
   2011-2012, Gerd Kohlberger <lowfi@chello.at>
   2009, Chris Jones <tortoise@tortuga>
