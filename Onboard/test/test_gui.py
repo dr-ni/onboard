@@ -525,6 +525,8 @@ class _TestGUIBase(unittest.TestCase):
 class TestWindowHandling(_TestGUIBase):
 
     def test_keyboard_moving_remembered_after_restart(self):
+        self._disable_docking()
+        
         r = self._get_window_rect()
         dx = 100
         dy = 200
@@ -558,6 +560,8 @@ class TestWindowHandling(_TestGUIBase):
         self.assertEqual(str(r_result), str(self._get_window_rect()))
 
     def test_keyboard_resizing_remembered_after_restart(self):
+        self._disable_docking()
+        
         r = self._get_window_rect()
         dx = 100
         dy = 200
@@ -727,6 +731,8 @@ class TestWindowHandling(_TestGUIBase):
                                    self._set_icon_palette_rect)
 
     def test_keyboard_window_resizing(self):
+        self._disable_docking()
+        
         self._gsettings_set("org.onboard.window.landscape", "x", 300)
         self._gsettings_set("org.onboard.window.landscape", "y", 300)
         self._test_window_resizing(self._get_window_rect,
@@ -840,6 +846,11 @@ class TestWindowHandling(_TestGUIBase):
             y1 = y0
 
         return x0, y0, x1, y1
+
+    def _disable_docking(self):
+        with self._run_onboard():   # apply system defaults -> docking enabled
+            pass
+        self._gsettings_set("org.onboard.window", "docking-enabled", False)
 
 
 class TestKeys(_TestGUIBase):
