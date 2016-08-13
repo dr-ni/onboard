@@ -1142,7 +1142,7 @@ def lstrip_docstring(docstring):
     return "\n".join(split_docstring(docstring))
 
 
-def split_docstring(docstring, strip_leading_spaces):
+def split_docstring(docstring, strip_leading_spaces=True):
     lines = docstring.expandtabs().splitlines()
     if strip_leading_spaces:
         lines = [line.lstrip() for line in lines]
