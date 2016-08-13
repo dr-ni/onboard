@@ -130,7 +130,8 @@ class Command:
                   ["simon.schumann@web.de"]),
     ]
 
-    # Additional copyrights per file that can't be found with bzr annotate
+    # Additional copyrights per file that can't be found with bzr annotate.
+    # Filename may be a regex pattern.
     _extra_copyrights = [
         ["debian/rules",
          "barry@ubuntu.com", ['20110624']],
@@ -236,7 +237,11 @@ class Command:
         else:
             exclude_paths = options.exclude_paths + Command._exclude_paths
             for dirpath, dirnames, filenames in os.walk("."):
+            
                 dirpath = os.path.normpath(dirpath)  # remove starting "./"
+                if dirpath == ".":
+                    dirpath = ""
+                     
                 for basename in filenames:
                     fn = os.path.join(dirpath, basename)
                     if all(not fn.startswith(ep) for ep in exclude_paths):
@@ -511,7 +516,7 @@ class CommandHeaderUpdate(Command):
 
             # add additional copyrights that can't be found with bzr annotate
             for file_pattern, email, timestamps in self._extra_copyrights:
-                if fn.endswith(file_pattern):
+                if re.fullmatch(file_pattern, fn):
                     committer = self.get_committer_from_email(email)
                     copyrights[committer] = \
                         copyrights.get(committer, ()) + tuple(timestamps)
