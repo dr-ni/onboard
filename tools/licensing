@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright © 2015, 2016 marmuta <marmvta@gmail.com>
+# Copyright © 2016 Francesco Fumanti <francesco.fumanti@gmx.net>
 #
 # This file is part of Onboard.
 #
@@ -83,43 +84,88 @@ class Command:
             return None
 
     _known_committers = [
+        Committer("Alan Bell",
+                  ["alanbell@ubuntu.com"]),
+        Committer("Barry Warsaw",
+                  ["barry@ubuntu.com"]),
         Committer("Chris Jones",
                   ["tortoise@tortuga",
                    "cej@blinkenlights",
                    "tortoise@chrisjdesktop",
                    "tortoise@xuanwu"]),
+        Committer("Francesco Fumanti",
+                  ["francesco.fumanti@gmx.net",
+                   "frafu@UbuntuDesktop"]),
+        Committer("Gerd Kohlberger",
+                  ["lowfi@chello.at",
+                   "gerdk@src.gnome.org"]),
         Committer("Henrik Nilsen Omma",
                   ["henrik@ubuntu.com"],
                   # according to Chris Jones he only committed files
                   ignore=True),
-        Committer("Luke Yelavitch",
-                  ["luke.yelavich@canonical.com"]),
-        Committer("Francesco Fumanti",
-                  ["francesco.fumanti@gmx.net", "frafu@UbuntuDesktop"]),
-        Committer("marmuta",
-                  ["marmvta@gmail.com", "user@dingsdale"]),
-        Committer("Gerd Kohlberger",
-                  ["lowfi@chello.at", "gerdk@src.gnome.org"]),
-        Committer("Martin Böhme",
-                  ["martin.bohm@kubuntu.org"]),
-        Committer("Alan Bell",
-                  ["alanbell@ubuntu.com"]),
+        Committer("Jeremy Bicha",
+                  ["jbicha@ubuntu.com",
+                   "jbicha@gnome.org",
+                   "jbicha@linux.com"]),
         Committer("Johannes Almer",
                   ["almer@nomail.com"],
                   # Johannes asked not to publish his email
                   hide_email=True),
-        Committer("Barry Warsaw",
-                  ["barry@ubuntu.com"]),
         Committer("Launchpad Code Hosting",
                   ["codehost@crowberry"]),
+        Committer("Luke Yelavitch",
+                  ["luke.yelavich@canonical.com"]),
+        Committer("marmuta",
+                  ["marmvta@gmail.com",
+                   "user@dingsdale"]),
+        Committer("Mike Gabriel",
+                  ["mike.gabriel@das-netzwerkteam.de"]),
+        Committer("Martin Böhme",
+                  ["martin.bohm@kubuntu.org"]),
+        Committer("Martin Wimpress",
+                  ["martin@flexion.org"]),
+        Committer("Reiner Herrmann",
+                  ["reiner@reiner-h.de"]),
+        Committer("Simon Schumann",
+                  ["simon.schumann@web.de"]),
     ]
 
     # Additional copyrights per file that can't be found with bzr annotate
     _extra_copyrights = [
+        ["debian/rules",
+         "barry@ubuntu.com", ['20110624']],
+        ["data/onboard-autostart.desktop",
+         "martin@flexion.org", ['20150101']],
+        ["data/onboard-autostart.desktop",
+         "luke.yelavich@canonical.com", ['20110101']],
+        ["data/onboard-autostart.desktop",
+         "marmvta@gmail.com", ['20120101', '20150101']],
+        ["data/layoutstrings.py",
+         "marmvta@gmail.com", ['20150101']],
+        ["data/layoutstrings.py",
+         "tortoise@tortuga", ['20080101', '20100101']],
+        ["data/onboard.desktop.in",
+         "mike.gabriel@das-netzwerkteam.de", ['20160731']],
+        ["data/onboard-settings.desktop.in",
+         "mike.gabriel@das-netzwerkteam.de", ['20160731']],
+        ["gnome/Onboard_Indicator@onboard.org/extension.js",
+         "simon.schumann@web.de", ['20160101']],
+        ["gnome/Onboard_Indicator@onboard.org/metadata.json",
+         "jbicha@ubuntu.com", ['20160731']],
+        ["layouts/Whiteboard.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["layouts/Whiteboard_wide.onboard",
+         "almer@nomail.com", ['20140101']],
+        ["Onboard/Config.py",
+         "francesco.fumanti@gmx.net", ['20080101', '20110101']],
+        ["Onboard/Exceptions.py",
+         "tortoise@tortuga", ['20080101', '20100101']],
+        ["Onboard/DBusUtils.py",
+         "lowfi@chello.at", ['20130101']],
+        ["Onboard/DBusUtils.py",
+         "marmvta@gmail.com", ['20130101', '20140101', '20150101']],
         ["Onboard/IconPalette.py",
          "francesco.fumanti@gmx.net", ['20080101']],
-        ["Onboard/Sound.py",
-         "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_audio.c",
          "lowfi@chello.at", ['20130101']],
         ["Onboard/osk/osk_click_mapper.c",
@@ -134,23 +180,34 @@ class Command:
          "lowfi@chello.at", ['20110101']],
         ["Onboard/osk/osk_struts.c",
          "lowfi@chello.at", ['20120101']],
+        ["Onboard/osk/osk_uinput.c",
+         "marmvta@gmail.com", ['20120101']],
         ["Onboard/osk/osk_virtkey.c",
          "tortoise@tortuga", ['20060101', '20070101', '20080101']],
         ["Onboard/osk/osk_virtkey.c",
          "marmvta@gmail.com", ['20100101']],
-        ["layouts/Whiteboard.onboard",
-         "almer@nomail.com", ['20140101']],
-        ["layouts/Whiteboard_wide.onboard",
-         "almer@nomail.com", ['20140101']],
+        ["Onboard/osk/osk_virtkey_x.c",
+         "lowfi@chello.at", ['20130101']],
+        ["Onboard/osk/osk_virtkey_x.c",
+         "tortoise@tortuga", ['20060101', '20070101', '20080101']],
+        ["Onboard/osk/osk_virtkey_x.c",
+         "marmvta@gmail.com", ['20100101']],
+        ["Onboard/Scanner.py",
+         "lowfi@chello.at", ['20110101', '20130101']],
+        ["Onboard/Sound.py",
+         "lowfi@chello.at", ['20130101']],
+        ["Onboard/utils.py",
+         "lowfi@chello.at", ['20120101']],
+        ["setup.py",
+         "francesco.fumanti@gmx.net", ['20150101']],
+        ["setup.py",
+         "reiner@reiner-h.de", ['20150101']],
         ["themes/Aubergine.colors",
-         "alanbell@ubuntu.com", ['20110101']],
-        ["themes/Typist.colors",
          "alanbell@ubuntu.com", ['20110101']],
         ["themes/ModelM.colors",
          "alanbell@ubuntu.com", ['20110101']],
-        ["debian/rules",
-         "barry@ubuntu.com", ['20110624']],
-
+        ["themes/Typist.colors",
+         "alanbell@ubuntu.com", ['20110101']],
     ]
 
     # bzr commits that should not grant copyright
@@ -559,24 +616,23 @@ class FileType:
         return False
 
     def get_license_template(self, lines):
-        template = lstrip_docstring(
-        """
-        {copyright}
-        This file is part of {prog}.
+        template = lstrip_docstring("""
+{copyright}
+This file is part of {prog}.
 
-        {prog} is free software; you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation; either version 3 of the License, or
-        (at your option) any later version.
+{prog} is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
-        {prog} is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-        GNU General Public License for more details.
+{prog} is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-        You should have received a copy of the GNU General Public License
-        along with this program. If not, see <http://www.gnu.org/licenses/>.
-        """)    # noqa - shut up flake8
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+""")    # noqa - shut up flake8
         return template
 
     def insert_license_header(self, lines, header):
@@ -1005,15 +1061,15 @@ class FileTypePO(FileType):
                         state = 1
 
                 elif state == 1:
-                    m = re.search("Copyright.*Rosetta Contributors", stripped)
+                    m = re.search("Copyright", stripped)
                     if m:
-                        template_lines.append(m.group())
+                        template_lines.append(m.group() + ":")
                         state = 2
 
                 # last line of the fixed part
                 elif state == 2:
                     m = re.search("#\s*This file is distributed under the "
-                                  "same license as the onboard package",
+                                  "same license as.*package",
                                   stripped)
                     if m:
                         state = 3
@@ -1039,35 +1095,15 @@ class FileTypePO(FileType):
         # Onboard's strings are GPLv3, the translated ones BSD, see
         # https://help.launchpad.net/Translations/LicensingFAQ
         bsd = split_docstring("""
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
+Copyright:
+  Original strings: See files they were extracted from
+  Translations: Rosetta Contributers
 
-* Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following
-disclaimer in the documentation and/or other materials provided
-with the distribution.
-
-* Neither the name of the Onboard Devel Team nor the names of its
-contributors may be used to endorse or promote products derived
-from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-        """, False)[1:]
+License:
+  Original strings: GPL-3+ license
+  Translations: BSD-3-clause license
+\n
+""")[1:]
 
         template_lines += bsd
         template_lines += footer_lines
@@ -1142,7 +1178,7 @@ def lstrip_docstring(docstring):
     return "\n".join(split_docstring(docstring))
 
 
-def split_docstring(docstring, strip_leading_spaces=True):
+def split_docstring(docstring, strip_leading_spaces=False):
     lines = docstring.expandtabs().splitlines()
     if strip_leading_spaces:
         lines = [line.lstrip() for line in lines]
