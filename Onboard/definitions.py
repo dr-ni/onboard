@@ -156,6 +156,7 @@ class Handle:
     SOUTH = Gdk.WindowEdge.SOUTH
     SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
     class MOVE: pass
+    class ASPECT_RATIO: pass
 
 Handle.EDGES  =   (Handle.EAST,
                    Handle.SOUTH,
@@ -190,7 +191,8 @@ Handle.BOTTOM_RESIZERS = (
                    Handle.SOUTH_WEST,
                    Handle.WEST)
 
-Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
+Handle.RESIZE_MOVE = Handle.RESIZERS + (Handle.MOVE, )
+Handle.ALL = Handle.RESIZE_MOVE + (Handle.ASPECT_RATIO,)
 
 Handle.CURSOR_TYPES = {
     Handle.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
@@ -201,7 +203,8 @@ Handle.CURSOR_TYPES = {
     Handle.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
     Handle.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
     Handle.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER,
-    Handle.MOVE       : Gdk.CursorType.FLEUR}
+    Handle.MOVE       : Gdk.CursorType.FLEUR,
+    Handle.ASPECT_RATIO : Gdk.CursorType.RIGHT_SIDE}
 
 Handle.IDS = {
     Handle.EAST       : "E",

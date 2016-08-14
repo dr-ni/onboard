@@ -32,6 +32,7 @@ import logging
 _logger = logging.getLogger("TouchHandles")
 ###############
 
+
 class TouchHandle(object):
     """ Enlarged drag handle for resizing or moving """
 
@@ -64,8 +65,9 @@ class TouchHandle(object):
             for i, h in enumerate(Handle.EDGES):
                 self._handle_angles[h] = i * pi / 2.0
             for i, h in enumerate(Handle.CORNERS):
-                self._handle_angles[h] = i * pi / 2.0 + pi /  4.0
+                self._handle_angles[h] = i * pi / 2.0 + pi / 4.0
             self._handle_angles[Handle.MOVE] = 0.0
+            self._handle_angles[Handle.ASPECT_RATIO] = 0.0
 
     def get_rect(self):
         rect = self._rect
@@ -95,7 +97,7 @@ class TouchHandle(object):
     def is_corner_handle(self):
         return self.id in Handle.CORNERS
 
-    def update_position(self, canvas_rect):
+    def update_position(self, canvas_rect, keyboard_frame_rect):
         w, h = self._size
         w = min(w, canvas_rect.w / 3.0)
         w = min(w, canvas_rect.h / 3.0)
@@ -103,7 +105,7 @@ class TouchHandle(object):
         self._scale = 1.0
 
         xc, yc = canvas_rect.get_center()
-        if self.id is Handle.MOVE:  # move handle?
+        if self.id is Handle.MOVE:
             d = min(canvas_rect.w - 2.0 * w, canvas_rect.h - 2.0 * h)
             self._scale = 1.4
             w = min(w * self._scale, d)
@@ -130,6 +132,10 @@ class TouchHandle(object):
             y = yc - h / 2.0
         if self.id in [Handle.MOVE, Handle.NORTH, Handle.SOUTH]:
             x = xc - w / 2.0
+
+        if self.id == Handle.ASPECT_RATIO:
+            x = keyboard_frame_rect.right() - w
+            y = yc - h / 2.0
 
         self._rect = Rect(x, y, w, h)
 
@@ -280,7 +286,8 @@ class TouchHandle(object):
         m.translate(xc, yc)
         m.rotate(angle)
 
-        if self.is_edge_handle():
+        if self.is_edge_handle() or \
+           self.id is Handle.ASPECT_RATIO:
             p0 = m.transform_point(radius, -radius)
             p1 = m.transform_point(radius, radius)
             context.arc(xc, yc, radius, angle + pi / 2.0, angle + pi / 2.0 + pi)
@@ -335,7 +342,8 @@ class TouchHandles(object):
                              TouchHandle(Handle.SOUTH_EAST),
                              TouchHandle(Handle.SOUTH),
                              TouchHandle(Handle.SOUTH_WEST),
-                             TouchHandle(Handle.WEST)]
+                             TouchHandle(Handle.WEST),
+                             TouchHandle(Handle.ASPECT_RATIO)]
 
     def set_active_handles(self, handle_ids):
         self.handles = []
@@ -347,10 +355,10 @@ class TouchHandles(object):
         for handle in self._handle_pool:
             handle._window = window
 
-    def update_positions(self, canvas_rect):
+    def update_positions(self, canvas_rect, keyboard_frame_rect):
         self.rect = canvas_rect
         for handle in self.handles:
-            handle.update_position(canvas_rect)
+            handle.update_position(canvas_rect, keyboard_frame_rect)
 
     def draw(self, context):
         if self.opacity:

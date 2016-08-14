@@ -301,6 +301,9 @@ class OnboardGtk(object):
         config.window.enable_inactive_transparency_notify_add(update_transparency)
         config.window.inactive_transparency_notify_add(update_inactive_transparency)
         config.window.docking_notify_add(self._update_docking)
+        config.window.docking_aspect_change_range_notify_add(
+            lambda x: self.keyboard_widget
+            .update_docking_aspect_change_range())
 
         # layout
         config.layout_filename_notify_add(reload_layout)

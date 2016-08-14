@@ -107,7 +107,7 @@ USER_DIR                   = "onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
-DEFAULT_WINDOW_HANDLES     = list(Handle.ALL)
+DEFAULT_WINDOW_HANDLES     = list(Handle.RESIZE_MOVE)
 
 DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
@@ -1223,8 +1223,8 @@ class Config(ConfigObject):
 
     def set_num_window_handles(self, num):
         if num == NumResizeHandles.ALL:
-            window_handles = list(Handle.ALL)
-            icp_handles    = list(Handle.ALL)
+            window_handles = list(Handle.RESIZE_MOVE)
+            icp_handles    = list(Handle.RESIZE_MOVE)
         elif num == NumResizeHandles.NORESIZE:
             window_handles = [Handle.MOVE]
             icp_handles    = [Handle.MOVE]
@@ -1470,7 +1470,7 @@ class Config(ConfigObject):
             if sys.version_info < (3,3):
                 return s1.lower() == s2.lower()
             return s1.casefold() == s2.casefold()
-            
+
 
         def isdesktop(id):
             return istrcmp(xdg_desktop, id) or istrcmp(desktop, id)

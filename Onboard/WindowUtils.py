@@ -139,6 +139,8 @@ class WindowManipulator(object):
                 self.start_move_window(sequence.root_point)
             else:
                 self.start_resize_window(hit, sequence.root_point)
+                if hit is Handle.ASPECT_RATIO:
+                    self.on_handle_aspect_ratio_pressed()
             return True
 
         if move_on_background and \
@@ -229,6 +231,14 @@ class WindowManipulator(object):
         """
         self.stop_drag()
 
+    def on_handle_aspect_ratio_pressed(self):
+        """ Overload this to process start of dragging of Handle.ASPECT_RATIO """
+        pass
+
+    def on_handle_aspect_ratio_motion(self, wx, wy):
+        """ Overload this to process motion changes of Handle.ASPECT_RATIO """
+        pass
+
     def _handle_motion_fallback(self, dx, dy):
         """ handle dragging for window move and resize """
         if not self.is_drag_initiated():
@@ -237,43 +247,46 @@ class WindowManipulator(object):
         wx = self._drag_start_pointer[0] + dx - self._drag_start_offset[0]
         wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
 
-        if self._drag_handle == Handle.MOVE:
-            # contrain axis movement
-            if self._lock_x_axis:
-                wx = self.get_drag_window().get_position()[0]
-            if self._lock_y_axis:
-                wx = self.get_drag_window().get_position()[1]
-
-            # move window
-            x, y = self.limit_position(wx, wy)
-            w, h = None, None
+        if self._drag_handle == Handle.ASPECT_RATIO:
+            self.on_aspect_ratio_motion(wx, wy)
         else:
-            # resize window
-            wmin, hmin = self.get_min_window_size()
-            rect = self._drag_start_rect
-            x0, y0, x1, y1 = rect.to_extents()
-            w, h = rect.get_size()
+            if self._drag_handle == Handle.MOVE:
+                # contrain axis movement
+                if self._lock_x_axis:
+                    wx = self.get_drag_window().get_position()[0]
+                if self._lock_y_axis:
+                    wx = self.get_drag_window().get_position()[1]
 
-            if self._drag_handle in [Handle.NORTH,
-                                     Handle.NORTH_WEST,
-                                     Handle.NORTH_EAST]:
-                y0 = min(wy, y1 - hmin)
-            if self._drag_handle in [Handle.WEST,
-                                     Handle.NORTH_WEST,
-                                     Handle.SOUTH_WEST]:
-                x0 = min(wx, x1 - wmin)
-            if self._drag_handle in [Handle.EAST,
-                                     Handle.NORTH_EAST,
-                                     Handle.SOUTH_EAST]:
-                x1 = max(wx + w, x0 + wmin)
-            if self._drag_handle in [Handle.SOUTH,
-                                     Handle.SOUTH_WEST,
-                                     Handle.SOUTH_EAST]:
-                y1 = max(wy + h, y0 + hmin)
+                # move window
+                x, y = self.limit_position(wx, wy)
+                w, h = None, None
+            else:
+                # resize window
+                wmin, hmin = self.get_min_window_size()
+                rect = self._drag_start_rect
+                x0, y0, x1, y1 = rect.to_extents()
+                w, h = rect.get_size()
 
-            x, y, w, h = x0, y0, x1 -x0, y1 - y0
+                if self._drag_handle in [Handle.NORTH,
+                                        Handle.NORTH_WEST,
+                                        Handle.NORTH_EAST]:
+                    y0 = min(wy, y1 - hmin)
+                if self._drag_handle in [Handle.WEST,
+                                        Handle.NORTH_WEST,
+                                        Handle.SOUTH_WEST]:
+                    x0 = min(wx, x1 - wmin)
+                if self._drag_handle in [Handle.EAST,
+                                        Handle.NORTH_EAST,
+                                        Handle.SOUTH_EAST]:
+                    x1 = max(wx + w, x0 + wmin)
+                if self._drag_handle in [Handle.SOUTH,
+                                        Handle.SOUTH_WEST,
+                                        Handle.SOUTH_EAST]:
+                    y1 = max(wy + h, y0 + hmin)
 
-        self._move_resize(x, y, w, h)
+                x, y, w, h = x0, y0, x1 -x0, y1 - y0
+
+            self._move_resize(x, y, w, h)
 
     def set_drag_cursor_at(self, point, allow_drag_cursors = True):
         """ set the mouse cursor """

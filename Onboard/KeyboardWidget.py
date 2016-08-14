@@ -229,7 +229,63 @@ class TransitionState:
         return max(x.duration for x in self._vars)
 
 
-class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
+class WindowManipulatorAspectRatio(WindowManipulator):
+    """ Adds support for the ASPECT_RATIO docking handle. """
+
+    def __init__(self):
+        WindowManipulator.__init__(self)
+        self._docking_aspect_change_range = \
+            config.window.docking_aspect_change_range
+
+    def update_docking_aspect_change_range(self):
+        """ GSettings key changed """
+        value = config.window.docking_aspect_change_range
+        if self._docking_aspect_change_range != value:
+            self._docking_aspect_change_range = value
+            self.keyboard.invalidate_ui()
+            self.keyboard.commit_ui_updates()
+
+    def get_docking_aspect_change_range(self):
+        return self._docking_aspect_change_range
+
+    def on_handle_aspect_ratio_pressed(self):
+        self._drag_start_keyboard_frame_rect = self.get_keyboard_frame_rect()
+
+    def on_drag_done(self):
+        config.window.docking_aspect_change_range = \
+            self._docking_aspect_change_range
+
+    def on_aspect_ratio_motion(self, wx, wy):
+        keyboard_frame_rect = self._drag_start_keyboard_frame_rect
+
+        base_aspect_rect = self.get_base_aspect_rect()
+        base_aspect = base_aspect_rect.w / base_aspect_rect.h
+        start_frame_width = self._drag_start_keyboard_frame_rect.w
+        new_frame_width = start_frame_width + wx * 2
+
+        # snap to screen sides
+        if new_frame_width >= self.canvas_rect.w * (1.0 - 0.05):
+            new_aspect_change = 100.0
+        else:
+            new_aspect_change = \
+                new_frame_width / (keyboard_frame_rect.h * base_aspect)
+
+        # limit to minimum combined aspect
+        min_aspect = 0.75
+        new_aspect = base_aspect * new_aspect_change
+        if new_aspect < min_aspect:
+            new_aspect_change = min_aspect / base_aspect
+
+        self._docking_aspect_change_range = \
+            (self._docking_aspect_change_range[0], new_aspect_change)
+
+        self.update_layout()
+        self.update_touch_handles_positions()
+        self.invalidate_for_resize(self._lod)
+        self.redraw()
+
+
+class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
                      LayoutView, TouchInput):
 
     TRANSITION_DURATION_MOVE = 0.25
@@ -238,7 +294,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
     def __init__(self, keyboard):
         Gtk.DrawingArea.__init__(self)
-        WindowManipulator.__init__(self)
+        WindowManipulatorAspectRatio.__init__(self)
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
 
@@ -271,7 +327,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         self.touch_handles_fade = FadeTimer()
         self.touch_handles_auto_hide = True
 
-        self._aspect_ratio = None
+        self._window_aspect_ratio = None
 
         self._hide_input_line_timer = HideInputLineTimer(keyboard)
 
@@ -399,7 +455,18 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         return self.canvas_rect.w != w or \
                self.canvas_rect.h != h
 
-    def update_layout(self, canvas_rect = None):
+    def get_canvas_content_rect(self):
+        """ Canvas rect excluding resize frame """
+        return self.canvas_rect.deflate(self.get_frame_width())
+
+    def get_base_aspect_rect(self):
+        """ Rect with aspect ratio of the layout as defined in the SVG file """
+        layout = self.get_layout()
+        if not layout:
+            return Rect(0, 0, 1.0, 1.0)
+        return layout.context.log_rect
+
+    def update_layout(self, canvas_rect=None):
         layout = self.get_layout()
         if not layout:
             return
@@ -412,11 +479,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         else:
             self.canvas_rect = canvas_rect
 
-        rect = self.canvas_rect.deflate(self.get_frame_width())
+        rect = self.get_canvas_content_rect()
 
         layout.update_log_rect()  # update logical tree to base aspect ratio
-        rect = self._get_aspect_corrected_layout_rect(rect,
-                                                      layout.context.log_rect)
+        rect = self._get_aspect_corrected_layout_rect(
+            rect, self.get_base_aspect_rect())
         layout.do_fit_inside_canvas(rect)  # update contexts to final aspect
 
         # update the aspect ratio of the main window
@@ -441,7 +508,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
                 aspect_change_range = config.get_xembed_aspect_change_range()
             elif (config.is_docking_enabled() and
                   config.is_dock_expanded(orientation_co)):
-                aspect_change_range = config.window.docking_aspect_change_range
+                aspect_change_range = self.get_docking_aspect_change_range()
 
             ra = rect.resize_to_aspect_range(base_aspect_rect,
                                              aspect_change_range)
@@ -452,7 +519,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
                 offset = config.get_xembed_unity_greeter_offset_x()
                 # Attempt to left align to unity-greeters password box,
                 # but use the whole width on small screens.
-                if not offset is None \
+                if offset is not None \
                    and padding > 2 * offset:
                     rect.x += offset
                     rect.w -= offset
@@ -822,6 +889,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
     def on_drag_done(self):
         """ Overload for WindowManipulator """
         self.grab_xi_pointer(False)
+        WindowManipulatorAspectRatio.on_drag_done(self)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
@@ -866,7 +934,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
         if self.is_new_layout_size(self.get_allocated_width(),
                                    self.get_allocated_height()):
             self.update_layout()
-            self.touch_handles.update_positions(self.canvas_rect)
+            self.update_touch_handles_positions()
             self.invalidate_for_resize(self._lod)
 
     def on_enter_notify(self, widget, event):
@@ -1248,7 +1316,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
 
             size, size_mm = get_monitor_dimensions(self)
             self.touch_handles.set_monitor_dimensions(size, size_mm)
-            self.touch_handles.update_positions(self.canvas_rect)
+            self.update_touch_handles_positions()
 
             if auto_hide:
                 self.start_touch_handles_auto_hide()
@@ -1300,6 +1368,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             if done:
                 # draw the missing final step
                 GLib.idle_add(self._on_touch_handles_opacity, 1.0, False)
+
+    def update_touch_handles_positions(self):
+        self.touch_handles.update_positions(self.canvas_rect,
+                                            self.get_keyboard_frame_rect())
 
     def _on_draw(self, widget, context):
         context.push_group()
@@ -1372,11 +1444,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             if config.is_docking_enabled():
                 expand = self.get_kbd_window().get_dock_expand()
                 if expand:
-                    handles = (Handle.NORTH, Handle.SOUTH, Handle.MOVE)
+                    handles = (Handle.NORTH, Handle.SOUTH,
+                               Handle.MOVE, Handle.ASPECT_RATIO)
                 else:
-                    handles = Handle.ALL
+                    handles = Handle.RESIZE_MOVE
             else:
-                handles = Handle.ALL
+                handles = Handle.RESIZE_MOVE
 
             if not all_handles:
                 # filter through handles enabled in config
@@ -1433,7 +1506,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
             aspect_ratio = log_rect.w / float(log_rect.h)
             aspect_ratio = layout.get_log_aspect_ratio()
 
-        if self._aspect_ratio != aspect_ratio:
+        if self._window_aspect_ratio != aspect_ratio:
             window = self.get_kbd_window()
             if window:
                 geom = Gdk.Geometry()
@@ -1443,7 +1516,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator,
                     geom.min_aspect = geom.max_aspect = aspect_ratio
                     window.set_geometry_hints(self, geom, Gdk.WindowHints.ASPECT)
 
-                self._aspect_ratio = aspect_ratio
+                self._window_aspect_ratio = aspect_ratio
 
     def refresh_pango_layouts(self):
         """

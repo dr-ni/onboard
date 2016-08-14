@@ -648,7 +648,7 @@ class Rect:
 
     def resize_to_aspect(self, aspect_rect):
         """
-        Resize self to get the aspect ratio of aspect_rect.
+        Resize self to the aspect ratio of aspect_rect.
         """
         if self.is_empty() or aspect_rect.is_empty():
             return Rect()
@@ -666,7 +666,7 @@ class Rect:
     def resize_to_aspect_range(self, aspect_rect, aspect_change_range):
         """
         Resize self to get the aspect ratio of aspect_rect, but limited
-        but the given aspect range.
+        to the given aspect range.
         """
         if self.is_empty() or aspect_rect.is_empty():
             return Rect()
