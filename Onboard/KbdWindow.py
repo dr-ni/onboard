@@ -1298,7 +1298,11 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             return
 
         win = self.get_window()
-        xid = win.get_xid()  # requires GdkX11 import
+        try:
+            xid = win.get_xid()  # requires GdkX11 import
+        except AttributeError:
+            # docking unavailable on Wayland
+            return
 
         if not enable:
             self._apply_struts(xid, None)
