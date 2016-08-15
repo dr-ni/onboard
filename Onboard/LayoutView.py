@@ -582,12 +582,16 @@ class LayoutView:
         """
         Draw drop shadows for all keys.
         """
+        # Shadows are drawn at odd positions when resizing while
+        # docked and extended with side bars visible.
+        # -> Turn them off while resizing. Improves rendering speed a bit too.
+        if lod < LOD.FULL:
+            return
         if not config.theme_settings.key_shadow_strength:
             return
 
         self._auto_select_shadow_quality(context)
 
-        # draw shadows
         context.save()
         self.set_shadow_scale(context, lod)
 
