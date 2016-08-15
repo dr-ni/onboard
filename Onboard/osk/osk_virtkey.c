@@ -1,7 +1,7 @@
 
 /*
  * Copyright © 2006-2008 Chris Jones <tortoise@tortuga>
- * Copyright © 2010, 2013 marmuta <marmvta@gmail.com>
+ * Copyright © 2010, 2013, 2015-2016 marmuta <marmvta@gmail.com>
  * Copyright © 2013 Gerd Kohlberger <lowfi@chello.at>
  *
  * This file is part of Onboard.

@@ -5,7 +5,7 @@
 # Copyright © 2010 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2011 Alan Bell <alanbell@ubuntu.com>
 # Copyright © 2012 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2009-2014 marmuta <marmvta@gmail.com>
+# Copyright © 2009-2014, 2016 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

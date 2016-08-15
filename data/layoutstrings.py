@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-# Copyright © 2009 Chris Jones <tortoise@tortuga>
+# Copyright © 2008-2010 Chris Jones <tortoise@tortuga>
 # Copyright © 2011 Francesco Fumanti <francesco.fumanti@gmx.net>
-# Copyright © 2011-2014 marmuta <marmvta@gmail.com>
+# Copyright © 2011-2016 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

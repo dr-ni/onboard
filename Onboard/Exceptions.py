@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2009 Chris Jones <tortoise@tortuga>
+# Copyright © 2008-2010 Chris Jones <tortoise@tortuga>
 # Copyright © 2010 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2011-2014 marmuta <marmvta@gmail.com>
 #

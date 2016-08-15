@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2015, 2016 marmuta <marmvta@gmail.com>
+# Copyright © 2015-2016 marmuta <marmvta@gmail.com>
 # Copyright © 2016 Francesco Fumanti <francesco.fumanti@gmx.net>
 #
 # This file is part of Onboard.
@@ -221,6 +221,8 @@ class Command:
         "1962",
         # Update license headers.
         "1963",
+        # Update license headers.
+        "2178",
     ]
 
     # paths excluded by default (matched with startswith())

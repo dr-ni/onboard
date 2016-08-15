@@ -3,9 +3,9 @@
 
 # Copyright © 2007 Martin Böhme <martin.bohm@kubuntu.org>
 # Copyright © 2012-2013 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2015 Reiner Herrmann <reiner@reiner-h.de>
 # Copyright © 2009-2016 Francesco Fumanti <francesco.fumanti@gmx.net>
-# Copyright © 2011-2015 marmuta <marmvta@gmail.com>
+# Copyright © 2015 Reiner Herrmann <reiner@reiner-h.de>
+# Copyright © 2011-2016 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -341,7 +341,7 @@ class TestCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '1.2.0',
+    version = '1.2.0+2177',
     author = 'Onboard Devel Team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
