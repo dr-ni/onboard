@@ -1,10 +1,10 @@
-# Albanian translation for onboard
+# Albanian translation for Onboard
 #
-# Copyright: 
-#   Original strings: See files they where extracted from
+# Copyright:
+#   Original strings: See files they were extracted from
 #   Translations: Rosetta Contributers
 #
-# License: 
+# License:
 #   Original strings: GPL-3+ license
 #   Translations: BSD-3-clause license
 #
@@ -14,20 +14,923 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 15:18+0100\n"
-"PO-Revision-Date: 2014-03-01 16:20+0000\n"
+"POT-Creation-Date: 2016-08-15 17:31+0200\n"
+"PO-Revision-Date: 2011-10-11 14:52+0000\n"
 "Last-Translator: Vilson Gjeci <vilsongjeci@gmail.com>\n"
 "Language-Team: Albanian <sq@li.org>\n"
 "Language: sq\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-02-17 14:32+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-08-14 15:52+0000\n"
+"X-Generator: Launchpad (build 18169)\n"
+
+#: ../Onboard/LanguageSupport.py:173 ../Onboard/Timer.py:160
+#: ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723
+msgid "Failed to execute '{}', {}"
+msgstr "Dështova në ekzekutimin e '{}', {}"
+
+#: ../Onboard/OnboardGtk.py:415
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard është konfiguruar të shfaet me dialogun për të zhbllokuar ekranin; "
+"përshembull për tëhequr ruajtësin e ekranit të mbrojtur nga fjalëkalimi.\n"
+"\n"
+"Sidoqoftë sistemi nuk është më i konfiguruar që të përdorë Onboard për të "
+"zhbllokuar ekranin. Një arsye e mundshme mund të jetë që një program tjetër "
+"e ka konfiguruar sistemin për të përdorur diçka tjetër.\n"
+"\n"
+"\n"
+"Do të dëshironit ta rikonfiguronit sistemin që të shfaqë Onboard kur "
+"zhbllokon ekranin?"
+
+#: ../Onboard/OnboardGtk.py:434
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard është konfiguruar të shfaqet me dialogun për të zhbllokuar ekranin; "
+"përshembull për të hequr ruajtësin e mbrojtur të ekranit.\n"
+"\n"
+"Sidoqoftë ky funksion është çaktivizuar në sistem.\n"
+"\n"
+"Do të dëshironit ta aktivizonit atë?"
+
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Personalizo Temën"
+
+#: ../settings_theme_dialog.ui.h:2
+msgctxt "Label of the revert button of the theme settings dialog."
+msgid "_Revert"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:3
+msgctxt "Label of the close button of the theme settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:4
+msgid "Color Sche_me"
+msgstr "Ske_ma e Ngjyrave"
+
+#: ../settings_theme_dialog.ui.h:5 ../settings.ui.h:68
+msgid "_Background:"
+msgstr "_Sfondi:"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:6 ../Onboard/settings.py:1426
+msgid "Gradient"
+msgstr "Shkallëzor"
+
+#: ../settings_theme_dialog.ui.h:7
+msgid "_Angle:"
+msgstr "_Këndi:"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "Light Direction"
+msgstr "Drejtimi i Dritës"
+
+#: ../settings_theme_dialog.ui.h:9 ../settings.ui.h:16
+msgid "Keyboard"
+msgstr "Tastiera"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "_Style:"
+msgstr "_Stili:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "R_oundness:"
+msgstr "R_rumbullakësia:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "S_ize:"
+msgstr "P_ërmasa:"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "B_order width:"
+msgstr "B_order gjerësia:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "Key Style"
+msgstr "Stili i Çelësit"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Key:"
+msgstr "_Tasti:"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Border:"
+msgstr "_Korniza:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Gradients"
+msgstr "Gradientët"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "_Strength:"
+msgstr "_Forca:"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "Shadow"
+msgstr "Hija"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "Keys"
+msgstr "Butonat"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "_Font:"
+msgstr "_Gërma:"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "_Attributes:"
+msgstr "_Atributet:"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "Font"
+msgstr "Gërma"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "I_ndependent size"
+msgstr "P_ërmasë e Pavarur"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "_Super key:"
+msgstr "_Super çelësi:"
+
+#: ../settings_theme_dialog.ui.h:26
+msgid "Label Override"
+msgstr "Mbishkrim i etiketave"
+
+#: ../settings_theme_dialog.ui.h:27
+msgid "Labels"
+msgstr "Etiketat"
+
+#: ../settings.ui.h:1
+msgid "Key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "International character selection"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "Auto"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "XTest"
+msgstr "XTest"
+
+#: ../settings.ui.h:7
+msgid "uinput"
+msgstr ""
+
+#: ../settings.ui.h:8
+msgid "AT-SPI"
+msgstr "AT-SPI"
+
+#: ../settings.ui.h:9
+msgid "Remember nothing"
+msgstr ""
+
+#: ../settings.ui.h:10
+msgid "Don't remember new words"
+msgstr ""
+
+#: ../settings.ui.h:11
+msgid "General"
+msgstr "Të Përgjithshme"
+
+#: ../settings.ui.h:12
+msgid "Window"
+msgstr "Dritare"
+
+#: ../settings.ui.h:13
+msgid "Layout"
+msgstr "Planimetria"
+
+#: ../settings.ui.h:14
+msgid "Theme"
+msgstr "Temë"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:15 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
+msgid "Snippets"
+msgstr "Snippets"
+
+#: ../settings.ui.h:17
+msgid "Typing Assistance"
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Universal Access"
+msgstr "Hyrje Universale"
+
+#: ../settings.ui.h:19
+msgid "Latch, then lock"
+msgstr ""
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "Kliko dy herë ta mbyllësh"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Latch only"
+msgstr "Boshti"
+
+#: ../settings.ui.h:22
+#, fuzzy
+msgid "Lock only"
+msgstr "Kyç"
+
+#: ../settings.ui.h:23
+#, fuzzy
+msgid "Push button"
+msgstr "Kliko një buton..."
+
+#: ../settings.ui.h:24
+msgid "none"
+msgstr ""
+
+#: ../settings.ui.h:25
+msgid "single-touch"
+msgstr ""
+
+#: ../settings.ui.h:26
+msgid "multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:27
+msgctxt "Label of the main close button of the preferences dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings.ui.h:28
+msgid "_Auto-show when editing text"
+msgstr "_Vetëshfaqe kur modifikon tekstin"
+
+#: ../settings.ui.h:29
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"Shfaq Onboard kur një dritare e njohur teksti është në fokus. Kërkon Hyrje "
+"në Gnome."
+
+#: ../settings.ui.h:30
+#, fuzzy
+msgctxt "Label of settings button on preferences page General."
+msgid "_Settings"
+msgstr "_Rregullime"
+
+#: ../settings.ui.h:31
+msgid "Start Onboard _hidden"
+msgstr "Nise Onboard _të fshehur"
+
+#: ../settings.ui.h:32
+msgid "Start Onboard hidden."
+msgstr "Nise Onboard të fshehur."
+
+#: ../settings.ui.h:33
+msgid "Show/Hide options"
+msgstr ""
+
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Shfaq _ikonën lundruese kur Onboard është fshehur"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Shfaq një ikonë lundruese në ekran kur Onboard është i fshehur. Një klikim "
+"në ikonë e bën Onboard që të rishfaqet."
+
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "Shfaqe kur _zhbllokon erkanin"
+
+#: ../settings.ui.h:37
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Shfaq Onboard kur shfaqet dialogu për të zhbllokuar ekranin; në këtë mënyrë "
+"Onboard mund të përdoret përshembull për të vendosur fjalëkalimin për të "
+"hequr screensaver kur është vendosur që të kërkojë për të."
+
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "Shfaq _kshillat"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Shfaq këshillat për butonat e tastierës&apos;."
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Shfaq këshillat për butonat e tastierës"
+
+#: ../settings.ui.h:41
+msgid "_Show status icon"
+msgstr "_Shfaq ikonën e gjendjes"
+
+#: ../settings.ui.h:42
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr ""
+"Shfaq gjendjen e temës. Një klikim në atë ikonë fsheh ose shfaq Onboard."
+
+#: ../settings.ui.h:43
+msgid "Status icon _provider:"
+msgstr ""
+
+#: ../settings.ui.h:44
+msgid ""
+"<b>AppIndicator</b> (default) is recommended for broadest compatibility. A "
+"middle click on the icon shows the keyboard. In KDE Plasma a left click does "
+"the same.\n"
+"\n"
+"<b>GtkStatusIcon</b> isn't supported well anymore by various desktop "
+"environments, but generally allows to show the keyboard on left click.\n"
+"\n"
+"Requires restart."
+msgstr ""
+
+#: ../settings.ui.h:49
+msgid "Desktop Integration"
+msgstr "Integrimi i Desktopit"
+
+#: ../settings.ui.h:50
+msgid "Dock to screen edge"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "Mbështet tastierën në buzë të ekranit."
+
+#: ../settings.ui.h:52
+#, fuzzy
+msgctxt "Label of settings button on preferences page Window."
+msgid "_Settings"
+msgstr "_Rregullime"
+
+#: ../settings.ui.h:53
+msgid "Docking"
+msgstr "Mbështetja"
+
+#: ../settings.ui.h:54
+msgid "Show window _decoration"
+msgstr "Shfaq _dekorimin e dritares"
+
+#: ../settings.ui.h:55
+msgid "Show window caption and frame."
+msgstr "Shfaq gërmat dhe kornizën e dritares."
+
+#: ../settings.ui.h:56
+msgid "Show always on visible _workspace"
+msgstr "Shfaqe gjithmonë të dukshme në _Hapësirën e dukshme të punës"
+
+#: ../settings.ui.h:57
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "&quot;Ngjitëse&quot; mënyrë për tastierën dhe ikonën lundruese."
+
+#: ../settings.ui.h:58
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "\"Ngjitëse\" mënyrë për tastierën dhe ikonën lundruese."
+
+#: ../settings.ui.h:59
+msgid "_Force window to top"
+msgstr "_Detyro dritaren që të qëndrojë në krye"
+
+#: ../settings.ui.h:60
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "Përpiqu shumë për ta mbajtur Onboard mbi çdo gjë në ekran."
+
+#: ../settings.ui.h:61
+msgid "Keep _aspect ratio"
+msgstr "Mbaje shkallën e _pamjes"
+
+#: ../settings.ui.h:62
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "Ndrysho përmasat e dritares në proporcion me layout&apos;s"
+
+#: ../settings.ui.h:63
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "Rregulloje përmasën e dritares sipas përmasës së ekranit."
+
+#: ../settings.ui.h:64
+msgid "Floating Window Options"
+msgstr ""
+
+#: ../settings.ui.h:65
+msgid "Window options"
+msgstr ""
+
+#: ../settings.ui.h:66
+msgid "Wind_ow:"
+msgstr "Drit_arja:"
+
+#: ../settings.ui.h:67
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "Tejdukshmëri e të gjithë dritares së tastierës. Kërkon përbërje."
+
+#: ../settings.ui.h:69
+msgid "Transparency of the keyboard background"
+msgstr "Tejukshmëria e sfondit të tastierës"
+
+#: ../settings.ui.h:70
+msgid "_No background"
+msgstr "_Nuk ka sfond"
+
+#: ../settings.ui.h:71
+msgid "Show the desktop through the gaps between keys."
+msgstr "Shfaq desktopin në hapësirat midis butonave."
+
+#: ../settings.ui.h:72
+msgid "Transparency"
+msgstr "Tejdukshmëri"
+
+#: ../settings.ui.h:73
+msgid "Set _transparency to"
+msgstr "Vendos _transparencën tek"
+
+#: ../settings.ui.h:74
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "Aktivizo transparencën jo aktive. Kërkon përzierje."
+
+#: ../settings.ui.h:75
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "Tejdukshmëri kur shenjuesi e lë tastierën. Kërkon përbërje."
+
+#: ../settings.ui.h:76
+msgid "after"
+msgstr "pas"
+
+#: ../settings.ui.h:77
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "Vonesa në sekonda deri sa transparenca jo aktive bëhet e efektshme."
+
+#: ../settings.ui.h:78
+msgid "seconds"
+msgstr "sekonda"
+
+#: ../settings.ui.h:79
+msgid "When Inactive"
+msgstr "Kur nuk Është Aktive"
+
+#: ../settings.ui.h:80
+#, fuzzy
+msgid "_Window handles:"
+msgstr "Menaxhim dritareje"
+
+#: ../settings.ui.h:81
+msgid "Resize Protection"
+msgstr "Ripërmaso Mbrojtjen"
+
+#: ../settings.ui.h:82
+msgid "Name"
+msgstr ""
+
+#: ../settings.ui.h:83
+msgid "Description"
+msgstr ""
+
+#: ../settings.ui.h:84
+msgctxt "Label of new layout button on preferences page Layout."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:85
+#, fuzzy
+msgctxt "Label of delete layout button on preferences page Layout."
+msgid "_Delete"
+msgstr "Fshije"
+
+#: ../settings.ui.h:86
+#, fuzzy
+msgctxt "Label of open folder button on preferences page Layout."
+msgid "_Open layouts folder"
+msgstr "_Hap dosjen e shtresave"
+
+#: ../settings.ui.h:87
+msgctxt "Label of about layout button on preferences page Layout."
+msgid "_About"
+msgstr ""
+
+#: ../settings.ui.h:88
+msgctxt "Label of new theme button on preferences page Theme."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:89
+#, fuzzy
+msgctxt "Label of delete theme  button on preferences page Theme."
+msgid "_Delete"
+msgstr "Fshije"
+
+#: ../settings.ui.h:90
+#, fuzzy
+msgctxt "Label of customize theme button on preferences page Theme."
+msgid "C_ustomize theme"
+msgstr "P_ërshtat temën"
+
+#: ../settings.ui.h:91
+msgid "Follow _system theme"
+msgstr "Ndiq temën e _sistemit"
+
+#: ../settings.ui.h:92
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"Mba mend cila temë e Onboard u përdor e fundit për çdo temë të sistemit."
+
+#: ../settings.ui.h:93
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Snippets janë copëza teksti të cilat vendosen kur shtypet butoni "
+"korrespondues Onboard."
+
+#: ../settings.ui.h:94
+msgctxt "Label of add snippet button on preferences page Snippets."
+msgid "_Add"
+msgstr ""
+
+#: ../settings.ui.h:95
+msgctxt "Label of remove snippet button on preferences page Snippets."
+msgid "_Remove"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid "Show label popups"
+msgstr ""
+
+#: ../settings.ui.h:97
+msgid "Show label popups above pressed keys."
+msgstr ""
+
+#: ../settings.ui.h:98
+msgid "Play sound"
+msgstr ""
+
+#: ../settings.ui.h:99
+msgid "Play click sound on keypress."
+msgstr ""
+
+#: ../settings.ui.h:100
+msgid "Place sound in space"
+msgstr ""
+
+#: ../settings.ui.h:101
+msgid ""
+"Place sound in space between speakers depending on the key's position on "
+"screen"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid "Key-press Feedback"
+msgstr ""
+
+#: ../settings.ui.h:103
+msgid "Show secondary labels"
+msgstr ""
+
+#: ../settings.ui.h:104
+msgid "Show characters reachable with or without the shift key."
+msgstr ""
+
+#: ../settings.ui.h:105
+msgid "Key Labels"
+msgstr ""
+
+#: ../settings.ui.h:106
+msgid "Upper case on right click"
+msgstr ""
+
+#: ../settings.ui.h:107
+msgid "Temporarily enable SHIFT when clicking with the secondary button."
+msgstr ""
+
+#: ../settings.ui.h:108
+msgid "Key Behaviour"
+msgstr ""
+
+#: ../settings.ui.h:109
+msgid "_Long press action:"
+msgstr ""
+
+#: ../settings.ui.h:110
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:111
+msgid "Modifier _behavior:"
+msgstr "Ndryshues _sjellje:"
+
+#: ../settings.ui.h:112
+msgid "Behavior of modifier and layer keys."
+msgstr "Sjellja e nryshuesit dhe tastave të shtresës."
+
+#: ../settings.ui.h:113
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "Vonesa e ndryshuesit auto-_release:"
+
+#: ../settings.ui.h:114
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"Sekondat pa aktivitet derisa ndryshuesit aktivë dhe tastat e shtresës janë "
+"leshuar. 0 që të caktivizosh."
+
+#: ../settings.ui.h:115
+#, fuzzy
+msgid "Modifier auto-release after hide in seconds:"
+msgstr "Vonesa e ndryshuesit auto-_release:"
+
+#: ../settings.ui.h:116
+msgid ""
+"Time after hiding the keyboard in seconds until latched and locked modifiers "
+"and layer keys are released automatically. Leave at 0.0 to not automatically "
+"release them."
+msgstr ""
+
+#: ../settings.ui.h:117
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:118
+msgid "Key Behavior"
+msgstr ""
+
+#: ../settings.ui.h:119
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:120
+msgid "_Input event source:"
+msgstr ""
+
+#: ../settings.ui.h:121
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+
+#: ../settings.ui.h:122
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+
+#: ../settings.ui.h:123
+msgid "Input Options"
+msgstr ""
+
+#: ../settings.ui.h:124
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:125
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:126
+#, fuzzy
+msgid "Key-stroke generator"
+msgstr "Shkelje e tastit _brezi:"
+
+#: ../settings.ui.h:127
+msgid ""
+"<b>Auto</b>: let Onboard decide, recommended.\n"
+"\n"
+"<b>XTest</b> is the default for all X based desktop environments.\n"
+"\n"
+"<b>uinput</b> should be available on all linux-based systems, including X, "
+"Wayland and MIR-based desktops, but requires write permission for /dev/"
+"uinput.\n"
+"\n"
+"<b>AT-SPI</b> has limited support for key-stroke generation, and is only "
+"recommended for testing."
+msgstr ""
+
+#: ../settings.ui.h:134
+#, fuzzy
+msgid "Key-stroke Generation"
+msgstr "Shkelje e tastit _brezi:"
+
+#: ../settings.ui.h:135
+msgid "Advanced"
+msgstr "Të Avancuara"
+
+#: ../settings.ui.h:136
+msgid "Show _suggestions"
+msgstr ""
+
+#: ../settings.ui.h:137
+msgid "Enable word completion and prediction."
+msgstr ""
+
+#: ../settings.ui.h:138
+msgid "Show spelling suggestions"
+msgstr ""
+
+#: ../settings.ui.h:139
+msgid "Check spelling of the word at or before the cursor."
+msgstr ""
+
+#: ../settings.ui.h:140
+msgid "_Learn from typed text"
+msgstr ""
+
+#: ../settings.ui.h:141
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+
+#: ../settings.ui.h:142
+msgid "Insert word _separators"
+msgstr ""
+
+#: ../settings.ui.h:143
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+
+#: ../settings.ui.h:144
+msgid "Options"
+msgstr ""
+
+#: ../settings.ui.h:145
+msgid "Show more suggestions arrow"
+msgstr ""
+
+#: ../settings.ui.h:146
+msgid "Step forward and backward through the available suggestions."
+msgstr ""
+
+#: ../settings.ui.h:147
+msgid "Show button to pause learning"
+msgstr "Shfaq butonin për të vendosur të mësuarit në pauzë"
+
+#: ../settings.ui.h:148
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr "Fjalët e shtypura kur ky buton është shtypur nuk do të mbahen mend."
+
+#: ../settings.ui.h:149
+msgid "Show lan_guage switcher"
+msgstr "Shfaq ndryshuesin e gju_hëve"
+
+#: ../settings.ui.h:150
+msgid "Show a button for language selection."
+msgstr "Shfaq një buton për përzgjedhjen e gjuhës."
+
+#: ../settings.ui.h:151
+msgid "Buttons"
+msgstr ""
+
+#: ../settings.ui.h:152
+msgid "Word Suggestions"
+msgstr ""
+
+#: ../settings.ui.h:153
+msgid "Auto-capitalize while typing"
+msgstr ""
+
+#: ../settings.ui.h:154
+msgid "Automatically capitalize sentence begins and name words."
+msgstr ""
+
+#: ../settings.ui.h:155
+msgid "Auto-correct spelling"
+msgstr ""
+
+#: ../settings.ui.h:156
+msgid "Automatically correct the last word."
+msgstr ""
+
+#: ../settings.ui.h:157
+msgid "The spell check engine to use."
+msgstr ""
+
+#: ../settings.ui.h:158
+msgid "Spell-check backend:"
+msgstr ""
+
+#: ../settings.ui.h:159
+msgid "Auto-correction"
+msgstr ""
+
+#: ../settings.ui.h:160
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:161
+#, fuzzy
+msgid "Learning"
+msgstr "Pauzë në të mësuar"
+
+#: ../settings.ui.h:162
+msgid "Enable  keyboard _scanning"
+msgstr "Aktivizo _skanimin me tastierë"
+
+#: ../settings.ui.h:163
+#, fuzzy
+msgctxt ""
+"Label of keyboard scanning settings button on preferences page Universal "
+"Access."
+msgid "Sc_anner Settings"
+msgstr "Parametrat e Sk_anerit"
+
+#: ../settings.ui.h:164
+msgid "Keyboard Scanning"
+msgstr "Skanimi me Tastierë"
+
+#: ../settings.ui.h:165
+msgid "_Delay:"
+msgstr "_Vonesa:"
+
+#: ../settings.ui.h:166
+msgid "_Motion threshold:"
+msgstr "_Kufiri i lëvizjes:"
+
+#: ../settings.ui.h:167
+msgid "Time in seconds before a click is triggered."
+msgstr "Koha në sekonda përpara se të shkaktohet një klikim."
+
+#: ../settings.ui.h:168
+msgid "Distance in pixels before movement will be recognized."
+msgstr "Distanca në piksel para se të njihet levizja."
+
+#: ../settings.ui.h:169
+msgid "Hide hover click window"
+msgstr "Fshih dritaren që rri pezull"
+
+#: ../settings.ui.h:170
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr ""
+"Fshihe dritaren me klikim qëndrimi që jep sistemi kur është nisur Onboard."
+
+#: ../settings.ui.h:171
+msgid "Enable click type window on exit"
+msgstr "Aktivizo modalitetin e klikimit në dritare kur të dalesh"
+
+#: ../settings.ui.h:172
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Gjithmonë aktivizoje klikimin me qëndrim mbi dritaren që jep sistem kur del "
+"nga Onboard."
+
+#: ../settings.ui.h:173
+msgid "Hover Click"
+msgstr "Mbi Kliko"
 
 #. Default dialog title: name of the application
-#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1063
-#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1804
+#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1086
+#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1889
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -36,7 +939,8 @@ msgid "Onboard onscreen keyboard"
 msgstr "Onboard tastirë në ekran"
 
 #: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
+#, fuzzy
+msgid "Flexible onscreen keyboard"
 msgstr "Tastierë fleksibël në ekran për GNOME"
 
 #: ../Onboard/settings.py:259
@@ -67,8 +971,9 @@ msgstr ""
 
 #. Frame resize handles: Corners only
 #: ../Onboard/settings.py:743
+#, fuzzy
 msgid "Corners"
-msgstr "Cepat"
+msgstr "Vetëm cepat"
 
 #. Frame resize handles: All
 #: ../Onboard/settings.py:745
@@ -81,7 +986,7 @@ msgstr "Daljet bazë"
 
 #: ../Onboard/settings.py:787
 msgid "Contributions"
-msgstr "Kontributet"
+msgstr ""
 
 #: ../Onboard/settings.py:788
 #, fuzzy
@@ -90,11 +995,11 @@ msgstr "Daljet bazë"
 
 #: ../Onboard/settings.py:823
 msgid "Author: {}"
-msgstr "Autori: {}"
+msgstr ""
 
 #: ../Onboard/settings.py:827
 msgid "About Layout"
-msgstr "Rreth Daljeve"
+msgstr ""
 
 #: ../Onboard/settings.py:932
 msgid "Enter a name for the new theme:"
@@ -123,24 +1028,21 @@ msgstr "Ta fshij temën e përzgjedhur?"
 
 #. Translators: reset button of Preferences->Theme.
 #: ../Onboard/settings.py:1088
+#, fuzzy
 msgid "_Reset"
-msgstr "_Rivendos"
+msgstr "Ricakto"
 
 #. Translators: delete button of Preferences->Theme. It used to be
 #. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
 #: ../Onboard/settings.py:1092
+#, fuzzy
 msgid "_Delete"
-msgstr "_Fshije"
+msgstr "Fshije"
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1424
 msgid "Flat"
 msgstr "I Sheshtë"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1426 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Shkallëzor"
 
 #. Key style for dish-like key caps
 #: ../Onboard/settings.py:1428
@@ -215,1002 +1117,73 @@ msgstr "Kliko një buton..."
 msgid "Press a key..."
 msgstr "Kliko një buton..."
 
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr "Kreu"
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr "Fundi"
-
-#: ../settings_docking_dialog.ui.h:3
-msgid "Active Monitor"
-msgstr "Monitori Aktiv"
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Primary Monitor"
-msgstr "Monitori Kryesor"
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Monitor 0"
-msgstr "Monitori 0"
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Monitor 1"
-msgstr "Monitori 1"
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Monitor 2"
-msgstr "Monitori 2"
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Monitor 3"
-msgstr "Monitori 3"
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Monitor 4"
-msgstr "Monitori 4"
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Monitor 5"
-msgstr "Monitori 5"
-
-#: ../settings_docking_dialog.ui.h:11
-msgid "Monitor 6"
-msgstr "Monitori 6"
-
-#: ../settings_docking_dialog.ui.h:12
-msgid "Monitor 7"
-msgstr "Monitori 7"
-
-#: ../settings_docking_dialog.ui.h:13
-msgid "Monitor 8"
-msgstr "Monitori 8"
-
-#: ../settings_docking_dialog.ui.h:14
-msgid "Docking settings"
-msgstr "Konfigurimet e mbështetjes"
-
-#: ../settings_docking_dialog.ui.h:15
-msgid "Shrink workarea"
-msgstr "Ngushto sipërfaqen e punës"
-
-#: ../settings_docking_dialog.ui.h:16
-msgid "Shrink the available space for maximized windows."
-msgstr "Ngushto hapësiren e mundshme për dritare të maksimizuara."
-
-#: ../settings_docking_dialog.ui.h:17
-msgid "Expand on landscape screens"
-msgstr "Zgjero në pamjen e ekranit"
-
-#: ../settings_docking_dialog.ui.h:18
-msgid "Expand keyboard to the width of the workarea."
-msgstr "Zgjero tastierën në madhesinë e siperfaqes së punës."
-
-#: ../settings_docking_dialog.ui.h:19
-msgid "Expand on portrait screens"
-msgstr "Zgjero në ekrane portret."
-
-#: ../settings_docking_dialog.ui.h:20
-msgid "Dock to screen edge:"
-msgstr "Mbeshtet në buze të ekranit."
-
-#: ../settings_docking_dialog.ui.h:21
-msgid "Dock to monitor:"
-msgstr "Dock për monitorin:"
-
-#: ../settings.ui.h:1
-msgid "Key-repeat"
+#: ../Onboard/utils.py:1535
+msgid "failed to create directory '{}': {}"
 msgstr ""
 
-#: ../settings.ui.h:2
-msgid "International character selection"
-msgstr ""
+#. ##############
+#: ../Onboard/SnippetView.py:39
+msgid "<Enter label>"
+msgstr "<Vendos etiketën>"
 
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr "GTK"
+#: ../Onboard/SnippetView.py:40
+msgid "<Enter text>"
+msgstr "<Vendos tesktin>"
 
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr "XInput"
+#: ../Onboard/SnippetView.py:52
+msgid "Button Number"
+msgstr "Numri i Butonit"
 
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
+#: ../Onboard/SnippetView.py:59
+msgid "Button Label"
+msgstr "Etiketa e Butonit"
 
-#: ../settings.ui.h:6
-msgid "AT-SPI"
-msgstr "AT-SPI"
+#: ../Onboard/SnippetView.py:68
+msgid "Snippet Text"
+msgstr "Teksti i Dritares"
 
-#: ../settings.ui.h:7
-msgid "Remember nothing"
-msgstr ""
+#: ../Onboard/SnippetView.py:113
+msgid "Must be an integer number"
+msgstr "Duhet të jetë një numër integer"
 
-#: ../settings.ui.h:8
-msgid "Don't remember new words"
-msgstr ""
+#: ../Onboard/SnippetView.py:122
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Snippet %d është tashmë në përdorim."
 
-#: ../settings.ui.h:9
-msgid "General"
-msgstr "Të Përgjithshme"
-
-#: ../settings.ui.h:10
-msgid "Window"
-msgstr "Dritare"
-
-#: ../settings.ui.h:11
-msgid "Layout"
-msgstr "Planimetria"
-
-#: ../settings.ui.h:12
-msgid "Theme"
-msgstr "Temë"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
-msgid "Snippets"
-msgstr "Snippets"
-
-#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "Tastiera"
-
-#: ../settings.ui.h:15
-msgid "Typing Assistance"
-msgstr "Ndihmë për Shtypjen"
-
-#: ../settings.ui.h:16
-msgid "Universal Access"
-msgstr "Hyrje Universale"
-
-#: ../settings.ui.h:17
-msgid "Latch, then lock"
-msgstr ""
-
-#: ../settings.ui.h:18
-msgid "Latch, double-click to lock"
-msgstr ""
-
-#: ../settings.ui.h:19
-msgid "Latch only"
-msgstr ""
-
-#: ../settings.ui.h:20
-msgid "Lock only"
-msgstr "Vetëm blloko"
-
-#: ../settings.ui.h:21
-msgid "Push button"
-msgstr "Shtyp butonin"
-
-#: ../settings.ui.h:22
-msgid "none"
-msgstr "asnjë"
-
-#: ../settings.ui.h:23
-msgid "single-touch"
-msgstr "një prekje"
-
-#: ../settings.ui.h:24
-msgid "multi-touch"
-msgstr "shumë prekje"
-
-#: ../settings.ui.h:25
-msgid "column"
-msgstr "Kollonë"
-
-#: ../settings.ui.h:26
-msgid "_Auto-show when editing text"
-msgstr "_Vetëshfaqe kur modifikon tekstin"
-
-#: ../settings.ui.h:27
+#: ../Onboard/WordSuggestions.py:2687
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"Shfaq Onboard kur një dritare e njohur teksti është në fokus. Kërkon Hyrje "
-"në Gnome."
-
-#: ../settings.ui.h:28
-msgid "_Settings"
-msgstr "_Rregullime"
-
-#: ../settings.ui.h:29
-msgid "Start Onboard _hidden"
-msgstr "Nise Onboard _të fshehur"
-
-#: ../settings.ui.h:30
-msgid "Start Onboard hidden."
-msgstr "Nise Onboard të fshehur."
-
-#: ../settings.ui.h:31
-msgid "Show/Hide options"
-msgstr "Shfaq/Fshih opsionet"
-
-#: ../settings.ui.h:32
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Shfaq _ikonën lundruese kur Onboard është fshehur"
-
-#: ../settings.ui.h:33
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Shfaq një ikonë lundruese në ekran kur Onboard është i fshehur. Një klikim "
-"në ikonë e bën Onboard që të rishfaqet."
-
-#: ../settings.ui.h:34
-msgid "Show when _unlocking the screen"
-msgstr "Shfaqe kur _zhbllokon erkanin"
-
-#: ../settings.ui.h:35
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Shfaq Onboard kur shfaqet dialogu për të zhbllokuar ekranin; në këtë mënyrë "
-"Onboard mund të përdoret përshembull për të vendosur fjalëkalimin për të "
-"hequr screensaver kur është vendosur që të kërkojë për të."
-
-#: ../settings.ui.h:36
-msgid "Show _tooltips"
-msgstr "Shfaq _kshillat"
-
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Shfaq këshillat për butonat e tastierës&apos;."
-
-#: ../settings.ui.h:38
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Shfaq këshillat për butonat e tastierës"
-
-#: ../settings.ui.h:39
-msgid "_Show status icon"
-msgstr "_Shfaq ikonën e gjendjes"
-
-#: ../settings.ui.h:40
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Shfaq gjendjen e temës. Një klikim në atë ikonë fsheh ose shfaq Onboard."
-
-#: ../settings.ui.h:41
-msgid "Status icon _provider:"
-msgstr ""
-
-#: ../settings.ui.h:42
-msgid ""
-"AppIndicater (default) is recommend for broadest compatibility. "
-"GtkStatusIcon isn't supported well anymore by various desktop environments, "
-"but allows to show Onboard on left click. Requires restart."
-msgstr ""
-
-#: ../settings.ui.h:43
-msgid "Desktop Integration"
-msgstr "Integrimi i Desktopit"
-
-#: ../settings.ui.h:44
-msgid "Dock to screen edge"
-msgstr "Kalo dokun në cep të ekranit"
-
-#: ../settings.ui.h:45
-msgid "Dock the keyboard to the edge of the screen."
-msgstr "Mbështet tastierën në buzë të ekranit."
-
-#: ../settings.ui.h:46
-msgid "Docking"
-msgstr "Mbështetja"
-
-#: ../settings.ui.h:47
-msgid "Show window _decoration"
-msgstr "Shfaq _dekorimin e dritares"
-
-#: ../settings.ui.h:48
-msgid "Show window caption and frame."
-msgstr "Shfaq gërmat dhe kornizën e dritares."
-
-#: ../settings.ui.h:49
-msgid "Show always on visible _workspace"
-msgstr "Shfaqe gjithmonë të dukshme në _Hapësirën e dukshme të punës"
-
-#: ../settings.ui.h:50
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "&quot;Ngjitëse&quot; mënyrë për tastierën dhe ikonën lundruese."
-
-#: ../settings.ui.h:51
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "\"Ngjitëse\" mënyrë për tastierën dhe ikonën lundruese."
-
-#: ../settings.ui.h:52
-msgid "_Force window to top"
-msgstr "_Detyro dritaren që të qëndrojë në krye"
-
-#: ../settings.ui.h:53
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "Përpiqu shumë për ta mbajtur Onboard mbi çdo gjë në ekran."
-
-#: ../settings.ui.h:54
-msgid "Keep _aspect ratio"
-msgstr "Mbaje shkallën e _pamjes"
-
-#: ../settings.ui.h:55
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr "Ndrysho përmasat e dritares në proporcion me layout&apos;s"
-
-#: ../settings.ui.h:56
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "Rregulloje përmasën e dritares sipas përmasës së ekranit."
-
-#: ../settings.ui.h:57
-msgid "Floating Window Options"
-msgstr "Opsionet e Dritareve Lundruese"
-
-#: ../settings.ui.h:58
-msgid "Window options"
-msgstr "Opsionet e dritares"
-
-#: ../settings.ui.h:59
-msgid "Wind_ow:"
-msgstr "Drit_arja:"
-
-#: ../settings.ui.h:60
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Tejdukshmëri e të gjithë dritares së tastierës. Kërkon përbërje."
-
-#: ../settings.ui.h:61 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "_Sfondi:"
-
-#: ../settings.ui.h:62
-msgid "Transparency of the keyboard background"
-msgstr "Tejukshmëria e sfondit të tastierës"
-
-#: ../settings.ui.h:63
-msgid "_No background"
-msgstr "_Nuk ka sfond"
-
-#: ../settings.ui.h:64
-msgid "Show the desktop through the gaps between keys."
-msgstr "Shfaq desktopin në hapësirat midis butonave."
-
-#: ../settings.ui.h:65
-msgid "Transparency"
-msgstr "Tejdukshmëri"
-
-#: ../settings.ui.h:66
-msgid "Set _transparency to"
-msgstr "Vendos _transparencën tek"
-
-#: ../settings.ui.h:67
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "Aktivizo transparencën jo aktive. Kërkon përzierje."
-
-#: ../settings.ui.h:68
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Tejdukshmëri kur shenjuesi e lë tastierën. Kërkon përbërje."
-
-#: ../settings.ui.h:69
-msgid "after"
-msgstr "pas"
-
-#: ../settings.ui.h:70
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "Vonesa në sekonda deri sa transparenca jo aktive bëhet e efektshme."
-
-#: ../settings.ui.h:71
-msgid "seconds"
-msgstr "sekonda"
-
-#: ../settings.ui.h:72
-msgid "When Inactive"
-msgstr "Kur nuk Është Aktive"
-
-#: ../settings.ui.h:73
-msgid "_Window handles:"
-msgstr ""
-
-#: ../settings.ui.h:74
-msgid "Resize Protection"
-msgstr "Ripërmaso Mbrojtjen"
-
-#: ../settings.ui.h:75
-msgid "Name"
-msgstr "Emri"
-
-#: ../settings.ui.h:76
-msgid "Description"
-msgstr "Përshkrimi"
-
-#: ../settings.ui.h:77
-msgid "_Open layouts folder"
-msgstr "_Hap dosjen e shtresave"
-
-#: ../settings.ui.h:78
-msgid "C_ustomize theme"
-msgstr "P_ërshtat temën"
-
-#: ../settings.ui.h:79
-msgid "Follow _system theme"
-msgstr "Ndiq temën e _sistemit"
-
-#: ../settings.ui.h:80
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"Mba mend cila temë e Onboard u përdor e fundit për çdo temë të sistemit."
-
-#: ../settings.ui.h:81
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Snippets janë copëza teksti të cilat vendosen kur shtypet butoni "
-"korrespondues Onboard."
-
-#: ../settings.ui.h:82
-msgid "Show label popups"
-msgstr "Shfaq dritaret e etiketave"
-
-#: ../settings.ui.h:83
-msgid "Show label popups above pressed keys."
-msgstr "Trego etiketa kërcyese mbi butonat e shtypur"
-
-#: ../settings.ui.h:84
-msgid "Play sound"
-msgstr "Luaj zërin"
-
-#: ../settings.ui.h:85
-msgid "Play click sound on keypress."
-msgstr "Luaj zë me klikim kur shtyp butonat"
-
-#: ../settings.ui.h:86
-#, fuzzy
-msgid "Place sound in space"
-msgstr "Luaj zë me klikim kur shtyp butonat"
-
-#: ../settings.ui.h:87
-msgid ""
-"Place sound in space between speakers depending on the key's position on "
-"screen"
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-press Feedback"
-msgstr "Këshilla për Shtypjen e Butonave"
-
-#: ../settings.ui.h:89
-msgid "Show secondary labels"
-msgstr "Shfaq etiketat dytësore"
-
-#: ../settings.ui.h:90
-msgid "Show characters reachable with or without the shift key."
-msgstr "Shfaq gërmat që arrihen me apo pa butonin shift."
-
-#: ../settings.ui.h:91
-msgid "Key Labels"
-msgstr "Etiketat e Butonave"
-
-#: ../settings.ui.h:92
-msgid "Upper case on right click"
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "Temporarily enable SHIFT when clicking with the secondary button."
-msgstr ""
-
-#: ../settings.ui.h:94
-#, fuzzy
-msgid "Key Behaviour"
-msgstr "Sjellja e Butonave"
-
-#: ../settings.ui.h:95
-msgid "_Long press action:"
-msgstr "_Veprimi për shtypje të zgjatur:"
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-"Zgjidh midis përsëritjes së butonave apo menuve që shtypen për një kohë të "
-"gjatë. Kryesisht do të ndikojë në butonat alfanumerikë."
-
-#: ../settings.ui.h:97
-msgid "Modifier _behavior:"
-msgstr "Ndryshues _sjellje:"
-
-#: ../settings.ui.h:98
-msgid "Behavior of modifier and layer keys."
-msgstr "Sjellja e nryshuesit dhe tastave të shtresës."
-
-#: ../settings.ui.h:99
-msgid "Modifier auto-release delay in seconds:"
-msgstr ""
-
-#: ../settings.ui.h:100
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-"Sekondat pa aktivitet derisa ndryshuesit aktivë dhe tastat e shtresës janë "
-"leshuar. 0 që të caktivizosh."
-
-#: ../settings.ui.h:101
-msgid "Modifier auto-release after hide in seconds:"
-msgstr ""
-
-#: ../settings.ui.h:102
-msgid ""
-"Time after hiding the keyboard in seconds until latched and locked modifiers "
-"and layer keys are released automatically. Leave at 0.0 to not automatically "
-"release them."
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "0,00"
-msgstr "0,00"
-
-#: ../settings.ui.h:104
-msgid "Key Behavior"
-msgstr "Sjellja e Butonave"
-
-#: ../settings.ui.h:105
-msgid "_Touch input:"
-msgstr ""
-
-#: ../settings.ui.h:106
-msgid "_Input event source:"
-msgstr "_Burimi i hyrjes së ngjarjes"
-
-#: ../settings.ui.h:107
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-"Zgjidh &apos;XInput&apos; për shtypje më të besueshme në hyrjet e tekstit me "
-"zgjedhje tabelash. Opsioni &apos;GTK&apos; ofron përputhshmëri më të mirë, "
-"por shtypja mund të dështojë në praninë e kapësave të shenjuesit, psh. me "
-"dritaret kërcyese."
-
-#: ../settings.ui.h:108
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-"Zgjidh 'Xinput' për shtypje më të besueshme në hyrjet e tekstit me zgjedhje "
-"kërcyese. Opsioni 'GTK' ofron përputhshmëri më të mirë, por shtypja mund të "
-"dështojë në praninë e kapësave të shenjuesit, psh. me dritaret kërcyese."
-
-#: ../settings.ui.h:109
-msgid "Input Options"
-msgstr "Opsionet e Hyrjes"
-
-#: ../settings.ui.h:110
-msgid "Keystroke _generation:"
-msgstr ""
-
-#: ../settings.ui.h:111
-msgid "Delay between keystrokes in milliseconds:"
-msgstr ""
-
-#: ../settings.ui.h:112
-msgid ""
-"Increase this if key-strokes get lost when inserting word suggestions or "
-"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
-"applications."
-msgstr ""
-
-#: ../settings.ui.h:113
-msgid "Keystroke Generation"
-msgstr ""
-
-#: ../settings.ui.h:114
-msgid "Advanced"
-msgstr "Të Avancuara"
-
-#: ../settings.ui.h:115
-msgid "Show _suggestions"
-msgstr "Shfaq _sugjerimet"
-
-#: ../settings.ui.h:116
-msgid "Enable word completion and prediction."
-msgstr "Aktivizo kompletimin dhe parashikimin e fjalëve."
-
-#: ../settings.ui.h:117
-msgid "Show spelling suggestions"
-msgstr "Shfaq sugjerime të gërmëzimit"
-
-#: ../settings.ui.h:118
-msgid "Check spelling of the word at or before the cursor."
-msgstr "Kontrollo gërmëzimin e fjalës tek ose përpara kursorit."
-
-#: ../settings.ui.h:119
-msgid "_Learn from typed text"
-msgstr "_Mëso nga teksti i shtypur"
-
-#: ../settings.ui.h:120
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-"Mba mend fjalët e reja, moshën e tyre dhe shpeshtësinë për të përmirësuar "
-"sugjerimet me kalimin e kohës."
-
-#: ../settings.ui.h:121
-msgid "Insert word _separators"
-msgstr "Vendos _ndarës të fjalëve"
-
-#: ../settings.ui.h:122
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-"Shto dhe hiq hapësira kur vendos sugjerime të fjalëve të ndjekura nga "
-"karaktere pikëzimi."
-
-#: ../settings.ui.h:123
-msgid "Options"
-msgstr "Opsionet"
-
-#: ../settings.ui.h:124
-#, fuzzy
-msgid "Show more suggestions arrow"
-msgstr "Shfaq _sugjerimet"
-
-#: ../settings.ui.h:125
-msgid "Step forward and backward through the available suggestions."
-msgstr ""
-
-#: ../settings.ui.h:126
-msgid "Show button to pause learning"
-msgstr "Shfaq butonin për të vendosur të mësuarit në pauzë"
-
-#: ../settings.ui.h:127
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr "Fjalët e shtypura kur ky buton është shtypur nuk do të mbahen mend."
-
-#: ../settings.ui.h:128
-msgid "Show lan_guage switcher"
-msgstr "Shfaq ndryshuesin e gju_hëve"
-
-#: ../settings.ui.h:129
-msgid "Show a button for language selection."
-msgstr "Shfaq një buton për përzgjedhjen e gjuhës."
-
-#: ../settings.ui.h:130
-msgid "Buttons"
-msgstr "Butonat"
-
-#: ../settings.ui.h:131
-msgid "Word Suggestions"
-msgstr "Sugjerime të Fjalëve"
-
-#: ../settings.ui.h:132
-msgid "Auto-capitalize while typing"
-msgstr "Vetë kapitalizoje gjatë shtypjes"
-
-#: ../settings.ui.h:133
-msgid "Automatically capitalize sentence begins and name words."
-msgstr ""
-"Kapitalizo automatikisht fillimin e fjalive dhe fillimin e fjalëve emra."
-
-#: ../settings.ui.h:134
-msgid "Auto-correct spelling"
-msgstr "Vetë-korrigjo gërmëzimin"
-
-#: ../settings.ui.h:135
-msgid "Automatically correct the last word."
-msgstr "Automatikisht korrigjo fjalën e fundit."
-
-#: ../settings.ui.h:136
-msgid "The spell check engine to use."
-msgstr "Cili motor kontrollues i gërmëzimit do të përdoret."
-
-#: ../settings.ui.h:137
-msgid "Spell-check backend:"
-msgstr "Mbështetësi i kontrollorit të gërmëzimit:"
-
-#: ../settings.ui.h:138
-msgid "Auto-correction"
-msgstr "Vetë-korrigjim"
-
-#: ../settings.ui.h:139
-msgid "While  learning is paused:"
-msgstr ""
-
-#: ../settings.ui.h:140
-msgid "Learning"
-msgstr "Mësim"
-
-#: ../settings.ui.h:141
-msgid "Enable  keyboard _scanning"
-msgstr "Aktivizo _skanimin me tastierë"
-
-#: ../settings.ui.h:142
-msgid "Sc_anner Settings"
-msgstr "Parametrat e Sk_anerit"
-
-#: ../settings.ui.h:143
-msgid "Keyboard Scanning"
-msgstr "Skanimi me Tastierë"
-
-#: ../settings.ui.h:144
-msgid "_Delay:"
-msgstr "_Vonesa:"
-
-#: ../settings.ui.h:145
-msgid "_Motion threshold:"
-msgstr "_Kufiri i lëvizjes:"
-
-#: ../settings.ui.h:146
-msgid "Time in seconds before a click is triggered."
-msgstr "Koha në sekonda përpara se të shkaktohet një klikim."
-
-#: ../settings.ui.h:147
-msgid "Distance in pixels before movement will be recognized."
-msgstr "Distanca në piksel para se të njihet levizja."
-
-#: ../settings.ui.h:148
-msgid "Hide hover click window"
-msgstr "Fshih dritaren që rri pezull"
-
-#: ../settings.ui.h:149
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
-"Fshihe dritaren me klikim qëndrimi që jep sistemi kur është nisur Onboard."
-
-#: ../settings.ui.h:150
-msgid "Enable click type window on exit"
-msgstr "Aktivizo modalitetin e klikimit në dritare kur të dalesh"
-
-#: ../settings.ui.h:151
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Gjithmonë aktivizoje klikimin me qëndrim mbi dritaren që jep sistem kur del "
-"nga Onboard."
-
-#: ../settings.ui.h:152
-msgid "Hover Click"
-msgstr "Mbi Kliko"
-
-#: ../Onboard/WindowUtils.py:1083
-msgid "New Input Device"
-msgstr "Pajisje e Re Hyrëse"
-
-#: ../Onboard/WindowUtils.py:1084
-msgid "Onboard has detected a new input device"
-msgstr "Onboard dalloi një pajisje të re hyrëse"
-
-#: ../Onboard/WindowUtils.py:1093
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "Dëshironi ta përdorni këtë pajisje për skanim të tastierës?"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/WindowUtils.py:1099 ../Onboard/KeyboardWidget.py:1518
-msgid "_Cancel"
-msgstr "_Anullo"
-
-#: ../Onboard/WindowUtils.py:1100
-msgid "Use device"
-msgstr "Përdore pajisjen"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Parametrat Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Parametrat e tastierës në ekran onboard"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Ndrysho Parametrat Onboard"
-
-#: ../Onboard/WPEngine.py:483
-msgid "Failed to load language model '{}': {} ({})"
-msgstr "Dështova në ngarkimin e modelit të gjuhës '{}': {} ({})"
-
-#: ../settings_scanner_dialog.ui.h:1
-msgid "Automatic scan for 1 switch"
-msgstr "Skanim automatik për çelësin 1"
-
-#: ../settings_scanner_dialog.ui.h:2
-msgid "Critical overscan for 1 switch"
-msgstr "Mbiskanim kritikpër një çelës"
-
-#: ../settings_scanner_dialog.ui.h:3
-msgid "Step scan for 2 switches"
-msgstr "Skanim i hapit për 2 çelësa"
-
-#: ../settings_scanner_dialog.ui.h:4
-msgid "Directed scan for 3 or 5 switches"
-msgstr "Skanim i drejtuar për 3 apo 5 çelësa"
-
-#: ../settings_scanner_dialog.ui.h:5
-msgid "Scanner Settings"
-msgstr "Parametrat e Skanerit"
-
-#: ../settings_scanner_dialog.ui.h:6
-msgid "Select a scanning _profile:"
-msgstr "Zgjidh një _profil skanimi:"
-
-#: ../settings_scanner_dialog.ui.h:7
-msgid "_Step interval:"
-msgstr "Intervali i _hapit:"
-
-#: ../settings_scanner_dialog.ui.h:8
-msgid "Sc_an cycles:"
-msgstr "Ciklet e sk_animit:"
-
-#: ../settings_scanner_dialog.ui.h:9
-msgid ""
-"The time the scanner rests on a key or group before moving to the next. (in "
-"seconds)"
-msgstr ""
-"Koha që skaneri qëndron në një çelës ose grup para se të lëvizë tek tjetri. "
-"(në sekonda)"
-
-#: ../settings_scanner_dialog.ui.h:10
-msgid ""
-"The number of times the scanner cycles through the entire keyboard before it "
-"stops."
-msgstr ""
-"Numri i herëve që skaneri ciklon në të gjithë tastierën para se të ndalojë."
-
-#: ../settings_scanner_dialog.ui.h:11
-msgid "Step _only during switch down"
-msgstr "Nise _vetëm gjatë shtypjes së çelësit"
-
-#: ../settings_scanner_dialog.ui.h:12
-msgid "Progress the highlight only while the switch is held down."
-msgstr "Përpunoje të përzgjedhurën vetëm kur çelësi mbahet i shtypur."
-
-#: ../settings_scanner_dialog.ui.h:13
-msgid "_Forward interval:"
-msgstr "_Intervali i shkuarjes _përpara:"
-
-#: ../settings_scanner_dialog.ui.h:14
-msgid "_Backtrack interval:"
-msgstr "Intervali i gjurmimi _mbrapsht:"
-
-#: ../settings_scanner_dialog.ui.h:15
-msgid ""
-"The time the scanner rests on a key  while progressing forward. (in seconds)"
-msgstr ""
-"Koha sa skaneri qëndron në një çelës ndërkohë që përparon përpara. (në "
-"sekonda)"
-
-#: ../settings_scanner_dialog.ui.h:16
-msgid ""
-"The time the scanner rests on a key  while moving backwards. (in seconds)"
-msgstr ""
-"Koha sa skaneri qëndron në një çelës ndërkohë që lëviz mbrapsht. (në sekonda)"
-
-#: ../settings_scanner_dialog.ui.h:17
-msgid "Backtrack _steps:"
-msgstr "_Hapat e gjurmimit mbrapsht:"
-
-#: ../settings_scanner_dialog.ui.h:18
-msgid "The number of keys the scanner steps back before moving forward again."
-msgstr ""
-"Numri i çelësave që skaneri bën mbrapsht para se të ecë përpara përsëri."
-
-#: ../settings_scanner_dialog.ui.h:19
-msgid "_Alternate switch actions"
-msgstr "Veprimet e ndryshuesit _alternativ"
-
-#: ../settings_scanner_dialog.ui.h:20
-msgid ""
-"Swap the scan actions after every key activation. The Step action will "
-"become the Activate action and vice versa."
-msgstr ""
-"Ndrysho veprimet e skanerit pas çdo aktivizimi të çelësit. Veprimi i Hapit "
-"do bëhet veprimi i aktivizimit dhe anasjelltas."
-
-#: ../settings_scanner_dialog.ui.h:21
-msgid "Profiles"
-msgstr "Profilet"
-
-#: ../settings_scanner_dialog.ui.h:22
-msgid "_Select an input device:"
-msgstr "_Zgjidh një pajisje për hyrje:"
-
-#: ../settings_scanner_dialog.ui.h:23
-msgid "_Use this device only for scanning"
-msgstr "_Përdore këtë pajisje vetëm për skanim"
-
-#: ../settings_scanner_dialog.ui.h:24
-msgid ""
-"The selected device should not control the system mouse cursor or the "
-"keyboard caret."
-msgstr ""
-"Pajisja e përzgjedhur nuk duhet të kontrollojë kursorin e miut të sistemit "
-"apo grupin e tastierës."
-
-#: ../settings_scanner_dialog.ui.h:25
-msgid "Input Device"
-msgstr "Pajisje Hyrëse"
-
-#: ../Onboard/LayoutLoaderSVG.py:158
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Duke ngarkuar planin, formati '{}'. Ju lutem konsideroni të ndryshoni në "
-"formatin aktual '{}'."
-
-#: ../Onboard/LayoutLoaderSVG.py:397
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-"Duke shpërfillur çelësin '{}'. Nuk është përcaktuar asnjë emër skedari svg."
-
-#: ../Onboard/LayoutLoaderSVG.py:618
-msgid "Snippet {}"
-msgstr "Snippet {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:622
-msgid ", unassigned"
-msgstr ", i pa caktuar"
-
-#: ../Onboard/LayoutLoaderSVG.py:931
-msgid "copying layout '{}' to '{}'"
-msgstr "duke kopjuar shtresën '{}' tek '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:951
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "copy_layouts dështoi, format e pa suportuar i shtresës '{}'."
-
-#: ../Onboard/LayoutLoaderSVG.py:994
-msgid "copying svg file '{}' to '{}'"
-msgstr "duke kopjuar skedarin svg '{}' tek '{}'"
-
-#: ../Onboard/OnboardGtk.py:397
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
+"Revert word suggestions to the last backup (recommended)?"
 msgstr ""
-"Onboard është konfiguruar të shfaet me dialogun për të zhbllokuar ekranin; "
-"përshembull për tëhequr ruajtësin e ekranit të mbrojtur nga fjalëkalimi.\n"
+"<big>Onboard dështoi në hapjen e sugjerimeve për fjalët e mësuara.</big>\n"
 "\n"
-"Sidoqoftë sistemi nuk është më i konfiguruar që të përdorë Onboard për të "
-"zhbllokuar ekranin. Një arsye e mundshme mund të jetë që një program tjetër "
-"e ka konfiguruar sistemin për të përdorur diçka tjetër.\n"
+"Gabimi ishte:\n"
+"<tt>{}</tt>\n"
 "\n"
-"\n"
-"Do të dëshironit ta rikonfiguronit sistemin që të shfaqë Onboard kur "
-"zhbllokon ekranin?"
+"Ti kthej sugjerimet e fjalëve në ruajtjen e fundit (rekomandohet)?"
 
-#: ../Onboard/OnboardGtk.py:416
+#: ../Onboard/WordSuggestions.py:2706
 msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However this function is disabled in the system.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to activate it?"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
 msgstr ""
-"Onboard është konfiguruar të shfaqet me dialogun për të zhbllokuar ekranin; "
-"përshembull për të hequr ruajtësin e mbrojtur të ekranit.\n"
+"<big>Onboard dështoi në hapjen e sugjerimeve të fjalëve të mësuara.</big>\n"
 "\n"
-"Sidoqoftë ky funksion është çaktivizuar në sistem.\n"
+"Gabimi ishte:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Do të dëshironit ta aktivizonit atë?"
+"Sugjerimet do të pastrohen, por skedari i gabuar do të ngelet në \n"
+"'{}'"
 
 #. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
@@ -1398,280 +1371,280 @@ msgstr "Win"
 #. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:96 ../data/layoutstrings.py:367
 msgid "Umbrella"
-msgstr "Çadër"
+msgstr ""
 
 #. translators: description of unicode character U+2606
 #. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:98 ../data/layoutstrings.py:373
 msgid "White star"
-msgstr "Yll i bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+260F
 #. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:100 ../data/layoutstrings.py:379
 msgid "White telephone"
-msgstr "Telefon i bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+2615
 #: ../data/layoutstrings.py:102
 msgid "Hot beverage"
-msgstr "Pije e ngrohtë"
+msgstr ""
 
 #. translators: description of unicode character U+2620
 #: ../data/layoutstrings.py:104
 msgid "Skull and crossbones"
-msgstr "Kafkë dhe kocka të kryqëzuara"
+msgstr ""
 
 #. translators: description of unicode character U+2622
 #. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:106 ../data/layoutstrings.py:310
 msgid "Radioactive sign"
-msgstr "Shenjë radioaktiviteti"
+msgstr ""
 
 #. translators: description of unicode character U+262E
 #. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
 msgid "Peace symbol"
-msgstr "Simbol i paqes"
+msgstr ""
 
 #. translators: description of unicode character U+262F
 #. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:110 ../data/layoutstrings.py:385
 msgid "Yin yang"
-msgstr "Yin yang"
+msgstr ""
 
 #. translators: description of unicode character U+2639
 #. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
 msgid "Frowning face"
-msgstr "Fytyrë e vrenjtur"
+msgstr ""
 
 #. translators: description of unicode character U+263A
 #. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:114 ../data/layoutstrings.py:322
 msgid "Smiling face"
-msgstr "Fytyrë e buzëqeshur"
+msgstr ""
 
 #. translators: description of unicode character U+263C
 #. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:116 ../data/layoutstrings.py:376
 msgid "White sun with rays"
-msgstr "Diell i bardhë me rreze"
+msgstr ""
 
 #. translators: description of unicode character U+263E
 #. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
 msgid "Last quarter moon"
-msgstr "Hënë çerekshe"
+msgstr ""
 
 #. translators: description of unicode character U+2640
 #. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
 msgid "Female sign"
-msgstr "Shenja e femrës"
+msgstr ""
 
 #. translators: description of unicode character U+2642
 #. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
 msgid "Male sign"
-msgstr "Shenja e mashkullit"
+msgstr ""
 
 #. translators: description of unicode character U+2661
 #. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:124 ../data/layoutstrings.py:370
 msgid "White heart suit"
-msgstr "Veshje me zemër të bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+2662
 #: ../data/layoutstrings.py:126
 msgid "White diamond suit"
-msgstr "Veshje me diamante të bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+2664
 #: ../data/layoutstrings.py:128
 msgid "White spade suit"
-msgstr "Veshje me shpatë të bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+2667
 #: ../data/layoutstrings.py:130
 msgid "White club suit"
-msgstr "Veshje klubi e bardhë"
+msgstr ""
 
 #. translators: description of unicode character U+266B
 #. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
 msgid "Beamed eighth note"
-msgstr "Nota e tetë me avull"
+msgstr ""
 
 #. translators: description of unicode character U+2709
 #. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
 msgid "Envelope"
-msgstr "Zarf"
+msgstr ""
 
 #. translators: description of unicode character U+270C
 #: ../data/layoutstrings.py:136
 msgid "Victory hand"
-msgstr "Dora e fitores"
+msgstr ""
 
 #. translators: description of unicode character U+270D
 #: ../data/layoutstrings.py:138
 msgid "Writing hand"
-msgstr "Dorë që shkruan"
+msgstr ""
 
 #. translators: description of unicode character U+1F604
 #. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:140 ../data/layoutstrings.py:331
 msgid "Smiling face with open mouth and smiling eyes"
-msgstr "Fytyrë e buzëqeshur me gojën e hapur dhe sytë që buzëqeshin"
+msgstr ""
 
 #. translators: description of unicode character U+1F607
 #. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:142 ../data/layoutstrings.py:325
 msgid "Smiling face with halo"
-msgstr "Fytyrë e buzëqeshur me rreth mbi kokë"
+msgstr ""
 
 #. translators: description of unicode character U+1F608
 #. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:144 ../data/layoutstrings.py:328
 msgid "Smiling face with horns"
-msgstr "Fytyrë e buzëqeshur me brirë"
+msgstr ""
 
 #. translators: description of unicode character U+1F609
 #. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:146 ../data/layoutstrings.py:382
 msgid "Winking face"
-msgstr "Fytyrë që shkel syrin"
+msgstr ""
 
 #. translators: description of unicode character U+1F60A
 #. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:148 ../data/layoutstrings.py:334
 msgid "Smiling face with smiling eyes"
-msgstr "Fytyrë e buzëqeshur me sy të buzëqeshur"
+msgstr ""
 
 #. translators: description of unicode character U+1F60B
 #. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
 msgid "Face savouring delicious food"
-msgstr "Fytyrë që po shijon ushqim të shijshëm"
+msgstr ""
 
 #. translators: description of unicode character U+1F60D
 #: ../data/layoutstrings.py:152
 msgid "Smiling face with heart-shaped eyes"
-msgstr "Fytyrë e buzëqeshur me sy në formë zemre"
+msgstr ""
 
 #. translators: description of unicode character U+1F60E
 #. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:154 ../data/layoutstrings.py:337
 msgid "Smiling face with sunglasses"
-msgstr "Fytyrë e buzëqeshur me syze dielli"
+msgstr ""
 
 #. translators: description of unicode character U+1F60F
 #: ../data/layoutstrings.py:156
 msgid "Smirking face"
-msgstr "Fytyrë e ngërdheshur"
+msgstr ""
 
 #. translators: description of unicode character U+1F610
 #: ../data/layoutstrings.py:158
 msgid "Neutral face"
-msgstr "Fytyrë neutrale"
+msgstr ""
 
 #. translators: description of unicode character U+1F612
 #: ../data/layoutstrings.py:160
 msgid "Unamused face"
-msgstr "Fytyrë e zhgënjyer"
+msgstr ""
 
 #. translators: description of unicode character U+1F616
 #. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
 msgid "Confounded face"
-msgstr "Fytyrë e habitur"
+msgstr ""
 
 #. translators: description of unicode character U+1F618
 #: ../data/layoutstrings.py:164
 msgid "Face throwing a kiss"
-msgstr "Fytyrë që lëshon një puthje"
+msgstr ""
 
 #. translators: description of unicode character U+1F61A
 #. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
 msgid "Kissing face with closed eyes"
-msgstr "fytyrë që puth me sytë e mbyllur"
+msgstr ""
 
 #. translators: description of unicode character U+1F61C
 #. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
 msgid "Face with stuck-out tongue and winking eye"
-msgstr "Fytyrë me gjuhën përjashta që shkel syrin"
+msgstr ""
 
 #. translators: description of unicode character U+1F61D
 #: ../data/layoutstrings.py:170
 msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr "Fytyrë me gjuhën nxjerrë përjashta dhe me sytë e mbyllur fort"
+msgstr ""
 
 #. translators: description of unicode character U+1F61E
 #: ../data/layoutstrings.py:172
 msgid "Disappointed face"
-msgstr "Fytyrë e zhgënjyer"
+msgstr ""
 
 #. translators: description of unicode character U+1F620
 #. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
 msgid "Angry face"
-msgstr "Fytyrë e zemëruar"
+msgstr ""
 
 #. translators: description of unicode character U+1F621
 #: ../data/layoutstrings.py:176
 msgid "Pouting face"
-msgstr "Fytyrë e fryrë"
+msgstr ""
 
 #. translators: description of unicode character U+1F622
 #. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
 msgid "Crying face"
-msgstr "Fytyrë që qan"
+msgstr ""
 
 #. translators: description of unicode character U+1F623
 #: ../data/layoutstrings.py:180
 msgid "Persevering face"
-msgstr "Fytyrë e vendosur"
+msgstr ""
 
 #. translators: description of unicode character U+1F629
 #: ../data/layoutstrings.py:182
 msgid "Weary face"
-msgstr "Fytyrë e lëshuar"
+msgstr ""
 
 #. translators: description of unicode character U+1F62B
 #. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:184 ../data/layoutstrings.py:361
 msgid "Tired face"
-msgstr "Fytyrë e lodhur"
+msgstr ""
 
 #. translators: description of unicode character U+1F632
 #. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
 msgid "Astonished face"
-msgstr "Fytyrë e çuditur"
+msgstr ""
 
 #. translators: description of unicode character U+1F633
 #: ../data/layoutstrings.py:188
 msgid "Flushed face"
-msgstr "Fytyrë e skuqur"
+msgstr ""
 
 #. translators: description of unicode character U+1F635
 #: ../data/layoutstrings.py:190
 msgid "Dizzy face"
-msgstr "Fytyrë e trullosur"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:199
 msgid "Arrows"
-msgstr "Shigjetat"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer5' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:214
 msgid "Custom"
-msgstr "E Personalizuar"
+msgstr ""
 
 #. translators: this is a 'summary' of the keyboard layout 'Full Keyboard.onboard'
 #: ../data/layoutstrings.py:217
@@ -1681,7 +1654,7 @@ msgstr "Tastierë desktopi me butonat e modifikimit dhe funksionit"
 #. translators: this is a 'tooltip' of the key_template 'layer0' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:241
 msgid "Greek"
-msgstr "Greqisht"
+msgstr ""
 
 #. translators: this is a 'summary' of the keyboard layout 'Grid.onboard'
 #: ../data/layoutstrings.py:244
@@ -1691,7 +1664,7 @@ msgstr "Rrjetë butonash, e pështatshme për skanimin e tastierës"
 #. translators: this is a 'tooltip' of the key 'hide' in keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:250
 msgid "Hide keyboard"
-msgstr "Fshihe tastierën"
+msgstr ""
 
 #. translators: this is a 'description' of the keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:253
@@ -1726,28 +1699,27 @@ msgstr "Tastierë mobile për ekrane të vegjël"
 #. translators: this is a 'tooltip' of the key 'expand-corrections' in keyboard layout 'word_suggestions.xml'
 #: ../data/layoutstrings.py:280
 msgid "More suggestions"
-msgstr "Më tepër sugjerime"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key 'move' in keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:286
 msgid "Move keyboard"
-msgstr "Lëvize tastierën"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key 'previous-predictions.wordlist' in keyboard layout 'word_suggestions.xml'
 #: ../data/layoutstrings.py:301
-#, fuzzy
 msgid "Previous suggestions"
-msgstr "Më tepër sugjerime"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:304
 msgid "Quit Keyboard"
-msgstr "Mbylle Tastierën"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'quit' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:307
 msgid "Quit Onboard"
-msgstr "Mbyll Onboard"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:316
@@ -1762,17 +1734,18 @@ msgstr "Parametrat"
 #. translators: this is a 'summary' of the keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:343
 msgid "Space efficient desktop keyboard"
-msgstr "Tastierë desktopi e volitshme për hapësirën"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer3' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:346
 msgid "Special Characters"
-msgstr "Shkronja speciale"
+msgstr ""
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:349
+#, fuzzy
 msgid "Special characters for interactive whiteboards, wide"
-msgstr ""
+msgstr "Gërma të veçanta për dërrasat e bardha interaktive, të gjera"
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:352
@@ -1782,148 +1755,229 @@ msgstr "Gërma të veçanta për dërrasat e bardha interaktive"
 #. translators: this is a 'tooltip' of the key 'correction' in keyboard layout 'word_suggestions.xml'
 #: ../data/layoutstrings.py:355
 msgid "Spelling suggestion"
-msgstr "Sugjerim gërmëzimi"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:358
 msgid "Sub-, Superscripts; Fractions"
 msgstr "Sub-, Superskripte; Fraksione"
 
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr "kurrë"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "Kreu"
 
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr "1 minutë"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "Fundi"
 
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr "5 minuta"
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr "10 minuta"
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr "30 minuta"
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr "1 orë"
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr "3 orë"
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr "përgjithmonë"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "Only move when necessary"
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:11
-msgid "Follow the active window"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:12
-msgid "Auto-show settings"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:13
-msgid "Strategy:"
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:14
-msgid "Chose how the keyboard window moves when a text entry is activated."
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:15
-#, fuzzy
-msgid "Keyboard Movement"
-msgstr "Tastiera"
-
-#: ../settings_auto_show_dialog.ui.h:16
-msgid "_Hide when using a physical keyboard"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:17
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "Konfigurimet e mbështetjes"
+
+#: ../settings_docking_dialog.ui.h:15
+msgctxt "Label of the close button of the docking settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink workarea"
+msgstr "Ngushto sipërfaqen e punës"
+
+#: ../settings_docking_dialog.ui.h:17
+msgid "Shrink the available space for maximized windows."
+msgstr "Ngushto hapësiren e mundshme për dritare të maksimizuara."
+
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand on landscape screens"
+msgstr "Zgjero në pamjen e ekranit"
+
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand keyboard to the width of the workarea."
+msgstr "Zgjero tastierën në madhesinë e siperfaqes së punës."
+
+#: ../settings_docking_dialog.ui.h:20
+msgid "Expand on portrait screens"
+msgstr "Zgjero në ekrane portret."
+
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to screen edge:"
+msgstr "Mbeshtet në buze të ekranit."
+
+#: ../settings_docking_dialog.ui.h:22
+msgid "Dock to monitor:"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1106
+msgid "New Input Device"
+msgstr "Pajisje e Re Hyrëse"
+
+#: ../Onboard/WindowUtils.py:1107
+msgid "Onboard has detected a new input device"
+msgstr "Onboard dalloi një pajisje të re hyrëse"
+
+#: ../Onboard/WindowUtils.py:1116
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "Dëshironi ta përdorni këtë pajisje për skanim të tastierës?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/WindowUtils.py:1122 ../Onboard/KeyboardWidget.py:1603
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1123
+msgid "Use device"
+msgstr "Përdore pajisjen"
+
+#: ../Onboard/Config.py:234
+msgid "Layout file ({}) or name"
+msgstr "Dalja e skedarit ({}) ose emri"
+
+#: ../Onboard/Config.py:237
+msgid "Theme file (.theme) or name"
+msgstr "Skedari i temës (.theme) ose emri"
+
+#: ../Onboard/Config.py:239
+msgid "Window size, widthxheight"
+msgstr "Përmasa e dritares gjerësi x lartësi"
+
+#: ../Onboard/Config.py:240
+msgid "Window x position"
+msgstr "Pozicioni x i dritares"
+
+#: ../Onboard/Config.py:241
+msgid "Window y position"
+msgstr "Pozicioni y i dritares"
+
+#: ../Onboard/Config.py:246
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Nis mënyrën XEmbed, p.sh. për gnome-screensaver"
+
+#: ../Onboard/Config.py:249
+msgid "Allow multiple Onboard instances"
+msgstr "Lejo instanca të shumta të onboard"
+
+#: ../Onboard/Config.py:252
 msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
 msgstr ""
+"Dështim në heshtje të fillojë në mjediset desktop të dhëna.  DESKTOP është "
+"nje listë e emrave të XDG ndarë e me presje, si p.sh. GNOME për GNOME Shell."
 
-#: ../settings_auto_show_dialog.ui.h:18
-msgid "Stay hidden:"
-msgstr ""
-
-#: ../settings_auto_show_dialog.ui.h:19
+#: ../Onboard/Config.py:258
 msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
+"Delay showing the initial keyboard window by STARTUP_DELAY seconds (default "
+"0.0)."
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:20
-msgid "Auto-hide"
-msgstr ""
+#: ../Onboard/Config.py:262
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Ruaj përmasat kur ripërmason dritaren"
 
-#: ../Onboard/KbdWindow.py:210
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"nuk ka tejdukshmëri të disponueshme të dritares; ekrani nuk suporton kanalet "
-"alfa"
-
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
-#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
-#: ../Onboard/SpellChecker.py:723 ../Onboard/LanguageSupport.py:170
-#: ../Onboard/Timer.py:160 ../Onboard/pypredict/tools/filter.py:382
-msgid "Failed to execute '{}', {}"
-msgstr "Dështova në ekzekutimin e '{}', {}"
-
-#: ../Onboard/utils.py:1535
-msgid "failed to create directory '{}': {}"
-msgstr "dështova në krijimin e drejtorisë '{}': {}"
-
-#: ../Onboard/Appearance.py:130
-#, python-brace-format
-msgid "Color scheme for theme '{filename}' not found"
-msgstr "Ngjyra e skemës për temën '{filename}' nuk u gjet"
-
-#: ../Onboard/Appearance.py:350
-#, python-brace-format
-msgid "Error loading theme '{filename}'. {exception}: {cause}"
-msgstr "Gabim në ngarkimin e temës '{filename}'. {exception}: {cause}"
-
-#: ../Onboard/Appearance.py:424
-msgid "Error saving "
-msgstr "Gabim në ruajtje "
-
-#: ../Onboard/Appearance.py:842
-#, python-brace-format
+#: ../Onboard/Config.py:264
 msgid ""
-"Loading legacy color scheme format '{old_format}', please consider upgrading "
-"to current format '{new_format}': '{filename}'"
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
 msgstr ""
-"Duke ngarkuar formatin e vjetër të skemës së ngjyrave '{old_format}', ju "
-"lutemi të merrni në konsideratë përditësimin në formatin e ri "
-"'{new_format}': '{filename}'"
+"Mbishkruaj vetë dallimin dhe vendos quirks në mënyrë manuale\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Appearance.py:862
+#: ../Onboard/Config.py:375
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Duke migruar drejtorinë e përdoruesit '{}' tek '{}'."
+
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:383
+msgid "failed to migrate user directory. "
+msgstr ""
+
+#: ../Onboard/Config.py:862
 #, python-brace-format
-msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
-msgstr ""
-"Gabim në ngarkimin e skemës së ngjyrave '{filename}'. {exception}: {cause}"
+msgid "layout '{filename}' does not exist"
+msgstr "shtresa '{filename}' nuk ekziston"
 
-#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+#: ../Onboard/Config.py:903
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "tema '{filename}' nuk ekziston"
+
+#: ../Onboard/Config.py:928
+msgid "Loading theme from '{}'"
+msgstr "Duke ngarkuar temën nga '{}'"
+
+#: ../Onboard/Config.py:932
+msgid "Unable to read theme '{}'"
+msgstr "Nuk jam në gjendje të lexoj temën '{}'"
+
+#: ../Onboard/Config.py:1125
 msgid ""
-"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
-"once."
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
 msgstr ""
-"key_id '{}' e dyfishtë u gjet në skedarin e skemës së ngjyrave. Key_id-të "
-"duhet të jenë vetëm një herë."
+"Aktivizimi i vetëshfaqjes kërkon hyrje në Gnome.\n"
+"\n"
+"Onboard mund ta ndezë hyrjen tani, sidoqoftë rekomandohet që ju të dilni nga "
+"sistemi dhe të riktheheni në të në mënyrë që ai të arrijë potencialin e vet "
+"të plotë.\n"
+"\n"
+"Ta aktivizoj hyrjen tani?"
+
+#: ../Onboard/Config.py:1873
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "skema e ngjyrave '{filename}' nuk ekziston"
 
 #: ../Onboard/ConfigUtils.py:81
 msgid "gsettings schema for '{}' is not installed"
@@ -1956,9 +2010,11 @@ msgstr "{description} '{filepath}' u gjet."
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:496
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid "{description} '{filename}' not found yet, searching in paths {paths}"
 msgstr ""
+"{description} '{filename}' nuk është gjetur akoma, po përpiqem në shtigjet e "
+"parazgjedhura"
 
 #: ../Onboard/ConfigUtils.py:591
 #, python-brace-format
@@ -2005,346 +2061,853 @@ msgstr ""
 msgid "Failed to get gsettings value. "
 msgstr "Dështova në marrjen e vlerës për gsettings. "
 
-#. ##############
-#: ../Onboard/SnippetView.py:39
-msgid "<Enter label>"
-msgstr "<Vendos etiketën>"
+#: ../Onboard/KbdWindow.py:211
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"nuk ka tejdukshmëri të disponueshme të dritares; ekrani nuk suporton kanalet "
+"alfa"
 
-#: ../Onboard/SnippetView.py:40
-msgid "<Enter text>"
-msgstr "<Vendos tesktin>"
+#: ../settings_scanner_dialog.ui.h:1
+msgid "Automatic scan for 1 switch"
+msgstr "Skanim automatik për çelësin 1"
 
-#: ../Onboard/SnippetView.py:52
-msgid "Button Number"
-msgstr "Numri i Butonit"
+#: ../settings_scanner_dialog.ui.h:2
+msgid "Critical overscan for 1 switch"
+msgstr "Mbiskanim kritikpër një çelës"
 
-#: ../Onboard/SnippetView.py:59
-msgid "Button Label"
-msgstr "Etiketa e Butonit"
+#: ../settings_scanner_dialog.ui.h:3
+msgid "Step scan for 2 switches"
+msgstr "Skanim i hapit për 2 çelësa"
 
-#: ../Onboard/SnippetView.py:68
-msgid "Snippet Text"
-msgstr "Teksti i Dritares"
+#: ../settings_scanner_dialog.ui.h:4
+msgid "Directed scan for 3 or 5 switches"
+msgstr "Skanim i drejtuar për 3 apo 5 çelësa"
 
-#: ../Onboard/SnippetView.py:113
-msgid "Must be an integer number"
-msgstr "Duhet të jetë një numër integer"
+#: ../settings_scanner_dialog.ui.h:5
+msgid "Scanner Settings"
+msgstr "Parametrat e Skanerit"
 
-#: ../Onboard/SnippetView.py:122
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Snippet %d është tashmë në përdorim."
+#: ../settings_scanner_dialog.ui.h:6
+msgctxt "Label of the close button of the scanner settings dialog."
+msgid "_Close"
+msgstr ""
 
-#: ../Onboard/Indicator.py:51
+#: ../settings_scanner_dialog.ui.h:7
+msgid "Select a scanning _profile:"
+msgstr "Zgjidh një _profil skanimi:"
+
+#: ../settings_scanner_dialog.ui.h:8
+msgid "_Step interval:"
+msgstr "Intervali i _hapit:"
+
+#: ../settings_scanner_dialog.ui.h:9
+msgid "Sc_an cycles:"
+msgstr "Ciklet e sk_animit:"
+
+#: ../settings_scanner_dialog.ui.h:10
+msgid ""
+"The time the scanner rests on a key or group before moving to the next. (in "
+"seconds)"
+msgstr ""
+"Koha që skaneri qëndron në një çelës ose grup para se të lëvizë tek tjetri. "
+"(në sekonda)"
+
+#: ../settings_scanner_dialog.ui.h:11
+msgid ""
+"The number of times the scanner cycles through the entire keyboard before it "
+"stops."
+msgstr ""
+"Numri i herëve që skaneri ciklon në të gjithë tastierën para se të ndalojë."
+
+#: ../settings_scanner_dialog.ui.h:12
+msgid "Step _only during switch down"
+msgstr "Nise _vetëm gjatë shtypjes së çelësit"
+
+#: ../settings_scanner_dialog.ui.h:13
+msgid "Progress the highlight only while the switch is held down."
+msgstr "Përpunoje të përzgjedhurën vetëm kur çelësi mbahet i shtypur."
+
+#: ../settings_scanner_dialog.ui.h:14
+msgid "_Forward interval:"
+msgstr "_Intervali i shkuarjes _përpara:"
+
+#: ../settings_scanner_dialog.ui.h:15
+msgid "_Backtrack interval:"
+msgstr "Intervali i gjurmimi _mbrapsht:"
+
+#: ../settings_scanner_dialog.ui.h:16
+msgid ""
+"The time the scanner rests on a key  while progressing forward. (in seconds)"
+msgstr ""
+"Koha sa skaneri qëndron në një çelës ndërkohë që përparon përpara. (në "
+"sekonda)"
+
+#: ../settings_scanner_dialog.ui.h:17
+msgid ""
+"The time the scanner rests on a key  while moving backwards. (in seconds)"
+msgstr ""
+"Koha sa skaneri qëndron në një çelës ndërkohë që lëviz mbrapsht. (në sekonda)"
+
+#: ../settings_scanner_dialog.ui.h:18
+msgid "Backtrack _steps:"
+msgstr "_Hapat e gjurmimit mbrapsht:"
+
+#: ../settings_scanner_dialog.ui.h:19
+msgid "The number of keys the scanner steps back before moving forward again."
+msgstr ""
+"Numri i çelësave që skaneri bën mbrapsht para se të ecë përpara përsëri."
+
+#: ../settings_scanner_dialog.ui.h:20
+msgid "_Alternate switch actions"
+msgstr "Veprimet e ndryshuesit _alternativ"
+
+#: ../settings_scanner_dialog.ui.h:21
+msgid ""
+"Swap the scan actions after every key activation. The Step action will "
+"become the Activate action and vice versa."
+msgstr ""
+"Ndrysho veprimet e skanerit pas çdo aktivizimi të çelësit. Veprimi i Hapit "
+"do bëhet veprimi i aktivizimit dhe anasjelltas."
+
+#: ../settings_scanner_dialog.ui.h:22
+msgid "Profiles"
+msgstr "Profilet"
+
+#: ../settings_scanner_dialog.ui.h:23
+msgid "_Select an input device:"
+msgstr "_Zgjidh një pajisje për hyrje:"
+
+#: ../settings_scanner_dialog.ui.h:24
+msgid "_Use this device only for scanning"
+msgstr "_Përdore këtë pajisje vetëm për skanim"
+
+#: ../settings_scanner_dialog.ui.h:25
+msgid ""
+"The selected device should not control the system mouse cursor or the "
+"keyboard caret."
+msgstr ""
+"Pajisja e përzgjedhur nuk duhet të kontrollojë kursorin e miut të sistemit "
+"apo grupin e tastierës."
+
+#: ../settings_scanner_dialog.ui.h:26
+msgid "Input Device"
+msgstr "Pajisje Hyrëse"
+
+#: ../Onboard/WPEngine.py:483
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Dështova në ngarkimin e modelit të gjuhës '{}': {} ({})"
+
+#: ../Onboard/Appearance.py:130
+#, python-brace-format
+msgid "Color scheme for theme '{filename}' not found"
+msgstr "Ngjyra e skemës për temën '{filename}' nuk u gjet"
+
+#: ../Onboard/Appearance.py:350
+#, python-brace-format
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr "Gabim në ngarkimin e temës '{filename}'. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:424
+msgid "Error saving "
+msgstr "Gabim në ruajtje "
+
+#: ../Onboard/Appearance.py:842
+#, python-brace-format
+msgid ""
+"Loading legacy color scheme format '{old_format}', please consider upgrading "
+"to current format '{new_format}': '{filename}'"
+msgstr ""
+"Duke ngarkuar formatin e vjetër të skemës së ngjyrave '{old_format}', ju "
+"lutemi të merrni në konsideratë përditësimin në formatin e ri "
+"'{new_format}': '{filename}'"
+
+#: ../Onboard/Appearance.py:862
+#, python-brace-format
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+"Gabim në ngarkimin e skemës së ngjyrave '{filename}'. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
+msgstr ""
+"key_id '{}' e dyfishtë u gjet në skedarin e skemës së ngjyrave. Key_id-të "
+"duhet të jenë vetëm një herë."
+
+#: ../Onboard/Indicator.py:56
 msgid "_Show Onboard"
 msgstr "_Shfaq Onboard"
 
-#: ../Onboard/Indicator.py:52
+#: ../Onboard/Indicator.py:57
 msgid "_Hide Onboard"
 msgstr "_Fshihe Onboard"
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:78
+#: ../Onboard/Indicator.py:83
+#, fuzzy
 msgid "_Preferences"
-msgstr "_Preferimet"
+msgstr "Parapëlqimet"
 
-#: ../Onboard/Indicator.py:86
+#: ../Onboard/Indicator.py:91
 msgid "_Help"
 msgstr ""
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:97
+#: ../Onboard/Indicator.py:102
 msgid "_Quit"
 msgstr "_Dalja"
 
-#: ../Onboard/Indicator.py:195
+#: ../Onboard/Indicator.py:221 ../Onboard/Indicator.py:224
 msgid "Onboard on-screen keyboard"
 msgstr "Tastierë në ekran"
 
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Personalizo Temën"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Ske_ma e Ngjyrave"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Këndi:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Drejtimi i Dritës"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Stili:"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "R_rumbullakësia:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "P_ërmasa:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "B_order gjerësia:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Stili i Çelësit"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Tasti:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Korniza:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Gradientët"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Forca:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Hija"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Butonat"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Gërma:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Atributet:"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Gërma"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "P_ërmasë e Pavarur"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Super çelësi:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Mbishkrim i etiketave"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Etiketat"
-
-#: ../Onboard/Config.py:231
-msgid "Layout file ({}) or name"
-msgstr "Dalja e skedarit ({}) ose emri"
-
-#: ../Onboard/Config.py:234
-msgid "Theme file (.theme) or name"
-msgstr "Skedari i temës (.theme) ose emri"
-
-#: ../Onboard/Config.py:236
-msgid "Window size, widthxheight"
-msgstr "Përmasa e dritares gjerësi x lartësi"
-
-#: ../Onboard/Config.py:237
-msgid "Window x position"
-msgstr "Pozicioni x i dritares"
-
-#: ../Onboard/Config.py:238
-msgid "Window y position"
-msgstr "Pozicioni y i dritares"
-
-#: ../Onboard/Config.py:243
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "Nis mënyrën XEmbed, p.sh. për gnome-screensaver"
-
-#: ../Onboard/Config.py:246
-msgid "Allow multiple Onboard instances"
-msgstr "Lejo instanca të shumta të onboard"
-
-#: ../Onboard/Config.py:249
+#: ../Onboard/LayoutLoaderSVG.py:159
 msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
-"Dështim në heshtje të fillojë në mjediset desktop të dhëna.  DESKTOP është "
-"nje listë e emrave të XDG ndarë e me presje, si p.sh. GNOME për GNOME Shell."
+"Duke ngarkuar planin, formati '{}'. Ju lutem konsideroni të ndryshoni në "
+"formatin aktual '{}'."
 
-#: ../Onboard/Config.py:255
-msgid "Keep aspect ratio when resizing the window"
-msgstr "Ruaj përmasat kur ripërmason dritaren"
-
-#: ../Onboard/Config.py:257
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
+#: ../Onboard/LayoutLoaderSVG.py:398
+msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
-"Mbishkruaj vetë dallimin dhe vendos quirks në mënyrë manuale\n"
-"QUIRKS={metacity|compiz|mutter}"
+"Duke shpërfillur çelësin '{}'. Nuk është përcaktuar asnjë emër skedari svg."
 
-#: ../Onboard/Config.py:363
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Duke migruar drejtorinë e përdoruesit '{}' tek '{}'."
+#: ../Onboard/LayoutLoaderSVG.py:619
+msgid "Snippet {}"
+msgstr "Snippet {}"
 
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:371
-msgid "failed to migrate user directory. "
-msgstr "dështova në migrimin e drejtorisë së përdoruesit. "
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:623
+msgid ", unassigned"
+msgstr ", i pa caktuar"
 
-#: ../Onboard/Config.py:849
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "shtresa '{filename}' nuk ekziston"
+#: ../Onboard/LayoutLoaderSVG.py:932
+msgid "copying layout '{}' to '{}'"
+msgstr "duke kopjuar shtresën '{}' tek '{}'"
 
-#: ../Onboard/Config.py:890
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "tema '{filename}' nuk ekziston"
+#: ../Onboard/LayoutLoaderSVG.py:952
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "copy_layouts dështoi, format e pa suportuar i shtresës '{}'."
 
-#: ../Onboard/Config.py:915
-msgid "Loading theme from '{}'"
-msgstr "Duke ngarkuar temën nga '{}'"
-
-#: ../Onboard/Config.py:919
-msgid "Unable to read theme '{}'"
-msgstr "Nuk jam në gjendje të lexoj temën '{}'"
-
-#: ../Onboard/Config.py:1112
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"Aktivizimi i vetëshfaqjes kërkon hyrje në Gnome.\n"
-"\n"
-"Onboard mund ta ndezë hyrjen tani, sidoqoftë rekomandohet që ju të dilni nga "
-"sistemi dhe të riktheheni në të në mënyrë që ai të arrijë potencialin e vet "
-"të plotë.\n"
-"\n"
-"Ta aktivizoj hyrjen tani?"
-
-#: ../Onboard/Config.py:1759
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "skema e ngjyrave '{filename}' nuk ekziston"
+#: ../Onboard/LayoutLoaderSVG.py:995
+msgid "copying svg file '{}' to '{}'"
+msgstr "duke kopjuar skedarin svg '{}' tek '{}'"
 
 #. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1502
+#: ../Onboard/KeyboardWidget.py:1587
+#, fuzzy
 msgid "Edit snippet #{}"
-msgstr ""
+msgstr "Snippet {}"
 
 #. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1506
+#: ../Onboard/KeyboardWidget.py:1591
 msgid "New snippet"
 msgstr "Dritare e re"
 
 #. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1508
+#: ../Onboard/KeyboardWidget.py:1593
+#, fuzzy
 msgid "Enter a new snippet for button #{}:"
-msgstr ""
+msgstr "Vendos një snippet të ri për këtë buton:"
 
-#: ../Onboard/KeyboardWidget.py:1519
+#: ../Onboard/KeyboardWidget.py:1604
 msgid "_Save snippet"
 msgstr "_Ruaj dritaren"
 
-#: ../Onboard/KeyboardWidget.py:1539
+#: ../Onboard/KeyboardWidget.py:1624
 msgid "_Button label:"
 msgstr "Etiketa e _butonit:"
 
-#: ../Onboard/KeyboardWidget.py:1543
+#: ../Onboard/KeyboardWidget.py:1628
 msgid "S_nippet:"
 msgstr "S_nippet:"
 
-#: ../Onboard/KeyboardWidget.py:1713
+#: ../Onboard/KeyboardWidget.py:1798
 msgid "Other _Languages"
-msgstr "Gjuhët e _Tjera"
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1757
+#: ../Onboard/KeyboardWidget.py:1842
 msgid "_Remove suggestion…"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1813
+#: ../Onboard/KeyboardWidget.py:1898
 msgid "Remove word suggestion"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1824
+#: ../Onboard/KeyboardWidget.py:1909
 msgid "Remove '{}' everywhere."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1834
+#: ../Onboard/KeyboardWidget.py:1919
 msgid "This will only affect learned suggestions."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1874
+#: ../Onboard/KeyboardWidget.py:1959
 msgid "Remove '{}' only where it occures at text begin."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1877
+#: ../Onboard/KeyboardWidget.py:1962
 msgid "Remove '{}' only where it occures at sentence begin."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1880
+#: ../Onboard/KeyboardWidget.py:1965
 msgid "Remove '{}' only where it occures after numbers."
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1883
+#: ../Onboard/KeyboardWidget.py:1968
 msgid "Remove '{}' only where it occures after '{}'."
 msgstr ""
 
-#: ../Onboard/WordSuggestions.py:2647
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
-msgstr ""
-"<big>Onboard dështoi në hapjen e sugjerimeve për fjalët e mësuara.</big>\n"
-"\n"
-"Gabimi ishte:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Ti kthej sugjerimet e fjalëve në ruajtjen e fundit (rekomandohet)?"
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Parametrat Onboard"
 
-#: ../Onboard/WordSuggestions.py:2666
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
-msgstr ""
-"<big>Onboard dështoi në hapjen e sugjerimeve të fjalëve të mësuara.</big>\n"
-"\n"
-"Gabimi ishte:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Sugjerimet do të pastrohen, por skedari i gabuar do të ngelet në \n"
-"'{}'"
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Parametrat e tastierës në ekran onboard"
 
-#~ msgid "User layouts"
-#~ msgstr "Daljet e përdoruesve"
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Ndrysho Parametrat Onboard"
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "Only move when necessary"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid "Follow the active window"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "Shfaq parametrat"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgctxt "Label of the close button of the auto-show settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:14
+msgid "Strategy:"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:15
+msgid "Chose how the keyboard window moves when a text entry is activated."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:16
+#, fuzzy
+msgid "Keyboard Movement"
+msgstr "Opsionet e tastierës"
+
+#: ../settings_auto_show_dialog.ui.h:17
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:18
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:19
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "Nise Onboard të fshehur."
+
+#: ../settings_auto_show_dialog.ui.h:20
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:21
+msgid "Auto-hide"
+msgstr ""
+
+#~ msgid "No file manager to open layout folder"
+#~ msgstr "Nuk ka menaxhues skedarësh për të hapur dosjen në dalje"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "column"
+#~ msgstr "Kollonë"
+
+#~ msgid "_Frame resize handles:"
+#~ msgstr "Cepat e ripërmasimit të _kornizës:"
+
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "_Touch input (kerkon rindezje):"
+
+#~ msgid "Quit onBoard"
+#~ msgstr "Dil onBoard"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "Switch\n"
+#~ "Buttons"
+
+#~ msgid "Personalise current layout"
+#~ msgstr "Personalizo daljen e tanishme"
+
+#~ msgid "Open layout folder"
+#~ msgstr "Hap folderin e daljes"
+
+#~ msgid "Change onBoard settings"
+#~ msgstr "Ndrysho parametrat onBoard"
+
+#~ msgid "onBoard Settings"
+#~ msgstr "Parametrat onBorad"
+
+#~ msgid "onBoard onscreen keyboard settings"
+#~ msgstr "Parametrat e tastierës në ekran onBoard"
+
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "Shfaq _ikonë që pluskon kur onboard është fshehur"
+
+#~ msgid "onBoard"
+#~ msgstr "onBoard"
+
+#~ msgid "Start onboard _minimized"
+#~ msgstr "Niste onboard të _minimizuar"
+
+#~ msgid "Enter text for snippet"
+#~ msgstr "Vendos tekstin për snippet"
+
+#~ msgid "_Show icon in system tray to hide/show onboard"
+#~ msgstr "_Shfaq ikonën në shiritin e sistemit për të fshehur/shfaqur onboard"
+
+#~ msgid "onBoard onscreen keyboard"
+#~ msgstr "onBoard tastierë në ekran"
+
+#~ msgid "Show onboard when _unlocking the screen"
+#~ msgstr "Shfaq në bord kur _zhbllokon ekranin"
+
+#~ msgid ""
+#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
+#~ "example to dismiss the password-protected screensaver.\n"
+#~ "\n"
+#~ "However the system is not configured anymore to use onboard to unlock the "
+#~ "screen. A possible reason can be that another application configured the "
+#~ "system to use something else.\n"
+#~ "\n"
+#~ "Would you like to reconfigure the system to show onboard when unlocking "
+#~ "the screen?"
+#~ msgstr ""
+#~ "Onboard është konfiguruar që të shfaqet me dialogun për të zhbllokuar "
+#~ "ekranin; përshembull për të hequr ruajtësin e ekranit të mbrojtur nga "
+#~ "fjalëkalimi.\n"
+#~ "\n"
+#~ "Sidoqoftë sistemi nuk është më i konfiguruar të përdorë onboard për të "
+#~ "zhbllokuar ekranin. një arsye e mundshme është që një program tjetër e ka "
+#~ "konfiguruar sistemin që të përdorë diçka tjetër.\n"
+#~ "\n"
+#~ "Do të dëshironit ta rikonfiguronit sistemin që të shfaqë onboard kur "
+#~ "zhbllokon ekranin?"
+
+#~ msgid ""
+#~ "<b><i>Scanning mode only works with layouts which are designed for the "
+#~ "purpose.</i></b>"
+#~ msgstr ""
+#~ "<b><i>Mënyra e skanimit punon vetëm me daljet që janë dizenjuar për atë "
+#~ "qëllim.</i></b>"
+
+#~ msgid "Interval"
+#~ msgstr "Intervali"
+
+#~ msgid "Scanning mode"
+#~ msgstr "Mënyra e skanimit"
+
+#~ msgid "Personalise _current layout"
+#~ msgstr "Personalizo _daljen e tanishme"
+
+#~ msgid "Startup Option"
+#~ msgstr "Opsioni në Nisje"
+
+#~ msgid "_Open custom layouts folder"
+#~ msgstr "_Hap dosjen e daljeve të sistemit"
+
+#~ msgid " - middle/right click buttons disabled"
+#~ msgstr " - butonat e mesit/djathtas të çaktivizuar"
+
+#~ msgid "Xlib unavailable%s\n"
+#~ msgstr "Xlib nuk është e disponueshme%s\n"
+
+#~ msgid "XInput extension unavailable%s\n"
+#~ msgstr "Zgjatimi XInput nuk është i disponueshëm%s\n"
+
+#~ msgid "Snippet assigned to button %d"
+#~ msgstr "Dritarja ju caktua butonit %d"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Key"
+#~ msgstr "Çelësi"
+
+#~ msgid "Label font"
+#~ msgstr "Gërma e etiketës"
+
+#~ msgid "Units for canvas height and width must currently be px (pixels)."
+#~ msgstr ""
+#~ "Njësitë për gjerësinë dhe lartësinë e tabelës duhet të jenë në px "
+#~ "(pikselë)."
+
+#~ msgid "Layouts"
+#~ msgstr "Daljet"
+
+#~ msgid "Scanning"
+#~ msgstr "Skanimi"
+
+#~ msgid ""
+#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
+#~ "the icon makes onboard reappear."
+#~ msgstr ""
+#~ "Shfaq një ikonë që pluskon në desktop kur onboard është e fshehur. Një "
+#~ "klikim në ikonë e bën onboard të rishfaqet."
+
+#~ msgid "Start onboard hidden."
+#~ msgstr "Nise onboard të fshehur."
+
+#~ msgid "Snippet"
+#~ msgstr "Snippet"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Up"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Up"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Dn"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Dn"
+
+#~ msgid ""
+#~ "Nm\n"
+#~ "Lk"
+#~ msgstr ""
+#~ "Nm\n"
+#~ "Lk"
+
+#~ msgid "ESC"
+#~ msgstr "ESC"
+
+#~ msgid "%s appears in scanning definition only"
+#~ msgstr "%s shfaqet vetëm në përkufizimin e skanimit"
+
+#~ msgid "Show the status item. A click on that icon hides or shows onboard."
+#~ msgstr ""
+#~ "Shfaq temën e gjendjes. Një klikim mbi atë ikonë fsheh apo shfaq onboard."
+
+#~ msgid ""
+#~ "Middle\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Klikim\n"
+#~ "në Mes"
+
+#~ msgid ""
+#~ "Right\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Klikim\n"
+#~ "me të Djathtën"
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "Shfaq onboard kur shfaqet dialogu për të zhbllokuar ekranin; në këtë "
+#~ "mënyrë onboard mund të përdoret përshembull për të vendosur fjalëkalimin "
+#~ "për të hequr shpëtuesin e ekranit kur është vendosur të kërkojë për të."
+
+#~ msgid ""
+#~ "Some password dialogs disable the area around them, making it impossible "
+#~ "to click on onboard. By activating this option, these dialogs behave as "
+#~ "normal windows and the area around the dialog remains active. This option "
+#~ "is also available in the Assistive Technologies control panel."
+#~ msgstr ""
+#~ "Disa dialogje të fjalëkalimeve e çaktivizojnë zonën përeth tyre, duke e "
+#~ "bërë të pamundur të klikoni onboard. Duke aktivizuar këtë opsion, këto "
+#~ "dialogje sillen sidritare normale dhe zona rreth dialogut ngelet aktive. "
+#~ "Ky opsion është gjithashtu i disponueshëm në panelin e kontrollit të "
+#~ "Teknologjive Ndihmëse."
+
+#~ msgid "_Password dialogs as normal windows"
+#~ msgstr "_Dialogjet e fjalëkalimeve si dritare normale"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "Opsioni Kur Janë të Fshehura"
+
+#~ msgid "Looking for system defaults in %s"
+#~ msgstr "Duke kërkuar përparazgjedhjet e sistemit tek %s"
+
+#~ msgid "Loading system defaults from %s."
+#~ msgstr "Duke ngarkuar parazgjedhjet e sistemit nga %s."
+
+#~ msgid "Can't find file '%s'. Retrying as %s basename."
+#~ msgstr "Nuk munda të gjej skedarin '%s'. Duke provuar me emrin bazë %s."
+
+#~ msgid "Show Onboard when _unlocking the screen"
+#~ msgstr "Shfaq Onboard kur _zhbllokon ekranin"
+
+#~ msgid "Start Onboard _minimized"
+#~ msgstr "Nise Onboard të _minimizuar"
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "Skedari i temës ekziston tashmë.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Ta mbishkruaj gjithësesi?"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "Skema e ngjyrës për temën '%s' nuk u gjet"
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "Aktivizo mënyrën e _skanimit"
+
+#~ msgid "Background"
+#~ msgstr "Sfondi"
+
+#~ msgid "On Inactivity"
+#~ msgstr "Pa Aktivitet"
+
+#~ msgid "Startup Options"
+#~ msgstr "Opsionet e Nisjes"
+
+#~ msgid "Show _tool-tips"
+#~ msgstr "Shfaq _këshillat"
+
+#~ msgid "I_nterval:"
+#~ msgstr "I_nterval:"
+
+#~ msgid "Universal Access Settings"
+#~ msgstr "Parametrat e Hyrjes Universale"
+
+#~ msgid ""
+#~ "Always enable the system provided click-type window when exiting Onboard."
+#~ msgstr ""
+#~ "Gjithmonë aktivizo dritaren me klikim që të jep sistemi kur del nga "
+#~ "Onboard."
+
+#~ msgid "Always enable the click-type window on exit"
+#~ msgstr "Gjithmonë aktivizo dritaren me klikim në dalje"
+
+#~ msgid "Hide click-type window"
+#~ msgstr "Fshihe dritaren me klikim"
+
+#~ msgid "Show tool-tips for the keyboard's buttons."
+#~ msgstr "Shfaq këshilla për butonat e tastierës."
+
+#~ msgid "Hide the system provided click-type window while Onboard is running."
+#~ msgstr ""
+#~ "Fshihe dritaren e klikueshme që të jep sistemi kur është nisur Onboard."
+
+#~ msgid ""
+#~ "Scanning mode only works with layouts which are designed for the purpose."
+#~ msgstr ""
+#~ "Mënyra e skanimit punon vetëm me shtresat që janë dizenjuar për atë "
+#~ "qëllim."
+
+#~ msgid "%s '%s' not found yet, retrying in default paths"
+#~ msgstr ""
+#~ "%s '%s' nuk është gjetur akoma, duke u përpjekur në shtigjet e "
+#~ "parazgjedhura"
+
+#~ msgid "{} '{}' found."
+#~ msgstr "{} '{}' u gjet."
+
+#~ msgid "unable to locate '%s', loading default %s instead"
+#~ msgstr ""
+#~ "nuk jam në gjendje të gjej '%s', duke ngarkuar %s e parazgjedhur në vend "
+#~ "të tij"
+
+#~ msgid "failed to find %s '%s'"
+#~ msgstr "dështova në gjetjen e %s '%s'"
+
+#~ msgid "Found system default '{}={}'"
+#~ msgstr "U gjet e parazgjedhura e sistemit '{}={}'"
+
+#~ msgid "theme '%s' does not exist"
+#~ msgstr "tema '%s' nuk ekziston"
+
+#~ msgid "color scheme '%s' does not exist"
+#~ msgstr "Skema e ngjyrave '%s' nuk ekziston"
+
+#~ msgid "layout '%s' does not exist"
+#~ msgstr "shtresa '%s' nuk ekziston"
+
+#~ msgid "setting keyboard transparency to {}%"
+#~ msgstr "Duke vendosur transparencën e tastierës tek {}%"
+
+#~ msgid "Failed to load Onboard icon."
+#~ msgstr "Dështova në ngarkimin e ikonës së Onboard."
+
+#~ msgid "_Direction:"
+#~ msgstr "_Drejtimi:"
+
+#~ msgid "Ignoring key '{}'. Not found in '{}'."
+#~ msgstr "Duke shpërfillur çelësin '{}'. Nuk u gjet tek '{}'."
+
+#~ msgid "Releasing still pressed key '{}'"
+#~ msgstr "Duke lëshuar butonin akoma të shtypur '{}'"
+
+#~ msgid "Window Options"
+#~ msgstr "Opsionet e Dritares"
+
+#~ msgid "screen changed, supports_alpha={}"
+#~ msgstr "ekrani ndryshoi, supports_alpha={}"
+
+#~ msgid "Style"
+#~ msgstr "Stili"
+
+#~ msgid "Failed to migrate user directory. "
+#~ msgstr "Dështova në migrimin e drejtorisë së përdoruesit. "
+
+#~ msgid "launching '{}'"
+#~ msgstr "duke nisur '{}'"
+
+#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
+#~ msgstr ""
+#~ "Duke rifreskuar daljen e pango, parametri i ri për dpi të gërmave është "
+#~ "'{}'"
+
+#~ msgid ""
+#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
+#~ "format '{}'"
+#~ msgstr ""
+#~ "Duke ngarkuar formatin e vjetër të formës '{}'. Ju lutemi të konsideroni "
+#~ "përditësimin në formatin e tanishëm '{}'"
+
+#~ msgid "Show/Hide Options"
+#~ msgstr "Shfaq/Fshihi Opsionet"
+
+#~ msgid "_Universal Access Panel"
+#~ msgstr "Paneli i Harjes _Universale"
+
+#~ msgid "_Hide Hover Click window"
+#~ msgstr "_Fshihe Dritaren me Qëndrim Sipër"
+
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "Aktivizo dritaren me Klikim me Mbivendosje në _dalje"
+
+#~ msgid ""
+#~ "The time the scanner rests on a key or group  before moving to the next. "
+#~ "(in seconds)"
+#~ msgstr ""
+#~ "Koha që skaneri qëndorn në një çelës aço grup para se të lëvizë tek "
+#~ "tjetri. (në sekonda)"
+
+#~ msgid ""
+#~ "Swap the scan actions after every key activation. The Step acticon will "
+#~ "become the Activate action and vice versa."
+#~ msgstr ""
+#~ "Ndrysho seksionet e skanimit pas çdo aktivizimi të çelësit. Veprimi i "
+#~ "Hapit do të bëhet veprim i Aktivizimit dhe anasjelltas."
+
+#~ msgid "Cycle"
+#~ msgstr "Cikli"
+
+#~ msgid "Release - hold for long press"
+#~ msgstr "Lësho - mbaj për shtyp të gjate"
+
+#~ msgid "Press & release - hold for key-repeat"
+#~ msgstr "Shtyp & Lesho - mbaj për tast - përsërit"
+
+#~ msgid "Multi-touch"
+#~ msgstr "Shumë-prekje"
+
+#~ msgid "Single-touch"
+#~ msgstr "Një-prekje"
+
+#~ msgid "_Docking settings"
+#~ msgstr "Opsionet e mbështetjes."
+
+#~ msgid "Enable docking"
+#~ msgstr "Aktivizo mbështetjen"
+
+#~ msgid "Send _key strokes on:"
+#~ msgstr "Dërgo regjistrimin e _tastave të shkelur në:"
+
+#~ msgid ""
+#~ "Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+#~ "keys."
+#~ msgstr ""
+#~ "Zgjidh midis menuve me përseritje së veprimit të tastave të shkelur, ose "
+#~ "me shtypje për një kohë të gjatë. Ndikon vetëm tastet alpha-numeric."
+
+#~ msgid "Error loading "
+#~ msgstr "Gabim gjatë ngarkimit "
+
+#~ msgid "_Personalize"
+#~ msgstr "_Personalizo"
+
+#~ msgid "Atspi unavailable, auto-hide won't be available"
+#~ msgstr ""
+#~ "Atspi nuk është i disponueshëm, vetëfshehja nuk do të jetë e disponueshme"
+
+#~ msgid "Enter name for personalised layout"
+#~ msgstr "Vendosjen emrin për daljen e personalizuar"
+
+#~ msgid "Add Layout"
+#~ msgstr "Shto planimetri"
+
+#~ msgid "Onboard layout files"
+#~ msgstr "Skedarët e daljes së Onboard"
+
+#~ msgid "All files"
+#~ msgstr "Të gjithë skedarët"

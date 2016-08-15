@@ -1,10 +1,10 @@
-# German translation for onboard
+# German translation for Onboard
 #
-# Copyright: 
-#   Original strings: See files they where extracted from
+# Copyright:
+#   Original strings: See files they were extracted from
 #   Translations: Rosetta Contributers
 #
-# License: 
+# License:
 #   Original strings: GPL-3+ license
 #   Translations: BSD-3-clause license
 #
@@ -14,20 +14,956 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 15:18+0100\n"
-"PO-Revision-Date: 2015-09-08 13:03+0000\n"
-"Last-Translator: Tobias Bannert <Unknown>\n"
+"POT-Creation-Date: 2016-08-15 17:31+0200\n"
+"PO-Revision-Date: 2015-09-08 13:02+0000\n"
+"Last-Translator: Tobias Bannert <tobannert@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-02-17 14:32+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-08-14 15:52+0000\n"
+"X-Generator: Launchpad (build 18169)\n"
+
+#: ../Onboard/LanguageSupport.py:173 ../Onboard/Timer.py:160
+#: ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723
+msgid "Failed to execute '{}', {}"
+msgstr "Die folgende Datei konnte nicht ausgeführt werden »{}«, {}"
+
+#: ../Onboard/OnboardGtk.py:415
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard ist so eingestellt, dass ein Fenster angezeigt wird, sobald der "
+"Bildschirm freigegeben wird; zum Beispiel, um den passwortgeschützten "
+"Bildschirmschoner aufzuheben.\n"
+"\n"
+"Das System ist allerdings nicht mehr so eingestellt, dass Onboard erscheint, "
+"wenn der Bildschirm freigegeben wird. Ein möglicher Grund kann sein, dass "
+"eine andere Anwendung diese Einstellung überschrieben hat.\n"
+"\n"
+"Möchten Sie das System wieder so konfigurieren, dass Onboard erscheint, wenn "
+"der Bildschirm freigegeben wird?"
+
+#: ../Onboard/OnboardGtk.py:434
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard ist so konfiguriert, dass es mit dem Dialog zum Entsperren des "
+"Bildschirms erscheint, z. B um einen passwortgeschützten Bildschirmschoner "
+"aufzuheben.\n"
+"\n"
+"Jedoch ist diese Funktion im System deaktiviert.\n"
+"\n"
+"Möchten Sie sie wieder aktivieren?"
+
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Erscheinungsbild personalisieren"
+
+#: ../settings_theme_dialog.ui.h:2
+msgctxt "Label of the revert button of the theme settings dialog."
+msgid "_Revert"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:3
+msgctxt "Label of the close button of the theme settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:4
+msgid "Color Sche_me"
+msgstr "Farbsche_ma"
+
+#: ../settings_theme_dialog.ui.h:5 ../settings.ui.h:68
+msgid "_Background:"
+msgstr "_Hintergrund:"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:6 ../Onboard/settings.py:1426
+msgid "Gradient"
+msgstr "Farbgefälle"
+
+#: ../settings_theme_dialog.ui.h:7
+msgid "_Angle:"
+msgstr "_Winkel:"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "Light Direction"
+msgstr "Lichtrichtung"
+
+#: ../settings_theme_dialog.ui.h:9 ../settings.ui.h:16
+msgid "Keyboard"
+msgstr "Tastatur"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "_Style:"
+msgstr "_Stil:"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "R_oundness:"
+msgstr "R_undheit"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "S_ize:"
+msgstr "G_röße:"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "B_order width:"
+msgstr "_Rahmenbreite:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "Key Style"
+msgstr "Tastenstil"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Key:"
+msgstr "_Schlüssel:"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Border:"
+msgstr "_Rand:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Gradients"
+msgstr "Farbgefälle"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "_Strength:"
+msgstr "_Stärke:"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "Shadow"
+msgstr "Schatten"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "Keys"
+msgstr "Tasten"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "_Font:"
+msgstr "_Schriftart:"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "_Attributes:"
+msgstr "_Eigenschaften"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "Font"
+msgstr "Schriftart"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "I_ndependent size"
+msgstr "U_nabhängige Größe"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "_Super key:"
+msgstr "_Super-Taste:"
+
+#: ../settings_theme_dialog.ui.h:26
+msgid "Label Override"
+msgstr "Beschriftung überschreiben"
+
+#: ../settings_theme_dialog.ui.h:27
+msgid "Labels"
+msgstr "Beschriftungen"
+
+#: ../settings.ui.h:1
+#, fuzzy
+msgid "Key-repeat"
+msgstr "Tastenwiederholung"
+
+#: ../settings.ui.h:2
+#, fuzzy
+msgid "International character selection"
+msgstr "Internationale Schriftzeichenauswahl"
+
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr "GTK"
+
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr "XInput"
+
+#: ../settings.ui.h:5
+msgid "Auto"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "XTest"
+msgstr "XTest"
+
+#: ../settings.ui.h:7
+#, fuzzy
+msgid "uinput"
+msgstr "XInput"
+
+#: ../settings.ui.h:8
+msgid "AT-SPI"
+msgstr "AT-SPI"
+
+#: ../settings.ui.h:9
+msgid "Remember nothing"
+msgstr ""
+
+#: ../settings.ui.h:10
+msgid "Don't remember new words"
+msgstr ""
+
+#: ../settings.ui.h:11
+msgid "General"
+msgstr "Allgemein"
+
+#: ../settings.ui.h:12
+msgid "Window"
+msgstr "Fenster"
+
+#: ../settings.ui.h:13
+msgid "Layout"
+msgstr "Tastaturbelegung"
+
+#: ../settings.ui.h:14
+msgid "Theme"
+msgstr "Thema"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:15 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
+msgid "Snippets"
+msgstr "Textbausteine"
+
+#: ../settings.ui.h:17
+msgid "Typing Assistance"
+msgstr "Schreibunterstützung"
+
+#: ../settings.ui.h:18
+msgid "Universal Access"
+msgstr "Barrierefreiheit"
+
+#: ../settings.ui.h:19
+#, fuzzy
+msgid "Latch, then lock"
+msgstr "Verriegeln, dann sperren"
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "Verriegeln, zum Sperren doppelklicken"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Latch only"
+msgstr "Nur verriegeln"
+
+#: ../settings.ui.h:22
+#, fuzzy
+msgid "Lock only"
+msgstr "Nur sperren"
+
+#: ../settings.ui.h:23
+#, fuzzy
+msgid "Push button"
+msgstr "Drücken Sie einen Knopf …"
+
+#: ../settings.ui.h:24
+msgid "none"
+msgstr "Keine"
+
+#: ../settings.ui.h:25
+msgid "single-touch"
+msgstr "Einfache Berührung"
+
+#: ../settings.ui.h:26
+msgid "multi-touch"
+msgstr "Mehrfache Berührung"
+
+#: ../settings.ui.h:27
+msgctxt "Label of the main close button of the preferences dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings.ui.h:28
+msgid "_Auto-show when editing text"
+msgstr "Beim Bearbeiten von Text _automatisch anzeigen"
+
+#: ../settings.ui.h:29
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"Onboard anzeigen, wenn ein Textfenster im Vordergrund erkannt wird. "
+"Erfordert GNOME-Barrierefreiheit."
+
+#: ../settings.ui.h:30
+#, fuzzy
+msgctxt "Label of settings button on preferences page General."
+msgid "_Settings"
+msgstr "_Einstellungen"
+
+#: ../settings.ui.h:31
+msgid "Start Onboard _hidden"
+msgstr "Onboard _ausgeblendet starten"
+
+#: ../settings.ui.h:32
+msgid "Start Onboard hidden."
+msgstr "Onboard versteckt starten."
+
+#: ../settings.ui.h:33
+msgid "Show/Hide options"
+msgstr "Anzeige-/Ausblendeoptionen"
+
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Schwebendes S_ymbol anzeigen, wenn Onboard ausgeblendet ist"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Ein schwebendes Symbol auf dem Schreibtisch anzeigen, wenn Onboard "
+"ausgeblendet ist. Ein Klick auf das Symbol lässt Onboard wieder erscheinen."
+
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "Anzeigen, wenn der Bildschirm _entsperrt wird"
+
+#: ../settings.ui.h:37
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Zeigt Onboard an, wenn der Dialog zum Entsperren des Bildschirms angezeigt "
+"wird. Auf diesem Weg kann Onboard zur Eingabe des Kennworts verwendet "
+"werden, wenn der Bildschirmschoner danach fragt."
+
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "_Minihilfen anzeigen"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Minihilfen für die Tastaturtasten anzeigen."
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Minihilfen für die Tastaturtasten anzeigen."
+
+#: ../settings.ui.h:41
+msgid "_Show status icon"
+msgstr "_Statussymbol anzeigen"
+
+#: ../settings.ui.h:42
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr ""
+"Status-Symbol anzeigen. Ein Klick auf das Symbol blendet Onboard  aus oder "
+"zeigt es wieder an."
+
+#: ../settings.ui.h:43
+msgid "Status icon _provider:"
+msgstr ""
+
+#: ../settings.ui.h:44
+msgid ""
+"<b>AppIndicator</b> (default) is recommended for broadest compatibility. A "
+"middle click on the icon shows the keyboard. In KDE Plasma a left click does "
+"the same.\n"
+"\n"
+"<b>GtkStatusIcon</b> isn't supported well anymore by various desktop "
+"environments, but generally allows to show the keyboard on left click.\n"
+"\n"
+"Requires restart."
+msgstr ""
+
+#: ../settings.ui.h:49
+msgid "Desktop Integration"
+msgstr "Schreibtischeinbindung"
+
+#: ../settings.ui.h:50
+msgid "Dock to screen edge"
+msgstr "Am Bildschirmrand andocken"
+
+#: ../settings.ui.h:51
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "Die Tastatur am Bildschirmrand andocken."
+
+#: ../settings.ui.h:52
+#, fuzzy
+msgctxt "Label of settings button on preferences page Window."
+msgid "_Settings"
+msgstr "_Einstellungen"
+
+#: ../settings.ui.h:53
+msgid "Docking"
+msgstr "Andocken"
+
+#: ../settings.ui.h:54
+msgid "Show window _decoration"
+msgstr "Fenster_dekoration anzeigen"
+
+#: ../settings.ui.h:55
+msgid "Show window caption and frame."
+msgstr "Fenstertitel und -Rahmen anzeigen."
+
+#: ../settings.ui.h:56
+msgid "Show always on visible _workspace"
+msgstr "Immer auf _aktiver Arbeitsfläche anzeigen"
+
+#: ../settings.ui.h:57
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "»Verfolgungs«-Modus für Tastatur und schwebende Symbole."
+
+#: ../settings.ui.h:58
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "»Verfolgungs«-Modus für Tastatur und schwebende Symbole."
+
+#: ../settings.ui.h:59
+msgid "_Force window to top"
+msgstr "_Fenster im Vordergrund halten"
+
+#: ../settings.ui.h:60
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr ""
+"Stärker versuchen Onboard vor allen anderen Bildschirminhalten anzuzeigen."
+
+#: ../settings.ui.h:61
+msgid "Keep _aspect ratio"
+msgstr "_Seitenverhältnis beibehalten"
+
+#: ../settings.ui.h:62
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr ""
+"Fenstergröße auf das Seitenverhältnis der Tastaturbelegung beschränken."
+
+#: ../settings.ui.h:63
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr ""
+"Fenstergröße auf das Seitenverhältnis der Tastaturbelegung beschränken."
+
+#: ../settings.ui.h:64
+msgid "Floating Window Options"
+msgstr "Optionen für das schwebende Fenster"
+
+#: ../settings.ui.h:65
+msgid "Window options"
+msgstr "Fensteroptionen"
+
+#: ../settings.ui.h:66
+msgid "Wind_ow:"
+msgstr "_Fenster:"
+
+#: ../settings.ui.h:67
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr ""
+"Durchsichtigkeit des gesamten Tastaturfensters. Komposit wird benötigt."
+
+#: ../settings.ui.h:69
+msgid "Transparency of the keyboard background"
+msgstr "Durchsichtigkeit des Tastaturhintergrundes"
+
+#: ../settings.ui.h:70
+msgid "_No background"
+msgstr "_Kein Hintergrund"
+
+#: ../settings.ui.h:71
+msgid "Show the desktop through the gaps between keys."
+msgstr "Den Schreibtisch durch die Lücken zwischen den Tasten anzeigen."
+
+#: ../settings.ui.h:72
+msgid "Transparency"
+msgstr "Durchsichtigkeit"
+
+#: ../settings.ui.h:73
+msgid "Set _transparency to"
+msgstr "_Durchsichtigkeit einstellen auf"
+
+#: ../settings.ui.h:74
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "Durchsichtigkeit bei Inaktivität einschalten. Komposit wird benötigt."
+
+#: ../settings.ui.h:75
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr ""
+"Durchsichtigkeit, sobald der Mauszeiger die Tastatur verlässt. Komposit wird "
+"benötigt."
+
+#: ../settings.ui.h:76
+msgid "after"
+msgstr "nach"
+
+#: ../settings.ui.h:77
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr ""
+"Verzögerung in Sekunden bis die inaktive Durchsichtigkeit in Kraft tritt."
+
+#: ../settings.ui.h:78
+msgid "seconds"
+msgstr "Sekunden"
+
+#: ../settings.ui.h:79
+msgid "When Inactive"
+msgstr "Wenn inaktiv"
+
+#: ../settings.ui.h:80
+#, fuzzy
+msgid "_Window handles:"
+msgstr "Fensterverwaltung"
+
+#: ../settings.ui.h:81
+msgid "Resize Protection"
+msgstr "Schutz vor Größenänderung"
+
+#: ../settings.ui.h:82
+msgid "Name"
+msgstr "Name"
+
+#: ../settings.ui.h:83
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ../settings.ui.h:84
+msgctxt "Label of new layout button on preferences page Layout."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:85
+#, fuzzy
+msgctxt "Label of delete layout button on preferences page Layout."
+msgid "_Delete"
+msgstr "Entfernen"
+
+#: ../settings.ui.h:86
+#, fuzzy
+msgctxt "Label of open folder button on preferences page Layout."
+msgid "_Open layouts folder"
+msgstr "Tastaturbelegungs_ordner öffnen"
+
+#: ../settings.ui.h:87
+msgctxt "Label of about layout button on preferences page Layout."
+msgid "_About"
+msgstr ""
+
+#: ../settings.ui.h:88
+msgctxt "Label of new theme button on preferences page Theme."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:89
+#, fuzzy
+msgctxt "Label of delete theme  button on preferences page Theme."
+msgid "_Delete"
+msgstr "Entfernen"
+
+#: ../settings.ui.h:90
+#, fuzzy
+msgctxt "Label of customize theme button on preferences page Theme."
+msgid "C_ustomize theme"
+msgstr "Erscheinungsbild an_passen"
+
+#: ../settings.ui.h:91
+msgid "Follow _system theme"
+msgstr "_Systemthema verwenden"
+
+#: ../settings.ui.h:92
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"Für jedes Systemthema merken, welches Onboard-Thema zuletzt verwendet wurde."
+
+#: ../settings.ui.h:93
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Textbausteine sind Textstücke, die eingegeben werden, wenn der zugehörige "
+"Knopf in Onboard gedrückt wird."
+
+#: ../settings.ui.h:94
+msgctxt "Label of add snippet button on preferences page Snippets."
+msgid "_Add"
+msgstr ""
+
+#: ../settings.ui.h:95
+msgctxt "Label of remove snippet button on preferences page Snippets."
+msgid "_Remove"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid "Show label popups"
+msgstr "Beschriftungseinblendungen anzeigen"
+
+#: ../settings.ui.h:97
+msgid "Show label popups above pressed keys."
+msgstr "Beschriftungseinblendungen über einer gedrückten Taste anzeigen."
+
+#: ../settings.ui.h:98
+msgid "Play sound"
+msgstr "Klang wiedergeben"
+
+#: ../settings.ui.h:99
+msgid "Play click sound on keypress."
+msgstr "Klickklang bei Tastendruck abspielen."
+
+#: ../settings.ui.h:100
+#, fuzzy
+msgid "Place sound in space"
+msgstr "Klickklang bei Tastendruck abspielen."
+
+#: ../settings.ui.h:101
+msgid ""
+"Place sound in space between speakers depending on the key's position on "
+"screen"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid "Key-press Feedback"
+msgstr "Rückmeldung bei Tastendruck"
+
+#: ../settings.ui.h:103
+msgid "Show secondary labels"
+msgstr "Zweitbelegung der Tasten anzeigen"
+
+#: ../settings.ui.h:104
+msgid "Show characters reachable with or without the shift key."
+msgstr "Zeichen anzeigen, die mit oder ohne die Umschalttaste erreichbar sind"
+
+#: ../settings.ui.h:105
+msgid "Key Labels"
+msgstr "Tastenbeschriftungen"
+
+#: ../settings.ui.h:106
+msgid "Upper case on right click"
+msgstr ""
+
+#: ../settings.ui.h:107
+msgid "Temporarily enable SHIFT when clicking with the secondary button."
+msgstr ""
+
+#: ../settings.ui.h:108
+#, fuzzy
+msgid "Key Behaviour"
+msgstr "Tastenverhalten"
+
+#: ../settings.ui.h:109
+msgid "_Long press action:"
+msgstr "Aktion für _langen Tastendruck:"
+
+#: ../settings.ui.h:110
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+"Zwischen Tastenwiederholung oder Langer-Tastendruck-Menüs wählen. Betrifft "
+"hauptsächlich alphanumerische Tasten."
+
+#: ../settings.ui.h:111
+msgid "Modifier _behavior:"
+msgstr "_Veränderungverhalten:"
+
+#: ../settings.ui.h:112
+msgid "Behavior of modifier and layer keys."
+msgstr "Verhalten von Veränderungs- und Ablagetasten."
+
+#: ../settings.ui.h:113
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "Automatisches Entsperren verzögern:"
+
+#: ../settings.ui.h:114
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"Sekunden der Inaktivität bis aktive Veränderungs- und Ablagetasten "
+"losgelassen werden. 0 zum Abschalten."
+
+#: ../settings.ui.h:115
+#, fuzzy
+msgid "Modifier auto-release after hide in seconds:"
+msgstr "Automatisches Entsperren verzögern:"
+
+#: ../settings.ui.h:116
+msgid ""
+"Time after hiding the keyboard in seconds until latched and locked modifiers "
+"and layer keys are released automatically. Leave at 0.0 to not automatically "
+"release them."
+msgstr ""
+
+#: ../settings.ui.h:117
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:118
+msgid "Key Behavior"
+msgstr "Tastenverhalten"
+
+#: ../settings.ui.h:119
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:120
+msgid "_Input event source:"
+msgstr "_Ursprung des Eingangsereignisses:"
+
+#: ../settings.ui.h:121
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+"Ist »XInput« gewählt, wird Text zuverlässiger in Aufklappselektionen "
+"eingegeben. Die Option »GTK« bietet bessere Kompatibilität, aber die "
+"Texteingabe schlägt möglicherweise fehl, wenn Pointer-Greifer vorhanden "
+"sind,  beispielsweise bei offenen Aufklappfenstern."
+
+#: ../settings.ui.h:122
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+"Ist »XInput« gewählt, wird Text zuverlässiger in Aufklappselektionen "
+"eingegeben. Die Option »GTK« bietet bessere Kompatibilität, aber die "
+"Texteingabe schlägt möglicherweise fehl, wenn Pointer-Greifer vorhanden "
+"sind,  beispielsweise bei offenen Aufklappfenstern."
+
+#: ../settings.ui.h:123
+msgid "Input Options"
+msgstr "Eingabeoptionen"
+
+#: ../settings.ui.h:124
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:125
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:126
+#, fuzzy
+msgid "Key-stroke generator"
+msgstr "Tastenkürzel_erzeugung:"
+
+#: ../settings.ui.h:127
+msgid ""
+"<b>Auto</b>: let Onboard decide, recommended.\n"
+"\n"
+"<b>XTest</b> is the default for all X based desktop environments.\n"
+"\n"
+"<b>uinput</b> should be available on all linux-based systems, including X, "
+"Wayland and MIR-based desktops, but requires write permission for /dev/"
+"uinput.\n"
+"\n"
+"<b>AT-SPI</b> has limited support for key-stroke generation, and is only "
+"recommended for testing."
+msgstr ""
+
+#: ../settings.ui.h:134
+#, fuzzy
+msgid "Key-stroke Generation"
+msgstr "Tastenkürzel_erzeugung:"
+
+#: ../settings.ui.h:135
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: ../settings.ui.h:136
+msgid "Show _suggestions"
+msgstr "_Vorschläge anzeigen"
+
+#: ../settings.ui.h:137
+msgid "Enable word completion and prediction."
+msgstr "Wortvervollständigung und -vorhersage aktivieren."
+
+#: ../settings.ui.h:138
+msgid "Show spelling suggestions"
+msgstr "Rechtschreibevorschläge anzeigen"
+
+#: ../settings.ui.h:139
+msgid "Check spelling of the word at or before the cursor."
+msgstr "Rechtschreibung des Wortes vor oder unter der Schreibmarke prüfen."
+
+#: ../settings.ui.h:140
+msgid "_Learn from typed text"
+msgstr "_Vom eingegebenen Text lernen"
+
+#: ../settings.ui.h:141
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+"Neue Wörter, ihre Aktualität und Häufigkeit merken, um zukünftige Vorschläge "
+"zu verbessern."
+
+#: ../settings.ui.h:142
+msgid "Insert word _separators"
+msgstr "Wort_unterteilungen einfügen"
+
+#: ../settings.ui.h:143
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+"Leerzeichen einfügen bzw. entfernen beim Einfügen von Wortvorschlägen, denen "
+"ein Satzzeichen folgt."
+
+#: ../settings.ui.h:144
+msgid "Options"
+msgstr "Optionen"
+
+#: ../settings.ui.h:145
+#, fuzzy
+msgid "Show more suggestions arrow"
+msgstr "_Vorschläge anzeigen"
+
+#: ../settings.ui.h:146
+msgid "Step forward and backward through the available suggestions."
+msgstr ""
+
+#: ../settings.ui.h:147
+msgid "Show button to pause learning"
+msgstr "Knopf zum Pausieren des Lernvorgangs anzeigen"
+
+#: ../settings.ui.h:148
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr ""
+"Wörter die eingegeben werden, wenn diese Schaltfläche gedrückt ist, werden "
+"beim Lernen nicht berücksichtigt."
+
+#: ../settings.ui.h:149
+msgid "Show lan_guage switcher"
+msgstr "Sprachumschalter anzeigen"
+
+#: ../settings.ui.h:150
+msgid "Show a button for language selection."
+msgstr "Einen Knopf zur Wahlder Sprache anzeigen."
+
+#: ../settings.ui.h:151
+msgid "Buttons"
+msgstr "Knöpfe"
+
+#: ../settings.ui.h:152
+msgid "Word Suggestions"
+msgstr "Wortvorschläge"
+
+#: ../settings.ui.h:153
+msgid "Auto-capitalize while typing"
+msgstr "Automatische Groß-Kleinschreibung bei der Texteingabe"
+
+#: ../settings.ui.h:154
+msgid "Automatically capitalize sentence begins and name words."
+msgstr "Satzanfänge und Namen automatisch groß schreiben."
+
+#: ../settings.ui.h:155
+msgid "Auto-correct spelling"
+msgstr "Automatische Rechtschreibkorrektur"
+
+#: ../settings.ui.h:156
+msgid "Automatically correct the last word."
+msgstr "Zuletzt eingegebenes Wort automatisch korrigieren."
+
+#: ../settings.ui.h:157
+msgid "The spell check engine to use."
+msgstr "Verwendetes Rechtschreibprogramm"
+
+#: ../settings.ui.h:158
+msgid "Spell-check backend:"
+msgstr "Basis der Rechtschreibprüfung:"
+
+#: ../settings.ui.h:159
+msgid "Auto-correction"
+msgstr "Automatische Korrektur"
+
+#: ../settings.ui.h:160
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:161
+#, fuzzy
+msgid "Learning"
+msgstr "Lernen pausieren"
+
+#: ../settings.ui.h:162
+msgid "Enable  keyboard _scanning"
+msgstr "Tastatur-_Scanning aktivieren"
+
+#: ../settings.ui.h:163
+#, fuzzy
+msgctxt ""
+"Label of keyboard scanning settings button on preferences page Universal "
+"Access."
+msgid "Sc_anner Settings"
+msgstr "Sc_anner-Einstellungen"
+
+#: ../settings.ui.h:164
+msgid "Keyboard Scanning"
+msgstr "Tastatur-Scanning"
+
+#: ../settings.ui.h:165
+msgid "_Delay:"
+msgstr "_Verzögerung:"
+
+#: ../settings.ui.h:166
+msgid "_Motion threshold:"
+msgstr "_Schwellenwert der Bewegung:"
+
+#: ../settings.ui.h:167
+msgid "Time in seconds before a click is triggered."
+msgstr "Zeit in Sekunden, ehe ein Klick ausgelöst wird."
+
+#: ../settings.ui.h:168
+msgid "Distance in pixels before movement will be recognized."
+msgstr "Abstand in Pixeln, ehe eine Bewegung erkannt wird"
+
+#: ../settings.ui.h:169
+msgid "Hide hover click window"
+msgstr "Überfahrenklickfenster verbergen"
+
+#: ../settings.ui.h:170
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr ""
+"Das vom System bereitgestellte Überfahrenklickfenster ausblenden, wenn "
+"Onboard ausgeführt wird."
+
+#: ../settings.ui.h:171
+msgid "Enable click type window on exit"
+msgstr "Klicktyp-Fenster beim Beenden einschalten"
+
+#: ../settings.ui.h:172
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Immer das vom System bereitgestellten Überfahrenklickfenster aktivieren, "
+"wenn Onboard beendet wird."
+
+#: ../settings.ui.h:173
+msgid "Hover Click"
+msgstr "Überfahrenklick"
 
 #. Default dialog title: name of the application
-#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1063
-#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1804
+#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1086
+#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1889
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -36,7 +972,8 @@ msgid "Onboard onscreen keyboard"
 msgstr "Onboard-Bildschirmtastatur"
 
 #: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
+#, fuzzy
+msgid "Flexible onscreen keyboard"
 msgstr "Flexible Bildschirmtastatur für GNOME"
 
 #: ../Onboard/settings.py:259
@@ -63,12 +1000,13 @@ msgstr "Keine"
 #. Window handles: None
 #: ../Onboard/settings.py:741
 msgid "Movement only"
-msgstr "Nur bei Bewegung"
+msgstr ""
 
 #. Frame resize handles: Corners only
 #: ../Onboard/settings.py:743
+#, fuzzy
 msgid "Corners"
-msgstr "Ecken"
+msgstr "Nur Ecken"
 
 #. Frame resize handles: All
 #: ../Onboard/settings.py:745
@@ -123,24 +1061,21 @@ msgstr "Ausgewähltes Erscheinungsbild löschen?"
 
 #. Translators: reset button of Preferences->Theme.
 #: ../Onboard/settings.py:1088
+#, fuzzy
 msgid "_Reset"
-msgstr "_Zurücksetzen"
+msgstr "Zurücksetzen"
 
 #. Translators: delete button of Preferences->Theme. It used to be
 #. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
 #: ../Onboard/settings.py:1092
+#, fuzzy
 msgid "_Delete"
-msgstr "_Entfernen"
+msgstr "Entfernen"
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1424
 msgid "Flat"
 msgstr "Flach"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1426 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Farbgefälle"
 
 #. Key style for dish-like key caps
 #: ../Onboard/settings.py:1428
@@ -215,1023 +1150,74 @@ msgstr "Drücken Sie einen Knopf …"
 msgid "Press a key..."
 msgstr "Drücken Sie eine Taste …"
 
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr "Oben"
+#: ../Onboard/utils.py:1535
+msgid "failed to create directory '{}': {}"
+msgstr "Erstellen des Verzeichnisses fehlgeschlagen »{}«: {}"
 
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr "Unten"
+#. ##############
+#: ../Onboard/SnippetView.py:39
+msgid "<Enter label>"
+msgstr "<Beschriftung eingeben>"
 
-#: ../settings_docking_dialog.ui.h:3
-msgid "Active Monitor"
-msgstr "Aktiver Bildschirm"
+#: ../Onboard/SnippetView.py:40
+msgid "<Enter text>"
+msgstr "<Text eingeben>"
 
-#: ../settings_docking_dialog.ui.h:4
-msgid "Primary Monitor"
-msgstr "Hauptbildschirm"
+#: ../Onboard/SnippetView.py:52
+msgid "Button Number"
+msgstr "Knopfnummer"
 
-#: ../settings_docking_dialog.ui.h:5
-msgid "Monitor 0"
-msgstr "Bildschirm 0"
+#: ../Onboard/SnippetView.py:59
+msgid "Button Label"
+msgstr "Knopfbeschriftung"
 
-#: ../settings_docking_dialog.ui.h:6
-msgid "Monitor 1"
-msgstr "Bildschirm 1"
+#: ../Onboard/SnippetView.py:68
+msgid "Snippet Text"
+msgstr "Text des Textbausteins"
 
-#: ../settings_docking_dialog.ui.h:7
-msgid "Monitor 2"
-msgstr "Bildschirm 2"
+#: ../Onboard/SnippetView.py:113
+msgid "Must be an integer number"
+msgstr "Muss eine ganzzahlige Zahl sein"
 
-#: ../settings_docking_dialog.ui.h:8
-msgid "Monitor 3"
-msgstr "Bildschirm 3"
+#: ../Onboard/SnippetView.py:122
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Ausschnitt %d ist bereits in Verwendung."
 
-#: ../settings_docking_dialog.ui.h:9
-msgid "Monitor 4"
-msgstr "Bildschirm 4"
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Monitor 5"
-msgstr "Bildschirm 5"
-
-#: ../settings_docking_dialog.ui.h:11
-msgid "Monitor 6"
-msgstr "Bildschirm 6"
-
-#: ../settings_docking_dialog.ui.h:12
-msgid "Monitor 7"
-msgstr "Bildschirm 7"
-
-#: ../settings_docking_dialog.ui.h:13
-msgid "Monitor 8"
-msgstr "Bildschirm 8"
-
-#: ../settings_docking_dialog.ui.h:14
-msgid "Docking settings"
-msgstr "Andockeinstellungen"
-
-#: ../settings_docking_dialog.ui.h:15
-msgid "Shrink workarea"
-msgstr "Arbeitsbereich verkleinern"
-
-#: ../settings_docking_dialog.ui.h:16
-msgid "Shrink the available space for maximized windows."
-msgstr "Den für maximierte Fenster verfügbaren Platz verkleinern"
-
-#: ../settings_docking_dialog.ui.h:17
-msgid "Expand on landscape screens"
-msgstr "Auf Querformatbildschirmen erweitern"
-
-#: ../settings_docking_dialog.ui.h:18
-msgid "Expand keyboard to the width of the workarea."
-msgstr "Die Tastatur auf die Breite des Arbeitsbereichs erweitern."
-
-#: ../settings_docking_dialog.ui.h:19
-msgid "Expand on portrait screens"
-msgstr "Auf Hochformatbildschirmen erweitern"
-
-#: ../settings_docking_dialog.ui.h:20
-msgid "Dock to screen edge:"
-msgstr "Am Bildschirmrand andocken:"
-
-#: ../settings_docking_dialog.ui.h:21
-msgid "Dock to monitor:"
-msgstr "An folgenden Bildschirm anheften:"
-
-#: ../settings.ui.h:1
-msgid "Key-repeat"
-msgstr "Tastenwiederholung"
-
-#: ../settings.ui.h:2
-msgid "International character selection"
-msgstr "Auswahl internationaler Zeichen"
-
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr "GTK"
-
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr "XInput"
-
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
-
-#: ../settings.ui.h:6
-msgid "AT-SPI"
-msgstr "AT-SPI"
-
-#: ../settings.ui.h:7
-msgid "Remember nothing"
-msgstr "Nichts merken"
-
-#: ../settings.ui.h:8
-msgid "Don't remember new words"
-msgstr "Neue Wörter nicht merken"
-
-#: ../settings.ui.h:9
-msgid "General"
-msgstr "Allgemein"
-
-#: ../settings.ui.h:10
-msgid "Window"
-msgstr "Fenster"
-
-#: ../settings.ui.h:11
-msgid "Layout"
-msgstr "Tastaturbelegung"
-
-#: ../settings.ui.h:12
-msgid "Theme"
-msgstr "Thema"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
-msgid "Snippets"
-msgstr "Textbausteine"
-
-#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "Tastatur"
-
-#: ../settings.ui.h:15
-msgid "Typing Assistance"
-msgstr "Schreibunterstützung"
-
-#: ../settings.ui.h:16
-msgid "Universal Access"
-msgstr "Barrierefreiheit"
-
-#: ../settings.ui.h:17
-msgid "Latch, then lock"
-msgstr "Verriegeln, dann sperren"
-
-#: ../settings.ui.h:18
-msgid "Latch, double-click to lock"
-msgstr "Verriegeln, zum Sperren doppelklicken"
-
-#: ../settings.ui.h:19
-msgid "Latch only"
-msgstr "Nur verriegeln"
-
-#: ../settings.ui.h:20
-msgid "Lock only"
-msgstr "Nur sperren"
-
-#: ../settings.ui.h:21
-msgid "Push button"
-msgstr "Druckknopf"
-
-#: ../settings.ui.h:22
-msgid "none"
-msgstr "Keine"
-
-#: ../settings.ui.h:23
-msgid "single-touch"
-msgstr "Einfache Berührung"
-
-#: ../settings.ui.h:24
-msgid "multi-touch"
-msgstr "Mehrfache Berührung"
-
-#: ../settings.ui.h:25
-msgid "column"
-msgstr "Spalte"
-
-#: ../settings.ui.h:26
-msgid "_Auto-show when editing text"
-msgstr "Beim Bearbeiten von Text _automatisch anzeigen"
-
-#: ../settings.ui.h:27
+#: ../Onboard/WordSuggestions.py:2687
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"Onboard anzeigen, wenn ein Textfenster im Vordergrund erkannt wird. "
-"Erfordert GNOME-Barrierefreiheit."
-
-#: ../settings.ui.h:28
-msgid "_Settings"
-msgstr "_Einstellungen"
-
-#: ../settings.ui.h:29
-msgid "Start Onboard _hidden"
-msgstr "Onboard _ausgeblendet starten"
-
-#: ../settings.ui.h:30
-msgid "Start Onboard hidden."
-msgstr "Onboard versteckt starten."
-
-#: ../settings.ui.h:31
-msgid "Show/Hide options"
-msgstr "Anzeige-/Ausblendeoptionen"
-
-#: ../settings.ui.h:32
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Schwebendes S_ymbol anzeigen, wenn Onboard ausgeblendet ist"
-
-#: ../settings.ui.h:33
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Ein schwebendes Symbol auf dem Schreibtisch anzeigen, wenn Onboard "
-"ausgeblendet ist. Ein Klick auf das Symbol lässt Onboard wieder erscheinen."
-
-#: ../settings.ui.h:34
-msgid "Show when _unlocking the screen"
-msgstr "Anzeigen, wenn der Bildschirm _entsperrt wird"
-
-#: ../settings.ui.h:35
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Zeigt Onboard an, wenn der Dialog zum Entsperren des Bildschirms angezeigt "
-"wird. Auf diesem Weg kann Onboard zur Eingabe des Kennworts verwendet "
-"werden, wenn der Bildschirmschoner danach fragt."
-
-#: ../settings.ui.h:36
-msgid "Show _tooltips"
-msgstr "_Minihilfen anzeigen"
-
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Minihilfen für die Tastaturtasten anzeigen."
-
-#: ../settings.ui.h:38
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Minihilfen für die Tastaturtasten anzeigen."
-
-#: ../settings.ui.h:39
-msgid "_Show status icon"
-msgstr "_Statussymbol anzeigen"
-
-#: ../settings.ui.h:40
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Statussymbol anzeigen. Ein Klick auf das Symbol blendet Onboard aus oder "
-"zeigt es wieder an."
-
-#: ../settings.ui.h:41
-msgid "Status icon _provider:"
-msgstr ""
-
-#: ../settings.ui.h:42
-msgid ""
-"AppIndicater (default) is recommend for broadest compatibility. "
-"GtkStatusIcon isn't supported well anymore by various desktop environments, "
-"but allows to show Onboard on left click. Requires restart."
-msgstr ""
-
-#: ../settings.ui.h:43
-msgid "Desktop Integration"
-msgstr "Schreibtischeinbindung"
-
-#: ../settings.ui.h:44
-msgid "Dock to screen edge"
-msgstr "Am Bildschirmrand andocken"
-
-#: ../settings.ui.h:45
-msgid "Dock the keyboard to the edge of the screen."
-msgstr "Die Tastatur am Bildschirmrand andocken."
-
-#: ../settings.ui.h:46
-msgid "Docking"
-msgstr "Andocken"
-
-#: ../settings.ui.h:47
-msgid "Show window _decoration"
-msgstr "Fenster_dekoration anzeigen"
-
-#: ../settings.ui.h:48
-msgid "Show window caption and frame."
-msgstr "Fenstertitel und -Rahmen anzeigen."
-
-#: ../settings.ui.h:49
-msgid "Show always on visible _workspace"
-msgstr "Immer auf _aktiver Arbeitsfläche anzeigen"
-
-#: ../settings.ui.h:50
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "»Verfolgungs«-Modus für Tastatur und schwebende Symbole."
-
-#: ../settings.ui.h:51
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "»Verfolgungs«-Modus für Tastatur und schwebende Symbole."
-
-#: ../settings.ui.h:52
-msgid "_Force window to top"
-msgstr "_Fenster im Vordergrund halten"
-
-#: ../settings.ui.h:53
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr ""
-"Stärker versuchen Onboard vor allen anderen Bildschirminhalten anzuzeigen."
-
-#: ../settings.ui.h:54
-msgid "Keep _aspect ratio"
-msgstr "_Seitenverhältnis beibehalten"
-
-#: ../settings.ui.h:55
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr ""
-"Fenstergröße auf das Seitenverhältnis der Tastaturbelegung beschränken."
-
-#: ../settings.ui.h:56
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr ""
-"Fenstergröße auf das Seitenverhältnis der Tastaturbelegung beschränken."
-
-#: ../settings.ui.h:57
-msgid "Floating Window Options"
-msgstr "Optionen für das schwebende Fenster"
-
-#: ../settings.ui.h:58
-msgid "Window options"
-msgstr "Fensteroptionen"
-
-#: ../settings.ui.h:59
-msgid "Wind_ow:"
-msgstr "_Fenster:"
-
-#: ../settings.ui.h:60
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-"Durchsichtigkeit des gesamten Tastaturfensters. Komposit wird benötigt."
-
-#: ../settings.ui.h:61 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "_Hintergrund:"
-
-#: ../settings.ui.h:62
-msgid "Transparency of the keyboard background"
-msgstr "Durchsichtigkeit des Tastaturhintergrundes"
-
-#: ../settings.ui.h:63
-msgid "_No background"
-msgstr "_Kein Hintergrund"
-
-#: ../settings.ui.h:64
-msgid "Show the desktop through the gaps between keys."
-msgstr "Den Schreibtisch durch die Lücken zwischen den Tasten anzeigen."
-
-#: ../settings.ui.h:65
-msgid "Transparency"
-msgstr "Durchsichtigkeit"
-
-#: ../settings.ui.h:66
-msgid "Set _transparency to"
-msgstr "_Durchsichtigkeit einstellen auf"
-
-#: ../settings.ui.h:67
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "Durchsichtigkeit bei Inaktivität einschalten. Komposit wird benötigt."
-
-#: ../settings.ui.h:68
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
-"Durchsichtigkeit, sobald der Mauszeiger die Tastatur verlässt. Komposit wird "
-"benötigt."
-
-#: ../settings.ui.h:69
-msgid "after"
-msgstr "nach"
-
-#: ../settings.ui.h:70
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr ""
-"Verzögerung in Sekunden bis die inaktive Durchsichtigkeit in Kraft tritt."
-
-#: ../settings.ui.h:71
-msgid "seconds"
-msgstr "Sekunden"
-
-#: ../settings.ui.h:72
-msgid "When Inactive"
-msgstr "Wenn inaktiv"
-
-#: ../settings.ui.h:73
-msgid "_Window handles:"
-msgstr "_Fenstergriffe:"
-
-#: ../settings.ui.h:74
-msgid "Resize Protection"
-msgstr "Schutz vor Größenänderung"
-
-#: ../settings.ui.h:75
-msgid "Name"
-msgstr "Name"
-
-#: ../settings.ui.h:76
-msgid "Description"
-msgstr "Beschreibung"
-
-#: ../settings.ui.h:77
-msgid "_Open layouts folder"
-msgstr "Tastaturbelegungs_ordner öffnen"
-
-#: ../settings.ui.h:78
-msgid "C_ustomize theme"
-msgstr "_Erscheinungsbild anpassen"
-
-#: ../settings.ui.h:79
-msgid "Follow _system theme"
-msgstr "_Systemthema verwenden"
-
-#: ../settings.ui.h:80
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"Für jedes Systemthema merken, welches Onboard-Thema zuletzt verwendet wurde."
-
-#: ../settings.ui.h:81
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Textbausteine sind Textstücke, die eingegeben werden, wenn der zugehörige "
-"Knopf in Onboard gedrückt wird."
-
-#: ../settings.ui.h:82
-msgid "Show label popups"
-msgstr "Beschriftungseinblendungen anzeigen"
-
-#: ../settings.ui.h:83
-msgid "Show label popups above pressed keys."
-msgstr "Beschriftungseinblendungen über einer gedrückten Taste anzeigen."
-
-#: ../settings.ui.h:84
-msgid "Play sound"
-msgstr "Klang wiedergeben"
-
-#: ../settings.ui.h:85
-msgid "Play click sound on keypress."
-msgstr "Klickklang bei Tastendruck abspielen."
-
-#: ../settings.ui.h:86
-#, fuzzy
-msgid "Place sound in space"
-msgstr "Klickklang bei Tastendruck abspielen."
-
-#: ../settings.ui.h:87
-msgid ""
-"Place sound in space between speakers depending on the key's position on "
-"screen"
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-press Feedback"
-msgstr "Rückmeldung bei Tastendruck"
-
-#: ../settings.ui.h:89
-msgid "Show secondary labels"
-msgstr "Zweitbelegung der Tasten anzeigen"
-
-#: ../settings.ui.h:90
-msgid "Show characters reachable with or without the shift key."
-msgstr "Zeichen anzeigen, die mit oder ohne die Umschalttaste erreichbar sind"
-
-#: ../settings.ui.h:91
-msgid "Key Labels"
-msgstr "Tastenbeschriftungen"
-
-#: ../settings.ui.h:92
-msgid "Upper case on right click"
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "Temporarily enable SHIFT when clicking with the secondary button."
-msgstr ""
-
-#: ../settings.ui.h:94
-#, fuzzy
-msgid "Key Behaviour"
-msgstr "Tastenverhalten"
-
-#: ../settings.ui.h:95
-msgid "_Long press action:"
-msgstr "Aktion für _langen Tastendruck:"
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-"Zwischen Tastenwiederholung oder Langer-Tastendruck-Menüs wählen. Betrifft "
-"hauptsächlich alphanumerische Tasten."
-
-#: ../settings.ui.h:97
-msgid "Modifier _behavior:"
-msgstr "_Veränderungverhalten:"
-
-#: ../settings.ui.h:98
-msgid "Behavior of modifier and layer keys."
-msgstr "Verhalten von Veränderungs- und Ablagetasten."
-
-#: ../settings.ui.h:99
-msgid "Modifier auto-release delay in seconds:"
-msgstr "Automatisches Entsperren verzögern, in Sekunden:"
-
-#: ../settings.ui.h:100
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-"Sekunden der Inaktivität bis aktive Veränderungs- und Ablagetasten "
-"losgelassen werden. 0 zum Abschalten."
-
-#: ../settings.ui.h:101
-#, fuzzy
-msgid "Modifier auto-release after hide in seconds:"
-msgstr "Automatisches Entsperren verzögern, in Sekunden:"
-
-#: ../settings.ui.h:102
-msgid ""
-"Time after hiding the keyboard in seconds until latched and locked modifiers "
-"and layer keys are released automatically. Leave at 0.0 to not automatically "
-"release them."
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "0,00"
-msgstr "0,00"
-
-#: ../settings.ui.h:104
-msgid "Key Behavior"
-msgstr "Tastenverhalten"
-
-#: ../settings.ui.h:105
-msgid "_Touch input:"
-msgstr "_Berührungseingabe:"
-
-#: ../settings.ui.h:106
-msgid "_Input event source:"
-msgstr "_Ursprung des Eingangsereignisses:"
-
-#: ../settings.ui.h:107
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-"Ist »XInput« gewählt, wird Text zuverlässiger in Aufklappselektionen "
-"eingegeben. Die Option »GTK« bietet bessere Kompatibilität, aber die "
-"Texteingabe schlägt möglicherweise fehl, wenn Pointer-Greifer vorhanden "
-"sind,  beispielsweise bei offenen Aufklappfenstern."
-
-#: ../settings.ui.h:108
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-"Ist »XInput« gewählt, wird Text zuverlässiger in Aufklappselektionen "
-"eingegeben. Die Option »GTK« bietet bessere Kompatibilität, aber die "
-"Texteingabe schlägt möglicherweise fehl, wenn Pointer-Greifer vorhanden "
-"sind,  beispielsweise bei offenen Aufklappfenstern."
-
-#: ../settings.ui.h:109
-msgid "Input Options"
-msgstr "Eingabeoptionen"
-
-#: ../settings.ui.h:110
-msgid "Keystroke _generation:"
-msgstr "_Tastenanschlagerzeugung"
-
-#: ../settings.ui.h:111
-msgid "Delay between keystrokes in milliseconds:"
-msgstr "Verzögerung zwischen Tastenanschläge in Millisekunden:"
-
-#: ../settings.ui.h:112
-msgid ""
-"Increase this if key-strokes get lost when inserting word suggestions or "
-"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
-"applications."
-msgstr ""
-"Hier erhöhen, wenn gezeichnete Buchstaben beim Einfügen von Wortvorschlägen "
-"oder Ausschnitten im Firefox oder anderen Gtk-2-Anwendungen verloren gehen. "
-"Das hat keinen Einfluss auf Gtk-3-Anwendungen."
-
-#: ../settings.ui.h:113
-msgid "Keystroke Generation"
-msgstr "Tastenanschlagerzeugung"
-
-#: ../settings.ui.h:114
-msgid "Advanced"
-msgstr "Erweitert"
-
-#: ../settings.ui.h:115
-msgid "Show _suggestions"
-msgstr "_Vorschläge anzeigen"
-
-#: ../settings.ui.h:116
-msgid "Enable word completion and prediction."
-msgstr "Wortvervollständigung und -vorhersage aktivieren."
-
-#: ../settings.ui.h:117
-msgid "Show spelling suggestions"
-msgstr "Rechtschreibevorschläge anzeigen"
-
-#: ../settings.ui.h:118
-msgid "Check spelling of the word at or before the cursor."
-msgstr "Rechtschreibung des Wortes vor oder unter der Schreibmarke prüfen."
-
-#: ../settings.ui.h:119
-msgid "_Learn from typed text"
-msgstr "_Vom eingegebenen Text lernen"
-
-#: ../settings.ui.h:120
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-"Neue Wörter, ihre Aktualität und Häufigkeit merken, um zukünftige Vorschläge "
-"zu verbessern."
-
-#: ../settings.ui.h:121
-msgid "Insert word _separators"
-msgstr "Wort_unterteilungen einfügen"
-
-#: ../settings.ui.h:122
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-"Leerzeichen einfügen bzw. entfernen beim Einfügen von Wortvorschlägen, denen "
-"ein Satzzeichen folgt."
-
-#: ../settings.ui.h:123
-msgid "Options"
-msgstr "Optionen"
-
-#: ../settings.ui.h:124
-#, fuzzy
-msgid "Show more suggestions arrow"
-msgstr "_Vorschläge anzeigen"
-
-#: ../settings.ui.h:125
-msgid "Step forward and backward through the available suggestions."
-msgstr ""
-
-#: ../settings.ui.h:126
-msgid "Show button to pause learning"
-msgstr "Knopf zum Pausieren des Lernvorgangs anzeigen"
-
-#: ../settings.ui.h:127
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-"Wörter die eingegeben werden, wenn diese Schaltfläche gedrückt ist, werden "
-"beim Lernen nicht berücksichtigt."
-
-#: ../settings.ui.h:128
-msgid "Show lan_guage switcher"
-msgstr "Sprachumschalter anzeigen"
-
-#: ../settings.ui.h:129
-msgid "Show a button for language selection."
-msgstr "Einen Knopf zur Wahlder Sprache anzeigen."
-
-#: ../settings.ui.h:130
-msgid "Buttons"
-msgstr "Knöpfe"
-
-#: ../settings.ui.h:131
-msgid "Word Suggestions"
-msgstr "Wortvorschläge"
-
-#: ../settings.ui.h:132
-msgid "Auto-capitalize while typing"
-msgstr "Automatische Groß-Kleinschreibung bei der Texteingabe"
-
-#: ../settings.ui.h:133
-msgid "Automatically capitalize sentence begins and name words."
-msgstr "Satzanfänge und Namen automatisch groß schreiben."
-
-#: ../settings.ui.h:134
-msgid "Auto-correct spelling"
-msgstr "Automatische Rechtschreibkorrektur"
-
-#: ../settings.ui.h:135
-msgid "Automatically correct the last word."
-msgstr "Zuletzt eingegebenes Wort automatisch korrigieren."
-
-#: ../settings.ui.h:136
-msgid "The spell check engine to use."
-msgstr "Verwendetes Rechtschreibprogramm"
-
-#: ../settings.ui.h:137
-msgid "Spell-check backend:"
-msgstr "Basis der Rechtschreibprüfung:"
-
-#: ../settings.ui.h:138
-msgid "Auto-correction"
-msgstr "Automatische Korrektur"
-
-#: ../settings.ui.h:139
-msgid "While  learning is paused:"
-msgstr "Während das Lernen angehalten ist:"
-
-#: ../settings.ui.h:140
-msgid "Learning"
-msgstr "Lernen"
-
-#: ../settings.ui.h:141
-msgid "Enable  keyboard _scanning"
-msgstr "Tastatur-_Scanning aktivieren"
-
-#: ../settings.ui.h:142
-msgid "Sc_anner Settings"
-msgstr "Sc_anner-Einstellungen"
-
-#: ../settings.ui.h:143
-msgid "Keyboard Scanning"
-msgstr "Tastatur-Scanning"
-
-#: ../settings.ui.h:144
-msgid "_Delay:"
-msgstr "_Verzögerung:"
-
-#: ../settings.ui.h:145
-msgid "_Motion threshold:"
-msgstr "_Schwellenwert der Bewegung:"
-
-#: ../settings.ui.h:146
-msgid "Time in seconds before a click is triggered."
-msgstr "Zeit in Sekunden, ehe ein Klick ausgelöst wird."
-
-#: ../settings.ui.h:147
-msgid "Distance in pixels before movement will be recognized."
-msgstr "Abstand in Pixeln, ehe eine Bewegung erkannt wird"
-
-#: ../settings.ui.h:148
-msgid "Hide hover click window"
-msgstr "Überfahrenklickfenster verbergen"
-
-#: ../settings.ui.h:149
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
-"Das vom System bereitgestellte Überfahrenklickfenster ausblenden, wenn "
-"Onboard ausgeführt wird."
-
-#: ../settings.ui.h:150
-msgid "Enable click type window on exit"
-msgstr "Klicktyp-Fenster beim Beenden einschalten"
-
-#: ../settings.ui.h:151
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Immer das vom System bereitgestellten Überfahrenklickfenster aktivieren, "
-"wenn Onboard beendet wird."
-
-#: ../settings.ui.h:152
-msgid "Hover Click"
-msgstr "Überfahrenklick"
-
-#: ../Onboard/WindowUtils.py:1083
-msgid "New Input Device"
-msgstr "Neues Eingabegerät"
-
-#: ../Onboard/WindowUtils.py:1084
-msgid "Onboard has detected a new input device"
-msgstr "Onboard hat ein neues Eingabegerät erkannt"
-
-#: ../Onboard/WindowUtils.py:1093
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "Wollen Sie dieses Gerät zum Tastatur-Scanning benutzen?"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/WindowUtils.py:1099 ../Onboard/KeyboardWidget.py:1518
-msgid "_Cancel"
-msgstr "_Abbrechen"
-
-#: ../Onboard/WindowUtils.py:1100
-msgid "Use device"
-msgstr "Gerät verwenden"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Onboard-Einstellungen"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Onboard-Bildschirmtastatureinstellungen"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Onboard-Einstellungen ändern"
-
-#: ../Onboard/WPEngine.py:483
-msgid "Failed to load language model '{}': {} ({})"
-msgstr "Sprachmodell »{}« laden ist fehlgeschlagen: {} ({})"
-
-#: ../settings_scanner_dialog.ui.h:1
-msgid "Automatic scan for 1 switch"
-msgstr "Automatischer Scan für 1 Taste"
-
-#: ../settings_scanner_dialog.ui.h:2
-msgid "Critical overscan for 1 switch"
-msgstr "Kritischer Scan für 1 Taste"
-
-#: ../settings_scanner_dialog.ui.h:3
-msgid "Step scan for 2 switches"
-msgstr "Intervall-Scan für 2 Tasten"
-
-#: ../settings_scanner_dialog.ui.h:4
-msgid "Directed scan for 3 or 5 switches"
-msgstr "Gerichteter Scan für 3 oder 5 Tasten"
-
-#: ../settings_scanner_dialog.ui.h:5
-msgid "Scanner Settings"
-msgstr "Scanner-Einstellungen"
-
-#: ../settings_scanner_dialog.ui.h:6
-msgid "Select a scanning _profile:"
-msgstr "Wählen Sie ein Scanning-_Profil:"
-
-#: ../settings_scanner_dialog.ui.h:7
-msgid "_Step interval:"
-msgstr "Intervallgröße:"
-
-#: ../settings_scanner_dialog.ui.h:8
-msgid "Sc_an cycles:"
-msgstr "Sc_an-Zyklus:"
-
-#: ../settings_scanner_dialog.ui.h:9
-msgid ""
-"The time the scanner rests on a key or group before moving to the next. (in "
-"seconds)"
-msgstr ""
-"Die Zeit (in Sekunden), die der Scanner auf einem Schlüssel oder einer "
-"Gruppe bleibt, bevor er zur Nächsten wechselt."
-
-#: ../settings_scanner_dialog.ui.h:10
-msgid ""
-"The number of times the scanner cycles through the entire keyboard before it "
-"stops."
-msgstr ""
-"Die Anzahl der Scanner-Durchläufe der gesamten Tastatur, bevor er anhält."
-
-#: ../settings_scanner_dialog.ui.h:11
-msgid "Step _only during switch down"
-msgstr "Fortschreiten _nur während Taste gedrückt"
-
-#: ../settings_scanner_dialog.ui.h:12
-msgid "Progress the highlight only while the switch is held down."
-msgstr ""
-"Mit der Markierung nur fortschreiten, während die Taste gedrückt gehalten "
-"wird."
-
-#: ../settings_scanner_dialog.ui.h:13
-msgid "_Forward interval:"
-msgstr "_Vorwärtsintervall:"
-
-#: ../settings_scanner_dialog.ui.h:14
-msgid "_Backtrack interval:"
-msgstr "_Rückwärtsintervall:"
-
-#: ../settings_scanner_dialog.ui.h:15
-msgid ""
-"The time the scanner rests on a key  while progressing forward. (in seconds)"
-msgstr ""
-"Zeit, die der Scanner auf einer Taste verweilt, während er sich vorwärts "
-"bewegt. (in Sekunden)"
-
-#: ../settings_scanner_dialog.ui.h:16
-msgid ""
-"The time the scanner rests on a key  while moving backwards. (in seconds)"
-msgstr ""
-"Zeit, die der Scanner auf einer Taste verweilt, während er sich rückwärts "
-"bewegt. (in Sekunden)"
-
-#: ../settings_scanner_dialog.ui.h:17
-msgid "Backtrack _steps:"
-msgstr "Rü_ckschritte:"
-
-#: ../settings_scanner_dialog.ui.h:18
-msgid "The number of keys the scanner steps back before moving forward again."
-msgstr ""
-"Anzahl an Tasten, die sich der Scanner zurück bewegt, bevor er sich wieder "
-"vorwärts bewegt."
-
-#: ../settings_scanner_dialog.ui.h:19
-msgid "_Alternate switch actions"
-msgstr "_Alternative Tastenaktionen"
-
-#: ../settings_scanner_dialog.ui.h:20
-msgid ""
-"Swap the scan actions after every key activation. The Step action will "
-"become the Activate action and vice versa."
-msgstr ""
-"Die Scan-Aktionen nach jedem Tastendruck vertauschen. Die »Schritt«-Aktion "
-"wird zur »Aktivieren«-Aktion und anders herum."
-
-#: ../settings_scanner_dialog.ui.h:21
-msgid "Profiles"
-msgstr "Profile"
-
-#: ../settings_scanner_dialog.ui.h:22
-msgid "_Select an input device:"
-msgstr "Wählen Sie ein Eing_abegerät:"
-
-#: ../settings_scanner_dialog.ui.h:23
-msgid "_Use this device only for scanning"
-msgstr "Dieses Gerät nur zum Scannen ben_utzen"
-
-#: ../settings_scanner_dialog.ui.h:24
-msgid ""
-"The selected device should not control the system mouse cursor or the "
-"keyboard caret."
-msgstr ""
-"Das ausgewählte Gerät sollte nicht den Systemmauszeiger oder die "
-"Tastatureinfügemarke steuern."
-
-#: ../settings_scanner_dialog.ui.h:25
-msgid "Input Device"
-msgstr "Eingabegerät"
-
-#: ../Onboard/LayoutLoaderSVG.py:158
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Ältere Tastaturbelegung wird geladen, Format »{}«. Bitte denken Sie über "
-"eine Aktualisierung auf das aktuelle Format »{}« nach."
-
-#: ../Onboard/LayoutLoaderSVG.py:397
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "Schlüssel »{}« wird ignoriert. Kein SVG-Dateiname angegeben."
-
-#: ../Onboard/LayoutLoaderSVG.py:618
-msgid "Snippet {}"
-msgstr "Textbaustein {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:622
-msgid ", unassigned"
-msgstr ", nicht zugeordnet"
-
-#: ../Onboard/LayoutLoaderSVG.py:931
-msgid "copying layout '{}' to '{}'"
-msgstr "Die Tastaturbelegung wird von »{}« nach »{}« kopiert"
-
-#: ../Onboard/LayoutLoaderSVG.py:951
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-"Kopieren der Tastaturbelegungen fehlgeschlagen, nicht unterstütztes Format "
-"»{}«."
-
-#: ../Onboard/LayoutLoaderSVG.py:994
-msgid "copying svg file '{}' to '{}'"
-msgstr "Die SVG-Datei wird von »{}« nach »{}« kopiert"
-
-#: ../Onboard/OnboardGtk.py:397
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
+"Revert word suggestions to the last backup (recommended)?"
 msgstr ""
-"Onboard ist so eingestellt, dass ein Fenster angezeigt wird, sobald der "
-"Bildschirm freigegeben wird; zum Beispiel, um den passwortgeschützten "
-"Bildschirmschoner aufzuheben.\n"
+"<big>Onboard konnte die gelernten Wortvorschläge nicht öffnen.</big>\n"
 "\n"
-"Das System ist allerdings nicht mehr so eingestellt, dass Onboard erscheint, "
-"wenn der Bildschirm freigegeben wird. Ein möglicher Grund kann sein, dass "
-"eine andere Anwendung diese Einstellung überschrieben hat.\n"
+"Der Fehler war:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Möchten Sie das System wieder so konfigurieren, dass Onboard erscheint, wenn "
-"der Bildschirm freigegeben wird?"
+"Wortvorschläge auf das letzte Sicherung zurücksetzen (empfohlen)?"
 
-#: ../Onboard/OnboardGtk.py:416
+#: ../Onboard/WordSuggestions.py:2706
 msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However this function is disabled in the system.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to activate it?"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
 msgstr ""
-"Onboard ist so konfiguriert, dass es mit dem Dialog zum Entsperren des "
-"Bildschirms erscheint, z. B um einen passwortgeschützten Bildschirmschoner "
-"aufzuheben.\n"
+"<big>Onboard konnte die gelernten Wortvorschläge nicht öffnen.</big>\n"
 "\n"
-"Jedoch ist diese Funktion im System deaktiviert.\n"
+"Der Fehler war:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Möchten Sie sie wieder aktivieren?"
+"Die Vorschläge müssen zurück gesetzt werden, aber die fehlerhafte Datei wird "
+"weiterhin hier verfügbar sein:\n"
+"'{}'"
 
 #. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
@@ -1250,7 +1236,7 @@ msgstr "Alt"
 #. translators: very short label of the Alt Gr key
 #: ../data/layoutstrings.py:40
 msgid "Alt Gr"
-msgstr "Alt-Gr-Taste"
+msgstr "Alt Gr"
 
 #. translators: very short label of the CAPS LOCK key
 #: ../data/layoutstrings.py:42
@@ -1343,12 +1329,12 @@ msgstr "Onboard verschieben"
 #. translators: very short label of the NUMLOCK key
 #: ../data/layoutstrings.py:69
 msgid "Nm&#10;Lk"
-msgstr "Num"
+msgstr "Nm&#10;Lk"
 
 #. translators: this is a 'tooltip' of the key_template 'layer1' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:70 ../data/layoutstrings.py:289
 msgid "Number block and snippets"
-msgstr "Ziffernblock und Textbausteine"
+msgstr "Ziffernblock und Ausschnitte"
 
 #. translators: very short label of the PAUSE key
 #: ../data/layoutstrings.py:72
@@ -1358,12 +1344,12 @@ msgstr "Pause"
 #. translators: very short label of the PAGE DOWN key
 #: ../data/layoutstrings.py:74
 msgid "Pg&#10;Dn"
-msgstr "Bild ↓"
+msgstr "Pg&#10;Dn"
 
 #. translators: very short label of the PAGE UP key
 #: ../data/layoutstrings.py:76
 msgid "Pg&#10;Up"
-msgstr "Bild ↑"
+msgstr "Pg&#10;Up"
 
 #. translators: very short label of the Preferences button
 #. translators: this is a 'tooltip' of the key_template 'settings' in keyboard layout 'key_defs.xml'
@@ -1793,8 +1779,9 @@ msgstr "Sonderzeichen"
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:349
+#, fuzzy
 msgid "Special characters for interactive whiteboards, wide"
-msgstr "Sonderzeichen für interaktive Tafeln, breit"
+msgstr "Sonderzeichen für interaktiven Tafeln, breit"
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:352
@@ -1811,143 +1798,223 @@ msgstr "Rechtschreibevorschlag"
 msgid "Sub-, Superscripts; Fractions"
 msgstr "Hoch-, tiefgestellte Zeichen; Bruchzahlen"
 
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr "Nie"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "Oben"
 
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr "1 Minute"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "Unten"
 
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr "5 Minuten"
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr "10 Minuten"
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr "30 Minuten"
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr "1 Stunde"
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr "3 Stunden"
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr "Immer"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "Only move when necessary"
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:11
-msgid "Follow the active window"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:12
-msgid "Auto-show settings"
-msgstr "Einstellungen automatisch anzeigen"
-
-#: ../settings_auto_show_dialog.ui.h:13
-msgid "Strategy:"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:14
-msgid "Chose how the keyboard window moves when a text entry is activated."
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:15
-#, fuzzy
-msgid "Keyboard Movement"
-msgstr "Tastatur"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
+msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:16
-msgid "_Hide when using a physical keyboard"
-msgstr "_Verstecken, wenn eine physische Tastatur verwendet wird"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
+msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:17
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "Andockeinstellungen"
+
+#: ../settings_docking_dialog.ui.h:15
+msgctxt "Label of the close button of the docking settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink workarea"
+msgstr "Arbeitsbereich verkleinern"
+
+#: ../settings_docking_dialog.ui.h:17
+msgid "Shrink the available space for maximized windows."
+msgstr "Den für maximierte Fenster verfügbaren Platz verkleinern"
+
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand on landscape screens"
+msgstr "Auf Querformatbildschirmen erweitern"
+
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand keyboard to the width of the workarea."
+msgstr "Die Tastatur auf die Breite des Arbeitsbereichs erweitern."
+
+#: ../settings_docking_dialog.ui.h:20
+msgid "Expand on portrait screens"
+msgstr "Auf Hochformatbildschirmen erweitern"
+
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to screen edge:"
+msgstr "Am Bildschirmrand andocken:"
+
+#: ../settings_docking_dialog.ui.h:22
+msgid "Dock to monitor:"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1106
+msgid "New Input Device"
+msgstr "Neues Eingabegerät"
+
+#: ../Onboard/WindowUtils.py:1107
+msgid "Onboard has detected a new input device"
+msgstr "Onboard hat ein neues Eingabegerät erkannt"
+
+#: ../Onboard/WindowUtils.py:1116
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "Wollen Sie dieses Gerät zum Tastatur-Scanning benutzen?"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/WindowUtils.py:1122 ../Onboard/KeyboardWidget.py:1603
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1123
+msgid "Use device"
+msgstr "Gerät verwenden"
+
+#: ../Onboard/Config.py:234
+msgid "Layout file ({}) or name"
+msgstr "Tastaturbelegungsdatei ({}) oder Name"
+
+#: ../Onboard/Config.py:237
+msgid "Theme file (.theme) or name"
+msgstr "Themendatei (.theme) oder Name"
+
+#: ../Onboard/Config.py:239
+msgid "Window size, widthxheight"
+msgstr "Fenstergröße, BreitexHöhe"
+
+#: ../Onboard/Config.py:240
+msgid "Window x position"
+msgstr "X-Position des Fensters"
+
+#: ../Onboard/Config.py:241
+msgid "Window y position"
+msgstr "Y-Position des Fensters"
+
+#: ../Onboard/Config.py:246
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Im »XEmbed«-Modus starten, z.B. für gnome-screensaver"
+
+#: ../Onboard/Config.py:249
+msgid "Allow multiple Onboard instances"
+msgstr "Mehrere Onboard-Instanzen zulassen"
+
+#: ../Onboard/Config.py:252
 msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
 msgstr ""
-"Die Bildschirmtastatur wird ausgeblendet, wenn eine Taste auf der physischen "
-"Tastatur gedrückt wurde. Das benötigt die Eingabequelle »XInput«."
+"In den gegebenen Arbeitsumgebungen beim Start ohne Rückmeldung scheitern. "
+"DESKTOPS ist eine durch Kommata getrennte Liste von XDG-"
+"Arbeitsumgebungsnamen, z.B. GNOME für GNOME-Shell."
 
-#: ../settings_auto_show_dialog.ui.h:18
-msgid "Stay hidden:"
-msgstr "Ausgeblendet bleiben:"
-
-#: ../settings_auto_show_dialog.ui.h:19
+#: ../Onboard/Config.py:258
 msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
-msgstr ""
-"Wurde eine Taste auf der physischen Tastatur gedrückt, ist das automatische "
-"Anzeigen deaktiviert. Die Dauer der Deaktivierung hier auswählen."
-
-#: ../settings_auto_show_dialog.ui.h:20
-msgid "Auto-hide"
+"Delay showing the initial keyboard window by STARTUP_DELAY seconds (default "
+"0.0)."
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:210
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"Fensterdurchsichtigkeit nicht einstellbar, der Bildschirm unterstützt keine "
-"Alpha-Kanäle"
+#: ../Onboard/Config.py:262
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Seitenverhältnis bei Größenveränderung des Fensters beibehalten"
 
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
-#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
-#: ../Onboard/SpellChecker.py:723 ../Onboard/LanguageSupport.py:170
-#: ../Onboard/Timer.py:160 ../Onboard/pypredict/tools/filter.py:382
-msgid "Failed to execute '{}', {}"
-msgstr "Die folgende Datei konnte nicht ausgeführt werden »{}«, {}"
-
-#: ../Onboard/utils.py:1535
-msgid "failed to create directory '{}': {}"
-msgstr "Erstellen des Verzeichnisses fehlgeschlagen »{}«: {}"
-
-#: ../Onboard/Appearance.py:130
-#, python-brace-format
-msgid "Color scheme for theme '{filename}' not found"
-msgstr "Farbschema für das Thema »{filename}« nicht gefunden"
-
-#: ../Onboard/Appearance.py:350
-#, python-brace-format
-msgid "Error loading theme '{filename}'. {exception}: {cause}"
-msgstr "Fehler beim Laden des Themas »{filename}«. {exception}: {cause}"
-
-#: ../Onboard/Appearance.py:424
-msgid "Error saving "
-msgstr "Fehler beim Speichern von "
-
-#: ../Onboard/Appearance.py:842
-#, python-brace-format
+#: ../Onboard/Config.py:264
 msgid ""
-"Loading legacy color scheme format '{old_format}', please consider upgrading "
-"to current format '{new_format}': '{filename}'"
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
 msgstr ""
-"Veraltetes Farbschemaformat »{old_format}« wird geladen, bitte denken Sie "
-"über einen Wechsel auf das aktuelle Format »{new_format}« nach: »{filename}«"
+"Automatische Erkennung außer Kraft setzen und Quirks manuell auswählen\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Appearance.py:862
+#: ../Onboard/Config.py:375
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Verschiebe Benutzerverzeichnis '{}' nach '{}'."
+
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:383
+msgid "failed to migrate user directory. "
+msgstr "Migrieren des Benutzerverzeichnisses fehlgeschlagen. "
+
+#: ../Onboard/Config.py:862
 #, python-brace-format
-msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
-msgstr "Fehler beim Laden des Farbschemas »{filename}«. {exception}: {cause}"
+msgid "layout '{filename}' does not exist"
+msgstr "Tastaturbelegung »{filename}« nicht vorhanden"
 
-#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+#: ../Onboard/Config.py:903
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "Thema »{filename}« existiert nicht"
+
+#: ../Onboard/Config.py:928
+msgid "Loading theme from '{}'"
+msgstr "Erscheinungsbild wird geladen von »{}«"
+
+#: ../Onboard/Config.py:932
+msgid "Unable to read theme '{}'"
+msgstr "Erscheinungsbild »{}« kann nicht gelesen werden"
+
+#: ../Onboard/Config.py:1125
 msgid ""
-"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
-"once."
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
 msgstr ""
-"Doppelte key_id »{}« wurde in Farbschemadatei gefunden. Key_ids dürfen nur "
-"einmal vorkommen."
+"Das automatische Anzeigen erfordert GNOME-Barrierefreiheit.\n"
+"\n"
+"Onboard kann Barrierefreiheit jetzt einschalten, allerdings wird empfohlen, "
+"dass Sie sich abmelden und dann erneut anmelden, um alle Funktionen voll "
+"auszuschöpfen.\n"
+"\n"
+"Barrierefreiheit jetzt aktivieren?"
+
+#: ../Onboard/Config.py:1873
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "Farbschema »{filename}« existiert nicht"
 
 #: ../Onboard/ConfigUtils.py:81
 msgid "gsettings schema for '{}' is not installed"
@@ -1980,10 +2047,11 @@ msgstr "{description} »{filepath}« gefunden."
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:496
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid "{description} '{filename}' not found yet, searching in paths {paths}"
 msgstr ""
-"{description} »{filename}« wurde bei der Suche im Pfad {paths} nicht gefunden"
+"{description} »{filename}« nicht gefunden, erneuter Versuch in "
+"voreingestellten Pfaden"
 
 #: ../Onboard/ConfigUtils.py:591
 #, python-brace-format
@@ -2029,348 +2097,961 @@ msgstr ""
 msgid "Failed to get gsettings value. "
 msgstr "gsettings-Wert konnte nicht gelesen werden. "
 
-#. ##############
-#: ../Onboard/SnippetView.py:39
-msgid "<Enter label>"
-msgstr "<Beschriftung eingeben>"
+#: ../Onboard/KbdWindow.py:211
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"Fensterdurchsichtigkeit nicht einstellbar, der Bildschirm unterstützt keine "
+"Alpha-Kanäle"
 
-#: ../Onboard/SnippetView.py:40
-msgid "<Enter text>"
-msgstr "<Text eingeben>"
+#: ../settings_scanner_dialog.ui.h:1
+msgid "Automatic scan for 1 switch"
+msgstr "Automatischer Scan für 1 Taste"
 
-#: ../Onboard/SnippetView.py:52
-msgid "Button Number"
-msgstr "Knopfnummer"
+#: ../settings_scanner_dialog.ui.h:2
+msgid "Critical overscan for 1 switch"
+msgstr "Kritischer Scan für 1 Taste"
 
-#: ../Onboard/SnippetView.py:59
-msgid "Button Label"
-msgstr "Knopfbeschriftung"
+#: ../settings_scanner_dialog.ui.h:3
+msgid "Step scan for 2 switches"
+msgstr "Intervall-Scan für 2 Tasten"
 
-#: ../Onboard/SnippetView.py:68
-msgid "Snippet Text"
-msgstr "Text des Textbausteins"
+#: ../settings_scanner_dialog.ui.h:4
+msgid "Directed scan for 3 or 5 switches"
+msgstr "Gerichteter Scan für 3 oder 5 Tasten"
 
-#: ../Onboard/SnippetView.py:113
-msgid "Must be an integer number"
-msgstr "Muss eine ganzzahlige Zahl sein"
+#: ../settings_scanner_dialog.ui.h:5
+msgid "Scanner Settings"
+msgstr "Scanner-Einstellungen"
 
-#: ../Onboard/SnippetView.py:122
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Textbaustein %d ist bereits in Verwendung."
+#: ../settings_scanner_dialog.ui.h:6
+msgctxt "Label of the close button of the scanner settings dialog."
+msgid "_Close"
+msgstr ""
 
-#: ../Onboard/Indicator.py:51
+#: ../settings_scanner_dialog.ui.h:7
+msgid "Select a scanning _profile:"
+msgstr "Wählen Sie ein Scanning-_Profil:"
+
+#: ../settings_scanner_dialog.ui.h:8
+msgid "_Step interval:"
+msgstr "Intervallgröße:"
+
+#: ../settings_scanner_dialog.ui.h:9
+msgid "Sc_an cycles:"
+msgstr "Sc_an-Zyklus:"
+
+#: ../settings_scanner_dialog.ui.h:10
+msgid ""
+"The time the scanner rests on a key or group before moving to the next. (in "
+"seconds)"
+msgstr ""
+"Die Zeit (in Sekunden), die der Scanner auf einem Schlüssel oder einer "
+"Gruppe bleibt, bevor er zur Nächsten wechselt."
+
+#: ../settings_scanner_dialog.ui.h:11
+msgid ""
+"The number of times the scanner cycles through the entire keyboard before it "
+"stops."
+msgstr ""
+"Die Anzahl der Scanner-Durchläufe der gesamten Tastatur, bevor er anhält."
+
+#: ../settings_scanner_dialog.ui.h:12
+msgid "Step _only during switch down"
+msgstr "Fortschreiten _nur während Taste gedrückt"
+
+#: ../settings_scanner_dialog.ui.h:13
+msgid "Progress the highlight only while the switch is held down."
+msgstr ""
+"Mit der Markierung nur fortschreiten, während die Taste gedrückt gehalten "
+"wird."
+
+#: ../settings_scanner_dialog.ui.h:14
+msgid "_Forward interval:"
+msgstr "_Vorwärtsintervall:"
+
+#: ../settings_scanner_dialog.ui.h:15
+msgid "_Backtrack interval:"
+msgstr "_Rückwärtsintervall:"
+
+#: ../settings_scanner_dialog.ui.h:16
+msgid ""
+"The time the scanner rests on a key  while progressing forward. (in seconds)"
+msgstr ""
+"Zeit, die der Scanner auf einer Taste verweilt, während er sich vorwärts "
+"bewegt. (in Sekunden)"
+
+#: ../settings_scanner_dialog.ui.h:17
+msgid ""
+"The time the scanner rests on a key  while moving backwards. (in seconds)"
+msgstr ""
+"Zeit, die der Scanner auf einer Taste verweilt, während er sich rückwärts "
+"bewegt. (in Sekunden)"
+
+#: ../settings_scanner_dialog.ui.h:18
+msgid "Backtrack _steps:"
+msgstr "Rü_ckschritte:"
+
+#: ../settings_scanner_dialog.ui.h:19
+msgid "The number of keys the scanner steps back before moving forward again."
+msgstr ""
+"Anzahl an Tasten, die sich der Scanner zurück bewegt, bevor er sich wieder "
+"vorwärts bewegt."
+
+#: ../settings_scanner_dialog.ui.h:20
+msgid "_Alternate switch actions"
+msgstr "_Alternative Tastenaktionen"
+
+#: ../settings_scanner_dialog.ui.h:21
+msgid ""
+"Swap the scan actions after every key activation. The Step action will "
+"become the Activate action and vice versa."
+msgstr ""
+"Die Scan-Aktionen nach jedem Tastendruck vertauschen. Die »Schritt«-Aktion "
+"wird zur »Aktivieren«-Aktion und anders herum."
+
+#: ../settings_scanner_dialog.ui.h:22
+msgid "Profiles"
+msgstr "Profile"
+
+#: ../settings_scanner_dialog.ui.h:23
+msgid "_Select an input device:"
+msgstr "Wählen Sie ein Eing_abegerät:"
+
+#: ../settings_scanner_dialog.ui.h:24
+msgid "_Use this device only for scanning"
+msgstr "Dieses Gerät nur zum Scannen ben_utzen"
+
+#: ../settings_scanner_dialog.ui.h:25
+msgid ""
+"The selected device should not control the system mouse cursor or the "
+"keyboard caret."
+msgstr ""
+"Das ausgewählte Gerät sollte nicht den Systemmauszeiger oder die "
+"Tastatureinfügemarke steuern."
+
+#: ../settings_scanner_dialog.ui.h:26
+msgid "Input Device"
+msgstr "Eingabegerät"
+
+#: ../Onboard/WPEngine.py:483
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Sprachmodell »{}« laden ist fehlgeschlagen: {} ({})"
+
+#: ../Onboard/Appearance.py:130
+#, python-brace-format
+msgid "Color scheme for theme '{filename}' not found"
+msgstr "Farbschema für das Thema »{filename}« nicht gefunden"
+
+#: ../Onboard/Appearance.py:350
+#, python-brace-format
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr "Fehler beim Laden des Themas »{filename}«. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:424
+msgid "Error saving "
+msgstr "Fehler beim Speichern von "
+
+#: ../Onboard/Appearance.py:842
+#, python-brace-format
+msgid ""
+"Loading legacy color scheme format '{old_format}', please consider upgrading "
+"to current format '{new_format}': '{filename}'"
+msgstr ""
+"Veraltetes Farbschemaformat »{old_format}« wird geladen, bitte denken Sie "
+"über einen Wechsel auf das aktuelle Format »{new_format}« nach: »{filename}«"
+
+#: ../Onboard/Appearance.py:862
+#, python-brace-format
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr "Fehler beim Laden des Farbschemas »{filename}«. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
+msgstr ""
+"Doppelte key_id »{}« wurde in Farbschemadatei gefunden. Key_ids dürfen nur "
+"einmal vorkommen."
+
+#: ../Onboard/Indicator.py:56
 msgid "_Show Onboard"
 msgstr "Onboard _anzeigen"
 
-#: ../Onboard/Indicator.py:52
+#: ../Onboard/Indicator.py:57
 msgid "_Hide Onboard"
 msgstr "Onboard _ausblenden"
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:78
+#: ../Onboard/Indicator.py:83
+#, fuzzy
 msgid "_Preferences"
-msgstr "_Einstellungen"
+msgstr "Einstellungen"
 
-#: ../Onboard/Indicator.py:86
+#: ../Onboard/Indicator.py:91
 msgid "_Help"
 msgstr ""
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:97
+#: ../Onboard/Indicator.py:102
 msgid "_Quit"
 msgstr "_Beenden"
 
-#: ../Onboard/Indicator.py:195
+#: ../Onboard/Indicator.py:221 ../Onboard/Indicator.py:224
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard (Bildschirmtastatur)"
 
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Erscheinungsbild personalisieren"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Farbsche_ma"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Winkel:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Lichtrichtung"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Stil:"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "R_undheit"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "G_röße:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "_Rahmenbreite:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Tastenstil"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Schlüssel:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Rand:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Farbgefälle"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Stärke:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Schatten"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Tasten"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Schriftart:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Eigenschaften"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Schriftart"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "U_nabhängige Größe"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Super-Taste:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Beschriftung überschreiben"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Beschriftungen"
-
-#: ../Onboard/Config.py:231
-msgid "Layout file ({}) or name"
-msgstr "Tastaturbelegungsdatei ({}) oder Name"
-
-#: ../Onboard/Config.py:234
-msgid "Theme file (.theme) or name"
-msgstr "Themendatei (.theme) oder Name"
-
-#: ../Onboard/Config.py:236
-msgid "Window size, widthxheight"
-msgstr "Fenstergröße, BreitexHöhe"
-
-#: ../Onboard/Config.py:237
-msgid "Window x position"
-msgstr "X-Position des Fensters"
-
-#: ../Onboard/Config.py:238
-msgid "Window y position"
-msgstr "Y-Position des Fensters"
-
-#: ../Onboard/Config.py:243
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "Im »XEmbed«-Modus starten, z.B. für gnome-screensaver"
-
-#: ../Onboard/Config.py:246
-msgid "Allow multiple Onboard instances"
-msgstr "Mehrere Onboard-Instanzen zulassen"
-
-#: ../Onboard/Config.py:249
+#: ../Onboard/LayoutLoaderSVG.py:159
 msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
-"In den gegebenen Arbeitsumgebungen beim Start ohne Rückmeldung scheitern. "
-"DESKTOPS ist eine durch Kommata getrennte Liste von XDG-"
-"Arbeitsumgebungsnamen, z.B. GNOME für GNOME-Shell."
+"Ältere Tastaturbelegung wird geladen, Format »{}«. Bitte denken Sie über "
+"eine Aktualisierung auf das aktuelle Format »{}« nach."
 
-#: ../Onboard/Config.py:255
-msgid "Keep aspect ratio when resizing the window"
-msgstr "Seitenverhältnis bei Größenveränderung des Fensters beibehalten"
+#: ../Onboard/LayoutLoaderSVG.py:398
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "Schlüssel »{}« wird ignoriert. Kein SVG-Dateiname angegeben."
 
-#: ../Onboard/Config.py:257
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
+#: ../Onboard/LayoutLoaderSVG.py:619
+msgid "Snippet {}"
+msgstr "Ausschnitt {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:623
+msgid ", unassigned"
+msgstr ", nicht zugeordnet"
+
+#: ../Onboard/LayoutLoaderSVG.py:932
+msgid "copying layout '{}' to '{}'"
+msgstr "Die Tastaturbelegung wird von »{}« nach »{}« kopiert"
+
+#: ../Onboard/LayoutLoaderSVG.py:952
+msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
-"Automatische Erkennung außer Kraft setzen und Quirks manuell auswählen\n"
-"QUIRKS={metacity|compiz|mutter}"
+"Kopieren der Tastaturbelegungen fehlgeschlagen, nicht unterstütztes Format "
+"»{}«."
 
-#: ../Onboard/Config.py:363
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Verschiebe Benutzerverzeichnis '{}' nach '{}'."
-
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:371
-msgid "failed to migrate user directory. "
-msgstr "Migrieren des Benutzerverzeichnisses fehlgeschlagen. "
-
-#: ../Onboard/Config.py:849
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "Tastaturbelegung »{filename}« nicht vorhanden"
-
-#: ../Onboard/Config.py:890
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "Thema »{filename}« existiert nicht"
-
-#: ../Onboard/Config.py:915
-msgid "Loading theme from '{}'"
-msgstr "Erscheinungsbild wird geladen von »{}«"
-
-#: ../Onboard/Config.py:919
-msgid "Unable to read theme '{}'"
-msgstr "Erscheinungsbild »{}« kann nicht gelesen werden"
-
-#: ../Onboard/Config.py:1112
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"Das automatische Anzeigen erfordert GNOME-Barrierefreiheit.\n"
-"\n"
-"Onboard kann Barrierefreiheit jetzt einschalten, allerdings wird empfohlen, "
-"dass Sie sich abmelden und dann erneut anmelden, um alle Funktionen voll "
-"auszuschöpfen.\n"
-"\n"
-"Barrierefreiheit jetzt aktivieren?"
-
-#: ../Onboard/Config.py:1759
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "Farbschema »{filename}« existiert nicht"
+#: ../Onboard/LayoutLoaderSVG.py:995
+msgid "copying svg file '{}' to '{}'"
+msgstr "Die SVG-Datei wird von »{}« nach »{}« kopiert"
 
 #. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1502
+#: ../Onboard/KeyboardWidget.py:1587
+#, fuzzy
 msgid "Edit snippet #{}"
-msgstr "Textbaustein #{} bearbeiten"
+msgstr "Ausschnitt {}"
 
 #. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1506
+#: ../Onboard/KeyboardWidget.py:1591
 msgid "New snippet"
 msgstr "Neuer Textbaustein"
 
 #. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1508
+#: ../Onboard/KeyboardWidget.py:1593
+#, fuzzy
 msgid "Enter a new snippet for button #{}:"
-msgstr "Einen neuen Textbaustein für Taste #{} eingeben:"
+msgstr "Geben Sie einen neuen Ausschnitt für diesen Knopf ein:"
 
-#: ../Onboard/KeyboardWidget.py:1519
+#: ../Onboard/KeyboardWidget.py:1604
 msgid "_Save snippet"
 msgstr "Textbaustein _speichern"
 
-#: ../Onboard/KeyboardWidget.py:1539
+#: ../Onboard/KeyboardWidget.py:1624
 msgid "_Button label:"
 msgstr "_Knopfbeschriftung:"
 
-#: ../Onboard/KeyboardWidget.py:1543
+#: ../Onboard/KeyboardWidget.py:1628
 msgid "S_nippet:"
 msgstr "Au_sschnitt:"
 
-#: ../Onboard/KeyboardWidget.py:1713
+#: ../Onboard/KeyboardWidget.py:1798
 msgid "Other _Languages"
 msgstr "Andere _Sprachen"
 
-#: ../Onboard/KeyboardWidget.py:1757
+#: ../Onboard/KeyboardWidget.py:1842
+#, fuzzy
 msgid "_Remove suggestion…"
-msgstr "_Vorschlag zurücknehmen …"
+msgstr "Weitere Vorschläge"
 
-#: ../Onboard/KeyboardWidget.py:1813
+#: ../Onboard/KeyboardWidget.py:1898
+#, fuzzy
 msgid "Remove word suggestion"
-msgstr "Wortvorschlag entfernen"
+msgstr "Weitere Vorschläge"
 
-#: ../Onboard/KeyboardWidget.py:1824
+#: ../Onboard/KeyboardWidget.py:1909
 msgid "Remove '{}' everywhere."
-msgstr "»{}« überall entfernen."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1834
+#: ../Onboard/KeyboardWidget.py:1919
 msgid "This will only affect learned suggestions."
-msgstr "Das wird nur Auswirkungen auf die gelernten Vorschläge haben."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1874
+#: ../Onboard/KeyboardWidget.py:1959
 msgid "Remove '{}' only where it occures at text begin."
-msgstr "»{}« nur entfernen, wenn es am Textanfang steht."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1877
+#: ../Onboard/KeyboardWidget.py:1962
 msgid "Remove '{}' only where it occures at sentence begin."
-msgstr "»{}« nur entfernen, wenn es am Satzanfang steht."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1880
+#: ../Onboard/KeyboardWidget.py:1965
 msgid "Remove '{}' only where it occures after numbers."
-msgstr "»{}« nur entfernen, wenn es  nach einer Zahl steht."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1883
+#: ../Onboard/KeyboardWidget.py:1968
 msgid "Remove '{}' only where it occures after '{}'."
-msgstr "»{}« nur entfernen, wenn es  nach »{}« steht."
-
-#: ../Onboard/WordSuggestions.py:2647
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
 msgstr ""
-"<big>Onboard konnte die gelernten Wortvorschläge nicht öffnen.</big>\n"
-"\n"
-"Der Fehler war:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Wortvorschläge auf das letzte Sicherung zurücksetzen (empfohlen)?"
 
-#: ../Onboard/WordSuggestions.py:2666
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Onboard-Einstellungen"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Onboard-Bildschirmtastatureinstellungen"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Onboard-Einstellungen ändern"
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
 msgstr ""
-"<big>Onboard konnte die gelernten Wortvorschläge nicht öffnen.</big>\n"
-"\n"
-"Der Fehler war:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Die Vorschläge müssen zurück gesetzt werden, aber die fehlerhafte Datei wird "
-"weiterhin hier verfügbar sein:\n"
-"'{}'"
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "Only move when necessary"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid "Follow the active window"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "Einstellungen anzeigen"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgctxt "Label of the close button of the auto-show settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:14
+msgid "Strategy:"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:15
+msgid "Chose how the keyboard window moves when a text entry is activated."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:16
+#, fuzzy
+msgid "Keyboard Movement"
+msgstr "Tastatur-Optionen"
+
+#: ../settings_auto_show_dialog.ui.h:17
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:18
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:19
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "Onboard versteckt starten."
+
+#: ../settings_auto_show_dialog.ui.h:20
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:21
+msgid "Auto-hide"
+msgstr ""
+
+#~ msgid "No file manager to open layout folder"
+#~ msgstr ""
+#~ "Keine Dateiverwaltung zum Öffnen des Tastaturbelegungsordners vorhanden."
 
 #~ msgid "User layouts"
 #~ msgstr "Benutzertastaturbelegungen"
+
+#~ msgid " - System Language"
+#~ msgstr " – Systemsprache"
+
+#~ msgid "_Languages"
+#~ msgstr "_Sprachen"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "column"
+#~ msgstr "Spalte"
+
+#~ msgid "_Frame resize handles:"
+#~ msgstr "_Rahmenziehpunkte:"
+
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "_Berührungseingabe (erfordert Neustart):"
+
+#~ msgid "Quit onBoard"
+#~ msgstr "onBoard beenden"
+
+#~ msgid ""
+#~ "Show on icon in the system tray. A click on that icon hides or shows "
+#~ "onboard."
+#~ msgstr ""
+#~ "Symbol im System-Tray anzeigen. Ein Klick auf dieses Symbol versteckt "
+#~ "oder zeigt onboard."
+
+#~ msgid "_Show icon in system tray to hide/show onboard"
+#~ msgstr "Symbol zum Verstecken/Anzeigen von onboard im System-Tray anzeigen"
+
+#~ msgid "Enter text for snippet"
+#~ msgstr "Text für Schnipsel eingeben"
+
+#~ msgid "Flexible onscreen keyboard for gnome"
+#~ msgstr "Flexible Bildschirmtastatur für GNOME"
+
+#~ msgid "onBoard"
+#~ msgstr "onBoard"
+
+#~ msgid "Personalise current layout"
+#~ msgstr "Aktuelle Tastaturbelegung anpassen"
+
+#~ msgid "Open layout folder"
+#~ msgstr "Ordner mit den Tastaturbelegungen öffnen"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "Maustasten\n"
+#~ "vertauschen"
+
+#~ msgid "Start onboard _minimized"
+#~ msgstr "onBoard _minimiert starten."
+
+#~ msgid "onBoard onscreen keyboard settings"
+#~ msgstr "onBoard-Bildschirmtastatureinstellungen"
+
+#~ msgid "onBoard Settings"
+#~ msgstr "onBoard-Einstellungen"
+
+#~ msgid "Change onBoard settings"
+#~ msgstr "onBoard-Einstellungen ändern"
+
+#~ msgid "Show onboard when _unlocking the screen"
+#~ msgstr "onboard beim Entsperren des Bildschirms _anzeigen"
+
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "Schwebendes _Symbol anzeigen, wenn onBoard verborgen ist."
+
+#~ msgid "onBoard onscreen keyboard"
+#~ msgstr "onBoard-Bildschirmtastatur"
+
+#~ msgid ""
+#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
+#~ "example to dismiss the password-protected screensaver.\n"
+#~ "\n"
+#~ "However the system is not configured anymore to use onboard to unlock the "
+#~ "screen. A possible reason can be that another application configured the "
+#~ "system to use something else.\n"
+#~ "\n"
+#~ "Would you like to reconfigure the system to show onboard when unlocking "
+#~ "the screen?"
+#~ msgstr ""
+#~ "Onboards ist so konfiguriert, dass es mit dem Dialog zum Entsperren des "
+#~ "Bildschirms erscheint.\n"
+#~ "\n"
+#~ "Jedoch ist das System nicht mehr so konfiguriert, onboard zum Entsperren "
+#~ "des Bildschirms zu nutzen. Ein möglicher Grund kann sein, dass eine "
+#~ "Anwendung das System so konfiguriert hat, etwas anderes zu benutzen.\n"
+#~ "\n"
+#~ "Möchten Sie das System so konfigurieren, dass onboad beim Entsperren des "
+#~ "Bildschirms wieder mit angezeigt wird?"
+
+#~ msgid "Interval"
+#~ msgstr "Intervall"
+
+#~ msgid "Personalise _current layout"
+#~ msgstr "Aktuelle _Belegung anpassen"
+
+#~ msgid "Startup Option"
+#~ msgstr "Startoption"
+
+#~ msgid "_Open custom layouts folder"
+#~ msgstr "_Ordner mit benutzerdefinierten Belegungen öffnen"
+
+#~ msgid "Xlib unavailable%s\n"
+#~ msgstr "Xlib nicht verfügbar%s\n"
+
+#~ msgid "XInput extension unavailable%s\n"
+#~ msgstr "XInput-Erweiterung nicht verfügbar%s\n"
+
+#~ msgid "Button label"
+#~ msgstr "Knopfbeschriftung"
+
+#~ msgid "<enter label>"
+#~ msgstr "<Beschriftung eingeben>"
+
+#~ msgid "<enter text>"
+#~ msgstr "<Text eingeben>"
+
+#~ msgid "Please enter a name for the new theme"
+#~ msgstr "Geben Sie einen Namen für das neue Erscheinungsbild ein"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Attributes"
+#~ msgstr "Eigenschaften"
+
+#~ msgid "Border"
+#~ msgstr "Rand"
+
+#~ msgid "Color Scheme"
+#~ msgstr "Farbschema"
+
+#~ msgid "Direction"
+#~ msgstr "Ausrichtung"
+
+#~ msgid "Independent size"
+#~ msgstr "Unabhängige Größe"
+
+#~ msgid "Key style"
+#~ msgstr "Tastenstil"
+
+#~ msgid "Label font"
+#~ msgstr "Schriftart der Beschriftung"
+
+#~ msgid "Label override"
+#~ msgstr "Beschriftungsüberschreibung"
+
+#~ msgid "Roundness"
+#~ msgstr "Rundheit"
+
+#~ msgid "{} '{}' found."
+#~ msgstr "{} »{}« wurde gefunden."
+
+#~ msgid "unable to locate '%s', loading default %s instead"
+#~ msgstr ""
+#~ "»%s« konnte nicht gefunden werden, %s wird stattdessen vorgabemäßig "
+#~ "geladen"
+
+#~ msgid "failed to find %s '%s'"
+#~ msgstr "%s »%s« konnte nicht gefunden werden"
+
+#~ msgid "Found system default '{}={}'"
+#~ msgstr "Systemvorgabe »{}={}« gefunden"
+
+#~ msgid "Startup Options"
+#~ msgstr "Programmstart-Einstellungen"
+
+#~ msgid "I_nterval:"
+#~ msgstr "I_ntervall:"
+
+#~ msgid "Failed to load Onboard icon."
+#~ msgstr "Onboard-Symbol konnte nicht geladen werden."
+
+#~ msgid "layout '%s' does not exist"
+#~ msgstr "Tastaturbelegung »%s« existiert nicht"
+
+#~ msgid "color scheme '%s' does not exist"
+#~ msgstr "Farbschema »%s« existiert nicht"
+
+#~ msgid "theme '%s' does not exist"
+#~ msgstr "Erscheinungsbild »%s« existiert nicht"
+
+#~ msgid "Units for canvas height and width must currently be px (pixels)."
+#~ msgstr ""
+#~ "Die Einheit für Höhe und Breite des Anzeigebereichs muss px (Pixel) sein."
+
+#~ msgid "Layouts"
+#~ msgstr "Tastaturbelegungen"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Up"
+#~ msgstr ""
+#~ "Bild\n"
+#~ "Hoch"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Dn"
+#~ msgstr ""
+#~ "Bild\n"
+#~ "Runter"
+
+#~ msgid ""
+#~ "Nm\n"
+#~ "Lk"
+#~ msgstr ""
+#~ "Num\n"
+#~ "Lock"
+
+#~ msgid "ESC"
+#~ msgstr "Esc"
+
+#~ msgid "%s appears in scanning definition only"
+#~ msgstr "%s erscheint nur in der Einlesedefinition"
+
+#~ msgid ""
+#~ "Middle\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Mitte\n"
+#~ "Klick"
+
+#~ msgid ""
+#~ "Right\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Rechts\n"
+#~ "Klick"
+
+#~ msgid "_Password dialogs as normal windows"
+#~ msgstr "_Passwortdialoge als normale Fenster darstellen"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "Option, wenn verborgen"
+
+#~ msgid "Looking for system defaults in %s"
+#~ msgstr "Suche Systemvoreinstellungen in %s"
+
+#~ msgid "Loading system defaults from %s."
+#~ msgstr "Systemvoreinstellungen werden aus %s geladen."
+
+#~ msgid "Unable to find %s '%s'"
+#~ msgstr "Kann %s '%s' nicht finden"
+
+#~ msgid "Show Onboard when _unlocking the screen"
+#~ msgstr "Onboard anzeigen, wenn der Bildschirm _freigegeben wird"
+
+#~ msgid "Start Onboard _minimized"
+#~ msgstr "Onboard _minimiert starten"
+
+#~ msgid "Themes"
+#~ msgstr "Erscheinungsbilder"
+
+#~ msgid "Background"
+#~ msgstr "Hintergrund"
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "_Scanning-Modus aktivieren"
+
+#~ msgid "On Inactivity"
+#~ msgstr "Bei Inaktivität"
+
+#~ msgid "%s '%s' not found yet, retrying in default paths"
+#~ msgstr ""
+#~ "%s »%s« bisher nicht gefunden, erneuter Versuch im voreingestellten Pfad"
+
+#~ msgid "setting keyboard transparency to {}%"
+#~ msgstr "Die Tastaturtransparenz wird auf {}% eingestellt"
+
+#~ msgid "Show tool-tips for the keyboard's buttons."
+#~ msgstr "Kurzinfo für die Tastaturschaltflächen anzeigen."
+
+#~ msgid "Show _tool-tips"
+#~ msgstr "_Kurzinfo anzeigen"
+
+#~ msgid ""
+#~ "Scanning mode only works with layouts which are designed for the purpose."
+#~ msgstr ""
+#~ "Das Scan-Modul funktioniert nur mit Tastaturbelegungen, die für diesen "
+#~ "Zweck entwickelt wurden."
+
+#~ msgid "Start onboard hidden."
+#~ msgstr "Onboard verborgen starten."
+
+#~ msgid "Universal Access Settings"
+#~ msgstr "Einstellungen zur Barrierefreiheit"
+
+#~ msgid "Hide the system provided click-type window while Onboard is running."
+#~ msgstr ""
+#~ "Das vom System bereitgestellte Klick/Tipp-Fenster verstecken, während "
+#~ "Onboard ausgeführt wird."
+
+#~ msgid "Hide click-type window"
+#~ msgstr "Klick/Tipp-Fenster verstecken"
+
+#~ msgid ""
+#~ "Always enable the system provided click-type window when exiting Onboard."
+#~ msgstr ""
+#~ "Das vom System bereitgestellte Klick/Tipp-Fenster immer aktivieren, wenn "
+#~ "Onboard beendet wird."
+
+#~ msgid "Always enable the click-type window on exit"
+#~ msgstr "Das Klick/Tipp-Fenster beim Beenden immer aktivieren"
+
+#~ msgid "Can't load basename '%s' loading default %s instead"
+#~ msgstr ""
+#~ "Basisname '%s' kann nicht geladen werden. Voreinstellung %s wird "
+#~ "stattdessen geladen."
+
+#~ msgid "Customize theme"
+#~ msgstr "Erscheinungsbild personalisieren"
+
+#~ msgid "Failed to load Onboard icon"
+#~ msgstr "Oboard-Symbol konnte nicht geladen werden"
+
+#~ msgid "Super key label"
+#~ msgstr "Beschriftung der Supertaste"
+
+#~ msgid "Can't find file '%s'. Retrying as %s basename."
+#~ msgstr "Datei '%s' wurde nicht gefunden. Neuer Versuch mit %s-Basisname."
+
+#~ msgid ""
+#~ "<b><i>Scanning mode only works with layouts which are designed for the "
+#~ "purpose.</i></b>"
+#~ msgstr ""
+#~ "<b><i>Der Duchlaufmodus funktioniert nur mit Tastaturbelegungen, die "
+#~ "dafür konzipiert wurden.</i></b>"
+
+#~ msgid "Scanning"
+#~ msgstr "Am Durchlaufen"
+
+#~ msgid "Scanning mode"
+#~ msgstr "Durchlaufmodus"
+
+#~ msgid "Show the status item. A click on that icon hides or shows onboard."
+#~ msgstr ""
+#~ "Benachrichtigungssymbol anzeigen. Per Klick auf dieses Symbol kann "
+#~ "Onboard angezeigt oder ausgeblendet werden."
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "Onboard beim Dialog zum Entsperren des Bildschirms anzeigen. Auf diese "
+#~ "Weise kann Onboard beispielsweise zur Eingabe des Passwortes zum Beenden "
+#~ "des Bildschirmschoners genutzt werden, falls dieser so eingestellt ist, "
+#~ "danach zu fragen."
+
+#~ msgid ""
+#~ "Some password dialogs disable the area around them, making it impossible "
+#~ "to click on onboard. By activating this option, these dialogs behave as "
+#~ "normal windows and the area around the dialog remains active. This option "
+#~ "is also available in the Assistive Technologies control panel."
+#~ msgstr ""
+#~ "Einige Passwortdialoge deaktivieren den umgebenden Bereich, was es "
+#~ "unmöglich macht, auf Onboard zu klicken. Wird diese Option aktiviert, "
+#~ "zeigen sich diese Dialoge als normale Fenster und der Bereich um den "
+#~ "Dialog bleibt aktiv. Diese Einstellung ist ebenfalls in den Einstellungen "
+#~ "der Hilfstechnologien verfügbar."
+
+#~ msgid "Snippet"
+#~ msgstr "Textbaustein"
+
+#~ msgid "Please enter a new snippet for this button."
+#~ msgstr "Bitte geben Sie einen neuen Textbaustein für diesen Knopf ein."
+
+#~ msgid "Snippet assigned to button %d"
+#~ msgstr "Dem Knopf %d zugeordner Textbaustein"
+
+#~ msgid ""
+#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
+#~ "the icon makes onboard reappear."
+#~ msgstr ""
+#~ "Schwebendes Symbol anzeigen, wenn Onboard verborgen ist. Ein Klick auf "
+#~ "das Symbol lässt Onboard erscheinen."
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "Das Erscheinungsbild existiert bereits.\n"
+#~ "'%s'\n"
+#~ "Soll es überschrieben werden?"
+
+#~ msgid "Delete selected theme file?"
+#~ msgstr "Ausgewählte Erscheinungsbild löschen?"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "Farbschema für Erscheinungsbild '%s' konnte nicht gefunden werden"
+
+#~ msgid "Key"
+#~ msgstr "Taste"
+
+#~ msgid " - middle/right click buttons disabled"
+#~ msgstr " - Mittel-/Rechtsklick-Schaltflächen deaktiviert"
+
+#~ msgid "_Direction:"
+#~ msgstr "_Richtung:"
+
+#~ msgid "Ignoring key '{}'. Not found in '{}'."
+#~ msgstr "Ignoriere Schlüssel »{}«. Wurde nicht in »{}« gefunden."
+
+#~ msgid "Releasing still pressed key '{}'"
+#~ msgstr "Aktuell gedrückte Taste »{}« loslassen"
+
+#~ msgid "Window Options"
+#~ msgstr "Fenstereinstellungen"
+
+#~ msgid "screen changed, supports_alpha={}"
+#~ msgstr "Bildschirm geändert, supports_alpha={}"
+
+#~ msgid "Style"
+#~ msgstr "Stil"
+
+#~ msgid "Failed to migrate user directory. "
+#~ msgstr "Übernehmen des Benutzerverzeichnisses fehlgeschlagen. "
+
+#~ msgid "launching '{}'"
+#~ msgstr "»{}« wird ausgeführt"
+
+#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
+#~ msgstr ""
+#~ "Pango-Darstellung wird neu geladen, neue Schrift-DPI-Einstellung ist »{}«"
+
+#~ msgid "Show/Hide Options"
+#~ msgstr "Anzeige-/Ausblendeeinstellungen"
+
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "Überfahrenklick-Fenster beim _Beenden anzeigen"
+
+#~ msgid "_Hide Hover Click window"
+#~ msgstr "Überfahrenklick-Fenster _verstecken"
+
+#~ msgid "_Universal Access Panel"
+#~ msgstr "_Universelle Zugriffsleiste"
+
+#~ msgid ""
+#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
+#~ "format '{}'"
+#~ msgstr ""
+#~ "Veraltetes Layout-Format »{}« wird geladen. Bitte denken Sie darüber nach "
+#~ "auf das aktuelle Format »{}« umzusteigen."
+
+#~ msgid ""
+#~ "The time the scanner rests on a key or group  before moving to the next. "
+#~ "(in seconds)"
+#~ msgstr ""
+#~ "Zeit, die der Scanner bei einer Taste oder einer Gruppe verweilt, bevor "
+#~ "er sich zur nächsten bewegt. (in Sekunden)"
+
+#~ msgid ""
+#~ "Swap the scan actions after every key activation. The Step acticon will "
+#~ "become the Activate action and vice versa."
+#~ msgstr ""
+#~ "Scan-Aktionen nach jeder Tastenaktivierung tauschen. Die Intervallaktion "
+#~ "wird zur Aktivierungsaktion und andersherum."
+
+#~ msgid "Double-click to lock"
+#~ msgstr "Doppelklicken zum Sperren"
+
+#~ msgid "Multi-touch"
+#~ msgstr "Multi-touch"
+
+#~ msgid "Single-touch"
+#~ msgstr "Single-touch"
+
+#~ msgid "Lock"
+#~ msgstr "Sperren"
+
+#~ msgid "_Docking settings"
+#~ msgstr "_Andock-Einstellungen"
+
+#~ msgid "Enable docking"
+#~ msgstr "Andocken einschalten"
+
+#~ msgid "Latch"
+#~ msgstr "Sperre"
+
+#~ msgid "Cycle"
+#~ msgstr "Kreis"
+
+#~ msgid "Release - hold for long press"
+#~ msgstr "Loslassen – Halten für langes Drücken"
+
+#~ msgid "Press & release - hold for key-repeat"
+#~ msgstr "Drücken & Loslassen – Halten für Tastenwiederholung"
+
+#~ msgid "Modifier auto-_release delay:"
+#~ msgstr "Verzögerung für Modifizierer-Auto-_Loslassen:"
+
+#~ msgid "Send _key strokes on:"
+#~ msgstr "_Tastenkürzel senden bei:"
+
+#~ msgid ""
+#~ "Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+#~ "keys."
+#~ msgstr ""
+#~ "Wählen Sie zwischen Menüs bei wiederholtem oder langem Tastendruck. "
+#~ "Betrifft nur alphanumerische Tasten."
+
+#~ msgid "Error loading "
+#~ msgstr "Fehler beim Laden "
+
+#~ msgid "_Personalize"
+#~ msgstr "_Personalisieren"
+
+#~ msgid "Atspi unavailable, auto-hide won't be available"
+#~ msgstr "Atspi nicht verfügbar, Ausblenden daher nicht verfügbar"
+
+#~ msgid "Enter name for personalised layout"
+#~ msgstr "Namen für angepasste Tastaturbelegung eingeben"
+
+#~ msgid "Add Layout"
+#~ msgstr "Tastaturbelegung hinzufügen"
+
+#~ msgid "Onboard layout files"
+#~ msgstr "Onboard-Tastaturbelegungsdateien"
+
+#~ msgid "All files"
+#~ msgstr "Alle Dateien"
+
+#~ msgid "_System Language"
+#~ msgstr "_Systemsprache"
+
+#~ msgid "Atspi unavailable, word suggestions not fully functional"
+#~ msgstr ""
+#~ "Atspi ist nicht verfügbar, Wortvorschläge sind nicht voll funktionsfähig"
+
+#~ msgid "Atspi unavailable, word prediction may not be fully functional"
+#~ msgstr ""
+#~ "Atspi ist nicht verfügbar, Wortvorhersagen sind möglicherweise nicht "
+#~ "korrekt"

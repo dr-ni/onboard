@@ -1,10 +1,10 @@
-# Gaelic; Scottish translation for onboard
+# Gaelic; Scottish translation for Onboard
 #
-# Copyright: 
-#   Original strings: See files they where extracted from
+# Copyright:
+#   Original strings: See files they were extracted from
 #   Translations: Rosetta Contributers
 #
-# License: 
+# License:
 #   Original strings: GPL-3+ license
 #   Translations: BSD-3-clause license
 #
@@ -14,20 +14,942 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 15:18+0100\n"
-"PO-Revision-Date: 2016-01-29 00:50+0000\n"
-"Last-Translator: Akerbeltz <fios@akerbeltz.org>\n"
+"POT-Creation-Date: 2016-08-15 17:31+0200\n"
+"PO-Revision-Date: 2012-06-30 16:32+0000\n"
+"Last-Translator: Francesco Fumanti <Unknown>\n"
 "Language-Team: Gaelic; Scottish <gd@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-02-17 14:32+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-08-14 15:53+0000\n"
+"X-Generator: Launchpad (build 18169)\n"
+
+#: ../Onboard/LanguageSupport.py:173 ../Onboard/Timer.py:160
+#: ../Onboard/pypredict/tools/filter.py:382
+#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
+#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
+#: ../Onboard/SpellChecker.py:723
+msgid "Failed to execute '{}', {}"
+msgstr "Cha b' urrainn dhuinn \"{}\", {} a chur an gnìomh"
+
+#: ../Onboard/OnboardGtk.py:415
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
+"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
+"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"\n"
+"Ge-tà chan eil an siostam rèitichte tuilleadh airson a' ghlas a thoirt far "
+"na sgrìn le Onboard. Dh'fhaoidte gun do rèitich aplacaid eile an siostam ach "
+"an cleachd e rudeigin eile.\n"
+"\n"
+"A bheil thu airson am siostam ath-rèiteachadh airson 's gum faicear Onboard "
+"nuair a bheirear a' ghlas far na sgrìn?"
+
+#: ../Onboard/OnboardGtk.py:434
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
+"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
+"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"\n"
+"Ge-tà, chaidh am foincsean seo a chur à comas san t-siostam.\n"
+"\n"
+"A bheil thu airson a chur an gnìomh an-dràsta?"
+
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr "Gnàthaich an t-ùrlar"
+
+#: ../settings_theme_dialog.ui.h:2
+msgctxt "Label of the revert button of the theme settings dialog."
+msgid "_Revert"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:3
+msgctxt "Label of the close button of the theme settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:4
+msgid "Color Sche_me"
+msgstr "Sgea_ma dhathan"
+
+#: ../settings_theme_dialog.ui.h:5 ../settings.ui.h:68
+msgid "_Background:"
+msgstr "Cùlai_bh:"
+
+#. Key style with simple gradients
+#: ../settings_theme_dialog.ui.h:6 ../Onboard/settings.py:1426
+msgid "Gradient"
+msgstr "Caisead"
+
+#: ../settings_theme_dialog.ui.h:7
+msgid "_Angle:"
+msgstr "_Ceàrn:"
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "Light Direction"
+msgstr "Comhair an t-solais"
+
+#: ../settings_theme_dialog.ui.h:9 ../settings.ui.h:16
+msgid "Keyboard"
+msgstr "Meur-chlàr"
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "_Style:"
+msgstr "_Stoidhle"
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "R_oundness:"
+msgstr "C_ruinne:"
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "S_ize:"
+msgstr "M_eud:"
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "B_order width:"
+msgstr "Leud an i_omaill:"
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "Key Style"
+msgstr "Stoidhle nan iuchraichean"
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Key:"
+msgstr "_Iuchair:"
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Border:"
+msgstr "_Iomall:"
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Gradients"
+msgstr "Caiseadan"
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "_Strength:"
+msgstr "_Neart:"
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "Shadow"
+msgstr "Sgàil"
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "Keys"
+msgstr "Iuchraichean"
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "_Font:"
+msgstr "_Cruth-clò:"
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "_Attributes:"
+msgstr "_Buadhan:"
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "Font"
+msgstr "Cruth-clò"
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "I_ndependent size"
+msgstr "Meud n_eo-eisimeileach"
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "_Super key:"
+msgstr "_Sàr-iuchair:"
+
+#: ../settings_theme_dialog.ui.h:26
+msgid "Label Override"
+msgstr "Tar-àithne na leubail"
+
+#: ../settings_theme_dialog.ui.h:27
+msgid "Labels"
+msgstr "Leubailean"
+
+#: ../settings.ui.h:1
+msgid "Key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "International character selection"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "GTK"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "XInput"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "Auto"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "XTest"
+msgstr "XTest"
+
+#: ../settings.ui.h:7
+msgid "uinput"
+msgstr ""
+
+#: ../settings.ui.h:8
+msgid "AT-SPI"
+msgstr "AT-SPI"
+
+#: ../settings.ui.h:9
+msgid "Remember nothing"
+msgstr ""
+
+#: ../settings.ui.h:10
+msgid "Don't remember new words"
+msgstr ""
+
+#: ../settings.ui.h:11
+msgid "General"
+msgstr "Coitcheann"
+
+#: ../settings.ui.h:12
+msgid "Window"
+msgstr "Uinneag"
+
+#: ../settings.ui.h:13
+msgid "Layout"
+msgstr "Co-dhealbhachd"
+
+#: ../settings.ui.h:14
+msgid "Theme"
+msgstr "Ùrlar"
+
+#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
+#: ../settings.ui.h:15 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
+msgid "Snippets"
+msgstr "Snippets"
+
+#: ../settings.ui.h:17
+msgid "Typing Assistance"
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Universal Access"
+msgstr "Inntrigeadh uile-choitcheann"
+
+#: ../settings.ui.h:19
+msgid "Latch, then lock"
+msgstr ""
+
+#: ../settings.ui.h:20
+#, fuzzy
+msgid "Latch, double-click to lock"
+msgstr "Dèan briogadh dùbailte gus a ghlasadh"
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "Latch only"
+msgstr "Snag"
+
+#: ../settings.ui.h:22
+#, fuzzy
+msgid "Lock only"
+msgstr "Glais"
+
+#: ../settings.ui.h:23
+#, fuzzy
+msgid "Push button"
+msgstr "Brùth putan..."
+
+#: ../settings.ui.h:24
+msgid "none"
+msgstr ""
+
+#: ../settings.ui.h:25
+msgid "single-touch"
+msgstr ""
+
+#: ../settings.ui.h:26
+msgid "multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:27
+msgctxt "Label of the main close button of the preferences dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings.ui.h:28
+msgid "_Auto-show when editing text"
+msgstr "Fèin-se_all nuair a dheasaichear teacsa"
+
+#: ../settings.ui.h:29
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"Seall Onboard nuair tha uinneag teacsa aithnichte ann am fòcas. Feumaidh seo "
+"Gnome Accessibility."
+
+#: ../settings.ui.h:30
+#, fuzzy
+msgctxt "Label of settings button on preferences page General."
+msgid "_Settings"
+msgstr "Roghainnean"
+
+#: ../settings.ui.h:31
+msgid "Start Onboard _hidden"
+msgstr "Tòisich Onboard am _falach"
+
+#: ../settings.ui.h:32
+msgid "Start Onboard hidden."
+msgstr "Tòisich Onboard am falach."
+
+#: ../settings.ui.h:33
+msgid "Show/Hide options"
+msgstr ""
+
+#: ../settings.ui.h:34
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Seall ìomha_igheag air fleòd nuair a tha Onboard falaichte"
+
+#: ../settings.ui.h:35
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Seall ìomhaigheag air fleòd air an deasg nuair a tha Onboard falaichte. "
+"Nochdaidh Onboard as ùr ma bhriogas tu air an ìomhaigheag."
+
+#: ../settings.ui.h:36
+msgid "Show when _unlocking the screen"
+msgstr "Seall n_uair a bheirear a' ghlas far na sgrìn"
+
+#: ../settings.ui.h:37
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Seall Onboard nuair a nochdas an còmhradh airson a' ghlas a thoirt far na "
+"sgrìn; san dòigh seo, gabhaidh Onboard a chleachdadh, mar eisimpleir, gus "
+"facal-faire a chur a-steach no airson an sàbhalaiche-sgrìn a chur gu taobh "
+"ma chaidh a shuidheachadh gun iarr e e."
+
+#: ../settings.ui.h:38
+msgid "Show _tooltips"
+msgstr "Seall na _gliocasan-sgrìn"
+
+#: ../settings.ui.h:39
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Seall na gliocasan-sgrìn airson iuchraichean a' mheur-chlàir."
+
+#: ../settings.ui.h:40
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Seall na gliocasan-sgrìn airson iuchraichean a' mheur-chlàir."
+
+#: ../settings.ui.h:41
+msgid "_Show status icon"
+msgstr "_Seall ìomhaigheag na staid"
+
+#: ../settings.ui.h:42
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr ""
+"Seall ball na staid. Ma bhriogas tu air an ìomhaigheag, cuiridh e am falach "
+"no nochdaidh e Onboard."
+
+#: ../settings.ui.h:43
+msgid "Status icon _provider:"
+msgstr ""
+
+#: ../settings.ui.h:44
+msgid ""
+"<b>AppIndicator</b> (default) is recommended for broadest compatibility. A "
+"middle click on the icon shows the keyboard. In KDE Plasma a left click does "
+"the same.\n"
+"\n"
+"<b>GtkStatusIcon</b> isn't supported well anymore by various desktop "
+"environments, but generally allows to show the keyboard on left click.\n"
+"\n"
+"Requires restart."
+msgstr ""
+
+#: ../settings.ui.h:49
+msgid "Desktop Integration"
+msgstr "Innteagrachadh an deasga"
+
+#: ../settings.ui.h:50
+msgid "Dock to screen edge"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "Dock the keyboard to the edge of the screen."
+msgstr "Docaich am meur-chlàr ri oir na sgrìn."
+
+#: ../settings.ui.h:52
+#, fuzzy
+msgctxt "Label of settings button on preferences page Window."
+msgid "_Settings"
+msgstr "Roghainnean"
+
+#: ../settings.ui.h:53
+msgid "Docking"
+msgstr "Docadh"
+
+#: ../settings.ui.h:54
+msgid "Show window _decoration"
+msgstr "Seall sgea_dachadh na h-uinneige"
+
+#: ../settings.ui.h:55
+msgid "Show window caption and frame."
+msgstr "Seall caipsean agus frèam na h-uinneige."
+
+#: ../settings.ui.h:56
+msgid "Show always on visible _workspace"
+msgstr "Seall san _rum-obrach a tha ri fhaicinn an-còmhnaidh"
+
+#: ../settings.ui.h:57
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr ""
+"Am modh &quot;steigeach&quot; airson a' mheur-chlàir agus na -ìomhaigheige "
+"air fleòd."
+
+#: ../settings.ui.h:58
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr ""
+"Am modh \"steigeach\" airson a' mheur-chlàir agus na -ìomhaigheige air fleòd"
+
+#: ../settings.ui.h:59
+msgid "_Force window to top"
+msgstr "Sparr air an _uinneag a bhith air uachdar"
+
+#: ../settings.ui.h:60
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr ""
+"Bi na dìcheallaiche a' cumail Onboard os cionn dad sam bith eile air an "
+"sgrìn."
+
+#: ../settings.ui.h:61
+msgid "Keep _aspect ratio"
+msgstr "Glèidh _co-mheas an deilbh"
+
+#: ../settings.ui.h:62
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr ""
+"Sparr air meud na h-uinneige gèilleadh ri co-mheas dealbh na co-dhealbhachd"
+
+#: ../settings.ui.h:63
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr ""
+"Sparr air meud na h-uinneige gèilleadh ri co-mheas dealbh na co-dhealbhachd."
+
+#: ../settings.ui.h:64
+msgid "Floating Window Options"
+msgstr ""
+
+#: ../settings.ui.h:65
+msgid "Window options"
+msgstr ""
+
+#: ../settings.ui.h:66
+msgid "Wind_ow:"
+msgstr "Uinn_eag:"
+
+#: ../settings.ui.h:67
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr ""
+"Trìd-shoilleireachd uinneag shlàn a' mheur-chlàir. Feumaidh seo co-"
+"dhèantachadh."
+
+#: ../settings.ui.h:69
+msgid "Transparency of the keyboard background"
+msgstr "Trìd-shoilleireachd cùlaibh a' mheur-chlàir"
+
+#: ../settings.ui.h:70
+msgid "_No background"
+msgstr "_Gun chùlaibh"
+
+#: ../settings.ui.h:71
+msgid "Show the desktop through the gaps between keys."
+msgstr "Seall an deasg tro na beàrnan eadar na h-iuchraichean."
+
+#: ../settings.ui.h:72
+msgid "Transparency"
+msgstr "Trìd-shoilleireachd"
+
+#: ../settings.ui.h:73
+msgid "Set _transparency to"
+msgstr "Suidhich an _trìd-shoilleireachd aig"
+
+#: ../settings.ui.h:74
+msgid "Enable inactive transparency. Requires compositing."
+msgstr ""
+"Cuir an comas trìd-shoilleireachd neo-ghnìomhach. Feumaidh seo co-"
+"dhèantachadh."
+
+#: ../settings.ui.h:75
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr ""
+"An trìd-shoilleireachd nuair a dh'fhàgas an tomhaire am meur-chlàr. Feumaidh "
+"seo co-dhèantachadh."
+
+#: ../settings.ui.h:76
+msgid "after"
+msgstr "as dèidh"
+
+#: ../settings.ui.h:77
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr ""
+"An dàil ann an diogan mus bi an trìd-shoilleireachd neo-ghnìomhach an gnìomh."
+
+#: ../settings.ui.h:78
+msgid "seconds"
+msgstr "diogan"
+
+#: ../settings.ui.h:79
+msgid "When Inactive"
+msgstr "Nuair a bhios e neo-ghnìomhach"
+
+#: ../settings.ui.h:80
+#, fuzzy
+msgid "_Window handles:"
+msgstr "Stiùireadh na h-uinneige"
+
+#: ../settings.ui.h:81
+msgid "Resize Protection"
+msgstr "Dìon o atharrachadh a' mheud"
+
+#: ../settings.ui.h:82
+msgid "Name"
+msgstr "Ainm"
+
+#: ../settings.ui.h:83
+msgid "Description"
+msgstr "Tuairisgeul"
+
+#: ../settings.ui.h:84
+msgctxt "Label of new layout button on preferences page Layout."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:85
+msgctxt "Label of delete layout button on preferences page Layout."
+msgid "_Delete"
+msgstr ""
+
+#: ../settings.ui.h:86
+#, fuzzy
+msgctxt "Label of open folder button on preferences page Layout."
+msgid "_Open layouts folder"
+msgstr "F_osgail pasgan nan co-dhealbhachdan"
+
+#: ../settings.ui.h:87
+msgctxt "Label of about layout button on preferences page Layout."
+msgid "_About"
+msgstr ""
+
+#: ../settings.ui.h:88
+msgctxt "Label of new theme button on preferences page Theme."
+msgid "_New"
+msgstr ""
+
+#: ../settings.ui.h:89
+msgctxt "Label of delete theme  button on preferences page Theme."
+msgid "_Delete"
+msgstr ""
+
+#: ../settings.ui.h:90
+#, fuzzy
+msgctxt "Label of customize theme button on preferences page Theme."
+msgid "C_ustomize theme"
+msgstr "G_nàthaich an t-ùrlar"
+
+#: ../settings.ui.h:91
+msgid "Follow _system theme"
+msgstr "Lean ùrlar an _t-siostaim"
+
+#: ../settings.ui.h:92
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"Cuimhnich dè an t-ùrlar Onboard a chaidh a chleachdadh an turas mu dheireadh "
+"airson gach ùrlar an t-siostaim."
+
+#: ../settings.ui.h:93
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Tha snippets 'nam pìosan teacsa a thèid a chur a-steach nuair a bhrùthar a' "
+"cho-iuchair ann an Onboard."
+
+#: ../settings.ui.h:94
+msgctxt "Label of add snippet button on preferences page Snippets."
+msgid "_Add"
+msgstr ""
+
+#: ../settings.ui.h:95
+msgctxt "Label of remove snippet button on preferences page Snippets."
+msgid "_Remove"
+msgstr ""
+
+#: ../settings.ui.h:96
+msgid "Show label popups"
+msgstr ""
+
+#: ../settings.ui.h:97
+msgid "Show label popups above pressed keys."
+msgstr ""
+
+#: ../settings.ui.h:98
+msgid "Play sound"
+msgstr ""
+
+#: ../settings.ui.h:99
+msgid "Play click sound on keypress."
+msgstr ""
+
+#: ../settings.ui.h:100
+msgid "Place sound in space"
+msgstr ""
+
+#: ../settings.ui.h:101
+msgid ""
+"Place sound in space between speakers depending on the key's position on "
+"screen"
+msgstr ""
+
+#: ../settings.ui.h:102
+msgid "Key-press Feedback"
+msgstr ""
+
+#: ../settings.ui.h:103
+msgid "Show secondary labels"
+msgstr ""
+
+#: ../settings.ui.h:104
+msgid "Show characters reachable with or without the shift key."
+msgstr ""
+
+#: ../settings.ui.h:105
+msgid "Key Labels"
+msgstr ""
+
+#: ../settings.ui.h:106
+msgid "Upper case on right click"
+msgstr ""
+
+#: ../settings.ui.h:107
+msgid "Temporarily enable SHIFT when clicking with the secondary button."
+msgstr ""
+
+#: ../settings.ui.h:108
+msgid "Key Behaviour"
+msgstr ""
+
+#: ../settings.ui.h:109
+msgid "_Long press action:"
+msgstr ""
+
+#: ../settings.ui.h:110
+msgid ""
+"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:111
+msgid "Modifier _behavior:"
+msgstr "Giùlan a_n atharraicheir:"
+
+#: ../settings.ui.h:112
+msgid "Behavior of modifier and layer keys."
+msgstr "Giùlan nan iuchraichean atharrachaidh 's iuchraichean nam breathan."
+
+#: ../settings.ui.h:113
+#, fuzzy
+msgid "Modifier auto-release delay in seconds:"
+msgstr "An dàil air leigeil às fhèin-obrachail nan atharraichearan:"
+
+#: ../settings.ui.h:114
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+"Diogan a neo-ghnìomhachd gus an dèid iuchraichean atharrachaidh is "
+"iuchraichean bhreathan a leigeil às. Cleachd 0 gus a chur à comas."
+
+#: ../settings.ui.h:115
+#, fuzzy
+msgid "Modifier auto-release after hide in seconds:"
+msgstr "An dàil air leigeil às fhèin-obrachail nan atharraichearan:"
+
+#: ../settings.ui.h:116
+msgid ""
+"Time after hiding the keyboard in seconds until latched and locked modifiers "
+"and layer keys are released automatically. Leave at 0.0 to not automatically "
+"release them."
+msgstr ""
+
+#: ../settings.ui.h:117
+msgid "0,00"
+msgstr ""
+
+#: ../settings.ui.h:118
+msgid "Key Behavior"
+msgstr ""
+
+#: ../settings.ui.h:119
+msgid "_Touch input:"
+msgstr ""
+
+#: ../settings.ui.h:120
+msgid "_Input event source:"
+msgstr ""
+
+#: ../settings.ui.h:121
+msgid ""
+"Choose &apos;XInput&apos; for more reliable typing into text entries with "
+"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
+"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
+"windows."
+msgstr ""
+
+#: ../settings.ui.h:122
+msgid ""
+"Choose 'XInput' for more reliable typing into text entries with pop-up "
+"selections. The 'GTK' option offers better compatibility, but typing may "
+"fail in the presence of pointer grabs, e.g. with open pop-up windows."
+msgstr ""
+
+#: ../settings.ui.h:123
+msgid "Input Options"
+msgstr ""
+
+#: ../settings.ui.h:124
+msgid "Delay between keystrokes in milliseconds:"
+msgstr ""
+
+#: ../settings.ui.h:125
+msgid ""
+"Increase this if key-strokes get lost when inserting word suggestions or "
+"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
+"applications."
+msgstr ""
+
+#: ../settings.ui.h:126
+#, fuzzy
+msgid "Key-stroke generator"
+msgstr "_Gintinn buillean nan iuchraichean:"
+
+#: ../settings.ui.h:127
+msgid ""
+"<b>Auto</b>: let Onboard decide, recommended.\n"
+"\n"
+"<b>XTest</b> is the default for all X based desktop environments.\n"
+"\n"
+"<b>uinput</b> should be available on all linux-based systems, including X, "
+"Wayland and MIR-based desktops, but requires write permission for /dev/"
+"uinput.\n"
+"\n"
+"<b>AT-SPI</b> has limited support for key-stroke generation, and is only "
+"recommended for testing."
+msgstr ""
+
+#: ../settings.ui.h:134
+#, fuzzy
+msgid "Key-stroke Generation"
+msgstr "_Gintinn buillean nan iuchraichean:"
+
+#: ../settings.ui.h:135
+msgid "Advanced"
+msgstr "Adhartach"
+
+#: ../settings.ui.h:136
+msgid "Show _suggestions"
+msgstr ""
+
+#: ../settings.ui.h:137
+msgid "Enable word completion and prediction."
+msgstr ""
+
+#: ../settings.ui.h:138
+msgid "Show spelling suggestions"
+msgstr ""
+
+#: ../settings.ui.h:139
+msgid "Check spelling of the word at or before the cursor."
+msgstr ""
+
+#: ../settings.ui.h:140
+msgid "_Learn from typed text"
+msgstr ""
+
+#: ../settings.ui.h:141
+msgid ""
+"Remember new words, their recency and frequency to improve the suggestions "
+"over time."
+msgstr ""
+
+#: ../settings.ui.h:142
+msgid "Insert word _separators"
+msgstr ""
+
+#: ../settings.ui.h:143
+msgid ""
+"Add and remove spaces when inserting word suggestions followed by "
+"punctuation characters."
+msgstr ""
+
+#: ../settings.ui.h:144
+msgid "Options"
+msgstr "Roghainnean"
+
+#: ../settings.ui.h:145
+#, fuzzy
+msgid "Show more suggestions arrow"
+msgstr "Barrachd mholaidhean"
+
+#: ../settings.ui.h:146
+msgid "Step forward and backward through the available suggestions."
+msgstr ""
+
+#: ../settings.ui.h:147
+msgid "Show button to pause learning"
+msgstr "Seall putan gus stad air an ionnsachadh"
+
+#: ../settings.ui.h:148
+msgid "Words typed while this button is pressed won't be remembered."
+msgstr ""
+"Cha dèid facal a chur an cuimhne fhad 's a bhios am putan seo 'ga bhrùthadh."
+
+#: ../settings.ui.h:149
+msgid "Show lan_guage switcher"
+msgstr "Seall suidsear a' chà_nain"
+
+#: ../settings.ui.h:150
+msgid "Show a button for language selection."
+msgstr "Seall putan gus cànan a thaghadh."
+
+#: ../settings.ui.h:151
+msgid "Buttons"
+msgstr "Putanan"
+
+#: ../settings.ui.h:152
+msgid "Word Suggestions"
+msgstr ""
+
+#: ../settings.ui.h:153
+msgid "Auto-capitalize while typing"
+msgstr ""
+
+#: ../settings.ui.h:154
+msgid "Automatically capitalize sentence begins and name words."
+msgstr ""
+
+#: ../settings.ui.h:155
+msgid "Auto-correct spelling"
+msgstr ""
+
+#: ../settings.ui.h:156
+msgid "Automatically correct the last word."
+msgstr ""
+
+#: ../settings.ui.h:157
+msgid "The spell check engine to use."
+msgstr ""
+
+#: ../settings.ui.h:158
+msgid "Spell-check backend:"
+msgstr ""
+
+#: ../settings.ui.h:159
+msgid "Auto-correction"
+msgstr ""
+
+#: ../settings.ui.h:160
+msgid "While  learning is paused:"
+msgstr ""
+
+#: ../settings.ui.h:161
+#, fuzzy
+msgid "Learning"
+msgstr "Stad air an ionnsachadh"
+
+#: ../settings.ui.h:162
+msgid "Enable  keyboard _scanning"
+msgstr "Cuir an comas _sganadh a' mheur-chlàir"
+
+#: ../settings.ui.h:163
+#, fuzzy
+msgctxt ""
+"Label of keyboard scanning settings button on preferences page Universal "
+"Access."
+msgid "Sc_anner Settings"
+msgstr "Roghainnean an sg_anair"
+
+#: ../settings.ui.h:164
+msgid "Keyboard Scanning"
+msgstr "Sganadh a' mheur-chlàir"
+
+#: ../settings.ui.h:165
+msgid "_Delay:"
+msgstr "_Dàil:"
+
+#: ../settings.ui.h:166
+msgid "_Motion threshold:"
+msgstr "Stairsneach gl_uasaid:"
+
+#: ../settings.ui.h:167
+msgid "Time in seconds before a click is triggered."
+msgstr "An t-àm ann an dìogan mus dèid briogadh a chur gu dol."
+
+#: ../settings.ui.h:168
+msgid "Distance in pixels before movement will be recognized."
+msgstr "An t-astar ann am piogsailean mus dèid gluasad aithneachadh."
+
+#: ../settings.ui.h:169
+msgid "Hide hover click window"
+msgstr "Falaich an uinneag airson briogadh fantainn"
+
+#: ../settings.ui.h:170
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr ""
+"Falaich an uinneag a tha am broinn an t-siostaim airson briogadh fantainn "
+"fhad 's a tha Onboard a' ruith."
+
+#: ../settings.ui.h:171
+msgid "Enable click type window on exit"
+msgstr "Cuir an comas an uinneag airson seòrsa a' bhriogaidh nuair a dh'fhàgar"
+
+#: ../settings.ui.h:172
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Cuir an comas an uinneag a tha am broinn an t-siostaim airson briogadh le "
+"bhith a' fantainn os cionn rud nuair a dh'fhàgar Onboard an-còmhnaidh."
+
+#: ../settings.ui.h:173
+msgid "Hover Click"
+msgstr "Briogadh fantainn"
 
 #. Default dialog title: name of the application
-#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1063
-#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1804
+#: ../data/onboard.desktop.in.h:1 ../Onboard/WindowUtils.py:1086
+#: ../Onboard/KbdWindow.py:106 ../Onboard/KeyboardWidget.py:1889
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -36,7 +958,8 @@ msgid "Onboard onscreen keyboard"
 msgstr "Meur-chlàr air sgrìn Onboard"
 
 #: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
+#, fuzzy
+msgid "Flexible onscreen keyboard"
 msgstr "Meur-chlàr air sgrìn sùbailte airson GNOME"
 
 #: ../Onboard/settings.py:259
@@ -63,12 +986,13 @@ msgstr "Chan eil gin"
 #. Window handles: None
 #: ../Onboard/settings.py:741
 msgid "Movement only"
-msgstr "Gluasad a-mhàin"
+msgstr ""
 
 #. Frame resize handles: Corners only
 #: ../Onboard/settings.py:743
+#, fuzzy
 msgid "Corners"
-msgstr "Oiseanan"
+msgstr "Oiseanan a-mhàin"
 
 #. Frame resize handles: All
 #: ../Onboard/settings.py:745
@@ -124,24 +1048,20 @@ msgstr "A bheil thu airson an t-ùrlar a thagh thu a sguabadh às?"
 
 #. Translators: reset button of Preferences->Theme.
 #: ../Onboard/settings.py:1088
+#, fuzzy
 msgid "_Reset"
-msgstr "Ath-_shuidhich"
+msgstr "Ath-shuidhich"
 
 #. Translators: delete button of Preferences->Theme. It used to be
 #. stock item STOCK_DELETE until Gtk 3.10 deprecated those.
 #: ../Onboard/settings.py:1092
 msgid "_Delete"
-msgstr "_Sguab às"
+msgstr ""
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1424
 msgid "Flat"
 msgstr "Còmhnard"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1426 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Caisead"
 
 #. Key style for dish-like key caps
 #: ../Onboard/settings.py:1428
@@ -216,1037 +1136,77 @@ msgstr "Brùth putan..."
 msgid "Press a key..."
 msgstr "Brùth iuchair..."
 
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr "Barr"
+#: ../Onboard/utils.py:1535
+msgid "failed to create directory '{}': {}"
+msgstr ""
 
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr "Bonn"
+#. ##############
+#: ../Onboard/SnippetView.py:39
+msgid "<Enter label>"
+msgstr "<Cuir leubail a-steach>"
 
-#: ../settings_docking_dialog.ui.h:3
-msgid "Active Monitor"
-msgstr "Am monatair gnìomhach"
+#: ../Onboard/SnippetView.py:40
+msgid "<Enter text>"
+msgstr "<Cuir a-steach teacsa>"
 
-#: ../settings_docking_dialog.ui.h:4
-msgid "Primary Monitor"
-msgstr "Am prìomh-mhonatair"
+#: ../Onboard/SnippetView.py:52
+msgid "Button Number"
+msgstr "Àireamh a' phutain"
 
-#: ../settings_docking_dialog.ui.h:5
-msgid "Monitor 0"
-msgstr "Monatair 0"
+#: ../Onboard/SnippetView.py:59
+msgid "Button Label"
+msgstr "Leubail a' phutain"
 
-#: ../settings_docking_dialog.ui.h:6
-msgid "Monitor 1"
-msgstr "Monatair 1"
+#: ../Onboard/SnippetView.py:68
+msgid "Snippet Text"
+msgstr "Teacsa an snippet"
 
-#: ../settings_docking_dialog.ui.h:7
-msgid "Monitor 2"
-msgstr "Monatair 2"
+#: ../Onboard/SnippetView.py:113
+msgid "Must be an integer number"
+msgstr "Feumaidh seo a bhith 'na àireamh shlàn"
 
-#: ../settings_docking_dialog.ui.h:8
-msgid "Monitor 3"
-msgstr "Monatair 3"
+#: ../Onboard/SnippetView.py:122
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Tha an snippet %d 'ga chleachdadh mar thà."
 
-#: ../settings_docking_dialog.ui.h:9
-msgid "Monitor 4"
-msgstr "Monatair 4"
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Monitor 5"
-msgstr "Monatair 5"
-
-#: ../settings_docking_dialog.ui.h:11
-msgid "Monitor 6"
-msgstr "Monatair 6"
-
-#: ../settings_docking_dialog.ui.h:12
-msgid "Monitor 7"
-msgstr "Monatair 7"
-
-#: ../settings_docking_dialog.ui.h:13
-msgid "Monitor 8"
-msgstr "Monatair 8"
-
-#: ../settings_docking_dialog.ui.h:14
-msgid "Docking settings"
-msgstr "Roghainnean docaidh"
-
-#: ../settings_docking_dialog.ui.h:15
-msgid "Shrink workarea"
-msgstr "Crùb an t-àite-obrach"
-
-#: ../settings_docking_dialog.ui.h:16
-msgid "Shrink the available space for maximized windows."
-msgstr "Crùb an t-àite a tha ri làimh airson uinneagan làn-mheudaichte."
-
-#: ../settings_docking_dialog.ui.h:17
-msgid "Expand on landscape screens"
-msgstr "Leudaich air sgrìnichean dreach-tìre"
-
-#: ../settings_docking_dialog.ui.h:18
-msgid "Expand keyboard to the width of the workarea."
-msgstr "Leudaich am meur-chlàr gu meud an àite-obrach"
-
-#: ../settings_docking_dialog.ui.h:19
-msgid "Expand on portrait screens"
-msgstr "Leudaich air sgrìnichean portraid"
-
-#: ../settings_docking_dialog.ui.h:20
-msgid "Dock to screen edge:"
-msgstr "Docaich ri oir na sgrìn:"
-
-#: ../settings_docking_dialog.ui.h:21
-msgid "Dock to monitor:"
-msgstr "Docaich ri monatair:"
-
-#: ../settings.ui.h:1
-msgid "Key-repeat"
-msgstr "Ath-bhualadh iuchrach"
-
-#: ../settings.ui.h:2
-msgid "International character selection"
-msgstr "Taghadh charactaran eadar-nàiseanta"
-
-#: ../settings.ui.h:3
-msgid "GTK"
-msgstr "GTK"
-
-#: ../settings.ui.h:4
-msgid "XInput"
-msgstr "XInput"
-
-#: ../settings.ui.h:5
-msgid "XTest"
-msgstr "XTest"
-
-#: ../settings.ui.h:6
-msgid "AT-SPI"
-msgstr "AT-SPI"
-
-#: ../settings.ui.h:7
-msgid "Remember nothing"
-msgstr "Na cuimhnich dad"
-
-#: ../settings.ui.h:8
-msgid "Don't remember new words"
-msgstr "Na cuimhnich faclan ùra"
-
-#: ../settings.ui.h:9
-msgid "General"
-msgstr "Coitcheann"
-
-#: ../settings.ui.h:10
-msgid "Window"
-msgstr "Uinneag"
-
-#: ../settings.ui.h:11
-msgid "Layout"
-msgstr "Co-dhealbhachd"
-
-#: ../settings.ui.h:12
-msgid "Theme"
-msgstr "Ùrlar"
-
-#. translators: this is a 'tooltip' of the key_template 'layer2' in keyboard layout 'key_defs.xml'
-#: ../settings.ui.h:13 ../data/layoutstrings.py:88 ../data/layoutstrings.py:340
-msgid "Snippets"
-msgstr "Snippets"
-
-#: ../settings.ui.h:14 ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr "Meur-chlàr"
-
-#: ../settings.ui.h:15
-msgid "Typing Assistance"
-msgstr "Taic le sgrìobhadh"
-
-#: ../settings.ui.h:16
-msgid "Universal Access"
-msgstr "Inntrigeadh uile-choitcheann"
-
-#: ../settings.ui.h:17
-msgid "Latch, then lock"
-msgstr "Snag is an uairsin, glais"
-
-#: ../settings.ui.h:18
-msgid "Latch, double-click to lock"
-msgstr "Snag, briogadh dùbailte gus a ghlasadh"
-
-#: ../settings.ui.h:19
-msgid "Latch only"
-msgstr "Snag a-mhàin"
-
-#: ../settings.ui.h:20
-msgid "Lock only"
-msgstr "Glas a-mhàin"
-
-#: ../settings.ui.h:21
-msgid "Push button"
-msgstr "Putan push"
-
-#: ../settings.ui.h:22
-msgid "none"
-msgstr "chan eil gin"
-
-#: ../settings.ui.h:23
-msgid "single-touch"
-msgstr "suathadh singilte"
-
-#: ../settings.ui.h:24
-msgid "multi-touch"
-msgstr "ioma-shuathadh"
-
-#: ../settings.ui.h:25
-msgid "column"
-msgstr "colbh"
-
-#: ../settings.ui.h:26
-msgid "_Auto-show when editing text"
-msgstr "Fèin-se_all nuair a dheasaichear teacsa"
-
-#: ../settings.ui.h:27
+#: ../Onboard/WordSuggestions.py:2687
 msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"Seall Onboard nuair tha uinneag teacsa aithnichte ann am fòcas. Feumaidh seo "
-"Gnome Accessibility."
-
-#: ../settings.ui.h:28
-msgid "_Settings"
-msgstr "_Roghainnean"
-
-#: ../settings.ui.h:29
-msgid "Start Onboard _hidden"
-msgstr "Tòisich Onboard am _falach"
-
-#: ../settings.ui.h:30
-msgid "Start Onboard hidden."
-msgstr "Tòisich Onboard am falach."
-
-#: ../settings.ui.h:31
-msgid "Show/Hide options"
-msgstr "Seall/Falaich na roghainnean"
-
-#: ../settings.ui.h:32
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Seall ìomha_igheag air fleòd nuair a tha Onboard falaichte"
-
-#: ../settings.ui.h:33
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Seall ìomhaigheag air fleòd air an deasg nuair a tha Onboard falaichte. "
-"Nochdaidh Onboard as ùr ma bhriogas tu air an ìomhaigheag."
-
-#: ../settings.ui.h:34
-msgid "Show when _unlocking the screen"
-msgstr "Seall n_uair a bheirear a' ghlas far na sgrìn"
-
-#: ../settings.ui.h:35
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Seall Onboard nuair a nochdas an còmhradh airson a' ghlas a thoirt far na "
-"sgrìn; san dòigh seo, gabhaidh Onboard a chleachdadh, mar eisimpleir, gus "
-"facal-faire a chur a-steach no airson an sàbhalaiche-sgrìn a chur gu taobh "
-"ma chaidh a shuidheachadh gun iarr e e."
-
-#: ../settings.ui.h:36
-msgid "Show _tooltips"
-msgstr "Seall na _gliocasan-sgrìn"
-
-#: ../settings.ui.h:37
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Seall na gliocasan-sgrìn airson iuchraichean a' mheur-chlàir."
-
-#: ../settings.ui.h:38
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Seall na gliocasan-sgrìn airson iuchraichean a' mheur-chlàir."
-
-#: ../settings.ui.h:39
-msgid "_Show status icon"
-msgstr "_Seall ìomhaigheag na staid"
-
-#: ../settings.ui.h:40
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Seall ball na staid. Ma bhriogas tu air an ìomhaigheag, cuiridh e am falach "
-"no nochdaidh e Onboard."
-
-#: ../settings.ui.h:41
-msgid "Status icon _provider:"
-msgstr ""
-
-#: ../settings.ui.h:42
-msgid ""
-"AppIndicater (default) is recommend for broadest compatibility. "
-"GtkStatusIcon isn't supported well anymore by various desktop environments, "
-"but allows to show Onboard on left click. Requires restart."
-msgstr ""
-
-#: ../settings.ui.h:43
-msgid "Desktop Integration"
-msgstr "Innteagrachadh an deasga"
-
-#: ../settings.ui.h:44
-msgid "Dock to screen edge"
-msgstr "Docaich ri oir na sgrìn"
-
-#: ../settings.ui.h:45
-msgid "Dock the keyboard to the edge of the screen."
-msgstr "Docaich am meur-chlàr ri oir na sgrìn."
-
-#: ../settings.ui.h:46
-msgid "Docking"
-msgstr "Docadh"
-
-#: ../settings.ui.h:47
-msgid "Show window _decoration"
-msgstr "Seall sgea_dachadh na h-uinneige"
-
-#: ../settings.ui.h:48
-msgid "Show window caption and frame."
-msgstr "Seall caipsean agus frèam na h-uinneige."
-
-#: ../settings.ui.h:49
-msgid "Show always on visible _workspace"
-msgstr "Seall san _rum-obrach a tha ri fhaicinn an-còmhnaidh"
-
-#: ../settings.ui.h:50
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr ""
-"Am modh &quot;steigeach&quot; airson a' mheur-chlàir agus na -ìomhaigheige "
-"air fleòd."
-
-#: ../settings.ui.h:51
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
-"Am modh \"steigeach\" airson a' mheur-chlàir agus na -ìomhaigheige air fleòd"
-
-#: ../settings.ui.h:52
-msgid "_Force window to top"
-msgstr "Sparr air an _uinneag a bhith air uachdar"
-
-#: ../settings.ui.h:53
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr ""
-"Bi na dìcheallaiche a' cumail Onboard os cionn dad sam bith eile air an "
-"sgrìn."
-
-#: ../settings.ui.h:54
-msgid "Keep _aspect ratio"
-msgstr "Glèidh _co-mheas an deilbh"
-
-#: ../settings.ui.h:55
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr ""
-"Sparr air meud na h-uinneige gèilleadh ri co-mheas dealbh na co-dhealbhachd"
-
-#: ../settings.ui.h:56
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr ""
-"Sparr air meud na h-uinneige gèilleadh ri co-mheas dealbh na co-dhealbhachd."
-
-#: ../settings.ui.h:57
-msgid "Floating Window Options"
-msgstr "Roghainnean nan uinneagan air fleòd"
-
-#: ../settings.ui.h:58
-msgid "Window options"
-msgstr "Roghainnean nan uinneagan"
-
-#: ../settings.ui.h:59
-msgid "Wind_ow:"
-msgstr "Uinn_eag:"
-
-#: ../settings.ui.h:60
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-"Trìd-shoilleireachd uinneag shlàn a' mheur-chlàir. Feumaidh seo co-"
-"dhèantachadh."
-
-#: ../settings.ui.h:61 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "Cùlai_bh:"
-
-#: ../settings.ui.h:62
-msgid "Transparency of the keyboard background"
-msgstr "Trìd-shoilleireachd cùlaibh a' mheur-chlàir"
-
-#: ../settings.ui.h:63
-msgid "_No background"
-msgstr "_Gun chùlaibh"
-
-#: ../settings.ui.h:64
-msgid "Show the desktop through the gaps between keys."
-msgstr "Seall an deasg tro na beàrnan eadar na h-iuchraichean."
-
-#: ../settings.ui.h:65
-msgid "Transparency"
-msgstr "Trìd-shoilleireachd"
-
-#: ../settings.ui.h:66
-msgid "Set _transparency to"
-msgstr "Suidhich an _trìd-shoilleireachd aig"
-
-#: ../settings.ui.h:67
-msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
-"Cuir an comas trìd-shoilleireachd neo-ghnìomhach. Feumaidh seo co-"
-"dhèantachadh."
-
-#: ../settings.ui.h:68
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
-"An trìd-shoilleireachd nuair a dh'fhàgas an tomhaire am meur-chlàr. Feumaidh "
-"seo co-dhèantachadh."
-
-#: ../settings.ui.h:69
-msgid "after"
-msgstr "as dèidh"
-
-#: ../settings.ui.h:70
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr ""
-"An dàil ann an diogan mus bi an trìd-shoilleireachd neo-ghnìomhach an gnìomh."
-
-#: ../settings.ui.h:71
-msgid "seconds"
-msgstr "diogan"
-
-#: ../settings.ui.h:72
-msgid "When Inactive"
-msgstr "Nuair a bhios e neo-ghnìomhach"
-
-#: ../settings.ui.h:73
-msgid "_Window handles:"
-msgstr "Làimhsichearan _uinneagan:"
-
-#: ../settings.ui.h:74
-msgid "Resize Protection"
-msgstr "Dìon o atharrachadh a' mheud"
-
-#: ../settings.ui.h:75
-msgid "Name"
-msgstr "Ainm"
-
-#: ../settings.ui.h:76
-msgid "Description"
-msgstr "Tuairisgeul"
-
-#: ../settings.ui.h:77
-msgid "_Open layouts folder"
-msgstr "F_osgail pasgan nan co-dhealbhachdan"
-
-#: ../settings.ui.h:78
-msgid "C_ustomize theme"
-msgstr "G_nàthaich an t-ùrlar"
-
-#: ../settings.ui.h:79
-msgid "Follow _system theme"
-msgstr "Lean ùrlar an _t-siostaim"
-
-#: ../settings.ui.h:80
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"Cuimhnich dè an t-ùrlar Onboard a chaidh a chleachdadh an turas mu dheireadh "
-"airson gach ùrlar an t-siostaim."
-
-#: ../settings.ui.h:81
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Tha snippets 'nam pìosan teacsa a thèid a chur a-steach nuair a bhrùthar a' "
-"cho-iuchair ann an Onboard."
-
-#: ../settings.ui.h:82
-msgid "Show label popups"
-msgstr "Seall priob-uinneagan nan leubail"
-
-#: ../settings.ui.h:83
-msgid "Show label popups above pressed keys."
-msgstr ""
-"Seall priob-uinneagan nan leubail os cionn iuchraichean a tha 'gam brùthadh."
-
-#: ../settings.ui.h:84
-msgid "Play sound"
-msgstr "Cluich fuaim"
-
-#: ../settings.ui.h:85
-msgid "Play click sound on keypress."
-msgstr "Cluich fuaim nuair a bhrùthar iuchair."
-
-#: ../settings.ui.h:86
-#, fuzzy
-msgid "Place sound in space"
-msgstr "Cluich fuaim nuair a bhrùthar iuchair."
-
-#: ../settings.ui.h:87
-msgid ""
-"Place sound in space between speakers depending on the key's position on "
-"screen"
-msgstr ""
-
-#: ../settings.ui.h:88
-msgid "Key-press Feedback"
-msgstr "Freagairt nan iuchraichean a tha 'gam brùthadh"
-
-#: ../settings.ui.h:89
-msgid "Show secondary labels"
-msgstr "Seall na leubailean dàrnacha"
-
-#: ../settings.ui.h:90
-msgid "Show characters reachable with or without the shift key."
-msgstr "Seall caractaran a ruigear leis an iuchair Shift no as a h-aonais."
-
-#: ../settings.ui.h:91
-msgid "Key Labels"
-msgstr "Leubailean nan iuchraichean"
-
-#: ../settings.ui.h:92
-msgid "Upper case on right click"
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "Temporarily enable SHIFT when clicking with the secondary button."
-msgstr ""
-
-#: ../settings.ui.h:94
-#, fuzzy
-msgid "Key Behaviour"
-msgstr "Giùlan na h-iuchrach"
-
-#: ../settings.ui.h:95
-msgid "_Long press action:"
-msgstr "Gnìomh a' _bhrùthaidh fhada:"
-
-#: ../settings.ui.h:96
-msgid ""
-"Choose between key-repeat or long-press menus. Mainly affects alpha-numeric "
-"keys."
-msgstr ""
-"Tagh clàr-taice key-repeat no long-press. Bidh buaidh gu sònraichte aige seo "
-"air iuchraichean nan litrichean 's nan àireamhan."
-
-#: ../settings.ui.h:97
-msgid "Modifier _behavior:"
-msgstr "Giùlan a_n atharraicheir:"
-
-#: ../settings.ui.h:98
-msgid "Behavior of modifier and layer keys."
-msgstr "Giùlan nan iuchraichean atharrachaidh 's iuchraichean nam breathan."
-
-#: ../settings.ui.h:99
-msgid "Modifier auto-release delay in seconds:"
-msgstr "Dàil air fèin-sgaoileadh an atharraicheir ann an diogag:"
-
-#: ../settings.ui.h:100
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-"Diogan a neo-ghnìomhachd gus an dèid iuchraichean atharrachaidh is "
-"iuchraichean bhreathan a leigeil às. Cleachd 0 gus a chur à comas."
-
-#: ../settings.ui.h:101
-#, fuzzy
-msgid "Modifier auto-release after hide in seconds:"
-msgstr "Dàil air fèin-sgaoileadh an atharraicheir ann an diogag:"
-
-#: ../settings.ui.h:102
-msgid ""
-"Time after hiding the keyboard in seconds until latched and locked modifiers "
-"and layer keys are released automatically. Leave at 0.0 to not automatically "
-"release them."
-msgstr ""
-
-#: ../settings.ui.h:103
-msgid "0,00"
-msgstr "0,00"
-
-#: ../settings.ui.h:104
-msgid "Key Behavior"
-msgstr "Giùlan na h-iuchrach"
-
-#: ../settings.ui.h:105
-msgid "_Touch input:"
-msgstr "Ion-chur sua_thaidh:"
-
-#: ../settings.ui.h:106
-msgid "_Input event source:"
-msgstr "Tùs gnìomh an _ion-chuir:"
-
-#: ../settings.ui.h:107
-msgid ""
-"Choose &apos;XInput&apos; for more reliable typing into text entries with "
-"pop-up selections. The &apos;GTK&apos; option offers better compatibility, "
-"but typing may fail in the presence of pointer grabs, e.g. with open pop-up "
-"windows."
-msgstr ""
-"Tagh \"XInput\" airson taidhpeadh nas earbsaiche ann an raointean aig a "
-"bheil taghadh slighe phriob-uinneagan. Bheir an roghainn \"GTK\" dhut co-"
-"chòrdalachd nas fhearr ach dh'fhaoidte nach obraich taidhpeadh ma bhios "
-"rudan ann a bheir greim air an tomhaire, m.e. nuair a bhios priob-uinneag "
-"fhosgailte ann."
-
-#: ../settings.ui.h:108
-msgid ""
-"Choose 'XInput' for more reliable typing into text entries with pop-up "
-"selections. The 'GTK' option offers better compatibility, but typing may "
-"fail in the presence of pointer grabs, e.g. with open pop-up windows."
-msgstr ""
-"Tagh \"XInput\" airson taidhpeadh nas earbsaiche ann an raointean aig a "
-"bheil taghadh slighe phriob-uinneagan. Bheir an roghainn \"GTK\" dhut co-"
-"chòrdalachd nas fhearr ach dh'fhaoidte nach obraich taidhpeadh ma bhios "
-"rudan ann a bheir greim air an tomhaire, m.e. nuair a bhios priob-uinneag "
-"fhosgailte ann."
-
-#: ../settings.ui.h:109
-msgid "Input Options"
-msgstr "Roghainnean ion-chuir"
-
-#: ../settings.ui.h:110
-msgid "Keystroke _generation:"
-msgstr "_Gintinn buillean-iuchrach:"
-
-#: ../settings.ui.h:111
-msgid "Delay between keystrokes in milliseconds:"
-msgstr "An dàil eadar buillean-iuchrach ann am mille-dhiogan:"
-
-#: ../settings.ui.h:112
-msgid ""
-"Increase this if key-strokes get lost when inserting word suggestions or "
-"snippets into Firefox or other Gtk-2 applications. Has no effect on Gtk-3 "
-"applications."
-msgstr ""
-"Cuir an àirde seo ma thèid buillean-iuchrach air chall is tu a’ cur a-steach "
-"molaidhean fhaclan no snippets ann am Firefox no aplacaidean Gtk-2 eile. Cha "
-"bhi buaidh aige seo air aplacaidean Gtk-3."
-
-#: ../settings.ui.h:113
-msgid "Keystroke Generation"
-msgstr "Gintinn bhuillean-iuchrach"
-
-#: ../settings.ui.h:114
-msgid "Advanced"
-msgstr "Adhartach"
-
-#: ../settings.ui.h:115
-msgid "Show _suggestions"
-msgstr "Seall _molaidhean"
-
-#: ../settings.ui.h:116
-msgid "Enable word completion and prediction."
-msgstr "Cuir an comas ro-innse is slànachadh fhaclan."
-
-#: ../settings.ui.h:117
-msgid "Show spelling suggestions"
-msgstr "Seall molaidhean litreachaidh"
-
-#: ../settings.ui.h:118
-msgid "Check spelling of the word at or before the cursor."
-msgstr "Sgrùd litreachadh an fhacail aig no air beulaibh a' chùrsair."
-
-#: ../settings.ui.h:119
-msgid "_Learn from typed text"
-msgstr "_Ionnsaich o theacsa a chaidh a sgrìobhadh ann"
-
-#: ../settings.ui.h:120
-msgid ""
-"Remember new words, their recency and frequency to improve the suggestions "
-"over time."
-msgstr ""
-"Cuimhnich faclan ùra, dè cho ùr 's a tha iad agus dè cho tric 's a "
-"chleachdar iad gus piseach a thoirt air na molaidhean le tìde."
-
-#: ../settings.ui.h:121
-msgid "Insert word _separators"
-msgstr "Cuir a-steach _sgaradairean fhaclan"
-
-#: ../settings.ui.h:122
-msgid ""
-"Add and remove spaces when inserting word suggestions followed by "
-"punctuation characters."
-msgstr ""
-"Cuir ris is thoir air falbh àitichean bàna nuair a chuirear a-steach moladh "
-"facail a tha puingeachadh 'na dhèidh."
-
-#: ../settings.ui.h:123
-msgid "Options"
-msgstr "Roghainnean"
-
-#: ../settings.ui.h:124
-#, fuzzy
-msgid "Show more suggestions arrow"
-msgstr "Seall _molaidhean"
-
-#: ../settings.ui.h:125
-msgid "Step forward and backward through the available suggestions."
-msgstr ""
-
-#: ../settings.ui.h:126
-msgid "Show button to pause learning"
-msgstr "Seall putan gus stad air an ionnsachadh"
-
-#: ../settings.ui.h:127
-msgid "Words typed while this button is pressed won't be remembered."
-msgstr ""
-"Cha dèid facal a chur an cuimhne fhad 's a bhios am putan seo 'ga bhrùthadh."
-
-#: ../settings.ui.h:128
-msgid "Show lan_guage switcher"
-msgstr "Seall suidsear a' chà_nain"
-
-#: ../settings.ui.h:129
-msgid "Show a button for language selection."
-msgstr "Seall putan gus cànan a thaghadh."
-
-#: ../settings.ui.h:130
-msgid "Buttons"
-msgstr "Putanan"
-
-#: ../settings.ui.h:131
-msgid "Word Suggestions"
-msgstr "Molaidhean fhaclan"
-
-#: ../settings.ui.h:132
-msgid "Auto-capitalize while typing"
-msgstr "Cuir litir mhòr aig an toiseach gu fèin-obrachail"
-
-#: ../settings.ui.h:133
-msgid "Automatically capitalize sentence begins and name words."
-msgstr "Cuir litir mhòr aig toiseach abairt is ainmean gu fèin-obrachail."
-
-#: ../settings.ui.h:134
-msgid "Auto-correct spelling"
-msgstr "Fèin-cheartaich an litreachadh"
-
-#: ../settings.ui.h:135
-msgid "Automatically correct the last word."
-msgstr "Ceartaich am facal mu dheireadh gu fèin-obrachail."
-
-#: ../settings.ui.h:136
-msgid "The spell check engine to use."
-msgstr "Einnsean an dearbhaidh-litreachaidh a thèid a chleachdadh."
-
-#: ../settings.ui.h:137
-msgid "Spell-check backend:"
-msgstr "Backend an dearbhaidh-litreachaidh:"
-
-#: ../settings.ui.h:138
-msgid "Auto-correction"
-msgstr "Fèin-cheartachadh"
-
-#: ../settings.ui.h:139
-msgid "While  learning is paused:"
-msgstr "Nuair a bhios an t-ionnsachadh ’na stad:"
-
-#: ../settings.ui.h:140
-msgid "Learning"
-msgstr "Ionnsachadh"
-
-#: ../settings.ui.h:141
-msgid "Enable  keyboard _scanning"
-msgstr "Cuir an comas _sganadh a' mheur-chlàir"
-
-#: ../settings.ui.h:142
-msgid "Sc_anner Settings"
-msgstr "Roghainnean an sg_anair"
-
-#: ../settings.ui.h:143
-msgid "Keyboard Scanning"
-msgstr "Sganadh a' mheur-chlàir"
-
-#: ../settings.ui.h:144
-msgid "_Delay:"
-msgstr "_Dàil:"
-
-#: ../settings.ui.h:145
-msgid "_Motion threshold:"
-msgstr "Stairsneach gl_uasaid:"
-
-#: ../settings.ui.h:146
-msgid "Time in seconds before a click is triggered."
-msgstr "An t-àm ann an dìogan mus dèid briogadh a chur gu dol."
-
-#: ../settings.ui.h:147
-msgid "Distance in pixels before movement will be recognized."
-msgstr "An t-astar ann am piogsailean mus dèid gluasad aithneachadh."
-
-#: ../settings.ui.h:148
-msgid "Hide hover click window"
-msgstr "Falaich an uinneag airson briogadh fantainn"
-
-#: ../settings.ui.h:149
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
-"Falaich an uinneag a tha am broinn an t-siostaim airson briogadh fantainn "
-"fhad 's a tha Onboard a' ruith."
-
-#: ../settings.ui.h:150
-msgid "Enable click type window on exit"
-msgstr "Cuir an comas an uinneag airson seòrsa a' bhriogaidh nuair a dh'fhàgar"
-
-#: ../settings.ui.h:151
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Cuir an comas an uinneag a tha am broinn an t-siostaim airson briogadh le "
-"bhith a' fantainn os cionn rud nuair a dh'fhàgar Onboard an-còmhnaidh."
-
-#: ../settings.ui.h:152
-msgid "Hover Click"
-msgstr "Briogadh fantainn"
-
-#: ../Onboard/WindowUtils.py:1083
-msgid "New Input Device"
-msgstr "Uidheam ion-chuir ùr"
-
-#: ../Onboard/WindowUtils.py:1084
-msgid "Onboard has detected a new input device"
-msgstr "Mhothaich Onboard do dh'uidheam ion-chuir ùr"
-
-#: ../Onboard/WindowUtils.py:1093
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-"A bheil thu airson an t-uidheam seo a chleachdadh airson sganadh a' mheur-"
-"chlàir"
-
-#. Translators: cancel button of "New Input Device" dialog. It used to be
-#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#. Translators: cancel button of the snippets dialog. It used to
-#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
-#: ../Onboard/WindowUtils.py:1099 ../Onboard/KeyboardWidget.py:1518
-msgid "_Cancel"
-msgstr "_Sguir dheth"
-
-#: ../Onboard/WindowUtils.py:1100
-msgid "Use device"
-msgstr "Cleachd an t-uidheam"
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Roghainnean Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Roghainnean a' mheur-chlàir Onboard air sgrìn"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Atharraich roghainnean Onboard"
-
-#: ../Onboard/WPEngine.py:483
-msgid "Failed to load language model '{}': {} ({})"
-msgstr "Dh'fhàillig le luchdadh modail a' chànain '{}': {} ({})"
-
-#: ../settings_scanner_dialog.ui.h:1
-msgid "Automatic scan for 1 switch"
-msgstr "Sganaich gu fèin-obrachail airson aon suidse"
-
-#: ../settings_scanner_dialog.ui.h:2
-msgid "Critical overscan for 1 switch"
-msgstr "Tar-sganadh èiginneach airson aon suidse"
-
-#: ../settings_scanner_dialog.ui.h:3
-msgid "Step scan for 2 switches"
-msgstr "Sganadh ceumnachaidh airson dà shuidse"
-
-#: ../settings_scanner_dialog.ui.h:4
-msgid "Directed scan for 3 or 5 switches"
-msgstr "Sganadh stiùirichte airson 3 no 5 suidsean"
-
-#: ../settings_scanner_dialog.ui.h:5
-msgid "Scanner Settings"
-msgstr "Roghainnean an sganair"
-
-#: ../settings_scanner_dialog.ui.h:6
-msgid "Select a scanning _profile:"
-msgstr "Tagh _pròifil sganaidh:"
-
-#: ../settings_scanner_dialog.ui.h:7
-msgid "_Step interval:"
-msgstr "Eadaramh nan ceu_man:"
-
-#: ../settings_scanner_dialog.ui.h:8
-msgid "Sc_an cycles:"
-msgstr "Cuairtean sganaidh:"
-
-#: ../settings_scanner_dialog.ui.h:9
-msgid ""
-"The time the scanner rests on a key or group before moving to the next. (in "
-"seconds)"
-msgstr ""
-"An ùine a dh'fhanas an sganair air iuchair no buidheann mus gluais e air "
-"adhart dhan ath-fhear (ann an diogan)."
-
-#: ../settings_scanner_dialog.ui.h:10
-msgid ""
-"The number of times the scanner cycles through the entire keyboard before it "
-"stops."
-msgstr ""
-"Co mheud turas a chuairticheas an sganair tron mheur-chlàr air fad mus stad "
-"e."
-
-#: ../settings_scanner_dialog.ui.h:11
-msgid "Step _only during switch down"
-msgstr "Na ceumnaich ach nuair a bhi_os an t-suidse sìos"
-
-#: ../settings_scanner_dialog.ui.h:12
-msgid "Progress the highlight only while the switch is held down."
-msgstr "Na adhartaich an soilleireachadh ach nuair a bhios an t-suidse sìos."
-
-#: ../settings_scanner_dialog.ui.h:13
-msgid "_Forward interval:"
-msgstr "An t-_eadaramh a' dol air adhart:"
-
-#: ../settings_scanner_dialog.ui.h:14
-msgid "_Backtrack interval:"
-msgstr "An t-eadaramh _backtrack:"
-
-#: ../settings_scanner_dialog.ui.h:15
-msgid ""
-"The time the scanner rests on a key  while progressing forward. (in seconds)"
-msgstr ""
-"An ùine a dh'fhanas sganair air iuchair fhad 's a thèid e air adhart (ann an "
-"diogan)."
-
-#: ../settings_scanner_dialog.ui.h:16
-msgid ""
-"The time the scanner rests on a key  while moving backwards. (in seconds)"
-msgstr ""
-"An ùine a dh'fhanas sganair air iuchair fhad 's a thèid e air ais (ann an "
-"diogan)."
-
-#: ../settings_scanner_dialog.ui.h:17
-msgid "Backtrack _steps:"
-msgstr "_Ceuman backtrack:"
-
-#: ../settings_scanner_dialog.ui.h:18
-msgid "The number of keys the scanner steps back before moving forward again."
-msgstr ""
-"Co mheud iuchair a cheumnaicheas an sganair air ais mus gluais e air adhart "
-"a-rithist."
-
-#: ../settings_scanner_dialog.ui.h:19
-msgid "_Alternate switch actions"
-msgstr "Leum e_adar gnìomhan suidsidh"
-
-#: ../settings_scanner_dialog.ui.h:20
-msgid ""
-"Swap the scan actions after every key activation. The Step action will "
-"become the Activate action and vice versa."
-msgstr ""
-"Leum eadar na gnìomhan sganaidh an dèidh gach gnìomhachadh iuchrach. "
-"Gheibhear gnìomh ceumnachaidh an àite gnìomh gnìomhachaidh is a chaochladh."
-
-#: ../settings_scanner_dialog.ui.h:21
-msgid "Profiles"
-msgstr "Pròifilean"
-
-#: ../settings_scanner_dialog.ui.h:22
-msgid "_Select an input device:"
-msgstr "_Tagh uidheam ion-chuir:"
-
-#: ../settings_scanner_dialog.ui.h:23
-msgid "_Use this device only for scanning"
-msgstr "_Cleachd an t-uidheam seo airson sganadh a-mhàin"
-
-#: ../settings_scanner_dialog.ui.h:24
-msgid ""
-"The selected device should not control the system mouse cursor or the "
-"keyboard caret."
-msgstr ""
-"Cha bu chòir dhan uidheam a thagh thu smachd a chumail air cùrsair luchag t-"
-"siostaim no carait a' mheur-chlàir."
-
-#: ../settings_scanner_dialog.ui.h:25
-msgid "Input Device"
-msgstr "Uidheam ion-chuir"
-
-#: ../Onboard/LayoutLoaderSVG.py:158
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"A' luchdadh co-dhealbhachd dhìleabach, fòrmat \"{}\". Nach àrdaich thu gun "
-"fhòrmat làithreach \"{}\"?"
-
-#: ../Onboard/LayoutLoaderSVG.py:397
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-"A' leigeil seachad an iuchair \"{}\". Cha deach ainm faidhle svg a "
-"shònrachadh."
-
-#: ../Onboard/LayoutLoaderSVG.py:618
-msgid "Snippet {}"
-msgstr "Snippet {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:622
-msgid ", unassigned"
-msgstr ", gun iomruineadh"
-
-#: ../Onboard/LayoutLoaderSVG.py:931
-msgid "copying layout '{}' to '{}'"
-msgstr "a' dèanamh lethbhreac na co-dhealbhachd \"{}\" gu \"{}\""
-
-#: ../Onboard/LayoutLoaderSVG.py:951
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-"Dh'fhàillig _lethbhreac nan co-dhealbhachdan, chan eil taic ri fòrmat na co-"
-"dhealbhachd \"{}\"."
-
-#: ../Onboard/LayoutLoaderSVG.py:994
-msgid "copying svg file '{}' to '{}'"
-msgstr "a' cur lethbhreach dhen fhaidhle svg \"{}\" gu \"{}\""
-
-#: ../Onboard/OnboardGtk.py:397
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
+"Revert word suggestions to the last backup (recommended)?"
 msgstr ""
-"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
-"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
-"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
+"big>\n"
 "\n"
-"Ge-tà chan eil an siostam rèitichte tuilleadh airson a' ghlas a thoirt far "
-"na sgrìn le Onboard. Dh'fhaoidte gun do rèitich aplacaid eile an siostam ach "
-"an cleachd e rudeigin eile.\n"
+"Seo a' mhearachd:\n"
+"<tt>{}</tt>\n"
 "\n"
-"A bheil thu airson am siostam ath-rèiteachadh airson 's gum faicear Onboard "
-"nuair a bheirear a' ghlas far na sgrìn?"
+"A bheil thu airson molaidhean nam faclan aiseag gun lethbhreac-glèidhidh mu "
+"dheireadh (mholamaid seo)?"
 
-#: ../Onboard/OnboardGtk.py:416
+#: ../Onboard/WordSuggestions.py:2706
 msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
+"<big>Onboard failed to open learned word suggestions.</big>\n"
 "\n"
-"However this function is disabled in the system.\n"
+"The error was:\n"
+"<tt>{}</tt>\n"
 "\n"
-"Would you like to activate it?"
+"The suggestions have to be reset, but the erroneous file will remain at \n"
+"'{}'"
 msgstr ""
-"Chaidh Onboard a rèiteachadh airson 's gun nochd e an cois a' chòmhraidh "
-"airson a' ghlas a thoirt far na sgrìn; mar eisimpleir airson sàbhalaiche-"
-"sgrìn a tha fo dhìon facail-fhaire a leigeil seachad.\n"
+"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
+"big>\n"
 "\n"
-"Ge-tà, chaidh am foincsean seo a chur à comas san t-siostam.\n"
+"Seo a' mhearachd:\n"
+"<tt>{}</tt>\n"
 "\n"
-"A bheil thu airson a chur an gnìomh an-dràsta?"
+"Feumaidh sinn na molaidhean ath-shuidheachadh ach mairidh am faidhle "
+"mearachdach aig \n"
+"'{}'"
 
 #. translators: this is a 'tooltip' of the key_template 'hoverclick' in keyboard layout 'key_defs.xml'
 #: ../data/layoutstrings.py:35 ../data/layoutstrings.py:193
@@ -1434,270 +1394,270 @@ msgstr "Win"
 #. translators: this is a 'tooltip' of the key 'DB05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:96 ../data/layoutstrings.py:367
 msgid "Umbrella"
-msgstr "Sgàilean"
+msgstr ""
 
 #. translators: description of unicode character U+2606
 #. translators: this is a 'tooltip' of the key 'DB07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:98 ../data/layoutstrings.py:373
 msgid "White star"
-msgstr "Rionnag gheal"
+msgstr ""
 
 #. translators: description of unicode character U+260F
 #. translators: this is a 'tooltip' of the key 'DB03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:100 ../data/layoutstrings.py:379
 msgid "White telephone"
-msgstr "Fòn geal"
+msgstr ""
 
 #. translators: description of unicode character U+2615
 #: ../data/layoutstrings.py:102
 msgid "Hot beverage"
-msgstr "Deoch theth"
+msgstr ""
 
 #. translators: description of unicode character U+2620
 #: ../data/layoutstrings.py:104
 msgid "Skull and crossbones"
-msgstr "Claigeann is crois chnàmhan"
+msgstr ""
 
 #. translators: description of unicode character U+2622
 #. translators: this is a 'tooltip' of the key 'DB09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:106 ../data/layoutstrings.py:310
 msgid "Radioactive sign"
-msgstr "Comharra rèididheachd bheò"
+msgstr ""
 
 #. translators: description of unicode character U+262E
 #. translators: this is a 'tooltip' of the key 'DB06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:108 ../data/layoutstrings.py:295
 msgid "Peace symbol"
-msgstr "Comharra sìthe"
+msgstr ""
 
 #. translators: description of unicode character U+262F
 #. translators: this is a 'tooltip' of the key 'DB08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:110 ../data/layoutstrings.py:385
 msgid "Yin yang"
-msgstr "Yin Yang"
+msgstr ""
 
 #. translators: description of unicode character U+2639
 #. translators: this is a 'tooltip' of the key 'DC01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:112 ../data/layoutstrings.py:238
 msgid "Frowning face"
-msgstr "Aodann le drèin"
+msgstr ""
 
 #. translators: description of unicode character U+263A
 #. translators: this is a 'tooltip' of the key 'DD01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:114 ../data/layoutstrings.py:322
 msgid "Smiling face"
-msgstr "Aodann le gàire"
+msgstr ""
 
 #. translators: description of unicode character U+263C
 #. translators: this is a 'tooltip' of the key 'DD10' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:116 ../data/layoutstrings.py:376
 msgid "White sun with rays"
-msgstr "Grian gheal le gathan"
+msgstr ""
 
 #. translators: description of unicode character U+263E
 #. translators: this is a 'tooltip' of the key 'DC10' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:118 ../data/layoutstrings.py:262
 msgid "Last quarter moon"
-msgstr "Gealach 's a leathach air falbh"
+msgstr ""
 
 #. translators: description of unicode character U+2640
 #. translators: this is a 'tooltip' of the key 'DD09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:120 ../data/layoutstrings.py:235
 msgid "Female sign"
-msgstr "Comharra boireannachd"
+msgstr ""
 
 #. translators: description of unicode character U+2642
 #. translators: this is a 'tooltip' of the key 'DC09' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:122 ../data/layoutstrings.py:268
 msgid "Male sign"
-msgstr "Comharra fireannachd"
+msgstr ""
 
 #. translators: description of unicode character U+2661
 #. translators: this is a 'tooltip' of the key 'DB01' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:124 ../data/layoutstrings.py:370
 msgid "White heart suit"
-msgstr "Sreath geal nan cridheachan"
+msgstr ""
 
 #. translators: description of unicode character U+2662
 #: ../data/layoutstrings.py:126
 msgid "White diamond suit"
-msgstr "Sreath geal nan daoimean"
+msgstr ""
 
 #. translators: description of unicode character U+2664
 #: ../data/layoutstrings.py:128
 msgid "White spade suit"
-msgstr "Sreath geal nan spaidean"
+msgstr ""
 
 #. translators: description of unicode character U+2667
 #: ../data/layoutstrings.py:130
 msgid "White club suit"
-msgstr "Sreath geal nan cluba"
+msgstr ""
 
 #. translators: description of unicode character U+266B
 #. translators: this is a 'tooltip' of the key 'DB02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:132 ../data/layoutstrings.py:205
 msgid "Beamed eighth note"
-msgstr "Ochdamh pong le crann"
+msgstr ""
 
 #. translators: description of unicode character U+2709
 #. translators: this is a 'tooltip' of the key 'DB04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:134 ../data/layoutstrings.py:226
 msgid "Envelope"
-msgstr "Cèiseag"
+msgstr ""
 
 #. translators: description of unicode character U+270C
 #: ../data/layoutstrings.py:136
 msgid "Victory hand"
-msgstr "Làmh a thug buaidh"
+msgstr ""
 
 #. translators: description of unicode character U+270D
 #: ../data/layoutstrings.py:138
 msgid "Writing hand"
-msgstr "Làmh a tha a' sgrìobhadh"
+msgstr ""
 
 #. translators: description of unicode character U+1F604
 #. translators: this is a 'tooltip' of the key 'DD03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:140 ../data/layoutstrings.py:331
 msgid "Smiling face with open mouth and smiling eyes"
-msgstr "Aodann le gàire, beul fosgailte is sùilean air a bheil gàire"
+msgstr ""
 
 #. translators: description of unicode character U+1F607
 #. translators: this is a 'tooltip' of the key 'DD08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:142 ../data/layoutstrings.py:325
 msgid "Smiling face with halo"
-msgstr "Aodann le gàire 's riomball"
+msgstr ""
 
 #. translators: description of unicode character U+1F608
 #. translators: this is a 'tooltip' of the key 'DC08' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:144 ../data/layoutstrings.py:328
 msgid "Smiling face with horns"
-msgstr "Aodann le gàire 's adharcan"
+msgstr ""
 
 #. translators: description of unicode character U+1F609
 #. translators: this is a 'tooltip' of the key 'DD04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:146 ../data/layoutstrings.py:382
 msgid "Winking face"
-msgstr "Aodann le sùil bheag"
+msgstr ""
 
 #. translators: description of unicode character U+1F60A
 #. translators: this is a 'tooltip' of the key 'DD02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:148 ../data/layoutstrings.py:334
 msgid "Smiling face with smiling eyes"
-msgstr "Aodann le gàire 's sùilean air a bheil gàire"
+msgstr ""
 
 #. translators: description of unicode character U+1F60B
 #. translators: this is a 'tooltip' of the key 'DC07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:150 ../data/layoutstrings.py:229
 msgid "Face savouring delicious food"
-msgstr "Aodann a tha ag ithe biadh blasta"
+msgstr ""
 
 #. translators: description of unicode character U+1F60D
 #: ../data/layoutstrings.py:152
 msgid "Smiling face with heart-shaped eyes"
-msgstr "Aodann le gàire 's sùilean an cruth chridheachan"
+msgstr ""
 
 #. translators: description of unicode character U+1F60E
 #. translators: this is a 'tooltip' of the key 'DD07' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:154 ../data/layoutstrings.py:337
 msgid "Smiling face with sunglasses"
-msgstr "Aodann le gàire agus speuclairean-grèine"
+msgstr ""
 
 #. translators: description of unicode character U+1F60F
 #: ../data/layoutstrings.py:156
 msgid "Smirking face"
-msgstr "Aodann le plìonas"
+msgstr ""
 
 #. translators: description of unicode character U+1F610
 #: ../data/layoutstrings.py:158
 msgid "Neutral face"
-msgstr "Aodann gun fhiamh"
+msgstr ""
 
 #. translators: description of unicode character U+1F612
 #: ../data/layoutstrings.py:160
 msgid "Unamused face"
-msgstr "Aodann nuair nach eil e èibhinn"
+msgstr ""
 
 #. translators: description of unicode character U+1F616
 #. translators: this is a 'tooltip' of the key 'DC05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:162 ../data/layoutstrings.py:208
 msgid "Confounded face"
-msgstr "Aodann tro chèile"
+msgstr ""
 
 #. translators: description of unicode character U+1F618
 #: ../data/layoutstrings.py:164
 msgid "Face throwing a kiss"
-msgstr "Aodann a' caitheamh pòg"
+msgstr ""
 
 #. translators: description of unicode character U+1F61A
 #. translators: this is a 'tooltip' of the key 'DD06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:166 ../data/layoutstrings.py:259
 msgid "Kissing face with closed eyes"
-msgstr "Aodann a' pògadh le sùilean dùinte"
+msgstr ""
 
 #. translators: description of unicode character U+1F61C
 #. translators: this is a 'tooltip' of the key 'DD05' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:168 ../data/layoutstrings.py:232
 msgid "Face with stuck-out tongue and winking eye"
-msgstr "Aodann le teanga ris is sùil bheag"
+msgstr ""
 
 #. translators: description of unicode character U+1F61D
 #: ../data/layoutstrings.py:170
 msgid "Face with stuck-out tongue and tightly closed eyes"
-msgstr "Aodann le teanga ris is sùilean dlùth-dhùinte"
+msgstr ""
 
 #. translators: description of unicode character U+1F61E
 #: ../data/layoutstrings.py:172
 msgid "Disappointed face"
-msgstr "Aodann a fhuair briseadh-dùil"
+msgstr ""
 
 #. translators: description of unicode character U+1F620
 #. translators: this is a 'tooltip' of the key 'DC02' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:174 ../data/layoutstrings.py:196
 msgid "Angry face"
-msgstr "Aodann feargach"
+msgstr ""
 
 #. translators: description of unicode character U+1F621
 #: ../data/layoutstrings.py:176
 msgid "Pouting face"
-msgstr "Neach le aodann busach"
+msgstr ""
 
 #. translators: description of unicode character U+1F622
 #. translators: this is a 'tooltip' of the key 'DC03' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:178 ../data/layoutstrings.py:211
 msgid "Crying face"
-msgstr "Aodann a' caoineadh"
+msgstr ""
 
 #. translators: description of unicode character U+1F623
 #: ../data/layoutstrings.py:180
 msgid "Persevering face"
-msgstr "Aodann rag"
+msgstr ""
 
 #. translators: description of unicode character U+1F629
 #: ../data/layoutstrings.py:182
 msgid "Weary face"
-msgstr "Aodann air chlaoidh"
+msgstr ""
 
 #. translators: description of unicode character U+1F62B
 #. translators: this is a 'tooltip' of the key 'DC06' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:184 ../data/layoutstrings.py:361
 msgid "Tired face"
-msgstr "Aodann sgìth"
+msgstr ""
 
 #. translators: description of unicode character U+1F632
 #. translators: this is a 'tooltip' of the key 'DC04' in keyboard layout 'Small.onboard'
 #: ../data/layoutstrings.py:186 ../data/layoutstrings.py:202
 msgid "Astonished face"
-msgstr "Aodann a ghabh mòr-iongnadh"
+msgstr ""
 
 #. translators: description of unicode character U+1F633
 #: ../data/layoutstrings.py:188
 msgid "Flushed face"
-msgstr "Aodann air rudhadh"
+msgstr ""
 
 #. translators: description of unicode character U+1F635
 #: ../data/layoutstrings.py:190
 msgid "Dizzy face"
-msgstr "Aodann na thuaineal"
+msgstr ""
 
 #. translators: this is a 'tooltip' of the key_template 'layer4' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:199
@@ -1808,8 +1768,9 @@ msgstr "Caractaran sònraichte"
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard_wide.onboard'
 #: ../data/layoutstrings.py:349
+#, fuzzy
 msgid "Special characters for interactive whiteboards, wide"
-msgstr "Caractaran sònraichte airson bùird-gheala eadar-ghnìomhach leathann"
+msgstr "Caractaran sònraichte airson bùird-gheala eadar-ghnìomhach, leathann"
 
 #. translators: this is a 'summary' of the keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:352
@@ -1826,144 +1787,226 @@ msgstr "Moladh litreachaidh"
 msgid "Sub-, Superscripts; Fractions"
 msgstr "Fo-, Os-sgrìobhaidhean; Bloighean"
 
-#: ../settings_auto_show_dialog.ui.h:1
-msgid "never"
-msgstr "chan ann idir"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr "Barr"
 
-#: ../settings_auto_show_dialog.ui.h:2
-msgid "1 minute"
-msgstr "1 mhionaid"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr "Bonn"
 
-#: ../settings_auto_show_dialog.ui.h:3
-msgid "5 minutes"
-msgstr "5 mionaidean"
-
-#: ../settings_auto_show_dialog.ui.h:4
-msgid "10 minutes"
-msgstr "10 mionaidean"
-
-#: ../settings_auto_show_dialog.ui.h:5
-msgid "30 minutes"
-msgstr "Leth-uair a thìde"
-
-#: ../settings_auto_show_dialog.ui.h:6
-msgid "1 hour"
-msgstr "Uair a thìde"
-
-#: ../settings_auto_show_dialog.ui.h:7
-msgid "3 hours"
-msgstr "3 uairean a thìde"
-
-#: ../settings_auto_show_dialog.ui.h:8
-msgid "forever"
-msgstr "gu bràth"
-
-#: ../settings_auto_show_dialog.ui.h:10
-msgid "Only move when necessary"
+#: ../settings_docking_dialog.ui.h:3
+msgid "Active Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:11
-msgid "Follow the active window"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Primary Monitor"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:12
-msgid "Auto-show settings"
-msgstr "Seall na roghainnean gu fèin-obrachail"
-
-#: ../settings_auto_show_dialog.ui.h:13
-msgid "Strategy:"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Monitor 0"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:14
-msgid "Chose how the keyboard window moves when a text entry is activated."
+#: ../settings_docking_dialog.ui.h:6
+msgid "Monitor 1"
 msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:15
-#, fuzzy
-msgid "Keyboard Movement"
-msgstr "Meur-chlàr"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Monitor 2"
+msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:16
-msgid "_Hide when using a physical keyboard"
-msgstr "Cuir am falac_h ma thathar a’ cleachdadh meur-chlàr fiosaigeach"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Monitor 3"
+msgstr ""
 
-#: ../settings_auto_show_dialog.ui.h:17
+#: ../settings_docking_dialog.ui.h:9
+msgid "Monitor 4"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Monitor 5"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:11
+msgid "Monitor 6"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:12
+msgid "Monitor 7"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:13
+msgid "Monitor 8"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:14
+msgid "Docking settings"
+msgstr "Roghainnean docaidh"
+
+#: ../settings_docking_dialog.ui.h:15
+msgctxt "Label of the close button of the docking settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:16
+msgid "Shrink workarea"
+msgstr "Crùb an t-àite-obrach"
+
+#: ../settings_docking_dialog.ui.h:17
+msgid "Shrink the available space for maximized windows."
+msgstr "Crùb an t-àite a tha ri làimh airson uinneagan làn-mheudaichte."
+
+#: ../settings_docking_dialog.ui.h:18
+msgid "Expand on landscape screens"
+msgstr "Leudaich air sgrìnichean dreach-tìre"
+
+#: ../settings_docking_dialog.ui.h:19
+msgid "Expand keyboard to the width of the workarea."
+msgstr "Leudaich am meur-chlàr gu meud an àite-obrach"
+
+#: ../settings_docking_dialog.ui.h:20
+msgid "Expand on portrait screens"
+msgstr "Leudaich air sgrìnichean portraid"
+
+#: ../settings_docking_dialog.ui.h:21
+msgid "Dock to screen edge:"
+msgstr "Docaich ri oir na sgrìn:"
+
+#: ../settings_docking_dialog.ui.h:22
+msgid "Dock to monitor:"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1106
+msgid "New Input Device"
+msgstr "Uidheam ion-chuir ùr"
+
+#: ../Onboard/WindowUtils.py:1107
+msgid "Onboard has detected a new input device"
+msgstr "Mhothaich Onboard do dh'uidheam ion-chuir ùr"
+
+#: ../Onboard/WindowUtils.py:1116
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+"A bheil thu airson an t-uidheam seo a chleachdadh airson sganadh a' mheur-"
+"chlàir"
+
+#. Translators: cancel button of "New Input Device" dialog. It used to be
+#. stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#. Translators: cancel button of the snippets dialog. It used to
+#. be stock item STOCK_CANCEL until Gtk 3.10 deprecated those.
+#: ../Onboard/WindowUtils.py:1122 ../Onboard/KeyboardWidget.py:1603
+msgid "_Cancel"
+msgstr ""
+
+#: ../Onboard/WindowUtils.py:1123
+msgid "Use device"
+msgstr "Cleachd an t-uidheam"
+
+#: ../Onboard/Config.py:234
+msgid "Layout file ({}) or name"
+msgstr "Faidhle no ainm co-dhealbhachd ({})"
+
+#: ../Onboard/Config.py:237
+msgid "Theme file (.theme) or name"
+msgstr "Faidhle no ainm ùrlair (.theme)"
+
+#: ../Onboard/Config.py:239
+msgid "Window size, widthxheight"
+msgstr "Meud na h-uinneige, widthxheight"
+
+#: ../Onboard/Config.py:240
+msgid "Window x position"
+msgstr "Ionad x na h-uinneige"
+
+#: ../Onboard/Config.py:241
+msgid "Window y position"
+msgstr "Ionad y na h-uinneige"
+
+#: ../Onboard/Config.py:246
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Tòisich sa mhodh XEmbed. m.e. airson gnome-screensaver"
+
+#: ../Onboard/Config.py:249
+msgid "Allow multiple Onboard instances"
+msgstr "Ceadaich barrachd air aon ionstand de Onboard"
+
+#: ../Onboard/Config.py:252
 msgid ""
-"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
-"event source \"XInput\"."
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
 msgstr ""
-"Falaich Onboard nuair a bhios iuchair sam bith ’ga bhrùthadh air meur-chlàr "
-"fiosaigeach. Feumaidh seo “XInput” mar thùs tachartas ion-chuir."
+"Fàillig an tòiseachadh gu sàmhach sna h-àrainneachdan deasga a thaghadh. Tha "
+"DESKTOPS 'na liosta de dh'ainmean deasga XDG a tha sgaraichte le cromagan, m."
+"e. GNOME airson GNOME Shell."
 
-#: ../settings_auto_show_dialog.ui.h:18
-msgid "Stay hidden:"
-msgstr "Cum falaichte:"
-
-#: ../settings_auto_show_dialog.ui.h:19
+#: ../Onboard/Config.py:258
 msgid ""
-"Once hidden by a physical key-press, auto-show is paused. Select the pause "
-"duration here."
-msgstr ""
-"Turas a chaidh a chur am falach an cois brùthadh iuchrach fhiosaigeach, bidh "
-"an sealladh fèin-obrachail ’na stad. Tagh faid an staid an-seo."
-
-#: ../settings_auto_show_dialog.ui.h:20
-msgid "Auto-hide"
+"Delay showing the initial keyboard window by STARTUP_DELAY seconds (default "
+"0.0)."
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:210
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"chan eil trìd-shoilleireachd uinneige ri làimh;  chan eil an sgrìn a' cur "
-"taic ri seanailean alpha"
+#: ../Onboard/Config.py:262
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Glèidh co-mheas an deilbh nuair a dh'atharraichear meud na h-uinneige"
 
-#: ../Onboard/pypredict/tools/train.py:227 ../Onboard/SpellChecker.py:634
-#: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
-#: ../Onboard/SpellChecker.py:723 ../Onboard/LanguageSupport.py:170
-#: ../Onboard/Timer.py:160 ../Onboard/pypredict/tools/filter.py:382
-msgid "Failed to execute '{}', {}"
-msgstr "Cha b' urrainn dhuinn \"{}\", {} a chur an gnìomh"
-
-#: ../Onboard/utils.py:1535
-msgid "failed to create directory '{}': {}"
-msgstr "dh'fhàillig cruthachadh a' phasgain \"{}\": {}"
-
-#: ../Onboard/Appearance.py:130
-#, python-brace-format
-msgid "Color scheme for theme '{filename}' not found"
-msgstr "Cha deach an sgeama dhathan airson an ùrlair \"{filename}\" a lorg"
-
-#: ../Onboard/Appearance.py:350
-#, python-brace-format
-msgid "Error loading theme '{filename}'. {exception}: {cause}"
-msgstr "Mearachd a' luchdadh an ùrlair \"{filename}\". {exception}: {cause}"
-
-#: ../Onboard/Appearance.py:424
-msgid "Error saving "
-msgstr "Mearachd sàbhalaidh "
-
-#: ../Onboard/Appearance.py:842
-#, python-brace-format
+#: ../Onboard/Config.py:264
 msgid ""
-"Loading legacy color scheme format '{old_format}', please consider upgrading "
-"to current format '{new_format}': '{filename}'"
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
 msgstr ""
-"A' luchdadh fòrmat dìleabach \"{old_format}\". Feuch is àrdaich gun fhòrmat "
-"as ùire, \"{new_format}\": \"{filename}\""
+"Leig seachad am fèin-lorgadh is tagh quirks a làimh\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Appearance.py:862
+#: ../Onboard/Config.py:375
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Ag imrich pasgan a' chleachdaiche \"{}\" gu \"{}\"."
+
+#. honor XDG spec
+#. python >2.5
+#: ../Onboard/Config.py:383
+msgid "failed to migrate user directory. "
+msgstr ""
+
+#: ../Onboard/Config.py:862
 #, python-brace-format
-msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
-msgstr ""
-"Mearachd a' luchdadh an sgeama dhathan \"{filename}\". {exception}: {cause}"
+msgid "layout '{filename}' does not exist"
+msgstr "chan eil a' cho-dhealbhachd \"{filename}\" ann"
 
-#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+#: ../Onboard/Config.py:903
+#, python-brace-format
+msgid "theme '{filename}' does not exist"
+msgstr "chan eil an t-ùrlar \"{filename}\" ann"
+
+#: ../Onboard/Config.py:928
+msgid "Loading theme from '{}'"
+msgstr "A' luchdadh an ùrlair o \"{}\""
+
+#: ../Onboard/Config.py:932
+msgid "Unable to read theme '{}'"
+msgstr "Cha ghabh an t-ùrlar \"{}\" a leughadh"
+
+#: ../Onboard/Config.py:1125
 msgid ""
-"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
-"once."
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
 msgstr ""
-"Lorg sinn key_id \"{}\" dùblaichte ann am faidhle an sgeama dhathan. Chan "
-"fhaod key_id a bhith ann ach aon turas."
+"Feumaidh tu Gnome Accessibility mus urrainn dhut fèin-taisbeanadh a chur an "
+"comas.\n"
+"\n"
+"'S urrainn dha Onboard an t-so-ruigsinneachd a chur air an-dràsta ach "
+"mholamaid dhut gun clàraich thu a-mach is a-steach a-rithist airson 's gum "
+"bi a làn-chomasan ri do làimh.\n"
+"\n"
+"A bheil thu airson an t-so-ruigsinneachd a chur an comas an-dràsta?"
+
+#: ../Onboard/Config.py:1873
+#, python-brace-format
+msgid "color scheme '{filename}' does not exist"
+msgstr "chan eil an sgeama dhathan \"{filename}\" ann"
 
 #: ../Onboard/ConfigUtils.py:81
 msgid "gsettings schema for '{}' is not installed"
@@ -1996,11 +2039,11 @@ msgstr "chaidh {description} \"{filepath}\" a lorg."
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:496
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid "{description} '{filename}' not found yet, searching in paths {paths}"
 msgstr ""
-"Cha deach {description} “{filename}” a lorg fhathast, a’ lorg sna slighean "
-"{paths}"
+"cha deach {description} \"{filename}\" a lorg fhathast, a' feuchainn ris a-"
+"rithist sna slighean bunaiteach"
 
 #: ../Onboard/ConfigUtils.py:591
 #, python-brace-format
@@ -2049,355 +2092,637 @@ msgstr ""
 msgid "Failed to get gsettings value. "
 msgstr "Cha b' urrainn dhuinn an luach gsettings fhaighinn. "
 
-#. ##############
-#: ../Onboard/SnippetView.py:39
-msgid "<Enter label>"
-msgstr "<Cuir leubail a-steach>"
+#: ../Onboard/KbdWindow.py:211
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"chan eil trìd-shoilleireachd uinneige ri làimh;  chan eil an sgrìn a' cur "
+"taic ri seanailean alpha"
 
-#: ../Onboard/SnippetView.py:40
-msgid "<Enter text>"
-msgstr "<Cuir a-steach teacsa>"
+#: ../settings_scanner_dialog.ui.h:1
+msgid "Automatic scan for 1 switch"
+msgstr "Sganaich gu fèin-obrachail airson aon suidse"
 
-#: ../Onboard/SnippetView.py:52
-msgid "Button Number"
-msgstr "Àireamh a' phutain"
+#: ../settings_scanner_dialog.ui.h:2
+msgid "Critical overscan for 1 switch"
+msgstr "Tar-sganadh èiginneach airson aon suidse"
 
-#: ../Onboard/SnippetView.py:59
-msgid "Button Label"
-msgstr "Leubail a' phutain"
+#: ../settings_scanner_dialog.ui.h:3
+msgid "Step scan for 2 switches"
+msgstr "Sganadh ceumnachaidh airson dà shuidse"
 
-#: ../Onboard/SnippetView.py:68
-msgid "Snippet Text"
-msgstr "Teacsa an snippet"
+#: ../settings_scanner_dialog.ui.h:4
+msgid "Directed scan for 3 or 5 switches"
+msgstr "Sganadh stiùirichte airson 3 no 5 suidsean"
 
-#: ../Onboard/SnippetView.py:113
-msgid "Must be an integer number"
-msgstr "Feumaidh seo a bhith 'na àireamh shlàn"
+#: ../settings_scanner_dialog.ui.h:5
+msgid "Scanner Settings"
+msgstr "Roghainnean an sganair"
 
-#: ../Onboard/SnippetView.py:122
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Tha an snippet %d 'ga chleachdadh mar thà."
+#: ../settings_scanner_dialog.ui.h:6
+msgctxt "Label of the close button of the scanner settings dialog."
+msgid "_Close"
+msgstr ""
 
-#: ../Onboard/Indicator.py:51
+#: ../settings_scanner_dialog.ui.h:7
+msgid "Select a scanning _profile:"
+msgstr "Tagh _pròifil sganaidh:"
+
+#: ../settings_scanner_dialog.ui.h:8
+msgid "_Step interval:"
+msgstr "Eadaramh nan ceu_man:"
+
+#: ../settings_scanner_dialog.ui.h:9
+msgid "Sc_an cycles:"
+msgstr "Cuairtean sganaidh:"
+
+#: ../settings_scanner_dialog.ui.h:10
+msgid ""
+"The time the scanner rests on a key or group before moving to the next. (in "
+"seconds)"
+msgstr ""
+"An ùine a dh'fhanas an sganair air iuchair no buidheann mus gluais e air "
+"adhart dhan ath-fhear (ann an diogan)."
+
+#: ../settings_scanner_dialog.ui.h:11
+msgid ""
+"The number of times the scanner cycles through the entire keyboard before it "
+"stops."
+msgstr ""
+"Co mheud turas a chuairticheas an sganair tron mheur-chlàr air fad mus stad "
+"e."
+
+#: ../settings_scanner_dialog.ui.h:12
+msgid "Step _only during switch down"
+msgstr "Na ceumnaich ach nuair a bhi_os an t-suidse sìos"
+
+#: ../settings_scanner_dialog.ui.h:13
+msgid "Progress the highlight only while the switch is held down."
+msgstr "Na adhartaich an soilleireachadh ach nuair a bhios an t-suidse sìos."
+
+#: ../settings_scanner_dialog.ui.h:14
+msgid "_Forward interval:"
+msgstr "An t-_eadaramh a' dol air adhart:"
+
+#: ../settings_scanner_dialog.ui.h:15
+msgid "_Backtrack interval:"
+msgstr "An t-eadaramh _backtrack:"
+
+#: ../settings_scanner_dialog.ui.h:16
+msgid ""
+"The time the scanner rests on a key  while progressing forward. (in seconds)"
+msgstr ""
+"An ùine a dh'fhanas sganair air iuchair fhad 's a thèid e air adhart (ann an "
+"diogan)."
+
+#: ../settings_scanner_dialog.ui.h:17
+msgid ""
+"The time the scanner rests on a key  while moving backwards. (in seconds)"
+msgstr ""
+"An ùine a dh'fhanas sganair air iuchair fhad 's a thèid e air ais (ann an "
+"diogan)."
+
+#: ../settings_scanner_dialog.ui.h:18
+msgid "Backtrack _steps:"
+msgstr "_Ceuman backtrack:"
+
+#: ../settings_scanner_dialog.ui.h:19
+msgid "The number of keys the scanner steps back before moving forward again."
+msgstr ""
+"Co mheud iuchair a cheumnaicheas an sganair air ais mus gluais e air adhart "
+"a-rithist."
+
+#: ../settings_scanner_dialog.ui.h:20
+msgid "_Alternate switch actions"
+msgstr "Leum e_adar gnìomhan suidsidh"
+
+#: ../settings_scanner_dialog.ui.h:21
+msgid ""
+"Swap the scan actions after every key activation. The Step action will "
+"become the Activate action and vice versa."
+msgstr ""
+"Leum eadar na gnìomhan sganaidh an dèidh gach gnìomhachadh iuchrach. "
+"Gheibhear gnìomh ceumnachaidh an àite gnìomh gnìomhachaidh is a chaochladh."
+
+#: ../settings_scanner_dialog.ui.h:22
+msgid "Profiles"
+msgstr "Pròifilean"
+
+#: ../settings_scanner_dialog.ui.h:23
+msgid "_Select an input device:"
+msgstr "_Tagh uidheam ion-chuir:"
+
+#: ../settings_scanner_dialog.ui.h:24
+msgid "_Use this device only for scanning"
+msgstr "_Cleachd an t-uidheam seo airson sganadh a-mhàin"
+
+#: ../settings_scanner_dialog.ui.h:25
+msgid ""
+"The selected device should not control the system mouse cursor or the "
+"keyboard caret."
+msgstr ""
+"Cha bu chòir dhan uidheam a thagh thu smachd a chumail air cùrsair luchag t-"
+"siostaim no carait a' mheur-chlàir."
+
+#: ../settings_scanner_dialog.ui.h:26
+msgid "Input Device"
+msgstr "Uidheam ion-chuir"
+
+#: ../Onboard/WPEngine.py:483
+msgid "Failed to load language model '{}': {} ({})"
+msgstr "Dh'fhàillig le luchdadh modail a' chànain '{}': {} ({})"
+
+#: ../Onboard/Appearance.py:130
+#, python-brace-format
+msgid "Color scheme for theme '{filename}' not found"
+msgstr "Cha deach an sgeama dhathan airson an ùrlair \"{filename}\" a lorg"
+
+#: ../Onboard/Appearance.py:350
+#, python-brace-format
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr "Mearachd a' luchdadh an ùrlair \"{filename}\". {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:424
+msgid "Error saving "
+msgstr "Mearachd sàbhalaidh "
+
+#: ../Onboard/Appearance.py:842
+#, python-brace-format
+msgid ""
+"Loading legacy color scheme format '{old_format}', please consider upgrading "
+"to current format '{new_format}': '{filename}'"
+msgstr ""
+"A' luchdadh fòrmat dìleabach \"{old_format}\". Feuch is àrdaich gun fhòrmat "
+"as ùire, \"{new_format}\": \"{filename}\""
+
+#: ../Onboard/Appearance.py:862
+#, python-brace-format
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+"Mearachd a' luchdadh an sgeama dhathan \"{filename}\". {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:939 ../Onboard/Appearance.py:1071
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
+msgstr ""
+"Lorg sinn key_id \"{}\" dùblaichte ann am faidhle an sgeama dhathan. Chan "
+"fhaod key_id a bhith ann ach aon turas."
+
+#: ../Onboard/Indicator.py:56
 msgid "_Show Onboard"
 msgstr "_Seall Onboard"
 
-#: ../Onboard/Indicator.py:52
+#: ../Onboard/Indicator.py:57
 msgid "_Hide Onboard"
 msgstr "_Falaich Onboard"
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:78
+#: ../Onboard/Indicator.py:83
+#, fuzzy
 msgid "_Preferences"
-msgstr "_Roghainnean"
+msgstr "Roghainnean"
 
-#: ../Onboard/Indicator.py:86
+#: ../Onboard/Indicator.py:91
 msgid "_Help"
 msgstr ""
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_QUIT until Gtk 3.10 deprecated those.
-#: ../Onboard/Indicator.py:97
+#: ../Onboard/Indicator.py:102
+#, fuzzy
 msgid "_Quit"
-msgstr "_Fàg an-seo"
+msgstr "Quit"
 
-#: ../Onboard/Indicator.py:195
+#: ../Onboard/Indicator.py:221 ../Onboard/Indicator.py:224
 msgid "Onboard on-screen keyboard"
 msgstr "Meur-chlàr air sgrìn Onboard"
 
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr "Gnàthaich an t-ùrlar"
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr "Sgea_ma dhathan"
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr "_Ceàrn:"
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr "Comhair an t-solais"
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr "_Stoidhle"
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr "C_ruinne:"
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr "M_eud:"
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr "Leud an i_omaill:"
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr "Stoidhle nan iuchraichean"
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr "_Iuchair:"
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr "_Iomall:"
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr "Caiseadan"
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr "_Neart:"
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr "Sgàil"
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr "Iuchraichean"
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr "_Cruth-clò:"
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr "_Buadhan:"
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr "Cruth-clò"
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr "Meud n_eo-eisimeileach"
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr "_Sàr-iuchair:"
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr "Tar-àithne na leubail"
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
-msgstr "Leubailean"
-
-#: ../Onboard/Config.py:231
-msgid "Layout file ({}) or name"
-msgstr "Faidhle no ainm co-dhealbhachd ({})"
-
-#: ../Onboard/Config.py:234
-msgid "Theme file (.theme) or name"
-msgstr "Faidhle no ainm ùrlair (.theme)"
-
-#: ../Onboard/Config.py:236
-msgid "Window size, widthxheight"
-msgstr "Meud na h-uinneige, widthxheight"
-
-#: ../Onboard/Config.py:237
-msgid "Window x position"
-msgstr "Ionad x na h-uinneige"
-
-#: ../Onboard/Config.py:238
-msgid "Window y position"
-msgstr "Ionad y na h-uinneige"
-
-#: ../Onboard/Config.py:243
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr "Tòisich sa mhodh XEmbed. m.e. airson gnome-screensaver"
-
-#: ../Onboard/Config.py:246
-msgid "Allow multiple Onboard instances"
-msgstr "Ceadaich barrachd air aon ionstand de Onboard"
-
-#: ../Onboard/Config.py:249
+#: ../Onboard/LayoutLoaderSVG.py:159
 msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
-"Fàillig an tòiseachadh gu sàmhach sna h-àrainneachdan deasga a thaghadh. Tha "
-"DESKTOPS 'na liosta de dh'ainmean deasga XDG a tha sgaraichte le cromagan, m."
-"e. GNOME airson GNOME Shell."
+"A' luchdadh co-dhealbhachd dhìleabach, fòrmat \"{}\". Nach àrdaich thu gun "
+"fhòrmat làithreach \"{}\"?"
 
-#: ../Onboard/Config.py:255
-msgid "Keep aspect ratio when resizing the window"
-msgstr "Glèidh co-mheas an deilbh nuair a dh'atharraichear meud na h-uinneige"
-
-#: ../Onboard/Config.py:257
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
+#: ../Onboard/LayoutLoaderSVG.py:398
+msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
-"Leig seachad am fèin-lorgadh is tagh quirks a làimh\n"
-"QUIRKS={metacity|compiz|mutter}"
+"A' leigeil seachad an iuchair \"{}\". Cha deach ainm faidhle svg a "
+"shònrachadh."
 
-#: ../Onboard/Config.py:363
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Ag imrich pasgan a' chleachdaiche \"{}\" gu \"{}\"."
+#: ../Onboard/LayoutLoaderSVG.py:619
+msgid "Snippet {}"
+msgstr "Snippet {}"
 
-#. honor XDG spec
-#. python >2.5
-#: ../Onboard/Config.py:371
-msgid "failed to migrate user directory. "
-msgstr "dh'fhàillig imrich pasgan a' chleachdaiche. "
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:623
+msgid ", unassigned"
+msgstr ", gun iomruineadh"
 
-#: ../Onboard/Config.py:849
-#, python-brace-format
-msgid "layout '{filename}' does not exist"
-msgstr "chan eil a' cho-dhealbhachd \"{filename}\" ann"
+#: ../Onboard/LayoutLoaderSVG.py:932
+msgid "copying layout '{}' to '{}'"
+msgstr "a' dèanamh lethbhreac na co-dhealbhachd \"{}\" gu \"{}\""
 
-#: ../Onboard/Config.py:890
-#, python-brace-format
-msgid "theme '{filename}' does not exist"
-msgstr "chan eil an t-ùrlar \"{filename}\" ann"
-
-#: ../Onboard/Config.py:915
-msgid "Loading theme from '{}'"
-msgstr "A' luchdadh an ùrlair o \"{}\""
-
-#: ../Onboard/Config.py:919
-msgid "Unable to read theme '{}'"
-msgstr "Cha ghabh an t-ùrlar \"{}\" a leughadh"
-
-#: ../Onboard/Config.py:1112
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
+#: ../Onboard/LayoutLoaderSVG.py:952
+msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
-"Feumaidh tu Gnome Accessibility mus urrainn dhut fèin-taisbeanadh a chur an "
-"comas.\n"
-"\n"
-"'S urrainn dha Onboard an t-so-ruigsinneachd a chur air an-dràsta ach "
-"mholamaid dhut gun clàraich thu a-mach is a-steach a-rithist airson 's gum "
-"bi a làn-chomasan ri do làimh.\n"
-"\n"
-"A bheil thu airson an t-so-ruigsinneachd a chur an comas an-dràsta?"
+"Dh'fhàillig _lethbhreac nan co-dhealbhachdan, chan eil taic ri fòrmat na co-"
+"dhealbhachd \"{}\"."
 
-#: ../Onboard/Config.py:1759
-#, python-brace-format
-msgid "color scheme '{filename}' does not exist"
-msgstr "chan eil an sgeama dhathan \"{filename}\" ann"
+#: ../Onboard/LayoutLoaderSVG.py:995
+msgid "copying svg file '{}' to '{}'"
+msgstr "a' cur lethbhreach dhen fhaidhle svg \"{}\" gu \"{}\""
 
 #. Title of the snippets dialog for existing snippets
-#: ../Onboard/KeyboardWidget.py:1502
+#: ../Onboard/KeyboardWidget.py:1587
+#, fuzzy
 msgid "Edit snippet #{}"
-msgstr "Deasaich an snippet #{}"
+msgstr "Snippet {}"
 
 #. Title of the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1506
+#: ../Onboard/KeyboardWidget.py:1591
 msgid "New snippet"
 msgstr "Snippet ùr"
 
 #. Message in the snippets dialog for new snippets
-#: ../Onboard/KeyboardWidget.py:1508
+#: ../Onboard/KeyboardWidget.py:1593
+#, fuzzy
 msgid "Enter a new snippet for button #{}:"
-msgstr "Cuir a-steach snippet airson a’ phutain #{}:"
+msgstr "Cuir a-steach snippet ùr airson a' phutain seo:"
 
-#: ../Onboard/KeyboardWidget.py:1519
+#: ../Onboard/KeyboardWidget.py:1604
 msgid "_Save snippet"
 msgstr "_Sàbhail an snippet"
 
-#: ../Onboard/KeyboardWidget.py:1539
+#: ../Onboard/KeyboardWidget.py:1624
 msgid "_Button label:"
 msgstr "Leubail a' _phutain:"
 
-#: ../Onboard/KeyboardWidget.py:1543
+#: ../Onboard/KeyboardWidget.py:1628
 msgid "S_nippet:"
 msgstr "S_nippet:"
 
-#: ../Onboard/KeyboardWidget.py:1713
+#: ../Onboard/KeyboardWidget.py:1798
 msgid "Other _Languages"
-msgstr "Cànain ei_le"
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1757
+#: ../Onboard/KeyboardWidget.py:1842
+#, fuzzy
 msgid "_Remove suggestion…"
-msgstr "Thoi_r air falbh am moladh..."
+msgstr "Barrachd mholaidhean"
 
-#: ../Onboard/KeyboardWidget.py:1813
+#: ../Onboard/KeyboardWidget.py:1898
+#, fuzzy
 msgid "Remove word suggestion"
-msgstr "Thoir air falbh am moladh facail"
+msgstr "Barrachd mholaidhean"
 
-#: ../Onboard/KeyboardWidget.py:1824
+#: ../Onboard/KeyboardWidget.py:1909
 msgid "Remove '{}' everywhere."
-msgstr "Thoir air falbh “{}” anns gach àite."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1834
+#: ../Onboard/KeyboardWidget.py:1919
 msgid "This will only affect learned suggestions."
-msgstr "Cha bhi buaidh aige seo ach air molaidhean a chaidh ionnsachadh."
+msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:1874
+#: ../Onboard/KeyboardWidget.py:1959
 msgid "Remove '{}' only where it occures at text begin."
 msgstr ""
-"Na doir air falbh “{}” ach far a bheil e a’ nochdadh aig toiseach facail."
 
-#: ../Onboard/KeyboardWidget.py:1877
+#: ../Onboard/KeyboardWidget.py:1962
 msgid "Remove '{}' only where it occures at sentence begin."
 msgstr ""
-"Na doir air falbh “{}” ach far a bheil e a’ nochdadh aig toiseach seantans."
 
-#: ../Onboard/KeyboardWidget.py:1880
+#: ../Onboard/KeyboardWidget.py:1965
 msgid "Remove '{}' only where it occures after numbers."
 msgstr ""
-"Na doir air falbh “{}” ach far a bheil e a’ nochdadh an dèidh àireamhan."
 
-#: ../Onboard/KeyboardWidget.py:1883
+#: ../Onboard/KeyboardWidget.py:1968
 msgid "Remove '{}' only where it occures after '{}'."
-msgstr "Na doir air falbh “{}” ach far a bheil e a’ nochdadh an dèidh “{}”."
-
-#: ../Onboard/WordSuggestions.py:2647
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Revert word suggestions to the last backup (recommended)?"
 msgstr ""
-"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
-"big>\n"
-"\n"
-"Seo a' mhearachd:\n"
-"<tt>{}</tt>\n"
-"\n"
-"A bheil thu airson molaidhean nam faclan aiseag gun lethbhreac-glèidhidh mu "
-"dheireadh (mholamaid seo)?"
 
-#: ../Onboard/WordSuggestions.py:2666
-msgid ""
-"<big>Onboard failed to open learned word suggestions.</big>\n"
-"\n"
-"The error was:\n"
-"<tt>{}</tt>\n"
-"\n"
-"The suggestions have to be reset, but the erroneous file will remain at \n"
-"'{}'"
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Roghainnean Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Roghainnean a' mheur-chlàir Onboard air sgrìn"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Atharraich roghainnean Onboard"
+
+#: ../settings_auto_show_dialog.ui.h:1
+msgid "never"
 msgstr ""
-"<big>Cha deach le Onboard molaidhean fhaclan air an ionnsachadh fhosgladh.</"
-"big>\n"
-"\n"
-"Seo a' mhearachd:\n"
-"<tt>{}</tt>\n"
-"\n"
-"Feumaidh sinn na molaidhean ath-shuidheachadh ach mairidh am faidhle "
-"mearachdach aig \n"
-"'{}'"
+
+#: ../settings_auto_show_dialog.ui.h:2
+msgid "1 minute"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:3
+msgid "5 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:4
+msgid "10 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:5
+msgid "30 minutes"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:6
+msgid "1 hour"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:7
+msgid "3 hours"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:8
+msgid "forever"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:10
+msgid "Only move when necessary"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:11
+msgid "Follow the active window"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:12
+#, fuzzy
+msgid "Auto-show settings"
+msgstr "Fèin-se_all nuair a dheasaichear teacsa"
+
+#: ../settings_auto_show_dialog.ui.h:13
+msgctxt "Label of the close button of the auto-show settings dialog."
+msgid "_Close"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:14
+msgid "Strategy:"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:15
+msgid "Chose how the keyboard window moves when a text entry is activated."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:16
+#, fuzzy
+msgid "Keyboard Movement"
+msgstr "Roghainnean a' mheur-chlàir"
+
+#: ../settings_auto_show_dialog.ui.h:17
+msgid "_Hide when using a physical keyboard"
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:18
+msgid ""
+"Hide Onboard when any key is pressed on a physical keyboard. Requires input "
+"event source \"XInput\"."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:19
+#, fuzzy
+msgid "Stay hidden:"
+msgstr "Tòisich Onboard am falach."
+
+#: ../settings_auto_show_dialog.ui.h:20
+msgid ""
+"Once hidden by a physical key-press, auto-show is paused. Select the pause "
+"duration here."
+msgstr ""
+
+#: ../settings_auto_show_dialog.ui.h:21
+msgid "Auto-hide"
+msgstr ""
+
+#~ msgid "No file manager to open layout folder"
+#~ msgstr ""
+#~ "Chan eil manaidsear fhaidhlichean ann a dh'fhosglas pasgan nan co-"
+#~ "dhealbhachdan"
 
 #~ msgid "User layouts"
 #~ msgstr "Co-dhealbhachdan cleachdaiche"
+
+#~ msgid " - System Language"
+#~ msgstr " - Cànan an t-siostaim"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "column"
+#~ msgstr "colbh"
+
+#~ msgid "_Frame resize handles:"
+#~ msgstr "Na làmhrachain airson meud an _fhrèama atharrachadh:"
+
+#~ msgid "_Touch input (requires restart):"
+#~ msgstr "Ion-chur sua_thaidh (feumaidh seo ath-thòiseachadh):"
+
+#~ msgid "Background"
+#~ msgstr "Cùl-raon"
+
+#~ msgid "Universal Access Settings"
+#~ msgstr "Suidheachaidhean Cothrom Uileach"
+
+#~ msgid "ESC"
+#~ msgstr "ESC"
+
+#~ msgid "{} '{}' found."
+#~ msgstr "{} '{}' lorg."
+
+#~ msgid "Startup Options"
+#~ msgstr "Roghainnean Tòiseachadh"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "Roghainn Nuair Falaichte"
+
+#~ msgid "Show tool-tips for the keyboard's buttons."
+#~ msgstr "Seall gliocasan-inneal son putain am meur-chlàr."
+
+#~ msgid "Show _tool-tips"
+#~ msgstr "Seall _gliocasan-inneal"
+
+#~ msgid "I_nterval:"
+#~ msgstr "E_adar-ama:"
+
+#~ msgid "Scanning"
+#~ msgstr "Sganadh"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "Cha robh sgeama son tèama '%s' air lorg"
+
+#~ msgid "Failed to load Onboard icon."
+#~ msgstr "Dh'fhàilig luchdadh ìomhaigheag Onboard."
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "Seall onboard nuair tha co-labhairt son fosgail an sgrìn a nochdadh; an "
+#~ "dòigh seo faodadh cleachdadh onboard mar eisimpleir son inntrigeadh facal-"
+#~ "faire gus chur à dreuchd an sàbhalaiche-sgrìn nuair tha e stèidhichte air "
+#~ "a shon."
+
+#~ msgid ""
+#~ "Scanning mode only works with layouts which are designed for the purpose."
+#~ msgstr ""
+#~ "Tha modh sganadh ag obair a-mhàin le co-dhealbhachdan 's iad air a "
+#~ "dhealbhachadh airson an adhbhar."
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "Cuir an comas modh _sganadh"
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "Tha faidhle tèama ann mar thà\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Tar-sgrìobh e co dhiù?"
+
+#~ msgid "Looking for system defaults in %s"
+#~ msgstr "Sealltainn son bunaitean an t-siostam ann an %s"
+
+#~ msgid "Loading system defaults from %s."
+#~ msgstr "Luchdachadh bunaitean an t-siostam bhon %s."
+
+#~ msgid "Found system default '{}={}'"
+#~ msgstr "Air lorg bunaiteach an t-siostam '{}={}'"
+
+#~ msgid "layout '%s' does not exist"
+#~ msgstr "Co-dhealbhachd '%s' neo-bhitheach"
+
+#~ msgid "color scheme '%s' does not exist"
+#~ msgstr "sgeama dath '%s' neo-bhitheach"
+
+#~ msgid "theme '%s' does not exist"
+#~ msgstr "tèama '%s' neo-bhitheach"
+
+#~ msgid "setting keyboard transparency to {}%"
+#~ msgstr "Suidheachadh trìd-shoillse a' mheur-chlàr gu {}%"
+
+#~ msgid "_Direction:"
+#~ msgstr "_Comhair:"
+
+#~ msgid "Releasing still pressed key '{}'"
+#~ msgstr "Fuasgladh putan tha fhathast ga bhrùthadh '{}'"
+
+#~ msgid "screen changed, supports_alpha={}"
+#~ msgstr "sgrìn dh'atharrachadh, supports_alpha={}"
+
+#~ msgid "Style"
+#~ msgstr "Stoidhle"
+
+#~ msgid "launching '{}'"
+#~ msgstr "A cuir air bhog '{}'"
+
+#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
+#~ msgstr ""
+#~ "Ath-ùraich co-dhealbhachd pango, 's iad suidheachaidhean dpi (dsò) cruth-"
+#~ "clò ùr '{}'"
+
+#~ msgid ""
+#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
+#~ "format '{}'"
+#~ msgstr ""
+#~ "Luchdadh fòrmat co-dhealbhadh dìleab '{}'. Meomhraich sibh leasachadh "
+#~ "dhan fòrmat cuartach '{}'"
+
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "Cuir an comas Uinneag Briog Fan-os-cionn nuair _fàgail"
+
+#~ msgid "_Hide Hover Click window"
+#~ msgstr "_Falaich Uinneag Briog Fan-os-cionn"
+
+#~ msgid "_Universal Access Panel"
+#~ msgstr "__Panail Cothrom Uileach"
+
+#~ msgid ""
+#~ "The time the scanner rests on a key or group  before moving to the next. "
+#~ "(in seconds)"
+#~ msgstr ""
+#~ "An ùine tha an sganair aig fois air putan no buidheann os chionn "
+#~ "gluaiseadh dhan ath fhear. (ann an Dìogan)"
+
+#~ msgid ""
+#~ "Swap the scan actions after every key activation. The Step acticon will "
+#~ "become the Activate action and vice versa."
+#~ msgstr ""
+#~ "Suaip na gnìomhan sgan as dèidh h-uile cur thuige phutan. Bithidh "
+#~ "ìomhaigheag-gnìomh an gnìomh cur thuige agus cùlaibh air beulaibh."
+
+#~ msgid "Failed to migrate user directory. "
+#~ msgstr "Dh'fhàillig imrich pasgan a' chleachdaiche. "
+
+#~ msgid "Release - hold for long press"
+#~ msgstr "Leig às - cum airson brùthadh fada"
+
+#~ msgid "Press & release - hold for key-repeat"
+#~ msgstr "Brùth ⁊ leig às - cum airson iuchair a bhrùthadh a-rithist"
+
+#~ msgid "Multi-touch"
+#~ msgstr "Ioma-shuathadh"
+
+#~ msgid "Single-touch"
+#~ msgstr "Suathadh singilte"
+
+#~ msgid "Cycle"
+#~ msgstr "Cuairt"
+
+#~ msgid "Show/Hide Options"
+#~ msgstr "Seall/Falaich na roghainnean"
+
+#~ msgid "_Docking settings"
+#~ msgstr "Roghainnean _docaidh"
+
+#~ msgid "Enable docking"
+#~ msgstr "Cuir docadh an comas"
+
+#~ msgid "Window Options"
+#~ msgstr "Roghainnean na h-uinneige"
+
+#~ msgid "Send _key strokes on:"
+#~ msgstr "Cuir _buillean nan iuchraichean nuair a:"
+
+#~ msgid ""
+#~ "Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+#~ "keys."
+#~ msgstr ""
+#~ "Dèan taghadh eadar clàran-taice ath-bhualadh iuchrach no brùthaidh fhada. "
+#~ "Cha bhi buaidh aige seo ach air iuchraichean àireamhan is litrichean."
+
+#~ msgid "Ignoring key '{}'. Not found in '{}'."
+#~ msgstr ""
+#~ "A' leigeil seachad na h-iuchrach \"{}\". Cha deach a lorg ann an \"{}\"."
+
+#~ msgid "Error loading "
+#~ msgstr "Mearachd a' luchdadh "
+
+#~ msgid "_Personalize"
+#~ msgstr "_Pearsanaich"
+
+#~ msgid "Atspi unavailable, auto-hide won't be available"
+#~ msgstr "Chan eil Atspi ri fhaighinn, cha bhi am fèin-fhalach ri làimh"
+
+#~ msgid "Enter name for personalised layout"
+#~ msgstr "Cuir a-steach ainm airson na co-dhealbhachd phearsanaichte"
+
+#~ msgid "Add Layout"
+#~ msgstr "Cuir co-dhealbhachd ris"
+
+#~ msgid "Onboard layout files"
+#~ msgstr "Faidhlichean co-dhealbhachd Onboard"
+
+#~ msgid "All files"
+#~ msgstr "A h-uile faidhle"
