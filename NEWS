@@ -1,3 +1,53 @@
+Version 1.3.0
+-------------
+
+  * Status icon:
+    - Move AppIndicator and GtkStatusIcon into separate backends
+    - Allow left-clicking AppIndicator in KDE Plasma
+    - Don't crash when Appindicator or Atspi are not available
+    - Fix fallback to GtkStatusIcon when Applndicator is not available
+    - Fix tooltip of status icon provider (LP: #1570318). Thanks Ubuntu-QC-1
+  * Word suggestions and auto-correction:
+    - Add Esperanto language model
+    - Elipsize very large words and fix them being invisible
+    - Fix Compact layout not showing the "More suggestions" arrows
+    - Improve auto-correction of URLs and filenames in long texts
+  * Virtkey:
+    - Improve search for available keysyms in X (LP:1562381)
+    - Move key mapping from X functions to Xkb
+    - Make Xkb-based mapping also work in Ubuntu-GNOME
+    - Add uinput backend to virtkey for initial support of non-X desktops
+    - Isolate X related parts of virtkey in preparation for non-X desktops
+    - Add initial Wayland support (blocker: gtk_window_set_accept_focus())
+  * D-Bus service:
+    - Add support for properties via python decorator
+    - Setup D-Bus activation to simplify showing on hotkey press (LP: #1607235)
+    - Update D-Bus usage examples in README
+  * Add fallback to default system font family for themes:
+    - High contrast themes get a font this way
+    - Fixes Ubuntu logo not appearing in yakkety
+  * Add aspect ratio limits when the keyboard is docked or expanded (LP:1586493)
+  * Add touch handle to adjust the docking aspect ratio limit
+  * Expand docked keyboard on landscape oriented screens by default
+  * Auto-detect default status-icon provider in major desktop environments
+  * Improve alignment of some labels in the Preferences dialog
+  * Fix former stock buttons in Preferences not being translated (LP: #1567301)
+  * Add small bitmap icons to prevent aliasing issues (LP: #1552484)
+  * Add more example keys to onboard-defaults.conf.example (LP: #1546654)
+  * Improve pep8 compliance of various source files
+  * Don't let the return key leave the screen for Small and Phone layouts
+  * Prevent setting new home position after accidental resize frame clicks
+  * Work around shadows becoming visible during resize when docked with sidebars
+  * Fix errors uncovered in Keyboard.py by flake8
+  * Fix unwanted key-repeats when typing into Gtk-3 applications (LP: #1562381)
+  * Fix keyboard sometimes starting up at unexpected positions on system start
+  * Fix build failure with gcc-6 that switched to C++14. Thanks Jeremy Bicha
+  * Fix warning when building with gcc versions before 6, i.e. C++98 by default
+  * Remove entries with default values from desktop files. Thanks Mike Gabriel
+  * Add 3.20 and 3.22 to shell-version field of GNOME extension. Thanks J. Bicha
+  * Care for compatibility with Ubuntu Precise (12.04)
+  * Update PPA link in README
+
 Version 1.2.0
 -------------
 
