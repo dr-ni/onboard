@@ -244,12 +244,12 @@ class WindowManipulator(object):
         if not self.is_drag_initiated():
             return
 
-        wx = self._drag_start_pointer[0] + dx - self._drag_start_offset[0]
-        wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
-
         if self._drag_handle == Handle.ASPECT_RATIO:
-            self.on_aspect_ratio_motion(wx, wy)
+            self.on_handle_aspect_ratio_motion(dx, dy)
         else:
+            wx = self._drag_start_pointer[0] + dx - self._drag_start_offset[0]
+            wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
+
             if self._drag_handle == Handle.MOVE:
                 # contrain axis movement
                 if self._lock_x_axis:

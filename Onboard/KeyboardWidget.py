@@ -255,13 +255,13 @@ class WindowManipulatorAspectRatio(WindowManipulator):
         config.window.docking_aspect_change_range = \
             self._docking_aspect_change_range
 
-    def on_aspect_ratio_motion(self, wx, wy):
+    def on_handle_aspect_ratio_motion(self, dx, dy):
         keyboard_frame_rect = self._drag_start_keyboard_frame_rect
 
         base_aspect_rect = self.get_base_aspect_rect()
         base_aspect = base_aspect_rect.w / base_aspect_rect.h
         start_frame_width = self._drag_start_keyboard_frame_rect.w
-        new_frame_width = start_frame_width + wx * 2
+        new_frame_width = start_frame_width + dx * 2
 
         # snap to screen sides
         if new_frame_width >= self.canvas_rect.w * (1.0 - 0.05):
@@ -512,7 +512,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
             ra = rect.resize_to_aspect_range(base_aspect_rect,
                                              aspect_change_range)
-
             if xembedding and \
                unity_greeter:
                 padding = rect.w - ra.w
