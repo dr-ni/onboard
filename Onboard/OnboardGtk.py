@@ -176,6 +176,19 @@ class OnboardGtk(object):
         # finish config initialization
         config.init()
 
+        # Optionally wait a little before proceeding.
+        # When the system starts up, the docking strut can be unreliable
+        # on Compiz (Yakkety) and the keyboard may end up at unexpected initial
+        # positions. Delaying the startup when launched by
+        # onboard-autostart.desktop helps to prevent this.
+        delay = config.startup_delay
+        if delay:
+            Timer(delay, self._init_delayed)
+        else:
+            self._init_delayed()
+
+    def _init_delayed(self):
+
         # Release pressed keys when onboard is killed.
         # Don't keep enter key stuck when being killed by lightdm.
         self._osk_util = osk.Util()

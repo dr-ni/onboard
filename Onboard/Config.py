@@ -253,6 +253,10 @@ class Config(ConfigObject):
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
+        group.add_option("-D", "--startup-delay",
+                type="float", dest="startup_delay",
+                help=_("Delay showing the initial keyboard window "
+                       "by STARTUP_DELAY seconds (default 0.0)."))
         group.add_option("-a", "--keep-aspect", action="store_true",
                 dest="keep_aspect_ratio",
                 help=_("Keep aspect ratio when resizing the window"))
@@ -289,6 +293,7 @@ class Config(ConfigObject):
         self.log_learn = options.log_learn
         self.quirks_name = options.quirks_name
         self.quirks = None  # WMQuirks instance, provided by KbdWindow for now
+        self.startup_delay = options.startup_delay
 
         # optionally log to file; everything, including stack traces
         if 0:
