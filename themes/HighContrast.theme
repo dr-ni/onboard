@@ -26,6 +26,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <key_fill_gradient>30</key_fill_gradient>
     <key_stroke_gradient>70</key_stroke_gradient>
     <key_gradient_direction>-3</key_gradient_direction>
-    <key_label_font>Normal bold</key_label_font>
+    <key_label_font>bold</key_label_font>
     <key_label_overrides></key_label_overrides>
 </theme>

@@ -1890,15 +1890,34 @@ class ConfigTheme(ConfigObject):
 
         return value
 
+    _font_attributes = ("bold", "italic", "condensed")
+    _cached_key_label_font = None
+
+    def _post_notify_key_label_font(self):
+        self._cached_key_label_font = None
+
     def get_key_label_font(self):
-        gskey = self.key_label_font_key
+        if self._cached_key_label_font is None:
+            gskey = self.key_label_font_key
 
-        value = gskey.value
-        if not value:
-            # get default value from onboard base config instead
-            value = self.parent.key_label_font
+            value = gskey.value
+            if value:
+                items = value.split()
+                if items:
+                    # If no font family was provided merge in system font family
+                    if items[0] in self._font_attributes:
+                        system_items = self.parent.key_label_font.split()
+                        if system_items and \
+                        system_items[0] not in self._font_attributes:
+                            items.insert(0, system_items[0])
+                            value = " ".join(items)
+            else:
+                # get default value from onboard base config instead
+                value = self.parent.key_label_font
 
-        return value
+            self._cached_key_label_font = value
+
+        return self._cached_key_label_font
 
 
 class ConfigLockdown(ConfigObject):

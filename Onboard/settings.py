@@ -1474,14 +1474,14 @@ class ThemeDialog(DialogBuilder):
                     for font in font_families]
 
         families.sort(key=lambda x: x[0])
-        families = [(_("Default"), "Normal"),
+        families = [(_("Default"), ""),
                     ("-", "-")] + families
         fd = Pango.FontDescription(self.theme.key_label_font)
         family = fd.get_family()
         for f in families:
             it = self.font_list.append(f)
             if  f[1] == family or \
-               (f[1] == "Normal" and not family):
+               (f[1] == "" and not family):
                 self.font_combobox.set_active_iter(it)
 
     def font_combobox_row_separator_func(self, model, iter, data):
