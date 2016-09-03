@@ -204,6 +204,8 @@ class Config(ConfigObject):
 
     _desktop_environment = None
 
+    _source_path = None
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -335,6 +337,10 @@ class Config(ConfigObject):
                     self.launched_by = self.LAUNCHER_UNITY_GREETER
 
         self.is_running_from_source = self._is_running_from_source()
+        if self.is_running_from_source:
+            _logger.warning("Starting in project directory, "
+                            "importing local packages and extensions.")
+
 
     def init(self):
         """
@@ -1414,13 +1420,25 @@ class Config(ConfigObject):
         self._xembed_background_image_enabled = value == "True" \
                                                 if not value is None else None
     def _is_running_from_source(self):
-        src_path = self._get_source_path()
-        src_data_path = os.path.join(src_path, "data")
-        fn = os.path.join(src_data_path, "org.onboard.gschema.xml")
-        return os.path.isfile(fn)
+        return bool(self._get_source_path())
 
     def _get_source_path(self):
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if self._source_path is None:
+
+            candidates = [
+                os.path.abspath(os.path.curdir),
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            ]
+
+            self._source_path = ""
+            for path in candidates:
+                data_path = os.path.join(path, "data")
+                fn = os.path.join(data_path, "org.onboard.gschema.xml")
+                if os.path.isfile(fn):
+                    self._source_path = path
+                    break
+
+        return self._source_path
 
     def _get_install_dir(self):
         result = None
