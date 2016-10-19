@@ -49,7 +49,7 @@ const OnboardIndicatorWidget = new GObject.Class({
         //this._settings = new Gio.Settings({ schema_id: 'org.onboard.gnome' });
 
         let check = new Gtk.CheckButton({
-            label: _('Drag from bottom edge of the screen '
+            label: _('Drag from bottom edge of the screen ' +
                      'to show the keyboard'),
             margin_top: 1 });
         Schema.bind('enable-show-gesture', check, 'active',
