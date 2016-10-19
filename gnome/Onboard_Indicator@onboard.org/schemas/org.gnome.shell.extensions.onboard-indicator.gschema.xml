@@ -1,0 +1,9 @@
+<schemalist gettext-domain="system-monitor">
+  <schema id="org.gnome.shell.extensions.onboard-indicator" path="/org/gnome/shell/extensions/onboard-indicator/">
+    <key name="enable-show-gesture" type="b">
+      <default>true</default>
+      <summary>Show keyboard by edge-drag-gesture</summary>
+      <description>Show keyboard by dragging upward from the bottom edge of the screen. Only available for touch input.</description>
+    </key>
+  </schema>
+</schemalist>
