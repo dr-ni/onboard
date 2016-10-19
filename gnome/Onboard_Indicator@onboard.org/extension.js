@@ -219,12 +219,10 @@ const Onboard = new Lang.Class({
 });
 
 function enable_show_gesture(enable) {
-    log('enable_show_gesture', enable);
     if (enable)
     {
         if (_gesture == null)
         {
-            log('   enable_show_gesture1 enabling');
             _gesture = new EdgeDragAction.EdgeDragAction(
                     St.Side.BOTTOM, Shell.ActionMode.NORMAL);
             _gesture.connect('activated', Lang.bind(this, function() {
@@ -237,7 +235,6 @@ function enable_show_gesture(enable) {
     {
         if (_gesture != null)
         {
-            log('   enable_show_gesture2 disabling');
             global.stage.remove_action(_gesture);
             _gesture = null;
         }
@@ -245,9 +242,7 @@ function enable_show_gesture(enable) {
 }
 
 function update_show_gesture(dummy) {
-    log('update_show_gesture', dummy);
     let enable = Schema.get_boolean('enable-show-gesture');
-    log('update_show_gesture1', enable);
     enable_show_gesture(enable);
 }
 
