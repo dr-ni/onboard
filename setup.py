@@ -70,6 +70,11 @@ def import_path(path):
     yield
     sys.path = old_path
 
+def glob_files(pathname):
+    """ glob without directory names """
+    return [fn for fn in glob.glob(pathname)
+            if os.path.isfile(fn)]
+
 def pkgconfig(*packages, **kw):
     command = "pkg-config --libs --cflags %s" % ' '.join(packages)
     status, output = getstatusoutput(command)
@@ -380,7 +385,9 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
 
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
-                                    glob.glob('gnome/Onboard_Indicator@onboard.org/*')),
+                      glob_files('gnome/Onboard_Indicator@onboard.org/*')),
+                  ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org/schemas',
+                      glob_files('gnome/Onboard_Indicator@onboard.org/schemas/*')),
                  ],
 
     scripts = ['onboard', 'onboard-settings'],
