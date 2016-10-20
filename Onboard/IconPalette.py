@@ -453,7 +453,10 @@ class IconPalette(WindowRectPersist, WindowManipulator, Gtk.Window):
             co = config.icp.landscape
         else:
             co = config.icp.portrait
-        rect = Rect(co.x, co.y, co.width, co.height)
+        rect = Rect(co.x,
+                    co.y,
+                    max(co.width, 10),
+                    max(co.height, 10))
         return rect
 
     def write_window_rect(self, orientation, rect):

@@ -33,7 +33,9 @@ from Onboard.utils       import Rect, Version
 from Onboard.Timer       import CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectPersist, \
                                 WindowRectTracker, set_unity_property, \
-                                gtk_has_resize_grip_support
+                                gtk_has_resize_grip_support, \
+                                get_monitor_dimensions, \
+                                physical_to_monitor_pixel_size
 import Onboard.osk as osk
 
 ### Logging ###
@@ -123,17 +125,6 @@ class KbdWindowBase:
 
     def cleanup(self):
         pass
-
-    def _cb_realize_event(self, user_data):
-        # Disable maximize function (LP #859288)
-        # unity:    no effect, but double click on top bar unhides anyway
-        # unity-2d: works and avoids the bug
-        if self.get_window():
-            self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
-                                            Gdk.WMFunction.MOVE | \
-                                            Gdk.WMFunction.MINIMIZE | \
-                                            Gdk.WMFunction.CLOSE)
-        set_unity_property(self)
 
     def _cb_screen_changed(self, widget, old_screen=None):
         self.detect_window_manager()
@@ -226,6 +217,10 @@ class KbdWindowBase:
     def pre_render_keys(self, w, h):
         self.keyboard_widget.pre_render_keys(self, w, h)
 
+    def get_min_window_size(self):
+        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
+        return physical_to_monitor_pixel_size(self, min_mm, (150, 100))
+
     def _cb_realize_event(self, user_data):
         """ Gdk window created """
         # Disable maximize function (LP #859288)
@@ -248,8 +243,19 @@ class KbdWindowBase:
 
         # set min window size for unity MT grab handles
         geom = Gdk.Geometry()
-        geom.min_width, geom.min_height = \
-                self.keyboard_widget.get_min_window_size()
+        geom.min_width, geom.min_height = self.get_min_window_size()
+
+        if _logger.isEnabledFor(logging.DEBUG):
+            screen = self.get_screen()
+            _logger.debug("_cb_realize_event, screen size {}x{}"
+                          .format(screen.width(), screen.height()))
+            size, size_mm = get_monitor_dimensions(self)
+            _logger.debug("_cb_realize_event, "
+                          "monitor dimensions: {} pixel, {} mm"
+                          .format(repr(size), repr(size_mm)))
+            _logger.debug("_cb_realize_event, get_min_window_size(): {} {}"
+                          .format(geom.min_width, geom.min_height))
+
         self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
 
     def _cb_unrealize_event(self, user_data):
@@ -1139,7 +1145,13 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
             co = config.window.landscape
         else:
             co = config.window.portrait
-        rect = Rect(co.x, co.y, co.width, co.height)
+
+        # limit size due to LP #1633284, gsettings values might be negative
+        min_width, min_height = self.get_min_window_size()
+        rect = Rect(co.x,
+                    co.y,
+                    max(co.width, min_width),
+                    max(co.height, min_height))
         return rect
 
     def write_window_rect(self, orientation, rect):
@@ -1190,6 +1202,10 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def on_screen_size_changed(self, screen):
         """ Screen rotation, etc. """
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug("on_screen_size_changed",
+                          screen.width(), screen.height())
+
         if config.is_docking_enabled():
             # Can't correctly position the window while struts are active
             # -> turn them off for a moment

@@ -251,10 +251,17 @@ class OnboardGtk(object):
             # Make sure the keyboard fits on screen
             rect = self._window.limit_size(rect)
 
-            if rect != self._window.get_rect():
+            if not rect.is_empty() and \
+               rect != self._window.get_rect():
+                _logger.debug("limiting window size: {} to {}"
+                            .format(self._window.get_rect(), rect))
                 orientation = self._window.get_screen_orientation()
                 self._window.write_window_rect(orientation, rect)
                 self._window.restore_window_rect()  # move/resize early
+            else:
+                _logger.debug("not limiting window size: {} to {}"
+                            .format(self._window.get_rect(), rect))
+
 
         # export dbus service
         if not config.xid_mode and \

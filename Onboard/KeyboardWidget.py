@@ -46,7 +46,6 @@ from Onboard.definitions    import Handle
 from Onboard.WindowUtils    import WindowManipulator, \
                                    canvas_to_root_window_rect, \
                                    canvas_to_root_window_point, \
-                                   physical_to_monitor_pixel_size, \
                                    get_monitor_dimensions
 
 ### Logging ###
@@ -1415,11 +1414,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         """ Overload for LayoutView """
         co = self.get_kbd_window().get_orientation_config_object()
         return config.is_keep_docking_frame_aspect_ratio_enabled(co)
-
-    def get_min_window_size(self):
-        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
-        return physical_to_monitor_pixel_size(self.get_kbd_window(),
-                                              min_mm, (150, 100))
 
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """
