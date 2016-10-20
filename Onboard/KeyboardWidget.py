@@ -1418,7 +1418,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
-        return physical_to_monitor_pixel_size(self, min_mm, (150, 100))
+        return physical_to_monitor_pixel_size(self.get_kbd_window(),
+                                              min_mm, (150, 100))
 
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """
