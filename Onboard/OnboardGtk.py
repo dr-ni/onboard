@@ -40,8 +40,9 @@ try:
     import dbus.service
     import dbus.mainloop.glib
     from Onboard.DBusUtils import ServiceBase, dbus_property
+    has_dbus = True
 except ImportError:
-    pass
+    has_dbus = False
 
 from Onboard.KbdWindow       import KbdWindow, KbdPlugWindow
 from Onboard.Keyboard        import Keyboard
@@ -85,7 +86,7 @@ class OnboardGtk(object):
         # no python3-dbus on Fedora17
         bus = None
         err_msg = ""
-        if "dbus" not in globals():
+        if not has_dbus:
             err_msg = "D-Bus bindings unavailable"
         else:
             # Use D-bus main loop by default
@@ -265,7 +266,7 @@ class OnboardGtk(object):
 
         # export dbus service
         if not config.xid_mode and \
-           "dbus" in globals():
+           has_dbus:
             self.service_keyboard = ServiceOnboardKeyboard(self)
 
         # show/hide the window
@@ -827,7 +828,7 @@ class OnboardGtk(object):
         return result
 
 
-if "dbus" in globals():
+if has_dbus:
     class ServiceOnboardKeyboard(ServiceBase):
         """
         Onboard's main D-Bus service.
