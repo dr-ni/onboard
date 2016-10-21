@@ -104,7 +104,18 @@ Building from Source:
         bzr branch lp:onboard
         cd onboard
         ./setup.py build
+        tools/install_gsettings_schema
+
+        # At this point you should be able to start Onboard
+        # from the project directory with
+        ./onboard
+
+        # If everything works as expected, install with
         sudo ./setup.py install
+
+        # And if needed, uninstall with
+        sudo ./setup.py install --record files.txt
+        cat files.txt | sudo xargs rm -rf
 
 
     Mageia 4:
@@ -120,8 +131,20 @@ Building from Source:
         bzr branch lp:onboard
         cd onboard
         ./setup.py build
+        tools/install_gsettings_schema
+
+        # At this point you should be able to start Onboard
+        # from the project directory with
+        ./onboard
+
+        # If everything works as expected, install with
         su
         ./setup.py install
+
+        # And if needed, uninstall with
+        su
+        ./setup.py install --record files.txt
+        cat files.txt | xargs rm -rf
 
 
     Ubuntu 14.04:
