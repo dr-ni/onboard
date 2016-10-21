@@ -64,7 +64,7 @@ static PyObject*
 unpack_variant(GVariant* value)
 {
     PyObject* result = NULL;
-    int i;
+    gsize i;
 
     GVariantClass class = g_variant_classify (value);
     switch (class)

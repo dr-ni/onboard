@@ -62,7 +62,7 @@ typedef struct {
 /* saved button mappings */
 #define MAX_BUTTONS 512
 typedef struct {
-    int device_id;
+    XID device_id;
     unsigned char buttons[MAX_BUTTONS];
     int num_buttons;
 } PointerState;

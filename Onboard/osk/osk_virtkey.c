@@ -1078,7 +1078,7 @@ virtkey_get_label_from_keysym (int keysym)
             const gunichar uc = gdk_keyval_to_unicode (keysym);
             if (uc && g_unichar_isgraph (uc))
             {
-                int l = MIN(g_unichar_to_utf8 (uc, buf), sizeof(buf)-1);
+                gint l = MIN(g_unichar_to_utf8 (uc, buf), (gint)(sizeof(buf)-1));
                 buf[l] = '\0';
                 label = buf;
             }

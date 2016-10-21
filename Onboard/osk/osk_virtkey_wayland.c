@@ -104,13 +104,13 @@ get_xkb_state (VirtkeyBase *base)
 static int
 virtkey_wayland_get_current_group (VirtkeyBase *base)
 {
-    int i;
     // Gdk's xkb_state doesn't know the currently active layout (group)
     // (Xenial). Use our own xkp_keymap instead.
     struct xkb_keymap* xkb_keymap = get_xkb_keymap(base);
     struct xkb_state* xkb_state = get_xkb_state(base);
     if (xkb_state)
     {
+        unsigned int i;
         for (i = 0; i < xkb_keymap_num_layouts (xkb_keymap); i++)
         {
             if (xkb_state_layout_index_is_active(xkb_state, i, 
@@ -324,7 +324,7 @@ keyboard_handle_keymap(void *data, struct wl_keyboard *keyboard,
     xkb_context_unref (context);
 
     {
-        int i;
+        unsigned int i;
         for (i = 0; i < xkb_keymap_num_layouts (this->xkb_keymap); i++)
         {
             g_debug("   layout index %d, active %d, \n", i,
@@ -372,7 +372,7 @@ keyboard_handle_modifiers(void *data, struct wl_keyboard *keyboard,
         VirtkeyBase* base = data;
         struct xkb_keymap* xkb_keymap = get_gdk_xkb_keymap(base);
         struct xkb_state* xkb_state = get_gdk_xkb_state(base);
-        int i;
+        unsigned int i;
         for (i = 0; i < xkb_keymap_num_layouts (xkb_keymap); i++)
         {
             g_debug("   gdk layout index %d, active %d, name %s\n", i,
@@ -384,7 +384,7 @@ keyboard_handle_modifiers(void *data, struct wl_keyboard *keyboard,
         VirtkeyBase* base = data;
         struct xkb_keymap* xkb_keymap = get_xkb_keymap(base);
         struct xkb_state* xkb_state = get_xkb_state(base);
-        int i;
+        unsigned int i;
         for (i = 0; i < xkb_keymap_num_layouts (xkb_keymap); i++)
         {
             g_debug("   wl layout index %d, active %d, name %s\n", i,

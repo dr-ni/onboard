@@ -225,6 +225,7 @@ class Extension_osk(Extension):
                            depends = depends,
                            define_macros = defines,
                            extra_compile_args = [
+                               "-Wsign-compare",
                                "-Wdeclaration-after-statement",
                                "-Werror=declaration-after-statement"],
 

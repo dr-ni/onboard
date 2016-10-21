@@ -571,7 +571,7 @@ translate_state (XIModifierState *mods_state,
 
     if (button_state)
     {
-        int n = MIN (G_N_ELEMENTS(gdk_button_masks), button_state->mask_len * 8);
+        int n = MIN ((int)G_N_ELEMENTS(gdk_button_masks), button_state->mask_len * 8);
         int i;
         for (i = 0; i < n; i++)
             if (XIMaskIsSet (button_state->mask, i))
@@ -656,7 +656,7 @@ get_master_state (OskDevices* dev)
 static unsigned int
 get_current_state (OskDevices* dev)
 {
-    int i;
+    gsize i;
 
     // Get out-of-sync master state, for key state mainly.
     // Button state will be out-dated immediately before or after
@@ -684,7 +684,7 @@ static void
 update_state (int evtype, XIDeviceEvent* event, OskDevices* dev)
 {
     int button = event->detail;
-    if (button >= 1 && button < G_N_ELEMENTS(dev->button_states))
+    if (button >= 1 && button < (int)G_N_ELEMENTS(dev->button_states))
     {
         int* count = dev->button_states + (button-1);
         if (evtype == XI_ButtonPress)
