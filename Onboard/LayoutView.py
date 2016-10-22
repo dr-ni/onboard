@@ -404,7 +404,8 @@ class LayoutView:
         except AttributeError:
             size, size_mm = get_monitor_dimensions(self)
             filename = config.get_desktop_background_filename()
-            if not filename:
+            if not filename or \
+               size[0] <= 0 or size[1] <= 0:
                 pixbuf = None
             else:
                 try:

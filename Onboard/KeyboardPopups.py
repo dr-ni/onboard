@@ -126,21 +126,20 @@ class TouchFeedback:
         w = config.keyboard.touch_feedback_size
         if w == 0:
             sz, sz_mm = get_monitor_dimensions(window)
-            if sz and sz_mm:
-                if sz[0] and sz_mm[0]:
-                    default_size_mm = DEFAULT_POPUP_SIZE_MM
+            if sz[0] > 0 and sz_mm[0] > 0:
+                default_size_mm = DEFAULT_POPUP_SIZE_MM
 
-                    # scale for hires displays
-                    if gdk_win:
-                        try:
-                            default_size_mm *= gdk_win.get_scale_factor() # from Gdk 3.10
-                        except AttributeError:
-                            pass
+                # scale for hires displays
+                if gdk_win:
+                    try:
+                        default_size_mm *= gdk_win.get_scale_factor() # from Gdk 3.10
+                    except AttributeError:
+                        pass
 
-                    w = sz[0] * default_size_mm / sz_mm[0]
-                else:
-                    w = min(sz[0] / 12.0, MAX_POPUP_SIZE_PX)
-            else:
+                w = sz[0] * default_size_mm / sz_mm[0]
+            elif sz[0] > 0:
+                w = min(sz[0] / 12.0, MAX_POPUP_SIZE_PX)
+            else:   # LP #1633284
                 w = MAX_POPUP_SIZE_PX
 
         return w, w * (1.0 + LabelPopup.ARROW_HEIGHT)

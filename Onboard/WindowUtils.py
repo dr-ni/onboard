@@ -1037,20 +1037,21 @@ def get_monitor_dimensions(window):
 
         return size, size_mm
     else:
-        return None, None
+        return (0, 0), (0, 0)
 
 def physical_to_monitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
     """
     Convert a physical size in mm to pixels of windows's monitor,
     """
     sz, sz_mm = get_monitor_dimensions(window)
-    if sz and sz_mm:
+    if sz[0] > 0 and sz[1] > 0 and \
+       sz_mm[0] > 0 and sz_mm[1] > 0:
         w = sz[0] * size_mm[0] / sz_mm[0] \
             if sz_mm[0] else fallback_size[0]
         h = sz[1] * size_mm[1] / sz_mm[1] \
             if sz_mm[0] else fallback_size[1]
     else:
-        w = h = 0
+        w, h = fallback_size
     return w, h
 
 def show_error_dialog(error_string):
