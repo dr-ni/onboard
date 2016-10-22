@@ -113,9 +113,10 @@ Building from Source:
         # If everything works as expected, install with
         sudo ./setup.py install
 
-        # And if needed, uninstall with
+        # And if necessary, uninstall with
         sudo ./setup.py install --record files.txt
-        cat files.txt | sudo xargs rm -rf
+        sudo xargs -a files.txt --delimiter='\n' rm -v
+        sudo rm -rf /usr/local/share/onboard
 
 
     Mageia 4:
@@ -141,10 +142,11 @@ Building from Source:
         su
         ./setup.py install
 
-        # And if needed, uninstall with
+        # And if necessary, uninstall with
         su
         ./setup.py install --record files.txt
-        cat files.txt | xargs rm -rf
+        sudo xargs -a files.txt --delimiter='\n' rm -v
+        sudo rm -rf /usr/local/share/onboard
 
 
     Ubuntu 14.04:
