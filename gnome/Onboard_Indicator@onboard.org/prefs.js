@@ -1,6 +1,5 @@
 /*
  * Copyright © 2016 marmuta <marmvta@gmail.com>
- * Copyright © 2016 Simon Schumann
  *
  * DBus proxy and default keyboard hiding based on ideas by Simon Schumann.
  * https://github.com/schuhumi/gnome-shell-extension-onboard-integration
@@ -45,8 +44,6 @@ const OnboardIndicatorWidget = new GObject.Class({
         this.margin = 24;
         this.row_spacing = 6;
         this.orientation = Gtk.Orientation.VERTICAL;
-
-        //this._settings = new Gio.Settings({ schema_id: 'org.onboard.gnome' });
 
         let check = new Gtk.CheckButton({
             label: _('Drag from bottom edge of the screen ' +
