@@ -209,6 +209,8 @@ class Command:
          "alanbell@ubuntu.com", ['20110101']],
         ["themes/Typist.colors",
          "alanbell@ubuntu.com", ['20110101']],
+        ["gnome/Onboard_Indicator@onboard.org/convenience.js",
+         "scampa.giovanni@gmail.com", ['20110101', '20120101']],
     ]
 
     # bzr commits that should not grant copyright
@@ -239,11 +241,11 @@ class Command:
         else:
             exclude_paths = options.exclude_paths + Command._exclude_paths
             for dirpath, dirnames, filenames in os.walk("."):
-            
+
                 dirpath = os.path.normpath(dirpath)  # remove starting "./"
                 if dirpath == ".":
                     dirpath = ""
-                     
+
                 for basename in filenames:
                     fn = os.path.join(dirpath, basename)
                     if all(not fn.startswith(ep) for ep in exclude_paths):
@@ -615,7 +617,7 @@ class FileType:
             if fn.startswith(p):
                 return True
         for f in files:
-            if fn.endswith("/" + f):
+            if fn.endswith(f):
                 return True
         for ext in extensions:
             if fn.endswith(ext):
@@ -794,7 +796,7 @@ class FileTypePython(FileType):
 
 
 class FileTypeC(FileType):
-    """ Matches python files """
+    """ Matches C or C++ files """
     @staticmethod
     def matches(fn):
         extensions = ["c", "cpp", "h"]
@@ -1157,11 +1159,12 @@ class FileTypeNoHeader(FileType):
     @staticmethod
     def matches(fn):
         return FileType.match_names(fn, [],
-                                    ["COPYING", "README", "TODO",
-                                     "AUTHORS", "HACKING",
-                                     "NEWS", "CHANGELOG", "MANIFEST.in",
-                                     ".bzrignore", "attic/Makefile"],
-                                    [".lm", ".svg", ".ui"])
+            ["COPYING", "README", "TODO",
+                "AUTHORS", "HACKING",
+                "NEWS", "CHANGELOG", "MANIFEST.in",
+                ".bzrignore", "attic/Makefile",
+                "gnome/Onboard_Indicator@onboard.org/convenience.js"],
+            [".lm", ".svg", ".ui"])
 
     def needs_license_header(self):
         return False
