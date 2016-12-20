@@ -133,7 +133,12 @@ class LayoutLoaderSVG:
         self._svg_cache = {}
         layout = None
 
-        f = open_utf8(layout_filename)
+        try:
+            f = open_utf8(layout_filename)
+        except FileNotFoundError as ex:
+            _logger.warning("Failed to open '{}': {}"
+                            .format(layout_filename, unicode_str(ex)))
+            return None
 
         # make sure unlink is called
         with minidom.parse(f).documentElement as dom:
