@@ -124,11 +124,6 @@ const Onboard = new Lang.Class({
     },
 
     enable: function() {
-        // enable auto-show
-        let auto_show = new Gio.Settings({ schema_id: 'org.onboard.auto-show'});
-        if (auto_show)
-            auto_show.set_boolean('enabled', true);
-
         // Start Onboard to overcome --not-show-in=GNOME
         // in onboard-autostart.desktop.
         this.launch();
@@ -252,6 +247,17 @@ function init() {
 }
 
 function enable() {
+    // Update schema-version
+    let schema_version = Schema.get_string('schema-version');
+    if (!schema_version) {
+        Schema.set_string('schema-version', '1.0');
+
+        // enable auto-show on first start
+        let auto_show = new Gio.Settings({schema_id: 'org.onboard.auto-show'});
+        if (auto_show)
+            auto_show.set_boolean('enabled', true);
+    }
+
     _onboard = new Onboard();
     _onboard.enable();
 

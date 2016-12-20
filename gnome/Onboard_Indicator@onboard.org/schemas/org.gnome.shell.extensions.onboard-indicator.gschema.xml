@@ -18,6 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <schemalist gettext-domain="system-monitor">
   <schema id="org.gnome.shell.extensions.onboard-indicator" path="/org/gnome/shell/extensions/onboard-indicator/">
+    <key name="schema-version" type="s">
+        <default>""</default>
+        <summary>Schema version</summary>
+        <description>Version of this configuration schema. Set on first start.</description>
+    </key>
     <key name="enable-show-gesture" type="b">
       <default>true</default>
       <summary>Show keyboard by edge-drag-gesture</summary>
