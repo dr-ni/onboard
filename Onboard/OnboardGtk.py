@@ -775,11 +775,14 @@ class OnboardGtk(object):
                 self.keyboard.scanner = None
             self.keyboard.cleanup()
 
-        self.status_icon.set_keyboard(None)
+        self.status_icon.cleanup()
+        self.status_icon = None
+
         self._window.cleanup()
         self._window.destroy()
         self._window = None
         Gtk.main_quit()
+
 
     def final_cleanup(self):
         config.final_cleanup()

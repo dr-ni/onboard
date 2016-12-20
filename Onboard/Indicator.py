@@ -199,6 +199,11 @@ class Indicator():
             self._backend.set_visible(False)
 
 
+    def cleanup(self):
+        if self._backend:
+            self._backend.cleanup()
+        self.set_keyboard(None)
+
     def set_keyboard(self, keyboard):
         self._keyboard = keyboard
         self._menu.set_keyboard(keyboard)
@@ -225,6 +230,9 @@ class BackendBase():
 
     def __init__(self, menu):
         self._menu = menu
+
+    def cleanup(self):
+        pass
 
     def get_menu(self):
         return self._menu
@@ -325,6 +333,9 @@ class BackendAppIndicator(BackendBase):
                     _logger.warning("Failed to setup D-Bus match rule, "
                                     "no left-click Activate() for AppIndicator: " +
                                     unicode_str(ex))
+
+    def cleanup(self):
+        pass
 
     def _on_activate_method(self, bus, message):
         if message.get_path() == self.STATUSNOTIFIER_OBJECT and \
