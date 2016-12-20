@@ -1840,6 +1840,11 @@ class ConfigAutoShow(ConfigObject):
         self.add_key("tablet-mode-state-file", "")
         self.add_key("tablet-mode-state-file-pattern", "1")
 
+    def tablet_mode_detection_notify_add(self, callback):
+        self.tablet_mode_detection_enabled_notify_add(callback)
+        self.tablet_mode_enter_key_notify_add(callback)
+        self.tablet_mode_leave_key_notify_add(callback)
+
 
 class ConfigUniversalAccess(ConfigObject):
     """ universal_access configuration """

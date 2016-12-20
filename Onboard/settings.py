@@ -495,9 +495,10 @@ class Settings(DialogBuilder):
 
         def _set(co, key, value):
             try:
-                setattr(co, key, int(value))
+                value = int(value)
             except ValueError:
-                pass
+                value = 0
+            setattr(co, key, value)
 
         self.bind_entry("tablet_mode_enter_key_entry",
                         config.auto_show, "tablet_mode_enter_key",

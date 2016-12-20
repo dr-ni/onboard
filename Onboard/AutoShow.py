@@ -106,6 +106,9 @@ class AutoShow(object):
                 self._hw_sensor_tracker = HardwareSensorTracker()
                 self._hw_sensor_tracker.connect(
                     "tablet-mode-changed", self._on_tablet_mode_changed)
+
+            # run/stop GlobalKeyListener when tablet hotkeys change
+            self._hw_sensor_tracker.update_sensor_sources()
         else:
             if self._hw_sensor_tracker:
                 self._hw_sensor_tracker.disconnect(

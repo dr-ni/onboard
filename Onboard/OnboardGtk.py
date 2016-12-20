@@ -343,7 +343,7 @@ class OnboardGtk(object):
             lambda x: self.keyboard.update_auto_show())
         config.auto_show.hide_on_key_press_notify_add(
             lambda x: self.keyboard.update_auto_hide())
-        config.auto_show.tablet_mode_detection_enabled_notify_add(
+        config.auto_show.tablet_mode_detection_notify_add(
             lambda x: self.keyboard.update_tablet_mode_detection())
 
         # word suggestions

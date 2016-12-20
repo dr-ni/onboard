@@ -95,19 +95,19 @@ class HardwareSensorTracker(EventSource):
 
     def connect(self, event_name, callback):
         EventSource.connect(self, event_name, callback)
-        self._update_listeners()
+        self.update_sensor_sources()
 
     def disconnect(self, event_name, callback):
         had_listeners = self.has_listeners(self._event_names)
 
         EventSource.disconnect(self, event_name, callback)
-        self._update_listeners()
+        self.update_sensor_sources()
 
         # help debugging disconnecting events on exit
         if had_listeners and not self.has_listeners(self._event_names):
             _logger.info("all listeners disconnected")
 
-    def _update_listeners(self):
+    def update_sensor_sources(self):
         register = self.has_listeners()
         self._register_acpid_listeners(register)
 
@@ -127,6 +127,11 @@ class HardwareSensorTracker(EventSource):
                 self._acpid_listener = None
 
     def _register_hotkey_listeners(self, register):
+        enter_key = config.auto_show.tablet_mode_enter_key
+        leave_key = config.auto_show.tablet_mode_leave_key
+        if not enter_key and not leave_key:
+            register = False
+
         if register:
             if not self._key_listener:
                 self._key_listener = GlobalKeyListener()
@@ -206,9 +211,23 @@ class AcpidListener:
     def __init__(self, sensor_tracker):
         super(AcpidListener, self).__init__()
         self._sensor_tracker = sensor_tracker
+        self._exit_r = self._exit_w = None
 
+        self.start()
+
+    def start(self):
         self._socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self._socket.connect("/var/run/acpid.socket")
+        fn = "/var/run/acpid.socket"
+        try:
+            self._socket.connect(fn)
+        except Exception as ex:
+            _logger.warning("Failed to connect to acpid, "
+                            "SW_TABLET_MODE detection disabled. "
+                            "('{}': {}) "
+
+                            .format(fn, str(ex)))
+            return
+
         self._socket.setblocking(False)
         self._exit_r, self._exit_w = os.pipe()
 
@@ -217,15 +236,14 @@ class AcpidListener:
         self._thread.start()
 
     def stop(self):
-        os.write(self._exit_w, "x".encode())
-        self._thread.join(2)
-        _logger.info("AcpidListener: thread stopped, is_alive={}"
-                     .format(self._thread.is_alive()))
+        if self._exit_w:
+            os.write(self._exit_w, "x".encode())
+            self._thread.join(2)
+            _logger.info("AcpidListener: thread stopped, is_alive={}"
+                         .format(self._thread.is_alive()))
 
     def _run(self):
         _logger.info("AcpidListener: thread start")
-        self._socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self._socket.connect("/var/run/acpid.socket")
 
         while True:
             rl, wl, xl = select.select([self._exit_r, self._socket],
