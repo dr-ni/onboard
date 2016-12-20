@@ -658,7 +658,7 @@ class Config(ConfigObject):
                           self.scanner,
                           self.typing_assistance]
 
-        # moustweaks
+        # mousetweaks (optional)
         for _class in [CSMousetweaks1, CSMousetweaks0]:
             try:
                 self.mousetweaks = _class()
@@ -1069,8 +1069,16 @@ class Config(ConfigObject):
                self.auto_show.enabled
 
     def is_auto_hide_enabled(self):
+        return self.is_auto_hide_on_keypress_enabled() or \
+            self.is_tablet_mode_detection_enabled()
+
+    def is_auto_hide_on_keypress_enabled(self):
         return self.can_set_auto_hide() and \
-               self.auto_show.hide_on_key_press
+            self.auto_show.hide_on_key_press
+
+    def is_tablet_mode_detection_enabled(self):
+        return self.can_set_auto_hide() and \
+            self.auto_show.tablet_mode_detection_enabled
 
     def can_auto_show_reposition(self):
         return self.is_auto_show_enabled() and \
@@ -1083,7 +1091,7 @@ class Config(ConfigObject):
             return self.auto_show.reposition_method_floating
 
     def can_set_auto_hide(self):
-        """ Allowed to change auto hide on key-press? """
+        """ Allowed to change auto hide? """
         return self.is_auto_show_enabled() and \
                self.is_event_source_xinput()
 
@@ -1825,6 +1833,12 @@ class ConfigAutoShow(ConfigObject):
 
         self.add_key("hide-on-key-press", True)
         self.add_key("hide-on-key-press-pause", 1800.0)
+
+        self.add_key("tablet-mode-detection-enabled", False)
+        self.add_key("tablet-mode-enter-key", 0)
+        self.add_key("tablet-mode-leave-key", 0)
+        self.add_key("tablet-mode-state-file", "")
+        self.add_key("tablet-mode-state-file-pattern", "1")
 
 
 class ConfigUniversalAccess(ConfigObject):

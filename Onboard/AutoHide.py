@@ -21,144 +21,49 @@
 Hide the keyboard on incoming physical keyboard events.
 """
 
-from __future__ import division, print_function, unicode_literals
+from Onboard.GlobalKeyListener  import GlobalKeyListener
 
-
-from Onboard.utils         import EventSource
-from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
-
-### Logging ###
 import logging
 _logger = logging.getLogger("AutoHide")
-###############
 
 from Onboard.Config import Config
 config = Config()
 
 
-class AutoHide(EventSource):
+class AutoHide:
     """
     Hide Onboard when a physical keyboard is being used.
     """
 
     def __init__(self, keyboard):
-        # There is only button-release to subscribe to currently,
-        # as this is all CSButtonRemapper needs to detect the end of a click.
-        EventSource.__init__(self, ["button-release"])
-
         self._keyboard = keyboard
-        self._device_manager = None
-        self._keyboard_slave_devices = None
+        self._key_listener = None
 
     def cleanup(self):
-        self._register_xinput_events(False)
+        self._register_events(False)
 
     def is_enabled(self):
-        return self._device_manager is not None
+        return self._key_listener is not None
 
-    def enable(self, enable, use_gtk=False):
-        self.register_input_events(enable, use_gtk)
+    def enable(self, enable):
+        self._register_events(enable)
 
-    def register_input_events(self, register, use_gtk=False):
-        self._register_xinput_events(False)
+    def _register_events(self, register):
         if register:
-            if not use_gtk:  # can't do this with gtk yet
-                if not self._register_xinput_events(True):
-                    _logger.warning(
-                        "XInput event source failed to initialize, "
-                        "falling back to GTK.")
-
-    def _register_xinput_events(self, register):
-        """ Setup XInput event handling """
-        success = True
-
-        if register:
-            self._device_manager = XIDeviceManager()
-            if self._device_manager.is_valid():
-                self._device_manager.connect("device-event",
-                                             self._on_device_event)
-                self._device_manager.connect("device-grab",
-                                             self._on_device_grab)
-                self._select_xinput_devices()
-            else:
-                success = False
-                self._device_manager = None
+            if not self._key_listener:
+                self._key_listener = GlobalKeyListener()
+                self._key_listener.connect("key-press", self._on_key_press)
         else:
+            if self._key_listener:
+                self._key_listener.disconnect("key-press", self._on_key_press)
+            self._key_listener = None
 
-            if self._device_manager:
-                self._device_manager.disconnect("device-event",
-                                                self._on_device_event)
-                self._device_manager.disconnect("device-grab",
-                                                self._on_device_grab)
-                self._unselect_xinput_devices()
-                self._device_manager = None
-
-        return success
-
-    def _select_xinput_devices(self):
-        """ Select keyboard devices and the events we want to listen to. """
-
-        self._unselect_xinput_devices()
-
-        event_mask = XIEventMask.KeyPressMask | \
-                     XIEventMask.KeyReleaseMask
-
-        devices = self._device_manager.get_client_keyboard_attached_slaves()
-        _logger.info("listening to keyboard devices: {}"
-                     .format([(d.name, d.id, d.get_config_string())
-                              for d in devices]))
-        for device in devices:
-            try:
-                self._device_manager.select_events(None, device, event_mask)
-            except Exception as ex:
-                _logger.warning("Failed to select events for device "
-                                "{id}: {ex}"
-                                .format(id=device.id, ex=ex))
-        self._keyboard_slave_devices = devices
-
-    def _unselect_xinput_devices(self):
-        if self._keyboard_slave_devices:
-            for device in self._keyboard_slave_devices:
-                try:
-                    self._device_manager.unselect_events(None, device)
-                except Exception as ex:
-                    _logger.warning("Failed to unselect events for device "
-                                    "{id}: {ex}"
-                                    .format(id=device.id, ex=ex))
-            self._keyboard_slave_devices = None
-
-    def _on_device_grab(self, device, event):
-        """ Someone grabbed/relased a device. Update our device list. """
-        self._select_xinput_devices()
-
-    def _on_device_event(self, event):
-        """
-        Handler for XI2 events.
-        """
-        event_type = event.xi_type
-
-        # re-select devices on changes to the device hierarchy
-        if event_type in XIEventType.HierarchyEvents or \
-           event_type == XIEventType.DeviceChanged:
-            self._select_xinput_devices()
-            return
-
-        if event_type == XIEventType.KeyPress or \
-           event_type == XIEventType.KeyRelease:
-
+    def _on_key_press(self, event):
+        # hide on key-press
+        if config.is_auto_hide_on_keypress_enabled():
             if not self._keyboard.is_auto_show_paused():
-                if _logger.isEnabledFor(logging.INFO):
-                    device = event.get_source_device()
-                    device_name = device.name if device else "None"
-                    _logger.info("Hiding keyboard and pausing "
-                                "auto-show due to physical key-{} "
-                                "{} from device '{}' ({})"
-                                .format("press"
-                                        if event_type == XIEventType.KeyPress
-                                        else "release",
-                                        event.keyval,
-                                        device_name,
-                                        event.source_id))
+                self._key_listener.log_key_event(
+                    event, "Hiding keyboard and pausing " "auto-show ")
 
                 if self._keyboard.is_visible():
                     if config.are_word_suggestions_enabled():
@@ -171,7 +76,5 @@ class AutoHide(EventSource):
                 if duration < 0.0:  # negative means auto-hide is off
                     duration = None
                 self._keyboard.pause_auto_show(duration)
-
-            return
 
 

@@ -295,10 +295,6 @@ class OnboardGtk(object):
             lambda x: once(self.keyboard_widget.update_inactive_transparency)
 
         # general
-        config.auto_show.enabled_notify_add(lambda x:
-                                    self.keyboard.update_auto_show())
-        config.auto_show.hide_on_key_press_notify_add(lambda x:
-                                    self.keyboard.update_auto_hide())
 
         # keyboard
         config.keyboard.key_synth_notify_add(reload_layout)
@@ -341,6 +337,14 @@ class OnboardGtk(object):
 
         # snippets
         config.snippets_notify_add(reload_layout)
+
+        # auto-show
+        config.auto_show.enabled_notify_add(
+            lambda x: self.keyboard.update_auto_show())
+        config.auto_show.hide_on_key_press_notify_add(
+            lambda x: self.keyboard.update_auto_hide())
+        config.auto_show.tablet_mode_detection_enabled_notify_add(
+            lambda x: self.keyboard.update_tablet_mode_detection())
 
         # word suggestions
         config.word_suggestions.show_context_line_notify_add(update_ui)

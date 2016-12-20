@@ -65,7 +65,8 @@ typedef struct {
     double       y_root;
     unsigned int button;
     unsigned int state;
-    unsigned int keyval;
+    unsigned int keycode;
+    unsigned int keyval;   // translated keycode (keysym on X)
     unsigned int sequence;
     unsigned int time;
 
@@ -123,6 +124,7 @@ osk_device_event_copy (OskDeviceEvent* self, PyObject *args)
         ev->y_root = self->y_root;
         ev->button = self->button;
         ev->state = self->state;
+        ev->keycode = self->keycode;
         ev->keyval = self->keyval;
         ev->sequence = self->sequence;
         ev->time = self->time;
@@ -180,6 +182,7 @@ static PyMemberDef osk_device_event_members[] = {
     {"y_root", T_DOUBLE, offsetof(OskDeviceEvent, y_root), RESTRICTED, NULL },
     {"button", T_UINT, offsetof(OskDeviceEvent, button), RESTRICTED, NULL },
     {"state", T_UINT, offsetof(OskDeviceEvent, state), RESTRICTED, NULL },
+    {"keycode", T_UINT, offsetof(OskDeviceEvent, keycode), READONLY, NULL },
     {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
     {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), RESTRICTED, NULL },
     {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },
@@ -476,6 +479,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
                                     Display*    display,
                                     int         device_id,
                                     int         source_id,
+                                    int         keycode,
                                     int         keyval
 )
 {
@@ -487,6 +491,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
         ev->type = translate_event_type(type);
         ev->device_id = device_id;
         ev->source_id = source_id;
+        ev->keycode = keycode;
         ev->keyval = keyval;
 
         queue_event (dev, ev, False);
@@ -883,19 +888,20 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
             case XI_KeyPress:
             {
                 XIDeviceEvent *event = cookie->data;
-                int            keyval;
 
                 if (!(event->flags & XIKeyRepeat))
                 {
-                    keyval = osk_devices_translate_keycode (event->detail,
-                                                            &event->group,
-                                                            &event->mods);
+                    int keycode = event->detail;
+                    int keyval = osk_devices_translate_keycode (keycode,
+                                                                &event->group,
+                                                                &event->mods);
                     if (keyval)
                         osk_devices_call_event_handler_key (dev,
                                                             evtype,
                                                             event->display,
                                                             event->deviceid,
                                                             event->sourceid,
+                                                            keycode,
                                                             keyval);
                 }
                 break;
@@ -904,17 +910,17 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
             case XI_KeyRelease:
             {
                 XIDeviceEvent *event = cookie->data;
-                int            keyval;
-
-                keyval = osk_devices_translate_keycode (event->detail,
-                                                        &event->group,
-                                                        &event->mods);
+                int keycode = event->detail;
+                int keyval = osk_devices_translate_keycode (event->detail,
+                                                            &event->group,
+                                                            &event->mods);
                 if (keyval)
                     osk_devices_call_event_handler_key (dev,
                                                         evtype,
                                                         event->display,
                                                         event->deviceid,
                                                         event->sourceid,
+                                                        keycode,
                                                         keyval);
                 break;
             }

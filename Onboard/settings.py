@@ -99,9 +99,39 @@ class DialogBuilder(object):
         w = self.wid(name)
         w.connect("clicked", callback)
 
+    # text entry
+    def bind_entry(self, name, config_object, key,
+                   config_get_callback=None, config_set_callback=None):
+        w = self.wid(name)
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        w.set_text(value)
+        w.connect("changed", self._bind_entry_callback,
+                  config_object, key, config_set_callback)
+        getattr(config_object, key + '_notify_add')(
+            lambda x: self._notify_entry_callback(w, config_object, key,
+                                                  config_get_callback))
+
+    def _notify_entry_callback(self, widget, config_object,
+                               key, config_get_callback):
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        widget.set_text(value)
+
+    def _bind_entry_callback(self, widget, config_object,
+                             key, config_set_callback):
+        if config_set_callback:
+            config_set_callback(config_object, key, widget.get_text())
+        else:
+            setattr(config_object, key, widget.get_text())
+
     # spin button
     def bind_spin(self, name, config_object, key,
-                  config_get_callback = None, config_set_callback = None):
+                  config_get_callback=None, config_set_callback=None):
         w = self.wid(name)
         if config_get_callback:
             value = config_get_callback(config_object, key)
@@ -259,9 +289,6 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
-        self.bind_button("auto_show_settings_button",
-                         lambda widget: AutoShowDialog().run(self.window))
-
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -285,10 +312,6 @@ class Settings(DialogBuilder):
         self.show_tooltips_toggle = builder.get_object("show_tooltips_toggle")
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
-
-        self.auto_show_toggle = builder.get_object("auto_show_toggle")
-        self.auto_show_toggle.set_active(config.auto_show.enabled)
-        config.auto_show.enabled_notify_add(self.auto_show_toggle.set_active)
 
         self.bind_combobox_id("status_icon_provider_combobox",
                               config, "status_icon_provider")
@@ -393,25 +416,98 @@ class Settings(DialogBuilder):
                             config.keyboard, "sticky_key_release_delay")
 
         self.bind_spin("sticky_key_release_on_hide_delay_spinbutton",
-                            config.keyboard, "sticky_key_release_on_hide_delay")
+                       config.keyboard, "sticky_key_release_on_hide_delay")
 
         self.bind_combobox_id("touch_input_combobox",
-                        config.keyboard, "touch_input")
+                              config.keyboard, "touch_input")
 
         def on_input_event_source_set(config_object, key, value):
             self.bind_combobox_config_set(config_object, key, value)
             self.update_window_widgets()
+
         self.bind_combobox_id("input_event_source_combobox",
-                        config.keyboard, "input_event_source",
-                        config_set_callback = on_input_event_source_set)
+                              config.keyboard, "input_event_source",
+                              config_set_callback=on_input_event_source_set)
 
         def get_inter_key_stroke_delay(config_object, key):
             return getattr(config_object, key) * 1000.0
+
         def set_inter_key_stroke_delay(config_object, key, value):
             setattr(config_object, key, value / 1000.0)
+
         self.bind_spin("inter_key_stroke_delay_spinbutton",
-                            config.keyboard, "inter_key_stroke_delay",
+                       config.keyboard, "inter_key_stroke_delay",
                        get_inter_key_stroke_delay, set_inter_key_stroke_delay)
+
+        # Auto-show - general page
+        def _set(co, key, value):
+            if value and \
+               not config.check_gnome_accessibility(self.window):
+                value = False
+            setattr(co, key, value)
+            self.update_window_widgets()
+
+        self.bind_check("auto_show_toggle1",   # toggle on general page
+                        config.auto_show, "enabled",
+                        config_set_callback=_set)
+        self.bind_check("auto_show_toggle2",   # same thing on auto-show page
+                        config.auto_show, "enabled",
+                        config_set_callback=_set)
+
+        def _set(config_object, key, value):
+            self.bind_combobox_config_set(config_object, key, value)
+            self.update_window_widgets()
+
+        self.bind_combobox_id("reposition_method_floating_combobox",
+                              config.auto_show, "reposition_method_floating",
+                              config_set_callback=_set)
+
+        self.bind_combobox_id("reposition_method_docked_combobox",
+                              config.auto_show, "reposition_method_docked",
+                              config_set_callback=_set)
+
+        def _set(config_object, key, value):
+            setattr(config_object, key, value)
+            self.update_window_widgets()
+
+        self.bind_check("hide_on_key_press_toggle",
+                        config.auto_show, "hide_on_key_press",
+                        config_set_callback=_set)
+
+        def _get(config_object, key):
+            duration = getattr(config_object, key)
+            return str(int(round(duration)))
+
+        def _set(config_object, key, value):
+            duration = float(value)
+            setattr(config_object, key, duration)
+
+        self.bind_combobox_id("hide_on_key_press_pause_combobox",
+                              config.auto_show, "hide_on_key_press_pause",
+                              _get, _set)
+
+        # Auto-show - Convertible Device page
+        self.bind_check("tablet_mode_detection_enabled_toggle",
+                        config.auto_show, "tablet_mode_detection_enabled")
+
+        def _get(co, key):
+            return str(getattr(co, key))
+
+        def _set(co, key, value):
+            try:
+                setattr(co, key, int(value))
+            except ValueError:
+                pass
+
+        self.bind_entry("tablet_mode_enter_key_entry",
+                        config.auto_show, "tablet_mode_enter_key",
+                        config_get_callback=_get,
+                        config_set_callback=_set)
+        self.bind_entry("tablet_mode_leave_key_entry",
+                        config.auto_show, "tablet_mode_leave_key",
+                        config_get_callback=_get,
+                        config_set_callback=_set)
+
 
         # word suggestions
         self._page_word_suggestions = PageWordSuggestions(self.window, builder)
@@ -429,8 +525,6 @@ class Settings(DialogBuilder):
                         config_set_callback = on_docking_enabled_config_set)
         self.bind_button("docking_settings_button",
                          lambda widget: DockingDialog().run(self.window))
-
-        self.update_window_widgets()
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
@@ -512,6 +606,9 @@ class Settings(DialogBuilder):
 
         self.window.show_all()
 
+        # update after show_all to apply widget visibility
+        self.update_window_widgets()
+
         # disable hover click controls if mousetweaks isn't installed
         frame = builder.get_object("hover_click_frame")
         frame.set_sensitive(bool(config.mousetweaks))
@@ -543,14 +640,6 @@ class Settings(DialogBuilder):
     def on_snippet_remove_button_clicked(self, event):
         _logger.info("Snippet remove button clicked")
         self.snippet_view.remove_selected()
-
-    def on_auto_show_toggled(self, widget):
-        active = widget.get_active()
-        if active and \
-           not config.check_gnome_accessibility(self.window):
-            active = False
-        config.auto_show.enabled = active
-        self.update_window_widgets()
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
@@ -593,8 +682,11 @@ class Settings(DialogBuilder):
     def update_window_widgets(self):
         force_to_top = config.is_force_to_top()
 
-        w = self.wid("auto_show_settings_button")
-        w.set_sensitive(config.is_auto_show_enabled())
+        # general
+        w = self.wid("auto_show_toggle1")
+        w.set_active(config.auto_show.enabled)
+        w = self.wid("auto_show_toggle2")
+        w.set_active(config.auto_show.enabled)
 
         w = self.wid("status_icon_provider_box")
         w.set_sensitive(config.show_status_icon)
@@ -605,6 +697,7 @@ class Settings(DialogBuilder):
         if self.icon_palette_toggle.get_active() != active:
             self.icon_palette_toggle.set_active(active)
 
+        # window
         self.window_decoration_toggle.set_sensitive(not force_to_top)
         active = config.has_window_decoration()
         if self.window_decoration_toggle.get_active() != active:
@@ -625,14 +718,23 @@ class Settings(DialogBuilder):
         self.start_minimized_toggle.set_sensitive(\
                                         not config.auto_show.enabled)
 
-        self.auto_show_toggle.set_active(config.auto_show.enabled)
-
         self.inactivity_frame.set_sensitive(not config.scanner.enabled)
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
 
-        self.auto_show_toggle.set_active(config.auto_show.enabled)
+        # auto-show
+        self.wid("hide_on_key_press_toggle") \
+            .set_sensitive(config.can_set_auto_hide())
+        self.wid("hide_on_key_press_box") \
+            .set_sensitive(config.is_auto_hide_enabled())
+        auto_show_enabled = config.is_auto_show_enabled()
+        self.wid("auto_show_general_box").set_sensitive(auto_show_enabled)
+        self.wid("auto_show_convertibles_box").set_sensitive(auto_show_enabled)
+
+        docked = config.is_docking_enabled()
+        self.wid("reposition_method_floating_box").set_visible(not docked)
+        self.wid("reposition_method_docked_box").set_visible(docked)
 
     def update_all_widgets(self):
         pass
@@ -1204,62 +1306,6 @@ class PageWordSuggestions(DialogBuilder):
         self.wid("pause_learning_button_toggle") \
                 .set_sensitive(config.word_suggestions.auto_learn)
 
-
-class AutoShowDialog(DialogBuilder):
-    """ Dialog "Auto-show Settings" """
-
-    def __init__(self):
-
-        builder = LoadUI("settings_auto_show_dialog")
-
-        DialogBuilder.__init__(self, builder)
-
-        def set_config(config_object, key, value):
-            self.bind_combobox_config_set(config_object, key, value)
-            self._update_ui()
-        self.bind_combobox_id("reposition_method_floating_combobox",
-                        config.auto_show, "reposition_method_floating",
-                        config_set_callback = set_config)
-        self.bind_combobox_id("reposition_method_docked_combobox",
-                        config.auto_show, "reposition_method_docked",
-                        config_set_callback = set_config)
-
-        def set_config(config_object, key, value):
-            setattr(config_object, key, value)
-            self._update_ui()
-        self.bind_check("hide_on_key_press_toggle",
-                        config.auto_show, "hide_on_key_press",
-                        config_set_callback = set_config)
-
-        def get_config(config_object, key):
-            duration = getattr(config_object, key)
-            return str(int(round(duration)))
-        def set_config(config_object, key, value):
-            duration = float(value)
-            setattr(config_object, key, duration)
-        self.bind_combobox_id("hide_on_key_press_pause_combobox",
-                        config.auto_show, "hide_on_key_press_pause",
-                        get_config, set_config)
-
-        self._update_ui()
-
-    def run(self, parent):
-        dialog = self.wid("dialog")
-        dialog.set_transient_for(parent)
-        dialog.run()
-        dialog.destroy()
-
-    def _update_ui(self):
-        w = self.wid("hide_on_key_press_toggle")
-        w.set_sensitive(config.can_set_auto_hide())
-        w = self.wid("hide_on_key_press_box")
-        w.set_sensitive(config.is_auto_hide_enabled())
-
-        docked = config.is_docking_enabled()
-        w = self.wid("reposition_method_floating_box")
-        w.set_visible(not docked)
-        w = self.wid("reposition_method_docked_box")
-        w.set_visible(docked)
 
 class DockingDialog(DialogBuilder):
     """ Dialog "Docking Settings" """

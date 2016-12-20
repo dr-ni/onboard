@@ -143,7 +143,7 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
         </key>
         <key name="hide-on-key-press" type="b">
             <default>true</default>
-            <summary>Hide on key-press.</summary>
+            <summary>Hide on key-press</summary>
             <description>Hide Onboard when pressing any key on a physical keyboard.</description>
         </key>
         <key name="hide-on-key-press-pause" type="d">
@@ -151,6 +151,33 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <summary>Auto-show pause after key-press.</summary>
             <description>Number of seconds auto-show remains paused after a physical key-press. -1.0 to pause forever.</description>
         </key>
+
+        <key name="tablet-mode-detection-enabled" type="b">
+            <default>true</default>
+            <summary>Enable tablet/laptop mode detection</summary>
+            <description>Enable listening to lock-key-code and unlock-key-code and lock/unlock auto-show in response.</description>
+        </key>
+        <key name="tablet-mode-enter-key" type="i">
+            <default>0</default>
+            <summary>Key-code to unlock auto-show</summary>
+            <description>When this key-press is received, resume auto-show. A convertible device might signal entering tablet-mode that way.</description>
+        </key>
+        <key name="tablet-mode-leave-key" type="i">
+            <default>0</default>
+            <summary>Key-code to lock auto-show</summary>
+            <description>When this key-press is received, stop auto-show indefinitely. A convertible device might signal entering laptop-mode that way.</description>
+        </key>
+        <key name="tablet-mode-state-file" type="s">
+            <default>''</default>
+            <summary>Name of tablet mode state file</summary>
+            <description>Path to a text file indicating whether tablet-mode is active or not, e.g. a sysfs path.</description>
+        </key>
+        <key name="tablet-mode-state-file-pattern" type="s">
+            <default>'1'</default>
+            <summary>Pattern for tablet-mode-state-file</summary>
+            <description>String to find in 'tablet-mode-state-file' in order to detect tablet-mode, e.g. 1.</description>
+        </key>
+
     </schema>
 
     <enum id="org.onboard.keyboard.DefaultKeyAction">

@@ -188,7 +188,7 @@ class XIDeviceManager(EventSource):
         return self.lookup_device_id(device_id)
 
     def get_client_keyboard(self):
-        """ Return client pointer device """
+        """ Return client keyboard device """
         client_pointer = self.get_client_pointer()
         device_id = client_pointer.attachment
         return self.lookup_device_id(device_id)

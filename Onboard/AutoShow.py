@@ -52,8 +52,8 @@ class AutoShow(object):
     _paused = False
     _frozen = False
     _keyboard = None
-    _atspi_state_tracker = AtspiStateTracker()
-    _hw_sensor_tracker = HardwareSensorTracker()
+    _atspi_state_tracker = None
+    _hw_sensor_tracker = None
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
@@ -71,32 +71,61 @@ class AutoShow(object):
 
     def cleanup(self):
         self.reset()
-        self.enable(False)  # disconnect atspi events
+        self.enable(False)  # disconnect events
+
+    def update(self):
+        self.enable_(config.is_auto_show_enabled())
 
     def enable(self, enable):
         if enable:
-            self._atspi_state_tracker.connect("text-entry-activated",
-                                        self._on_text_entry_activated)
-            self._atspi_state_tracker.connect("text-caret-moved",
-                                        self._on_text_caret_moved)
-            self._hw_sensor_tracker.connect("tablet-mode-changed",
-                                            self._on_tablet_mode_changed)
+            if not self._atspi_state_tracker:
+                self._atspi_state_tracker = AtspiStateTracker()
+                self._atspi_state_tracker.connect(
+                    "text-entry-activated", self._on_text_entry_activated)
+                self._atspi_state_tracker.connect(
+                    "text-caret-moved", self._on_text_caret_moved)
         else:
-            self._atspi_state_tracker.disconnect("text-entry-activated",
-                                        self._on_text_entry_activated)
-            self._atspi_state_tracker.disconnect("text-caret-moved",
-                                        self._on_text_caret_moved)
+            if self._atspi_state_tracker:
+                self._atspi_state_tracker.disconnect(
+                    "text-entry-activated", self._on_text_entry_activated)
+                self._atspi_state_tracker.disconnect(
+                    "text-caret-moved", self._on_text_caret_moved)
+            self._atspi_state_tracker = None
+            self._active_accessible = None  # stop using _atspi_state_tracker
 
-            self._hw_sensor_tracker.disconnect("tablet-mode-changed",
-                                               self._on_tablet_mode_changed)
         if enable:
             self._lock_visible = False
             self._frozen = False
 
+        self.enable_tablet_mode_detection(
+            enable and config.is_tablet_mode_detection_enabled())
+
+    def enable_tablet_mode_detection(self, enable):
+        if enable:
+            if not self._hw_sensor_tracker:
+                self._hw_sensor_tracker = HardwareSensorTracker()
+                self._hw_sensor_tracker.connect(
+                    "tablet-mode-changed", self._on_tablet_mode_changed)
+        else:
+            if self._hw_sensor_tracker:
+                self._hw_sensor_tracker.disconnect(
+                    "tablet-mode-changed", self._on_tablet_mode_changed)
+            self._hw_sensor_tracker = None
+
     def can_show_keyboard(self):
-        return (not self.is_paused() and
-                not config.is_tablet_mode_detection_enabled() or
-                self._hw_sensor_tracker.get_tablet_mode())
+        if self.is_paused():
+            return False
+
+        if config.is_tablet_mode_detection_enabled():
+            tablet_mode = self._hw_sensor_tracker.get_tablet_mode() \
+                if self._hw_sensor_tracker else None
+
+            _logger.info("can_show_keyboard: tablet_mode={}"
+                         .format(tablet_mode))
+
+            return tablet_mode is not False  # can be True, False or None
+
+        return True
 
     def is_paused(self):
         return self._paused
@@ -110,7 +139,7 @@ class AutoShow(object):
         """
         self._paused = True
         self._pause_timer.stop()
-        if not duration is None:
+        if duration is not None:
             self._pause_timer.start(duration, self.resume)
 
         # Discard pending hide/show actions.
@@ -156,7 +185,7 @@ class AutoShow(object):
         self._frozen = False
         return False
 
-    def lock_visible(self, lock, thaw_time = 1.0):
+    def lock_visible(self, lock, thaw_time=1.0):
         """
         Lock window permanently visible in response to the user showing it.
         Optionally freeze hiding/showing for a limited time.
@@ -195,24 +224,34 @@ class AutoShow(object):
         active = bool(accessible)
 
         # show/hide the keyboard window
-        if active is not None:
-            # Always allow to show the window even when locked.
-            # Mitigates right click on unity-2d launcher hiding
-            # onboard before _lock_visible is set (Precise).
-            if self._lock_visible:
-                active = True
-
-            if not self.is_frozen() and \
-               (not active or self.can_show_keyboard()):
-                self.show_keyboard(active)
-
-            # The active accessible changed, stop trying to
-            # track the position of the previous one.
-            # -> less erratic movement during quick focus changes
-            self._keyboard.stop_auto_positioning()
+        if active is not None and \
+           not self.is_frozen():
+            self._maybe_show_keyboard(active)
 
     def _on_tablet_mode_changed(self, active):
-        pass
+        if active:
+            show = bool(self._active_accessible)
+        else:
+            # hide keyboard even if it was locked visible
+            self.lock_visible(False, thaw_time=0)
+            show = False
+
+        self._maybe_show_keyboard(show)
+
+    def _maybe_show_keyboard(self, show):
+        # Always allow to show the window even when locked.
+        # Mitigates right click on unity-2d launcher hiding
+        # onboard before _lock_visible is set (Precise).
+        if self._lock_visible:
+            show = True
+
+        if not show or self.can_show_keyboard():
+            self.show_keyboard(show)
+
+        # The active accessible changed, stop trying to
+        # track the position of the previous one.
+        # -> less erratic movement during quick focus changes
+        self._keyboard.stop_auto_positioning()
 
     def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """

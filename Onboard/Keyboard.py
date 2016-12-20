@@ -2285,6 +2285,10 @@ class Keyboard(WordSuggestions):
         self._auto_show.show_keyboard(not enable)
         self.update_auto_hide()
 
+    def update_tablet_mode_detection(self):
+        enable = config.is_tablet_mode_detection_enabled()
+        self._auto_show.enable_tablet_mode_detection(enable)
+
     def update_auto_hide(self):
         enabled_before = self._auto_hide.is_enabled()
         enabled_after = config.is_auto_hide_enabled()
