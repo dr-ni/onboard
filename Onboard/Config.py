@@ -1070,7 +1070,8 @@ class Config(ConfigObject):
 
     def is_auto_hide_enabled(self):
         return self.is_auto_hide_on_keypress_enabled() or \
-            self.is_tablet_mode_detection_enabled()
+            self.is_tablet_mode_detection_enabled() or \
+            self.is_keyboard_device_detection_enabled()
 
     def is_auto_hide_on_keypress_enabled(self):
         return self.can_set_auto_hide() and \
@@ -1079,6 +1080,10 @@ class Config(ConfigObject):
     def is_tablet_mode_detection_enabled(self):
         return self.can_set_auto_hide() and \
             self.auto_show.tablet_mode_detection_enabled
+
+    def is_keyboard_device_detection_enabled(self):
+        return self.can_set_auto_hide() and \
+            self.auto_show.keyboard_device_detection_enabled
 
     def can_auto_show_reposition(self):
         return self.is_auto_show_enabled() and \
@@ -1834,11 +1839,14 @@ class ConfigAutoShow(ConfigObject):
         self.add_key("hide-on-key-press", True)
         self.add_key("hide-on-key-press-pause", 1800.0)
 
-        self.add_key("tablet-mode-detection-enabled", False)
+        self.add_key("tablet-mode-detection-enabled", True)
         self.add_key("tablet-mode-enter-key", 0)
         self.add_key("tablet-mode-leave-key", 0)
         self.add_key("tablet-mode-state-file", "")
         self.add_key("tablet-mode-state-file-pattern", "1")
+
+        self.add_key("keyboard-device-detection-enabled", False)
+        self.add_key("keyboard-device-detection-exceptions", [])
 
     def tablet_mode_detection_notify_add(self, callback):
         self.tablet_mode_detection_enabled_notify_add(callback)

@@ -181,6 +181,7 @@ void    __osk_struts_register_type       (PyObject *module);
 void    __osk_click_mapper_register_type (PyObject *module);
 void    __osk_util_register_type         (PyObject *module);
 void    __osk_uinput_register_type       (PyObject *module);
+void    __osk_udev_register_type       (PyObject *module);
 
 void osk_util_idle_call (PyObject *callback, PyObject *arglist);
 

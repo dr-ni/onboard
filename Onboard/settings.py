@@ -49,6 +49,7 @@ from Onboard.utils           import unicode_str, open_utf8, escape_markup, \
                                     XDGDirs
 from Onboard.WindowUtils     import show_ask_string_dialog, \
                                     show_confirmation_dialog
+from Onboard.UDevTracker     import UDevTracker
 
 
 app = "onboard"
@@ -240,7 +241,15 @@ class DialogBuilder(object):
         if not id is None:
             setattr(config_object, key, int(id))
 
-    def select_tree_view_row(self, view, column, value, _it = None):
+    def get_tree_view_selection(self, view, column):
+        sel = view.get_selection()
+        if sel:
+            it = sel.get_selected()[1]
+            if it:
+                return view.get_model().get_value(it, column)
+        return None
+
+    def select_tree_view_row(self, view, column, value, _it=None):
         model = view.get_model()
         if _it is None:
             _it = model.get_iter_first()
@@ -439,79 +448,11 @@ class Settings(DialogBuilder):
                        config.keyboard, "inter_key_stroke_delay",
                        get_inter_key_stroke_delay, set_inter_key_stroke_delay)
 
-        # Auto-show - general page
-        def _set(co, key, value):
-            if value and \
-               not config.check_gnome_accessibility(self.window):
-                value = False
-            setattr(co, key, value)
-            self.update_window_widgets()
-
-        self.bind_check("auto_show_toggle1",   # toggle on general page
-                        config.auto_show, "enabled",
-                        config_set_callback=_set)
-        self.bind_check("auto_show_toggle2",   # same thing on auto-show page
-                        config.auto_show, "enabled",
-                        config_set_callback=_set)
-
-        def _set(config_object, key, value):
-            self.bind_combobox_config_set(config_object, key, value)
-            self.update_window_widgets()
-
-        self.bind_combobox_id("reposition_method_floating_combobox",
-                              config.auto_show, "reposition_method_floating",
-                              config_set_callback=_set)
-
-        self.bind_combobox_id("reposition_method_docked_combobox",
-                              config.auto_show, "reposition_method_docked",
-                              config_set_callback=_set)
-
-        def _set(config_object, key, value):
-            setattr(config_object, key, value)
-            self.update_window_widgets()
-
-        self.bind_check("hide_on_key_press_toggle",
-                        config.auto_show, "hide_on_key_press",
-                        config_set_callback=_set)
-
-        def _get(config_object, key):
-            duration = getattr(config_object, key)
-            return str(int(round(duration)))
-
-        def _set(config_object, key, value):
-            duration = float(value)
-            setattr(config_object, key, duration)
-
-        self.bind_combobox_id("hide_on_key_press_pause_combobox",
-                              config.auto_show, "hide_on_key_press_pause",
-                              _get, _set)
-
-        # Auto-show - Convertible Device page
-        self.bind_check("tablet_mode_detection_enabled_toggle",
-                        config.auto_show, "tablet_mode_detection_enabled")
-
-        def _get(co, key):
-            return str(getattr(co, key))
-
-        def _set(co, key, value):
-            try:
-                value = int(value)
-            except ValueError:
-                value = 0
-            setattr(co, key, value)
-
-        self.bind_entry("tablet_mode_enter_key_entry",
-                        config.auto_show, "tablet_mode_enter_key",
-                        config_get_callback=_get,
-                        config_set_callback=_set)
-        self.bind_entry("tablet_mode_leave_key_entry",
-                        config.auto_show, "tablet_mode_leave_key",
-                        config_get_callback=_get,
-                        config_set_callback=_set)
-
+        # Auto-show
+        self._page_auto_show = PageAutoShow(self, builder)
 
         # word suggestions
-        self._page_word_suggestions = PageWordSuggestions(self.window, builder)
+        self._page_word_suggestions = PageWordSuggestions(self, builder)
 
         # window, docking
         self.docking_enabled_toggle = \
@@ -684,11 +625,6 @@ class Settings(DialogBuilder):
         force_to_top = config.is_force_to_top()
 
         # general
-        w = self.wid("auto_show_toggle1")
-        w.set_active(config.auto_show.enabled)
-        w = self.wid("auto_show_toggle2")
-        w.set_active(config.auto_show.enabled)
-
         w = self.wid("status_icon_provider_box")
         w.set_sensitive(config.show_status_icon)
 
@@ -725,17 +661,7 @@ class Settings(DialogBuilder):
             self.enable_inactive_transparency_toggle.set_active(active)
 
         # auto-show
-        self.wid("hide_on_key_press_toggle") \
-            .set_sensitive(config.can_set_auto_hide())
-        self.wid("hide_on_key_press_box") \
-            .set_sensitive(config.is_auto_hide_enabled())
-        auto_show_enabled = config.is_auto_show_enabled()
-        self.wid("auto_show_general_box").set_sensitive(auto_show_enabled)
-        self.wid("auto_show_convertibles_box").set_sensitive(auto_show_enabled)
-
-        docked = config.is_docking_enabled()
-        self.wid("reposition_method_floating_box").set_visible(not docked)
-        self.wid("reposition_method_docked_box").set_visible(docked)
+        self._page_auto_show.update_ui()
 
     def update_all_widgets(self):
         pass
@@ -935,7 +861,7 @@ class Settings(DialogBuilder):
         dialog.run()
         dialog.destroy()
 
-    def _read_layouts(self, path,  sort_order=()):
+    def _read_layouts(self, path, sort_order=()):
         filenames = self._find_layouts(path)
 
         layout_infos = []
@@ -1219,16 +1145,217 @@ class Settings(DialogBuilder):
         return None
 
 
+class PageAutoShow(DialogBuilder):
+    """ Word Suggestions """
+
+    """ Keyboard devices view columns """
+    COL_ID      = 0
+    COL_INCLUDE = 1
+    COL_TEXT    = 2
+
+    def __init__(self, settings, builder):
+        DialogBuilder.__init__(self, builder)
+        self._settings = settings
+
+        # General page
+        def _set(co, key, value):
+            if value and \
+               not config.check_gnome_accessibility(self._settings.window):
+                value = False
+            setattr(co, key, value)
+            self._settings.update_window_widgets()  # will call _update_ui()
+
+        self.bind_check("auto_show_toggle1",   # toggle on general page
+                        config.auto_show, "enabled",
+                        config_set_callback=_set)
+        self.bind_check("auto_show_toggle2",   # same thing on auto-show page
+                        config.auto_show, "enabled",
+                        config_set_callback=_set)
+
+        def _set(config_object, key, value):
+            self.bind_combobox_config_set(config_object, key, value)
+            self._settings.update_window_widgets()
+
+        self.bind_combobox_id("reposition_method_floating_combobox",
+                              config.auto_show, "reposition_method_floating",
+                              config_set_callback=_set)
+
+        self.bind_combobox_id("reposition_method_docked_combobox",
+                              config.auto_show, "reposition_method_docked",
+                              config_set_callback=_set)
+
+        def _set(config_object, key, value):
+            setattr(config_object, key, value)
+            self.update_window_widgets()
+
+        self.bind_check("hide_on_key_press_toggle",
+                        config.auto_show, "hide_on_key_press",
+                        config_set_callback=_set)
+
+        def _get(config_object, key):
+            duration = getattr(config_object, key)
+            return str(int(round(duration)))
+
+        def _set(config_object, key, value):
+            duration = float(value)
+            setattr(config_object, key, duration)
+
+        self.bind_combobox_id("hide_on_key_press_pause_combobox",
+                              config.auto_show, "hide_on_key_press_pause",
+                              _get, _set)
+
+        # Convertible Devices page
+        self.bind_check("tablet_mode_detection_enabled_toggle",
+                        config.auto_show, "tablet_mode_detection_enabled")
+
+        def _get(co, key):
+            return str(getattr(co, key))
+
+        def _set(co, key, value):
+            try:
+                value = int(value)
+            except ValueError:
+                value = 0
+            setattr(co, key, value)
+
+        self.bind_entry("tablet_mode_enter_key_entry",
+                        config.auto_show, "tablet_mode_enter_key",
+                        config_get_callback=_get,
+                        config_set_callback=_set)
+        self.bind_entry("tablet_mode_leave_key_entry",
+                        config.auto_show, "tablet_mode_leave_key",
+                        config_get_callback=_get,
+                        config_set_callback=_set)
+
+        # External Keyboards page
+        def _set(co, key, value):
+            setattr(co, key, value)
+            self._settings.update_window_widgets()  # will call _update_ui()
+
+        self.bind_check("keyboard_device_detection_enabled_toggle",
+                        config.auto_show, "keyboard_device_detection_enabled",
+                        config_set_callback=_set)
+
+        self._udev_tracker = UDevTracker()
+        self._udev_tracker.connect("keyboard-detection-changed",
+                                   self._on_keyboard_device_detection_changed)
+
+        self._update_keyboard_devices_view()
+
+        config.auto_show.keyboard_device_detection_exceptions_notify_add(
+            lambda x: self._update_keyboard_devices_view())
+
+    def _update_keyboard_devices_view(self):
+        view = self.wid("keyboard_detection_devices_view")
+        if not view.get_model():
+            model = Gtk.ListStore(str, bool, str)
+            view.set_model(model)
+
+            column_id = Gtk.TreeViewColumn()
+
+            # Translators: header of a tree view column with toggles to ignore
+            # keyboard devices (Preferences->Auto-show->External Keyboards).
+            column_toggle = Gtk.TreeViewColumn(_("Ignore"))
+
+            # Translators: header of a tree view column with device names
+            # (Preferences->Auto-show->External Keyboards).
+            column_text = Gtk.TreeViewColumn(_("Device"))
+
+            view.append_column(column_id)
+            view.append_column(column_toggle)
+            view.append_column(column_text)
+
+            cellrenderer_toggle = Gtk.CellRendererToggle()
+            column_toggle.pack_start(cellrenderer_toggle, False)
+            column_toggle.add_attribute(
+                cellrenderer_toggle, "active", self.COL_INCLUDE)
+
+            cellrenderer_text = Gtk.CellRendererText()
+            column_text.pack_start(cellrenderer_text, True)
+            column_text.add_attribute(cellrenderer_text, "text", self.COL_TEXT)
+            cellrenderer_toggle.connect(
+                "toggled", self._on_keyboard_device_toggled, model)
+
+        model = view.get_model()
+        selected_id = self.get_tree_view_selection(view, self.COL_ID)
+
+        model.clear()
+
+        devices = self._udev_tracker.get_keyboard_devices()
+        for device in devices:
+            ignore = device.id in \
+                config.auto_show.keyboard_device_detection_exceptions
+            t = (device.id, ignore, device.name)
+            model.append(t)
+
+        self.select_tree_view_row(view, self.COL_ID, selected_id)
+
+    def _on_keyboard_device_detection_changed(self, detected):
+        self._update_keyboard_devices_view()
+
+    def _on_keyboard_device_toggled(self, widget, path, model):
+        device_id = model[path][self.COL_ID]
+        ignore = not model[path][self.COL_INCLUDE]
+
+        # Update all rows with the same device id. There might still be
+        # duplicate device entries.
+        for row in model:
+            if row[self.COL_ID] == device_id:
+                row[self.COL_INCLUDE] = ignore
+
+        self._ignore_keyboard_device(device_id, ignore)
+
+    def _ignore_keyboard_device(self, device_id, ignore):
+        exceptions = config.auto_show.keyboard_device_detection_exceptions[:]
+
+        if ignore:
+            if device_id not in exceptions:
+                exceptions.append(device_id)
+        else:
+            try:
+                exceptions.remove(device_id)
+            except ValueError:
+                pass
+
+        config.auto_show.keyboard_device_detection_exceptions = exceptions
+
+    def update_ui(self):
+        # Two toggles that do the exact same thing: one on the general page,
+        # the other on the auto-show page. Keep the one on the general page as
+        # it's active state influences the visibility options there.
+        # Otherwise it becomes even less clear why some of these options are
+        # enabled/disabled.
+        self.wid("auto_show_toggle1").set_active(config.auto_show.enabled)
+        self.wid("auto_show_toggle2").set_active(config.auto_show.enabled)
+
+        docked = config.is_docking_enabled()
+        self.wid("reposition_method_floating_box").set_visible(not docked)
+        self.wid("reposition_method_docked_box").set_visible(docked)
+
+        self.wid("hide_on_key_press_toggle") \
+            .set_sensitive(config.can_set_auto_hide())
+        self.wid("hide_on_key_press_box") \
+            .set_sensitive(config.is_auto_hide_enabled())
+        auto_show_enabled = config.is_auto_show_enabled()
+        self.wid("auto_show_general_box").set_sensitive(auto_show_enabled)
+        self.wid("auto_show_convertibles_box").set_sensitive(auto_show_enabled)
+        self.wid("auto_show_external_keyboards_box") \
+            .set_sensitive(auto_show_enabled)
+
+        self.wid("keyboard_device_detection_box") \
+            .set_sensitive(config.is_keyboard_device_detection_enabled())
+
+
 class PageWordSuggestions(DialogBuilder):
     """ Word Suggestions """
 
-    def __init__(self, window, builder):
+    def __init__(self, settings, builder):
         DialogBuilder.__init__(self, builder)
-        self._window = window
+        self._settings = settings
 
         def _set_word_suggestions_enabled(co, key, value):
             if value and \
-               not config.check_gnome_accessibility(self._window):
+               not config.check_gnome_accessibility(self._settings.window):
                 value = False
                 self.wid("enable_word_suggestions_toggle") \
                         .set_active(value)

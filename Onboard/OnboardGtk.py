@@ -345,6 +345,8 @@ class OnboardGtk(object):
             lambda x: self.keyboard.update_auto_hide())
         config.auto_show.tablet_mode_detection_notify_add(
             lambda x: self.keyboard.update_tablet_mode_detection())
+        config.auto_show.keyboard_device_detection_enabled_notify_add(
+            lambda x: self.keyboard.update_keyboard_device_detection())
 
         # word suggestions
         config.word_suggestions.show_context_line_notify_add(update_ui)

@@ -178,6 +178,16 @@ If unavailable, 'AppIndicator' falls back to GtkStatusIcon.
             <description>String to find in 'tablet-mode-state-file' in order to detect tablet-mode, e.g. 1.</description>
         </key>
 
+        <key name="keyboard-device-detection-enabled" type="b">
+            <default>false</default>
+            <summary>Enable detection of keyboard devices</summary>
+            <description>If enabled, auto-show will be paused while physical keyboard devices are connected.</description>
+        </key>
+        <key name="keyboard-device-detection-exceptions" type="as">
+            <default>[]</default>
+            <summary>Keyboard devices to ignore</summary>
+            <description>List of keyboard devices that should not pause auto-show.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.keyboard.DefaultKeyAction">

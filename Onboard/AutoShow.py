@@ -22,19 +22,16 @@ from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.HardwareSensorTracker import HardwareSensorTracker
+from Onboard.UDevTracker       import UDevTracker
 from Onboard.utils             import Rect
 from Onboard.Timer             import TimerOnce
 from Onboard.definitions       import RepositionMethodEnum
 
-### Logging ###
 import logging
 _logger = logging.getLogger("AutoShow")
-###############
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class AutoShow(object):
@@ -54,6 +51,7 @@ class AutoShow(object):
     _keyboard = None
     _atspi_state_tracker = None
     _hw_sensor_tracker = None
+    _udev_tracker = None
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
@@ -100,6 +98,9 @@ class AutoShow(object):
         self.enable_tablet_mode_detection(
             enable and config.is_tablet_mode_detection_enabled())
 
+        self.enable_keyboard_device_detection(
+            enable and config.is_keyboard_device_detection_enabled())
+
     def enable_tablet_mode_detection(self, enable):
         if enable:
             if not self._hw_sensor_tracker:
@@ -107,7 +108,8 @@ class AutoShow(object):
                 self._hw_sensor_tracker.connect(
                     "tablet-mode-changed", self._on_tablet_mode_changed)
 
-            # run/stop GlobalKeyListener when tablet hotkeys change
+            # Run/stop GlobalKeyListener when tablet-mode-enter-key or
+            # tablet-mode-leave-key change.
             self._hw_sensor_tracker.update_sensor_sources()
         else:
             if self._hw_sensor_tracker:
@@ -115,20 +117,59 @@ class AutoShow(object):
                     "tablet-mode-changed", self._on_tablet_mode_changed)
             self._hw_sensor_tracker = None
 
+        _logger.debug("enable_tablet_mode_detection {} {}"
+                        .format(enable, self._hw_sensor_tracker))
+
+    def enable_keyboard_device_detection(self, enable):
+        """
+        Detect if physical keyboard devices are present in the system.
+        If yes, auto-show is paused.
+        """
+        if enable:
+            if not self._udev_tracker:
+                self._udev_tracker = UDevTracker()
+                self._udev_tracker.connect(
+                    "keyboard-detection-changed",
+                    self._on_keyboard_device_detection_changed)
+        else:
+            if self._udev_tracker:
+                self._udev_tracker.disconnect(
+                    "keyboard-detection-changed",
+                    self._on_keyboard_device_detection_changed)
+            self._udev_tracker = None
+
+        _logger.debug("enable_keyboard_device_detection {} {}"
+                        .format(enable, self._udev_tracker))
+
     def can_show_keyboard(self):
-        if self.is_paused():
-            return False
+        result = True
 
-        if config.is_tablet_mode_detection_enabled():
-            tablet_mode = self._hw_sensor_tracker.get_tablet_mode() \
-                if self._hw_sensor_tracker else None
+        paused = self.is_paused()
+        msg = "paused={} ".format(paused)
+        if paused:
+            result = False
+        else:
+            if config.is_tablet_mode_detection_enabled():
+                tablet_mode = self._hw_sensor_tracker.get_tablet_mode() \
+                    if self._hw_sensor_tracker else None
 
-            _logger.info("can_show_keyboard: tablet_mode={}"
-                         .format(tablet_mode))
+                msg += "tablet_mode={} ".format(tablet_mode)
 
-            return tablet_mode is not False  # can be True, False or None
+                result = result and \
+                    tablet_mode is not False  # can be True, False or None
 
-        return True
+            if config.is_keyboard_device_detection_enabled():
+                detected = self._udev_tracker.is_keyboard_device_detected() \
+                    if self._udev_tracker else None
+
+                msg += "keyboard_device_detected={} ".format(detected)
+
+                result = result and \
+                    detected is not True  # can be True, False or None
+
+        _logger.debug("can_show_keyboard: " + msg)
+
+        return result
 
     def is_paused(self):
         return self._paused
@@ -158,7 +199,7 @@ class AutoShow(object):
     def is_frozen(self):
         return self._frozen
 
-    def freeze(self, thaw_time = None):
+    def freeze(self, thaw_time=None):
         """
         Disable showing and hiding the keyboard window for short periods,
         e.g. to skip unexpected focus events.
@@ -166,13 +207,13 @@ class AutoShow(object):
         """
         self._frozen = True
         self._thaw_timer.stop()
-        if not thaw_time is None:
+        if thaw_time is not None:
             self._thaw_timer.start(thaw_time, self._on_thaw)
 
         # Discard pending hide/show actions.
         self._auto_show_timer.stop()
 
-    def thaw(self, thaw_time = None):
+    def thaw(self, thaw_time=None):
         """
         Allow hiding and showing the keyboard window again.
         thaw_time in seconds, None to thaw immediately.
@@ -232,7 +273,13 @@ class AutoShow(object):
             self._maybe_show_keyboard(active)
 
     def _on_tablet_mode_changed(self, active):
-        if active:
+        self._handle_tablet_mode_changed(active)
+
+    def _on_keyboard_device_detection_changed(self, detected):
+        self._handle_tablet_mode_changed(not detected)
+
+    def _handle_tablet_mode_changed(self, tablet_mode_active):
+        if tablet_mode_active:
             show = bool(self._active_accessible)
         else:
             # hide keyboard even if it was locked visible

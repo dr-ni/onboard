@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkAdjustment" id="_background_gradient_adjustment">
@@ -2789,131 +2790,105 @@ Requires restart.</property>
                                 <property name="valign">start</property>
                                 <property name="margin_left">20</property>
                                 <property name="orientation">vertical</property>
-                                <property name="spacing">16</property>
+                                <property name="spacing">23</property>
                                 <child>
-                                  <object class="GtkFrame" id="frame17">
+                                  <object class="GtkBox" id="box43">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label_xalign">0</property>
-                                    <property name="shadow_type">none</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
-                                      <object class="GtkAlignment" id="alignment2">
+                                      <object class="GtkBox" id="reposition_method_floating_box">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="top_padding">4</property>
-                                        <property name="left_padding">12</property>
+                                        <property name="spacing">12</property>
                                         <child>
-                                          <object class="GtkBox" id="box43">
+                                          <object class="GtkLabel" id="label65">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="orientation">vertical</property>
+                                            <property name="label" translatable="yes">Keyboard movement strategy:</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="single_line_mode">True</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkComboBox" id="reposition_method_floating_combobox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="tooltip_text" translatable="yes">Chose how the keyboard window moves when a text entry is activated.</property>
+                                            <property name="model">_reposition_method_model</property>
+                                            <property name="id_column">0</property>
                                             <child>
-                                              <object class="GtkBox" id="reposition_method_floating_box">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="spacing">12</property>
-                                                <child>
-                                                  <object class="GtkLabel" id="label65">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Strategy:</property>
-                                                    <property name="use_underline">True</property>
-                                                    <property name="single_line_mode">True</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkComboBox" id="reposition_method_floating_combobox">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="tooltip_text" translatable="yes">Chose how the keyboard window moves when a text entry is activated.</property>
-                                                    <property name="model">_reposition_method_model</property>
-                                                    <property name="id_column">0</property>
-                                                    <child>
-                                                      <object class="GtkCellRendererText" id="cellrenderer3"/>
-                                                      <attributes>
-                                                        <attribute name="text">1</attribute>
-                                                      </attributes>
-                                                    </child>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">1</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkBox" id="reposition_method_docked_box">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="spacing">12</property>
-                                                <child>
-                                                  <object class="GtkLabel" id="label66">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Strategy:</property>
-                                                    <property name="use_underline">True</property>
-                                                    <property name="single_line_mode">True</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkComboBox" id="reposition_method_docked_combobox">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="tooltip_text" translatable="yes">Chose how the keyboard window moves when a text entry is activated.</property>
-                                                    <property name="model">_reposition_method_model</property>
-                                                    <property name="id_column">0</property>
-                                                    <child>
-                                                      <object class="GtkCellRendererText" id="cellrenderer4"/>
-                                                      <attributes>
-                                                        <attribute name="text">1</attribute>
-                                                      </attributes>
-                                                    </child>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">2</property>
-                                              </packing>
+                                              <object class="GtkCellRendererText" id="cellrenderer3"/>
+                                              <attributes>
+                                                <attribute name="text">1</attribute>
+                                              </attributes>
                                             </child>
                                           </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
                                         </child>
                                       </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
                                     </child>
-                                    <child type="label">
-                                      <object class="GtkLabel" id="label67">
+                                    <child>
+                                      <object class="GtkBox" id="reposition_method_docked_box">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Keyboard Movement</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label66">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label" translatable="yes">Keyboard movement strategy:</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="single_line_mode">True</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkComboBox" id="reposition_method_docked_combobox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="tooltip_text" translatable="yes">Chose how the keyboard window moves when a text entry is activated.</property>
+                                            <property name="model">_reposition_method_model</property>
+                                            <property name="id_column">0</property>
+                                            <child>
+                                              <object class="GtkCellRendererText" id="cellrenderer4"/>
+                                              <attributes>
+                                                <attribute name="text">1</attribute>
+                                              </attributes>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
                                       </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
+                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
@@ -2923,33 +2898,47 @@ Requires restart.</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkFrame" id="frame18">
+                                  <object class="GtkBox" id="box44">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label_xalign">0</property>
-                                    <property name="shadow_type">none</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkAlignment" id="alignment3">
+                                      <object class="GtkCheckButton" id="hide_on_key_press_toggle">
+                                        <property name="label" translatable="yes">_Hide when typing on a physical keyboard</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Hide Onboard when any key is pressed on a physical keyboard. Requires input event source "XInput".</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="hide_on_key_press_box">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="top_padding">4</property>
-                                        <property name="left_padding">12</property>
+                                        <property name="orientation">vertical</property>
                                         <child>
-                                          <object class="GtkBox" id="box44">
+                                          <object class="GtkBox" id="box45">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="orientation">vertical</property>
-                                            <property name="spacing">6</property>
+                                            <property name="margin_left">20</property>
+                                            <property name="spacing">12</property>
                                             <child>
-                                              <object class="GtkCheckButton" id="hide_on_key_press_toggle">
-                                                <property name="label" translatable="yes">_Hide when typing on a physical keyboard</property>
+                                              <object class="GtkLabel" id="label68">
                                                 <property name="visible">True</property>
-                                                <property name="can_focus">True</property>
-                                                <property name="receives_default">False</property>
-                                                <property name="tooltip_text" translatable="yes">Hide Onboard when any key is pressed on a physical keyboard. Requires input event source "XInput".</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="label" translatable="yes">Stay hidden:</property>
                                                 <property name="use_underline">True</property>
+                                                <property name="single_line_mode">True</property>
                                                 <property name="xalign">0</property>
-                                                <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -2958,57 +2947,18 @@ Requires restart.</property>
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkBox" id="hide_on_key_press_box">
+                                              <object class="GtkComboBox" id="hide_on_key_press_pause_combobox">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="orientation">vertical</property>
+                                                <property name="tooltip_text" translatable="yes">Once hidden by a physical key-press, auto-show is paused. Select the pause duration here.</property>
+                                                <property name="model">_hide_on_key_press_pause_model</property>
+                                                <property name="popup_fixed_width">False</property>
+                                                <property name="id_column">0</property>
                                                 <child>
-                                                  <object class="GtkBox" id="box45">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="spacing">12</property>
-                                                    <child>
-                                                      <object class="GtkLabel" id="label68">
-                                                        <property name="visible">True</property>
-                                                        <property name="can_focus">False</property>
-                                                        <property name="label" translatable="yes">Stay hidden:</property>
-                                                        <property name="use_underline">True</property>
-                                                        <property name="single_line_mode">True</property>
-                                                        <property name="xalign">0</property>
-                                                      </object>
-                                                      <packing>
-                                                        <property name="expand">False</property>
-                                                        <property name="fill">True</property>
-                                                        <property name="position">0</property>
-                                                      </packing>
-                                                    </child>
-                                                    <child>
-                                                      <object class="GtkComboBox" id="hide_on_key_press_pause_combobox">
-                                                        <property name="visible">True</property>
-                                                        <property name="can_focus">False</property>
-                                                        <property name="tooltip_text" translatable="yes">Once hidden by a physical key-press, auto-show is paused. Select the pause duration here.</property>
-                                                        <property name="model">_hide_on_key_press_pause_model</property>
-                                                        <property name="popup_fixed_width">False</property>
-                                                        <property name="id_column">0</property>
-                                                        <child>
-                                                          <object class="GtkCellRendererText" id="cellrenderer1"/>
-                                                          <attributes>
-                                                            <attribute name="text">1</attribute>
-                                                          </attributes>
-                                                        </child>
-                                                      </object>
-                                                      <packing>
-                                                        <property name="expand">False</property>
-                                                        <property name="fill">True</property>
-                                                        <property name="position">1</property>
-                                                      </packing>
-                                                    </child>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
+                                                  <object class="GtkCellRendererText" id="cellrenderer1"/>
+                                                  <attributes>
+                                                    <attribute name="text">1</attribute>
+                                                  </attributes>
                                                 </child>
                                               </object>
                                               <packing>
@@ -3018,18 +2968,18 @@ Requires restart.</property>
                                               </packing>
                                             </child>
                                           </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
                                       </object>
-                                    </child>
-                                    <child type="label">
-                                      <object class="GtkLabel" id="label69">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Auto-hide</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
@@ -3301,7 +3251,7 @@ Requires restart.</property>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Convertible Device</property>
+                            <property name="label" translatable="yes">Convertible Devices</property>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -3309,15 +3259,15 @@ Requires restart.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="auto_show_external_keyboards_box">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">9</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <child>
-                              <object class="GtkCheckButton">
-                                <property name="label" translatable="yes">Auto-show only if no external keyboards are connected</property>
+                              <object class="GtkCheckButton" id="keyboard_device_detection_enabled_toggle">
+                                <property name="label" translatable="yes">Don't auto-show while external keyboards are connected</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -3336,40 +3286,70 @@ Requires restart.</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_left">21</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="keyboard_device_detection_box">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="orientation">vertical</property>
+                                    <property name="spacing">6</property>
                                     <child>
                                       <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="halign">start</property>
-                                        <property name="label" translatable="yes">label</property>
+                                        <property name="label" translatable="yes">Detected keyboard devices:</property>
+                                        <property name="wrap">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="fill">True</property>
+                                        <property name="fill">False</property>
                                         <property name="position">0</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <placeholder/>
+                                      <object class="GtkScrolledWindow">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="shadow_type">in</property>
+                                        <child>
+                                          <object class="GtkTreeView" id="keyboard_detection_devices_view">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="enable_search">False</property>
+                                            <child internal-child="selection">
+                                              <object class="GtkTreeSelection"/>
+                                            </child>
+                                          </object>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                     <child>
-                                      <placeholder/>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="label" translatable="yes">Check 'Ignore' for devices that are always connected and should not block auto-show.</property>
+                                        <property name="wrap">True</property>
+                                        <property name="max_width_chars">64</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
                                     </child>
                                   </object>
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
+                                <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                           <packing>
@@ -4259,11 +4239,12 @@ Requires restart.</property>
       <action-widget response="0">close_button</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkSizeGroup" id="auto_show_general_sizegroup">
+  <object class="GtkSizeGroup" id="auto_show_tablet_mode_sizegroup">
     <widgets>
-      <widget name="label65"/>
-      <widget name="label66"/>
-      <widget name="label68"/>
+      <widget name="label70"/>
+      <widget name="label60"/>
+      <widget name="label60"/>
+      <widget name="label70"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="keyboard_advanced_sizegroup">
@@ -4294,13 +4275,6 @@ Requires restart.</property>
       <widget name="label15"/>
     </widgets>
   </object>
-  <object class="GtkSizeGroup" id="auto_show_tablet_mode_sizegroup">
-    <widgets>
-      <widget name="label70"/>
-      <widget name="label60"/>
-      <widget name="label60"/>
-      <widget name="label70"/>
-    </widgets>
-  </object>
+  <object class="GtkSizeGroup" id="auto_show_general_sizegroup"/>
   <object class="GtkSizeGroup" id="window_sizegroup"/>
 </interface>

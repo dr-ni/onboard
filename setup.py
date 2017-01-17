@@ -196,6 +196,7 @@ class Extension_osk(Extension):
                'osk_hunspell.c',
                'osk_click_mapper.c',
                'osk_uinput.c',
+               'osk_udev.c',
               ]
 
     depends = ['osk_module.h']
@@ -230,7 +231,8 @@ class Extension_osk(Extension):
                                "-Werror=declaration-after-statement"],
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'xkbfile',
-                                       'dconf', 'libcanberra', 'hunspell')
+                                       'dconf', 'libcanberra', 'hunspell',
+                                       'libudev')
                            )
 
 extension_osk = Extension_osk()

@@ -2289,6 +2289,10 @@ class Keyboard(WordSuggestions):
         enable = config.is_tablet_mode_detection_enabled()
         self._auto_show.enable_tablet_mode_detection(enable)
 
+    def update_keyboard_device_detection(self):
+        enable = config.is_keyboard_device_detection_enabled()
+        self._auto_show.enable_tablet_mode_detection(enable)
+
     def update_auto_hide(self):
         enabled_before = self._auto_hide.is_enabled()
         enabled_after = config.is_auto_hide_enabled()
@@ -2355,6 +2359,9 @@ class Keyboard(WordSuggestions):
                                                test_clearance, move_clearance,
                                                horizontal=True,
                                                vertical=True):
+        if not self._auto_show:   # may happen on exit, rarely
+            return None
+
         return self._auto_show.get_repositioned_window_rect(
             view, home, limit_rects,
             test_clearance, move_clearance,
