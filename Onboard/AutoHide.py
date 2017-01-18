@@ -34,6 +34,7 @@ class AutoHide:
     """
     Hide Onboard when a physical keyboard is being used.
     """
+    LOCK_REASON = "hide-on-key-press"
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
@@ -59,22 +60,17 @@ class AutoHide:
             self._key_listener = None
 
     def _on_key_press(self, event):
-        # hide on key-press
         if config.is_auto_hide_on_keypress_enabled():
-            if not self._keyboard.is_auto_show_paused():
-                self._key_listener.log_key_event(
-                    event, "Hiding keyboard and pausing " "auto-show ")
 
-                if self._keyboard.is_visible():
-                    if config.are_word_suggestions_enabled():
-                        self._keyboard.discard_changes()
-
-                    self._keyboard.set_visible(False)
+            if not self._keyboard.is_auto_show_locked(self.LOCK_REASON):
+                self._key_listener.log_key_event(event, "auto-hide ")
 
             duration = config.auto_show.hide_on_key_press_pause
-            if duration:
-                if duration < 0.0:  # negative means auto-hide is off
-                    duration = None
-                self._keyboard.pause_auto_show(duration)
+            self._keyboard.lock_auto_show_and_hide(self.LOCK_REASON, duration)
 
+    def is_auto_show_locked(self):
+        return self._keyboard.is_auto_show_locked(self.LOCK_REASON)
+
+    def unlock_auto_show(self):
+        self._keyboard.unlock_auto_show(self.LOCK_REASON)
 

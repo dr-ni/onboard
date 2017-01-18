@@ -2300,15 +2300,60 @@ class Keyboard(WordSuggestions):
         self._auto_hide.enable(enabled_after)
 
         if enabled_before and not enabled_after:
-            self.resume_auto_show()
+            self._auto_hide.unlock_auto_show()
 
     def update_auto_show_on_visibility_change(self, visible):
         if config.is_auto_show_enabled():
-            if visible and self._auto_show.is_paused():
+            # showing keyboard while auto-hide is pausing auto-show?
+            if visible and self._auto_hide.is_auto_show_locked():
                 self.lock_auto_show_visible(False)
-                self.resume_auto_show()
+                self._auto_hide.unlock_auto_show()
             else:
                 self.lock_auto_show_visible(visible)
+
+    def lock_auto_show(self, reason, duration=None,
+                       lock_show=True, lock_hide=True):
+        """
+        Reenable both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            if duration is not None:
+                if duration == 0.0:
+                    return          # do nothing
+
+                if duration < 0.0:  # negative means auto-hide is off
+                    duration = None
+
+            self._auto_show.lock(reason, duration, lock_show, lock_hide)
+
+    def unlock_auto_show(self, reason):
+        """
+        Remove a specific lock named by "reason".
+        """
+        if config.is_auto_show_enabled():
+            self._auto_show.unlock(reason)
+
+    def lock_auto_show_and_hide(self, reason, duration=None):
+        """
+        Helper for locking auto-show from AutoHide (hide-on-key-press)
+        and D-Bus property.
+        """
+        if config.is_auto_show_enabled():
+            _logger.debug("lock_auto_show_and_hide({}, {})"
+                          .format(repr(reason), duration))
+
+            locked_before = self.is_auto_show_locked(reason)
+            self.lock_auto_show(reason, duration, True, False)
+
+            if not locked_before:
+                if self.is_visible():
+                    if config.are_word_suggestions_enabled():
+                        self.discard_changes()
+
+                    self.set_visible(False)
+
+    def is_auto_show_locked(self, reason):
+        return self._auto_show.is_locked(reason)
 
     def lock_auto_show_visible(self, visible):
         """
@@ -2317,37 +2362,6 @@ class Keyboard(WordSuggestions):
         """
         if config.is_auto_show_enabled():
             self._auto_show.lock_visible(visible)
-
-    def is_auto_show_paused(self):
-        return self._auto_show.is_paused()
-
-    def pause_auto_show(self, duration=None):
-        """
-        Stop both, hiding and showing long term.
-        """
-        if config.is_auto_show_enabled():
-            self._auto_show.pause(duration)
-
-    def resume_auto_show(self):
-        """
-        Reenable both, hiding and showing.
-        """
-        if config.is_auto_show_enabled():
-            self._auto_show.resume()
-
-    def freeze_auto_show(self, thaw_time=None):
-        """
-        Stop both, hiding and showing short term.
-        """
-        if config.is_auto_show_enabled():
-            self._auto_show.freeze(thaw_time)
-
-    def thaw_auto_show(self, thaw_time=None):
-        """
-        Reenable both, hiding and showing.
-        """
-        if config.is_auto_show_enabled():
-            self._auto_show.thaw(thaw_time)
 
     def auto_position(self):
         self._broadcast_to_views("auto_position")

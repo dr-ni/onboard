@@ -847,6 +847,8 @@ if has_dbus:
         PATH = "/org/onboard/Onboard/Keyboard"
         IFACE = "org.onboard.Onboard.Keyboard"
 
+        LOCK_REASON = "D-Bus"
+
         def __init__(self, app):
             ServiceBase.__init__(self, dbus.SessionBus(), self.NAME, self.PATH)
             self._keyboard = app.keyboard
@@ -880,9 +882,22 @@ if has_dbus:
                                        key.get_state()])
                 return result
 
+        # Property Visible, read-only
         @dbus_property(dbus_interface=IFACE, signature='b')
         def Visible(self):  # noqa: flake8
             return self._keyboard.is_visible()
+
+        # Property AutoShowPaused, read-write
+        @dbus_property(dbus_interface=IFACE, signature='b')
+        def AutoShowPaused(self):  # noqa: flake8
+            return self._keyboard.is_auto_show_locked(self.LOCK_REASON)
+
+        @AutoShowPaused.setter
+        def AutoShowPaused(self, value):  # noqa: flake8
+            if value:
+                self._keyboard.lock_auto_show_and_hide(self.LOCK_REASON)
+            else:
+                self._keyboard.unlock_auto_show(self.LOCK_REASON)
 
 
 def cb_any_event(event, onboard):

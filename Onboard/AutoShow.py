@@ -20,6 +20,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import collections
+
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.HardwareSensorTracker import HardwareSensorTracker
 from Onboard.UDevTracker       import UDevTracker
@@ -45,10 +47,11 @@ class AutoShow(object):
     SHOW_REACTION_TIME = 0.0
     HIDE_REACTION_TIME = 0.3
 
-    _lock_visible = False
-    _paused = False
-    _frozen = False
     _keyboard = None
+
+    _lock_visible = False
+    _locks = None
+
     _atspi_state_tracker = None
     _hw_sensor_tracker = None
     _udev_tracker = None
@@ -56,16 +59,12 @@ class AutoShow(object):
     def __init__(self, keyboard):
         self._keyboard = keyboard
         self._auto_show_timer = TimerOnce()
-        self._pause_timer = TimerOnce()
-        self._thaw_timer = TimerOnce()
         self._active_accessible = None
+        self._locks = collections.OrderedDict()
 
     def reset(self):
         self._auto_show_timer.stop()
-        self._pause_timer.stop()
-        self._thaw_timer.stop()
-        self._frozen = False
-        self._paused = False
+        self.unlock_all()
 
     def cleanup(self):
         self.reset()
@@ -93,7 +92,7 @@ class AutoShow(object):
 
         if enable:
             self._lock_visible = False
-            self._frozen = False
+            self._locks.clear()
 
         self.enable_tablet_mode_detection(
             enable and config.is_tablet_mode_detection_enabled())
@@ -118,12 +117,12 @@ class AutoShow(object):
             self._hw_sensor_tracker = None
 
         _logger.debug("enable_tablet_mode_detection {} {}"
-                        .format(enable, self._hw_sensor_tracker))
+                      .format(enable, self._hw_sensor_tracker))
 
     def enable_keyboard_device_detection(self, enable):
         """
         Detect if physical keyboard devices are present in the system.
-        If yes, auto-show is paused.
+        When detected, auto-show is locked.
         """
         if enable:
             if not self._udev_tracker:
@@ -139,14 +138,123 @@ class AutoShow(object):
             self._udev_tracker = None
 
         _logger.debug("enable_keyboard_device_detection {} {}"
-                        .format(enable, self._udev_tracker))
+                      .format(enable, self._udev_tracker))
+
+    def lock(self, reason, duration, lock_show, lock_hide):
+        """
+        Lock showing and/or hiding the keyboard window.
+        There is a separate, independent lock for each unique "reason".
+        If duration is specified, automatically unlock after these number of
+        seconds.
+        """
+        class AutoShowLock:
+            timer = None
+            lock_show = True
+            lock_hide = True
+
+        # Discard pending hide/show actions.
+        self._auto_show_timer.stop()
+
+        lock = self._locks.setdefault(reason, AutoShowLock())
+
+        if lock.timer:
+            lock.timer.stop()
+
+        if duration is None:
+            lock.timer = None
+        else:
+            lock.timer = TimerOnce()
+            lock.timer.start(duration, self._on_lock_timer, reason)
+
+        lock.lock_show = lock_show
+        lock.lock_hide = lock_hide
+
+        _logger.debug("lock({}): {}"
+                        .format(repr(reason), list(self._locks.keys())))
+
+    def unlock(self, reason):
+        """
+        Remove a specific lock named by "reason".
+        """
+        lock = self._locks.get(reason)
+        if lock:
+            if lock.timer:
+                lock.timer.stop()
+            del self._locks[reason]
+
+        _logger.debug("unlock({}) {}"
+                        .format(repr(reason), list(self._locks.keys())))
+
+    def unlock_all(self):
+        """
+        Remove all locks.
+        """
+        for lock in self._locks.values():
+            if lock.timer:
+                lock.timer.stop()
+        self._locks.clear()
+
+    def _on_lock_timer(self, reason):
+        self.unlock(reason)
+        return False
+
+    def is_locked(self, reason):
+        return reason in self._locks
+
+    def is_show_locked(self):
+        for lock in self._locks.values():
+            if lock.lock_show:
+                return True
+        return False
+
+    def is_hide_locked(self):
+        for lock in self._locks.values():
+            if lock.lock_hide:
+                return True
+        return False
+
+    def lock_visible(self, lock, thaw_time=1.0):
+        """
+        Lock window permanently visible in response to the user showing it.
+        Optionally freeze hiding/showing for a limited time.
+        """
+        _logger.debug("lock_visible{} ".format((lock, thaw_time)))
+
+        # Permanently lock visible.
+        self._lock_visible = lock
+
+        # Temporarily stop showing/hiding.
+        if thaw_time:
+            self.lock("lock_visible", thaw_time, True, True)
+
+        # Leave the window in its current state,
+        # discard pending hide/show actions.
+        self._auto_show_timer.stop()
+
+        # Stop pending auto-repositioning
+        if lock:
+            self._keyboard.stop_auto_positioning()
+
+    def can_hide_keyboard(self):
+        if _logger.isEnabledFor(logging.INFO):
+            msg = "locks={} " \
+                .format([reason for reason, lock in self._locks.items()
+                        if lock.lock_hide])
+
+            _logger.info("can_hide_keyboard: " + msg)
+
+        return not self.is_hide_locked()
 
     def can_show_keyboard(self):
         result = True
 
-        paused = self.is_paused()
-        msg = "paused={} ".format(paused)
-        if paused:
+        msg = ""
+        if _logger.isEnabledFor(logging.INFO):
+            msg += "locks={} " \
+                .format([reason for reason, lock in self._locks.items()
+                        if lock.lock_show])
+
+        if self._locks:
             result = False
         else:
             if config.is_tablet_mode_detection_enabled():
@@ -167,87 +275,9 @@ class AutoShow(object):
                 result = result and \
                     detected is not True  # can be True, False or None
 
-        _logger.debug("can_show_keyboard: " + msg)
+        _logger.info("can_show_keyboard: " + msg)
 
         return result
-
-    def is_paused(self):
-        return self._paused
-
-    def pause(self, duration=None):
-        """
-        Stop showing the keyboard window for longer time periods,
-        e.g. after pressing a key on a physical keyboard.
-
-        duration in seconds, None to pause forever.
-        """
-        self._paused = True
-        self._pause_timer.stop()
-        if duration is not None:
-            self._pause_timer.start(duration, self.resume)
-
-        # Discard pending hide/show actions.
-        self._auto_show_timer.stop()
-
-    def resume(self):
-        """
-        Allow hiding and showing the keyboard window again.
-        """
-        self._pause_timer.stop()
-        self._paused = False
-
-    def is_frozen(self):
-        return self._frozen
-
-    def freeze(self, thaw_time=None):
-        """
-        Disable showing and hiding the keyboard window for short periods,
-        e.g. to skip unexpected focus events.
-        thaw_time in seconds, None to freeze forever.
-        """
-        self._frozen = True
-        self._thaw_timer.stop()
-        if thaw_time is not None:
-            self._thaw_timer.start(thaw_time, self._on_thaw)
-
-        # Discard pending hide/show actions.
-        self._auto_show_timer.stop()
-
-    def thaw(self, thaw_time=None):
-        """
-        Allow hiding and showing the keyboard window again.
-        thaw_time in seconds, None to thaw immediately.
-        """
-        self._thaw_timer.stop()
-        if thaw_time is None:
-            self._on_thaw()
-        else:
-            self._thaw_timer.start(thaw_time, self._on_thaw)
-
-    def _on_thaw(self):
-        self._thaw_timer.stop()
-        self._frozen = False
-        return False
-
-    def lock_visible(self, lock, thaw_time=1.0):
-        """
-        Lock window permanently visible in response to the user showing it.
-        Optionally freeze hiding/showing for a limited time.
-        """
-        # Permanently lock visible.
-        self._lock_visible = lock
-
-        # Temporarily stop showing/hiding.
-        if thaw_time:
-            self.freeze(thaw_time)
-
-        # Leave the window in its current state,
-        # discard pending hide/show actions.
-        self._auto_show_timer.stop()
-
-        # Stop pending auto-repositioning
-        if lock:
-            self._keyboard.stop_auto_positioning()
 
     def _on_text_caret_moved(self, event):
         """
@@ -268,8 +298,7 @@ class AutoShow(object):
         active = bool(accessible)
 
         # show/hide the keyboard window
-        if active is not None and \
-           not self.is_frozen():
+        if active is not None:
             self._maybe_show_keyboard(active)
 
     def _on_tablet_mode_changed(self, active):
@@ -295,7 +324,8 @@ class AutoShow(object):
         if self._lock_visible:
             show = True
 
-        if not show or self.can_show_keyboard():
+        if show is False and self.can_hide_keyboard() or \
+           show is True  and self.can_show_keyboard():
             self.show_keyboard(show)
 
         # The active accessible changed, stop trying to

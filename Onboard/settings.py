@@ -1186,7 +1186,7 @@ class PageAutoShow(DialogBuilder):
 
         def _set(config_object, key, value):
             setattr(config_object, key, value)
-            self.update_window_widgets()
+            self._settings.update_window_widgets()
 
         self.bind_check("hide_on_key_press_toggle",
                         config.auto_show, "hide_on_key_press",
