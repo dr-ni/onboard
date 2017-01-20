@@ -151,6 +151,7 @@ class AutoShow(object):
             timer = None
             lock_show = True
             lock_hide = True
+            visibility_change = None
 
         # Discard pending hide/show actions.
         self._auto_show_timer.stop()
@@ -170,20 +171,26 @@ class AutoShow(object):
         lock.lock_hide = lock_hide
 
         _logger.debug("lock({}): {}"
-                        .format(repr(reason), list(self._locks.keys())))
+                      .format(repr(reason), list(self._locks.keys())))
 
     def unlock(self, reason):
         """
         Remove a specific lock named by "reason".
+        Returns the change in visibility that occurred while this lock was
+        active. None for no change.
         """
+        result = None
         lock = self._locks.get(reason)
         if lock:
+            result = lock.visibility_change
             if lock.timer:
                 lock.timer.stop()
             del self._locks[reason]
 
         _logger.debug("unlock({}) {}"
-                        .format(repr(reason), list(self._locks.keys())))
+                      .format(repr(reason), list(self._locks.keys())))
+
+        return result
 
     def unlock_all(self):
         """
@@ -234,6 +241,9 @@ class AutoShow(object):
         # Stop pending auto-repositioning
         if lock:
             self._keyboard.stop_auto_positioning()
+
+    def is_text_entry_active(self):
+        return bool(self._active_accessible)
 
     def can_hide_keyboard(self):
         if _logger.isEnabledFor(logging.INFO):
@@ -297,9 +307,7 @@ class AutoShow(object):
         self._active_accessible = accessible
         active = bool(accessible)
 
-        # show/hide the keyboard window
-        if active is not None:
-            self._maybe_show_keyboard(active)
+        self.request_keyboard_visible(active)
 
     def _on_tablet_mode_changed(self, active):
         self._handle_tablet_mode_changed(active)
@@ -309,38 +317,56 @@ class AutoShow(object):
 
     def _handle_tablet_mode_changed(self, tablet_mode_active):
         if tablet_mode_active:
-            show = bool(self._active_accessible)
+            show = self.is_text_entry_active()
         else:
             # hide keyboard even if it was locked visible
             self.lock_visible(False, thaw_time=0)
             show = False
 
-        self._maybe_show_keyboard(show)
+        self.request_keyboard_visible(show)
 
-    def _maybe_show_keyboard(self, show):
+    def request_keyboard_visible(self, visible, delay=None):
+        # Remember request per lock. That way we know the time span in
+        # which the visibility change occurred.
+        for lock in self._locks.values():
+            lock.visibility_change = visible
+
         # Always allow to show the window even when locked.
         # Mitigates right click on unity-2d launcher hiding
         # onboard before _lock_visible is set (Precise).
         if self._lock_visible:
-            show = True
+            visible = True
 
-        if show is False and self.can_hide_keyboard() or \
-           show is True  and self.can_show_keyboard():
-            self.show_keyboard(show)
+        can_hide = self.can_hide_keyboard()
+        can_show = self.can_show_keyboard()
+
+        _logger.debug("request_keyboard_visible({}): lock_visible={} "
+                      "can_hide={} can_show={}"
+                      .format(visible, self._lock_visible, can_hide, can_show))
+
+        if visible is False and can_hide or \
+           visible is True  and can_show:
+            self.show_keyboard(visible, delay)
 
         # The active accessible changed, stop trying to
         # track the position of the previous one.
         # -> less erratic movement during quick focus changes
         self._keyboard.stop_auto_positioning()
 
-    def show_keyboard(self, show):
+    def show_keyboard(self, show, delay=None):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
-        # Don't act on each and every focus message. Delay the start
-        # of the transition slightly so that only the last of a bunch of
-        # focus messages is acted on.
-        delay = self.SHOW_REACTION_TIME if show else \
-                self.HIDE_REACTION_TIME
-        self._auto_show_timer.start(delay, self._begin_transition, show)
+        if delay is None:
+            # Don't act on each and every focus message. Delay the start
+            # of the transition slightly so that only the last of a bunch of
+            # focus messages is acted on.
+            delay = (self.SHOW_REACTION_TIME if show else
+                     self.HIDE_REACTION_TIME)
+
+        if delay == 0:
+            self._auto_show_timer.stop()
+            self._begin_transition(show)
+        else:
+            self._auto_show_timer.start(delay, self._begin_transition, show)
 
     def _begin_transition(self, show):
         self._keyboard.transition_visible_to(show)
@@ -351,7 +377,7 @@ class AutoShow(object):
 
     def get_repositioned_window_rect(self, view, home, limit_rects,
                                      test_clearance, move_clearance,
-                                     horizontal = True, vertical = True):
+                                     horizontal=True, vertical=True):
         """
         Get the alternative window rect suggested by auto-show or None if
         no repositioning is required.

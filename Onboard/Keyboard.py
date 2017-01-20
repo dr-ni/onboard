@@ -568,6 +568,8 @@ class Keyboard(WordSuggestions):
     _alt_locked   = False
     _click_sim    = None
 
+    LOCK_REASON_KEY_PRESSED = "key-pressed"
+
     # Properties
 
     # The number of pressed keys per modifier
@@ -1027,6 +1029,10 @@ class Keyboard(WordSuggestions):
         if key and \
            key.sensitive:
 
+            # Stop auto-show from hiding the keyboard until all keys
+            # have been released.
+            self.auto_show_lock(self.LOCK_REASON_KEY_PRESSED)
+
             # stop timed redrawing for this key
             self._unpress_timers.stop(key)
 
@@ -1143,6 +1149,11 @@ class Keyboard(WordSuggestions):
             self._pressed_key = None
             self.on_all_keys_up()
             gc.enable()
+
+            # Unlock auto-show, and if the state has changed since locking,
+            # hide the keyboard only now (LP #1648543).
+            self.auto_show_unlock_and_apply_visibility(
+                self.LOCK_REASON_KEY_PRESSED)
 
         # Process pending UI updates
         self.commit_ui_updates()
@@ -2300,18 +2311,23 @@ class Keyboard(WordSuggestions):
         self._auto_hide.enable(enabled_after)
 
         if enabled_before and not enabled_after:
-            self._auto_hide.unlock_auto_show()
+            self._auto_hide.auto_show_unlock()
 
     def update_auto_show_on_visibility_change(self, visible):
         if config.is_auto_show_enabled():
             # showing keyboard while auto-hide is pausing auto-show?
             if visible and self._auto_hide.is_auto_show_locked():
-                self.lock_auto_show_visible(False)
-                self._auto_hide.unlock_auto_show()
+                self.auto_show_lock_visible(False)
+                self._auto_hide.auto_show_unlock()
             else:
-                self.lock_auto_show_visible(visible)
+                self.auto_show_lock_visible(visible)
 
-    def lock_auto_show(self, reason, duration=None,
+            # Make sure to drop the 'key-pressed' lock in case it still
+            # exists due to e.g. stuck keys.
+            if not visible:
+                self.auto_show_unlock(self.LOCK_REASON_KEY_PRESSED)
+
+    def auto_show_lock(self, reason, duration=None,
                        lock_show=True, lock_hide=True):
         """
         Reenable both, hiding and showing.
@@ -2326,36 +2342,46 @@ class Keyboard(WordSuggestions):
 
             self._auto_show.lock(reason, duration, lock_show, lock_hide)
 
-    def unlock_auto_show(self, reason):
+    def auto_show_unlock(self, reason):
         """
         Remove a specific lock named by "reason".
         """
         if config.is_auto_show_enabled():
             self._auto_show.unlock(reason)
 
-    def lock_auto_show_and_hide(self, reason, duration=None):
+    def auto_show_unlock_and_apply_visibility(self, reason):
+        """
+        Remove lock and apply the last requested auto-show state while the
+        lock was applied.
+        """
+        if config.is_auto_show_enabled():
+            visibility = self._auto_show.unlock(reason)
+            if visibility is not None:
+                self._auto_show.request_keyboard_visible(visibility, delay=0)
+
+    def auto_show_lock_and_hide(self, reason, duration=None):
         """
         Helper for locking auto-show from AutoHide (hide-on-key-press)
         and D-Bus property.
         """
         if config.is_auto_show_enabled():
-            _logger.debug("lock_auto_show_and_hide({}, {})"
+            _logger.debug("auto_show_lock_and_hide({}, {})"
                           .format(repr(reason), duration))
 
-            locked_before = self.is_auto_show_locked(reason)
-            self.lock_auto_show(reason, duration, True, False)
+            # Attempt to hide the keyboard.
+            # If it doesn't hide immediately, e.g. due to currently
+            # pressed keys, we get a second chance the next time
+            # apply_pending_state() is called, i.e. on key-release.
+            if not self._auto_show.is_locked(reason):
+                self._auto_show.request_keyboard_visible(False, delay=0)
 
-            if not locked_before:
-                if self.is_visible():
-                    if config.are_word_suggestions_enabled():
-                        self.discard_changes()
-
-                    self.set_visible(False)
+            # Block showing the keyboard.
+            self._auto_show.lock(reason, duration, True, False)
 
     def is_auto_show_locked(self, reason):
         return self._auto_show.is_locked(reason)
 
-    def lock_auto_show_visible(self, visible):
+    def auto_show_lock_visible(self, visible):
         """
         If the user unhides onboard, don't auto-hide it until
         he manually hides it again.

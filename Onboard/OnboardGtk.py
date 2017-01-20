@@ -895,9 +895,9 @@ if has_dbus:
         @AutoShowPaused.setter
         def AutoShowPaused(self, value):  # noqa: flake8
             if value:
-                self._keyboard.lock_auto_show_and_hide(self.LOCK_REASON)
+                self._keyboard.auto_show_lock_and_hide(self.LOCK_REASON)
             else:
-                self._keyboard.unlock_auto_show(self.LOCK_REASON)
+                self._keyboard.auto_show_unlock(self.LOCK_REASON)
 
 
 def cb_any_event(event, onboard):

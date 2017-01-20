@@ -66,11 +66,11 @@ class AutoHide:
                 self._key_listener.log_key_event(event, "auto-hide ")
 
             duration = config.auto_show.hide_on_key_press_pause
-            self._keyboard.lock_auto_show_and_hide(self.LOCK_REASON, duration)
+            self._keyboard.auto_show_lock_and_hide(self.LOCK_REASON, duration)
 
     def is_auto_show_locked(self):
         return self._keyboard.is_auto_show_locked(self.LOCK_REASON)
 
-    def unlock_auto_show(self):
-        self._keyboard.unlock_auto_show(self.LOCK_REASON)
+    def auto_show_unlock(self):
+        self._keyboard.auto_show_unlock(self.LOCK_REASON)
 

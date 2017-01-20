@@ -726,7 +726,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self.stop_save_position_timer()
         self.stop_auto_positioning()
         keyboard.stop_raise_attempts()
-        keyboard.lock_auto_show("user-positioning")
+        keyboard.auto_show_lock("user-positioning")
 
         self._user_positioning_begin_rect = self.get_rect()
 
@@ -754,7 +754,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         # Thaw auto show only after a short delay to stop the window
         # from hiding due to spurios focus events after a system resize.
         keyboard = self.keyboard_widget.keyboard
-        keyboard.lock_auto_show("user-positioning", 1.0)
+        keyboard.auto_show_lock("user-positioning", 1.0)
 
     def detect_docking(self):
         if self.keyboard_widget.was_moving():
@@ -786,7 +786,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
                 # stop auto-show from hiding the keyboard
                 keyboard = self.keyboard_widget.keyboard
-                keyboard.lock_auto_show("configure-event", 1.0)
+                keyboard.auto_show_lock("configure-event", 1.0)
 
                 # cut off any leftover auto-show repositioning
                 self.stop_auto_positioning()
