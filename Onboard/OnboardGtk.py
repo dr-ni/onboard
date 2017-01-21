@@ -856,15 +856,15 @@ if has_dbus:
 
         @dbus.service.method(dbus_interface=IFACE)
         def Show(self):  # noqa: flake8
-            self._keyboard.set_visible(True)
+            self._keyboard.request_visibility(True)
 
         @dbus.service.method(dbus_interface=IFACE)
         def Hide(self):  # noqa: flake8
-            self._keyboard.set_visible(False)
+            self._keyboard.request_visibility(False)
 
         @dbus.service.method(dbus_interface=IFACE)
         def ToggleVisible(self):  # noqa: flake8
-            self._keyboard.toggle_visible()
+            self._keyboard.request_visibility_toggle()
 
         # private method, for unit-testing only
         if config.is_running_from_source:

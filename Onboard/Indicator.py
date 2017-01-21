@@ -128,7 +128,9 @@ class ContextMenu(GObject.GObject):
         run_script("sokSettings")
 
     def on_show_keyboard_toggle(self):
-        self._keyboard.toggle_visible()
+        # The menu item might have been activated by keyboard hotkeys. Delay
+        # request until keys have been released.
+        self._keyboard.request_visibility_toggle()
 
     def _on_help(self, data=None):
         subprocess.Popen(["/usr/bin/yelp", "help:onboard"])

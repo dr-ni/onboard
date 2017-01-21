@@ -702,6 +702,9 @@ class Keyboard(WordSuggestions):
         self._pending_modifier_redraws = {}
         self._pending_modifier_redraws_timer = Timer()
 
+        self._visibility_locked = False
+        self._visibility_requested = None
+
         self.reset()
 
     def reset(self):
@@ -742,6 +745,8 @@ class Keyboard(WordSuggestions):
 
         self._pending_modifier_redraws_timer.stop()
         self._pending_modifier_redraws = {}
+
+        self.unlock_visibility()
 
     def cleanup(self):
         """ final cleanup on exit """
@@ -792,6 +797,7 @@ class Keyboard(WordSuggestions):
                 return visible
 
     def set_visible(self, visible):
+        self.unlock_visibility()  # unlock frequenty in case of stuck keys
         self.update_auto_show_on_visibility_change(visible)
         for view in self._layout_views:
             view.set_visible(visible)
@@ -799,6 +805,46 @@ class Keyboard(WordSuggestions):
     def toggle_visible(self):
         """ main method to show/hide onboard manually """
         self.set_visible(not self.is_visible())
+
+    def request_visibility(self, visible):
+        """ Request to change visibility when all keys have been released. """
+        if self._visibility_locked:
+            self._visibility_requested = visible
+        else:
+            self.set_visible(visible)
+
+    def request_visibility_toggle(self):
+        if self._visibility_locked and \
+           self._visibility_requested is not None:
+            visible = self._visibility_requested
+        else:
+            visible = self.is_visible()
+        self.request_visibility(not visible)
+
+    def lock_visibility(self):
+        """ Lock all showing/hiding, but remember requests to do so. """
+        self._visibility_locked = True
+        self.auto_show_lock(self.LOCK_REASON_KEY_PRESSED)
+
+    def unlock_visibility(self):
+        """ Unlock all showing/hiding. """
+        self._visibility_locked = False
+        self._visibility_requested = None
+
+    def unlock_and_apply_visibility(self):
+        """ Unlock all showing/hiding and apply the last request to do so. """
+        if self._visibility_locked:
+            visible = self._visibility_requested
+
+            self.unlock_visibility()
+
+            if visible is not None:
+                self.set_visible(visible)
+
+        # Unlock auto-show, and if the state has changed since locking,
+        # transition to hide the keyboard.
+        self.auto_show_unlock_and_apply_visibility(
+            self.LOCK_REASON_KEY_PRESSED)
 
     def redraw(self, keys=None, invalidate=True):
         for view in self._layout_views:
@@ -1029,9 +1075,8 @@ class Keyboard(WordSuggestions):
         if key and \
            key.sensitive:
 
-            # Stop auto-show from hiding the keyboard until all keys
-            # have been released.
-            self.auto_show_lock(self.LOCK_REASON_KEY_PRESSED)
+            # Stop hiding the keyboard until all keys have been released.
+            self.lock_visibility()
 
             # stop timed redrawing for this key
             self._unpress_timers.stop(key)
@@ -1150,10 +1195,8 @@ class Keyboard(WordSuggestions):
             self.on_all_keys_up()
             gc.enable()
 
-            # Unlock auto-show, and if the state has changed since locking,
-            # hide the keyboard only now (LP #1648543).
-            self.auto_show_unlock_and_apply_visibility(
-                self.LOCK_REASON_KEY_PRESSED)
+            # Allow hiding the keyboard again (LP #1648543).
+            self.unlock_and_apply_visibility()
 
         # Process pending UI updates
         self.commit_ui_updates()
@@ -2645,6 +2688,8 @@ class BCHide(ButtonController):
         if config.unity_greeter:
             config.unity_greeter.onscreen_keyboard = False
         else:
+            # No request_keyboard_visible() here, so hide button can
+            # unlock_visibility in case of stuck keys.
             self.keyboard.set_visible(False)
 
     def update(self):
