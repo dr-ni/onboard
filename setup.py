@@ -345,6 +345,20 @@ class TestCommand(Command):
         return True
 
 
+# Custom build_i18n command that overrides the hard-coded
+# auto-start path "share/autostart" in auto.build_i18n_auto
+# for "onboard-autostart.desktop.in"
+class build_i18n_custom(DistUtilsExtra.auto.build_i18n_auto):
+    def run(self):
+        super(build_i18n_custom, self).run()
+
+        for i, file_set in enumerate(self.distribution.data_files):
+            target, files = file_set
+            if target == 'share/autostart':
+                file_set = ('/etc/xdg/autostart', files)
+                self.distribution.data_files[i] = file_set
+
+
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -382,8 +396,6 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*')),
-                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
-
                   ('share/onboard/models', glob.glob('models/*.lm')),
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
 
@@ -400,7 +412,8 @@ DistUtilsExtra.auto.setup(
 
     ext_modules = [extension_osk, extension_lm],
 
-    cmdclass = {'test': TestCommand},
+    cmdclass = {'test': TestCommand,
+                'build_i18n': build_i18n_custom},
 )
 
 

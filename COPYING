@@ -130,8 +130,8 @@ Copyright: 2011-2016, marmuta <marmvta@gmail.com>
   2008-2010, Chris Jones <tortoise@tortuga>
 License: GPL-3+
 
-Files: data/onboard-autostart.desktop
-Copyright: 2012, 2015, marmuta <marmvta@gmail.com>
+Files: data/onboard-autostart.desktop.in
+Copyright: 2012, 2015-2016, marmuta <marmvta@gmail.com>
   2015, Martin Wimpress <martin@flexion.org>
   2011, Luke Yelavitch <luke.yelavich@canonical.com>
 License: GPL-3+
