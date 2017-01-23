@@ -32,6 +32,8 @@ import subprocess
 from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
+from distutils.command.build_ext import build_ext
+from distutils.sysconfig import customize_compiler
 from contextlib import contextmanager
 from subprocess import getstatusoutput
 
@@ -359,6 +361,26 @@ class build_i18n_custom(DistUtilsExtra.auto.build_i18n_auto):
                 self.distribution.data_files[i] = file_set
 
 
+# Custom build_ext command that removes the invalid "-Wstrict-prototypes"
+# warning when compiling C++ (lm extension).
+class build_ext_custom(build_ext):
+    def build_extensions(self):
+        customize_compiler(self.compiler)
+        self._saved_compiler_so = self.compiler.compiler_so
+
+        super(build_ext_custom, self).build_extensions()
+
+    def build_extension(self, ext):
+        if isinstance(ext, Extension_lm):
+            self.compiler.compiler_so = self._saved_compiler_so
+            try:
+                self.compiler.compiler_so.remove("-Wstrict-prototypes")
+            except (AttributeError, ValueError):
+                pass
+
+        super(build_ext_custom, self).build_extension(ext)
+
+
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -413,7 +435,8 @@ DistUtilsExtra.auto.setup(
     ext_modules = [extension_osk, extension_lm],
 
     cmdclass = {'test': TestCommand,
-                'build_i18n': build_i18n_custom},
+                'build_i18n': build_i18n_custom,
+                'build_ext': build_ext_custom},
 )
 
 
