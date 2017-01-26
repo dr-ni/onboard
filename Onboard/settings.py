@@ -161,7 +161,7 @@ class DialogBuilder(object):
             setattr(config_object, key, widget.get_value())
 
     # scale
-    def bind_scale(self, name, config_object, key, widget_callback = None):
+    def bind_scale(self, name, config_object, key, widget_callback=None):
         w = self.wid(name)
         w.set_value(getattr(config_object, key))
         w.connect("value-changed", self.bind_scale_callback,
@@ -415,6 +415,8 @@ class Settings(DialogBuilder):
         # Keyboard - first page
         self.bind_check("touch_feedback_enabled_toggle",
                         config.keyboard, "touch_feedback_enabled")
+        self.bind_scale("touch_feedback_size_scale",
+                        config.keyboard, "touch_feedback_size")
         self.bind_check("audio_feedback_enabled_toggle",
                         config.keyboard, "audio_feedback_enabled")
         self.bind_check("audio_feedback_place_in_space_toggle",
