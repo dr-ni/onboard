@@ -1234,33 +1234,32 @@ class Config(ConfigObject):
         self.window.window_handles_notify_add(callback)
         self.icp.window_handles_notify_add(callback)
 
-    def get_num_window_handles(self):
+    def window_handles_to_num_handles(self, handles):
         """ Translate array of handles to simplified NumResizeHandles enum """
-        handles = self.window.window_handles
         if len(handles) == 0:
             return NumResizeHandles.NONE
         if len(handles) == 1 and handles[0] == Handle.MOVE:
             return NumResizeHandles.NORESIZE
-        if len(handles) == 8+1:
+        if len(handles) == 8 + 1:
             return NumResizeHandles.ALL
         return NumResizeHandles.SOME
 
-    def set_num_window_handles(self, num):
+    def num_handles_to_window_handles(self, num):
         if num == NumResizeHandles.ALL:
-            window_handles = list(Handle.RESIZE_MOVE)
-            icp_handles    = list(Handle.RESIZE_MOVE)
+            handles = list(Handle.RESIZE_MOVE)
         elif num == NumResizeHandles.NORESIZE:
-            window_handles = [Handle.MOVE]
-            icp_handles    = [Handle.MOVE]
+            handles = [Handle.MOVE]
         elif num == NumResizeHandles.NONE:
-            window_handles = []
-            icp_handles    = []
+            handles = []
         else:  # NumResizeHandles.SOME
-            window_handles = list(Handle.CORNERS + (Handle.MOVE, ))
-            icp_handles    = [Handle.SOUTH_EAST, Handle.MOVE]
+            handles = list(Handle.CORNERS + (Handle.MOVE, ))
+        return handles
 
-        self.window.window_handles = window_handles
-        self.icp.window_handles = icp_handles
+    def num_handles_to_icon_palette_handles(self, num):
+        handles = self.num_handles_to_window_handles(num)
+        if num == NumResizeHandles.SOME:
+            handles = [Handle.SOUTH_EAST, Handle.MOVE]
+        return handles
 
     @staticmethod
     def _string_to_handles(string):

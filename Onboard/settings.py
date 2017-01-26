@@ -198,7 +198,7 @@ class DialogBuilder(object):
         widget.set_active(active)
 
     def _bind_check_callback(self, widget, config_object,
-                            key, config_set_callback):
+                             key, config_set_callback):
         if config_set_callback:
             config_set_callback(config_object, key, widget.get_active())
         else:
@@ -206,7 +206,7 @@ class DialogBuilder(object):
 
     # combobox with id column
     def bind_combobox_id(self, name, config_object, key,
-                         config_get_callback = None, config_set_callback = None):
+                         config_get_callback=None, config_set_callback=None):
         w = self.wid(name)
 
         if config_get_callback:
@@ -388,6 +388,30 @@ class Settings(DialogBuilder):
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
+        def _get(config_object, key):
+            handles = getattr(config_object, key)
+            return str(config.window_handles_to_num_handles(handles))
+
+        def _set(config_object, key, value):
+            handles = config.num_handles_to_window_handles(int(value))
+            setattr(config_object, key, handles[:])
+
+        self.bind_combobox_id("num_window_handles_combobox",
+                              config.window, "window_handles",
+                              _get, _set)
+
+        def _get(config_object, key):
+            handles = getattr(config_object, key)
+            return str(config.window_handles_to_num_handles(handles))
+
+        def _set(config_object, key, value):
+            handles = config.num_handles_to_icon_palette_handles(int(value))
+            setattr(config_object, key, handles[:])
+
+        self.bind_combobox_id("num_icon_palette_handles_combobox",
+                              config.icp, "window_handles",
+                              _get, _set)
+
         # Keyboard - first page
         self.bind_check("touch_feedback_enabled_toggle",
                         config.keyboard, "touch_feedback_enabled")
@@ -517,12 +541,6 @@ class Settings(DialogBuilder):
                       config.universal_access.enable_click_type_window_on_exit)
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
-
-        self.num_window_handles_combobox = \
-                         builder.get_object("num_window_handles_combobox")
-        self.update_num_window_handles_combobox()
-        config.window_handles_notify_add( \
-                            lambda x: self.select_num_window_handles())
 
         if config.mousetweaks:
             self.bind_spin("hover_click_delay_spinbutton",
@@ -754,43 +772,6 @@ class Settings(DialogBuilder):
         except OSError as e:
             _logger.warning(_format("System settings not found ({}): {}",
                                     filename, unicode_str(e)))
-
-    def update_num_window_handles_combobox(self):
-        self.num_window_handles_list = Gtk.ListStore(str, int)
-        self.num_window_handles_combobox.set_model(self.num_window_handles_list)
-        cell = Gtk.CellRendererText()
-        self.num_window_handles_combobox.clear()
-        self.num_window_handles_combobox.pack_start(cell, True)
-        self.num_window_handles_combobox.add_attribute(cell, 'markup', 0)
-
-        self.num_window_handles_choices = [
-                           # Window handles: None
-                           [_("None"), NumResizeHandles.NONE],
-                           # Window handles: None
-                           [_("Movement only"), NumResizeHandles.NORESIZE],
-                           # Frame resize handles: Corners only
-                           [_("Corners"), NumResizeHandles.SOME],
-                           # Frame resize handles: All
-                           [_("All corners and edges"),  NumResizeHandles.ALL]
-                           ]
-
-        for name, id in self.num_window_handles_choices:
-            self.num_window_handles_list.append((name, id))
-
-        self.select_num_window_handles()
-
-    def select_num_window_handles(self):
-        num = config.get_num_window_handles()
-        for row in self.num_window_handles_list:
-            if row[1] == num:
-                it = row.model.get_iter(row.path)
-                self.num_window_handles_combobox.set_active_iter(it)
-                break
-
-    def on_num_window_handles_combobox_changed(self, widget):
-        value = self.num_window_handles_list.get_value( \
-                        self.num_window_handles_combobox.get_active_iter(),1)
-        config.set_num_window_handles(value)
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()

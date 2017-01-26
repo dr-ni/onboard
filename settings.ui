@@ -168,6 +168,58 @@
       </row>
     </data>
   </object>
+  <object class="GtkListStore" id="_num_icon_palette_handles_model">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name value -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">0</col>
+        <col id="1" translatable="yes">None</col>
+      </row>
+      <row>
+        <col id="0">1</col>
+        <col id="1" translatable="yes">Movement only</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1" translatable="yes">Corners</col>
+      </row>
+      <row>
+        <col id="0">3</col>
+        <col id="1" translatable="yes">All corners and edges</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="_num_window_handles_model">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name value -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">0</col>
+        <col id="1" translatable="yes">None</col>
+      </row>
+      <row>
+        <col id="0">1</col>
+        <col id="1" translatable="yes">Movement only</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1" translatable="yes">Corners</col>
+      </row>
+      <row>
+        <col id="0">3</col>
+        <col id="1" translatable="yes">All corners and edges</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkListStore" id="_pages_model">
     <columns>
       <!-- column-name page -->
@@ -1327,9 +1379,10 @@ Requires restart.</property>
                                           <object class="GtkLabel" id="label15">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">_Window handles:</property>
+                                            <property name="label" translatable="yes">_Window handles of the keyboard window:</property>
                                             <property name="use_underline">True</property>
                                             <property name="mnemonic_widget">num_window_handles_combobox</property>
+                                            <property name="xalign">0</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1341,7 +1394,14 @@ Requires restart.</property>
                                           <object class="GtkComboBox" id="num_window_handles_combobox">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <signal name="changed" handler="on_num_window_handles_combobox_changed" swapped="no"/>
+                                            <property name="model">_num_window_handles_model</property>
+                                            <property name="id_column">0</property>
+                                            <child>
+                                              <object class="GtkCellRendererText" id="num_window_handles_cellrenderer"/>
+                                              <attributes>
+                                                <attribute name="text">1</attribute>
+                                              </attributes>
+                                            </child>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1354,6 +1414,53 @@ Requires restart.</property>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="resize_protection_box1">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkLabel" id="label67">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">_Window handles of the floating icon:</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="mnemonic_widget">num_window_handles_combobox</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkComboBox" id="num_icon_palette_handles_combobox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="model">_num_icon_palette_handles_model</property>
+                                            <property name="id_column">0</property>
+                                            <child>
+                                              <object class="GtkCellRendererText" id="num_icon_palette_handles_cellrenderer"/>
+                                              <attributes>
+                                                <attribute name="text">1</attribute>
+                                              </attributes>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -4272,6 +4379,12 @@ Requires restart.</property>
       <widget name="label20"/>
       <widget name="label23"/>
       <widget name="label15"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="window_resize_protection_sizegroup">
+    <widgets>
+      <widget name="label15"/>
+      <widget name="label67"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="auto_show_general_sizegroup"/>
