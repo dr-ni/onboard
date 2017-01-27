@@ -388,36 +388,59 @@ class AtspiStateTracker(EventSource):
 
                 # Has the previously focused accessible lost the focus?
                 active_accessible = self._focused_accessible
-                if not self._is_accessible_focused(self._state):
-                    active_accessible = None
+                if active_accessible and \
+                   not self._is_accessible_focused(self._state):
+
+                    # Zesty: Firefox 50+ loses focus of the URL entry after
+                    # typing just a few letters and focuses a completion
+                    # menu item instead. Let's pretend the accessible is
+                    # still focused in that case.
+                    self._state.update(
+                        self._read_remaining_accessible_state(
+                            self._focused_accessible))
+
+                    is_firefox_completion = self._is_urlbar(self._state) and \
+                        accessible.get_role() == Atspi.Role.MENU_ITEM
+
+                    if not is_firefox_completion:
+                        active_accessible = None
 
                 self._set_active_accessible(active_accessible)
 
+    @staticmethod
+    def _is_urlbar(state):
+        """ Is this a (most likely firefox') URL bar? """
+        attributes = state.get("attributes")
+        if attributes:
+            if "urlbar" in attributes.get("class", ""):
+                return True
+        return False
+
     def _set_active_accessible(self, accessible):
-        self._active_accessible = accessible
+        if self._active_accessible is not accessible:
+            self._active_accessible = accessible
 
-        if self._active_accessible is not None or \
-           self._last_active_accessible is not None:
+            if self._active_accessible or \
+               self._last_active_accessible:
 
-            if accessible is not None:
-                try:
-                    self._state.update(
-                        self._read_remaining_accessible_state(accessible))
-                # Private exception gi._glib.GError when
-                # gedit became unresponsive.
-                except Exception as ex:
+                if accessible is not None:
+                    try:
+                        self._state.update(
+                            self._read_remaining_accessible_state(accessible))
+                    # Private exception gi._glib.GError when
+                    # gedit became unresponsive.
+                    except Exception as ex:
 
-                    _logger.atspi("_set_active_accessible(): "
-                                  "invalid accessible, failed to "
-                                  "read remaining state: " +
-                                  unicode_str(ex))
+                        _logger.atspi("_set_active_accessible(): "
+                                      "invalid accessible, failed to "
+                                      "read remaining state: " +
+                                      unicode_str(ex))
 
-            # notify listeners
-            self.emit("text-entry-activated",
-                      self._active_accessible)
+                # notify listeners
+                self.emit("text-entry-activated", self._active_accessible)
 
-            self._last_active_accessible = self._active_accessible
-            self._active_accessible_activation_time = time.time()
+                self._last_active_accessible = self._active_accessible
+                self._active_accessible_activation_time = time.time()
 
     def _on_async_text_changed(self, event):
         if event.accessible is self._active_accessible:
