@@ -191,17 +191,22 @@ class HardwareSensorTracker(EventSource):
 
     def _on_key_press(self, event):
         """ Global hotkey press received """
-        enter_key = config.auto_show.tablet_mode_enter_key
-        leave_key = config.auto_show.tablet_mode_leave_key
+        enter_keycode = config.auto_show.tablet_mode_enter_key
+        leave_keycode = config.auto_show.tablet_mode_leave_key
 
-        _logger.info("global key press {} received".format(event.keycode))
+        _logger.info("global key press keycode={}, keyval={} received; "
+                     "enter_keycode={}, leave_keycode={}"
+                     .format(event.keycode, event.keyval,
+                             enter_keycode, leave_keycode))
 
-        if enter_key and event.keycode == enter_key:
-            _logger.info("hotkey tablet_mode_enter_key received")
+        if enter_keycode and event.keycode == enter_keycode:
+            _logger.info("hotkey tablet_mode_enter_key {} received"
+                         .format(enter_keycode))
             self.set_tablet_mode(True)
 
-        if leave_key and event.keycode == leave_key:
-            _logger.info("hotkey tablet_mode_leave_key received")
+        if leave_keycode and event.keycode == leave_keycode:
+            _logger.info("hotkey tablet_mode_leave_key {} received"
+                         .format(leave_keycode))
             self.set_tablet_mode(False)
 
 

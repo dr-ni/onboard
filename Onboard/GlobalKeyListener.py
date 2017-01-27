@@ -177,16 +177,17 @@ class GlobalKeyListener(EventSource):
         elif event_type == XIEventType.KeyRelease:
             self.emit("key-release", event)
 
-    def log_key_event(self, event, message):
-        if _logger.isEnabledFor(logging.INFO):
-            device = event.get_source_device()
-            device_name = device.name if device else "None"
-            _logger.info((message + "due to key-{} {} from device '{}' ({})")
-                         .format("press"
-                                 if event.xi_type == XIEventType.KeyPress
-                                 else "release",
-                                 event.keyval,
-                                 device_name,
-                                 event.source_id))
+    def get_key_event_string(self, event, message=""):
+        device = event.get_source_device()
+        device_name = device.name if device else "None"
+        _logger.info((message + "global key-{}, keycode={}, keyval={}, "
+                      "from device '{}' ({})")
+                     .format("press"
+                             if event.xi_type == XIEventType.KeyPress
+                             else "release",
+                             event.keycode,
+                             event.keyval,
+                             device_name,
+                             event.source_id))
 
 
