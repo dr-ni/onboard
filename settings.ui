@@ -2111,17 +2111,33 @@ Requires restart.</property>
                                                     </child>
                                                     <child>
                                                       <object class="GtkScale" id="touch_feedback_size_scale">
+                                                        <property name="width_request">280</property>
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">True</property>
+                                                        <property name="halign">start</property>
                                                         <property name="adjustment">_touch_feedback_size_adjustment</property>
                                                         <property name="round_digits">1</property>
                                                         <property name="digits">0</property>
+                                                        <property name="draw_value">False</property>
                                                         <property name="value_pos">right</property>
                                                       </object>
                                                       <packing>
-                                                        <property name="expand">True</property>
+                                                        <property name="expand">False</property>
                                                         <property name="fill">True</property>
                                                         <property name="position">1</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkLabel" id="touch_feedback_size_label">
+                                                        <property name="visible">True</property>
+                                                        <property name="can_focus">False</property>
+                                                        <property name="halign">start</property>
+                                                        <property name="label">000</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="expand">False</property>
+                                                        <property name="fill">True</property>
+                                                        <property name="position">2</property>
                                                       </packing>
                                                     </child>
                                                   </object>
@@ -2132,18 +2148,7 @@ Requires restart.</property>
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkLabel">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">&lt;small&gt;Leave at 0 to let Onboard guess based on physical monitor size.&lt;/small&gt;</property>
-                                                    <property name="use_markup">True</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
+                                                  <placeholder/>
                                                 </child>
                                               </object>
                                             </child>

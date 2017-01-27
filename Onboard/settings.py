@@ -161,22 +161,40 @@ class DialogBuilder(object):
             setattr(config_object, key, widget.get_value())
 
     # scale
-    def bind_scale(self, name, config_object, key, widget_callback=None):
+    def bind_scale(self, name, config_object, key,
+                   config_get_callback=None, config_set_callback=None):
         w = self.wid(name)
-        w.set_value(getattr(config_object, key))
-        w.connect("value-changed", self.bind_scale_callback,
-                          config_object, key, widget_callback)
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        w.set_value(value)
+        w.connect("value-changed", self._bind_scale_callback,
+                  config_object, key, config_set_callback)
         getattr(config_object, key + '_notify_add')(w.set_value)
+        getattr(config_object, key + '_notify_add')(
+            lambda x: self._notify_scale_callback(w, config_object, key,
+                                                  config_get_callback))
 
-    def bind_scale_callback(self, widget, config_object, key, callback):
+    def _notify_scale_callback(self, widget, config_object,
+                               key, config_get_callback):
+        if config_get_callback:
+            value = config_get_callback(config_object, key)
+        else:
+            value = getattr(config_object, key)
+        widget.set_value(value)
+
+    def _bind_scale_callback(self, widget, config_object,
+                             key, config_set_callback):
         value = widget.get_value()
-        setattr(config_object, key, value)
-        if callback:
-            callback(value)
+        if config_set_callback:
+            config_set_callback(config_object, key, value)
+        else:
+            setattr(config_object, key, value)
 
     # checkbox
     def bind_check(self, name, config_object, key,
-                   config_get_callback = None, config_set_callback = None):
+                   config_get_callback=None, config_set_callback=None):
         w = self.wid(name)
         if config_get_callback:
             active = config_get_callback(config_object, key)
@@ -187,7 +205,7 @@ class DialogBuilder(object):
                   config_object, key, config_set_callback)
         getattr(config_object, key + '_notify_add')( \
              lambda x: self._notify_check_callback(w, config_object, key,
-                                                     config_get_callback))
+                                                   config_get_callback))
 
     def _notify_check_callback(self, widget, config_object,
                               key, config_get_callback):
@@ -415,8 +433,16 @@ class Settings(DialogBuilder):
         # Keyboard - first page
         self.bind_check("touch_feedback_enabled_toggle",
                         config.keyboard, "touch_feedback_enabled")
+
+        def _set(config_object, key, value):
+            if value < 20:
+                value = 0
+            setattr(config_object, key, value)
+            self._update_touch_feedback_size_label()
+
         self.bind_scale("touch_feedback_size_scale",
-                        config.keyboard, "touch_feedback_size")
+                        config.keyboard, "touch_feedback_size",
+                        None, _set)
         self.bind_check("audio_feedback_enabled_toggle",
                         config.keyboard, "audio_feedback_enabled")
         self.bind_check("audio_feedback_place_in_space_toggle",
@@ -641,6 +667,14 @@ class Settings(DialogBuilder):
     def on_keep_aspect_ratio_toggled(self, widget):
         config.window.keep_aspect_ratio = widget.get_active()
 
+    def _update_touch_feedback_size_label(self, value=0):
+        value = config.keyboard.touch_feedback_size
+
+        # touch_feedback_size_label: 0=auto, i.e. let Onboard guess
+        # the size of the label popup.
+        s = str(round(value)) if value else _("auto")
+        self.wid("touch_feedback_size_label").set_text(s)
+
     def update_window_widgets(self):
         force_to_top = config.is_force_to_top()
 
@@ -679,6 +713,9 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
+
+        # keyboard
+        self._update_touch_feedback_size_label()
 
         # auto-show
         self._page_auto_show.update_ui()
@@ -1495,12 +1532,13 @@ class ThemeDialog(DialogBuilder):
                                             "superkey_label_size_checkbutton")
         self.superkey_label_model = builder.get_object("superkey_label_model")
 
-        def on_key_stroke_width_value_changed(value):
-            self.theme.key_stroke_width = value
+        def _set(config_object, key, value):
+            setattr(config_object, key, value)
             self.update_sensivity()
+
         self.bind_scale("key_stroke_width_scale",
                         config.theme_settings, "key_stroke_width",
-                        widget_callback = on_key_stroke_width_value_changed)
+                        None, _set)
 
         self.update_ui()
 
