@@ -62,11 +62,20 @@ class AutoHide:
     def _on_key_press(self, event):
         if config.is_auto_hide_on_keypress_enabled():
 
-            if not self._keyboard.is_auto_show_locked(self.LOCK_REASON):
-                self._key_listener.log_key_event(event, "auto-hide ")
+            if _logger.isEnabledFor(logging.INFO):
+                if not self._keyboard.is_auto_show_locked(self.LOCK_REASON):
+                    s = self._key_listener.get_key_event_string(event)
+                    _logger.info(s)
 
-            duration = config.auto_show.hide_on_key_press_pause
-            self._keyboard.auto_show_lock_and_hide(self.LOCK_REASON, duration)
+            # no auto-hide for hotkeys configured for tablet-mode detection
+            enter_keycode = config.auto_show.tablet_mode_enter_key
+            leave_keycode = config.auto_show.tablet_mode_leave_key
+            if event.keycode != enter_keycode and \
+               event.keycode != leave_keycode:
+
+                duration = config.auto_show.hide_on_key_press_pause
+                self._keyboard.auto_show_lock_and_hide(self.LOCK_REASON,
+                                                       duration)
 
     def is_auto_show_locked(self):
         return self._keyboard.is_auto_show_locked(self.LOCK_REASON)
