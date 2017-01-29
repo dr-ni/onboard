@@ -353,12 +353,26 @@ class DomainGenericText(TextDomain):
 
         # get text around the caret position
         try:
+            count = accessible.get_character_count()
+
             if selection is None:
                 offset = accessible.get_caret_offset()
+
+                # In Zesty, firefox 50.1 often returns caret position -1
+                # when typing. Assume we are at the end of the text.
+                if offset < 0:
+                    _logger.warning("DomainGenericText.read_context(): "
+                                    "Atspi.Text.get_caret_offset() "
+                                    "returned invalid {}. "
+                                    "Pretending the cursor is at the end "
+                                    "of the text at offset {}."
+                                    .format(offset, count))
+                    offset = count
+
                 selection = (offset, offset)
+
             r = accessible.get_text_at_offset(
                 selection[0], Atspi.TextBoundaryType.LINE_START)
-            count = accessible.get_character_count()
         except Exception as ex:     # Private exception gi._glib.GError when
                                     # gedit became unresponsive.
             _logger.info("DomainGenericText.read_context(), text: " +
