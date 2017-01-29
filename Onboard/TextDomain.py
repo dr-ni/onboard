@@ -265,6 +265,7 @@ class TextDomain:
                     end = max(end, span[1])
 
         return begin + offset, end - begin, text[begin:end]
+
     def can_record_insertion(self, accessible, pos, length):
         return True
 
@@ -348,56 +349,41 @@ class DomainGenericText(TextDomain):
         """ Extract prediction context from the accessible """
 
         # get caret position from selection
-        selection = None
-        try:
-            sel = accessible.get_selection(0)
-            # Gtk-2 applications return 0,0 when there is no selection.
-            # Gtk-3 applications return caret positions in that case.
-            # LibreOffice Writer in Vivid initially returns -1,-1 when there
-            # is no selection, later the caret position.
-            start = sel.start_offset
-            end = sel.end_offset
-            if start > 0 and \
-               end > 0 and \
-               start <= end:
-                selection = (sel.start_offset, sel.end_offset)
-        except Exception as ex: # Private exception gi._glib.GErro
-            _logger.info("DomainGenericText.read_context(), selection: " \
-                         + unicode_str(ex))
+        selection = accessible.get_selection()
 
         # get text around the caret position
         try:
             if selection is None:
                 offset = accessible.get_caret_offset()
                 selection = (offset, offset)
-            r = accessible.get_text_at_offset(selection[0],
-                                Atspi.TextBoundaryType.LINE_START)
+            r = accessible.get_text_at_offset(
+                selection[0], Atspi.TextBoundaryType.LINE_START)
             count = accessible.get_character_count()
-        except Exception as ex: # Private exception gi._glib.GError when
-                                # gedit became unresponsive.
-            _logger.info("DomainGenericText.read_context(), text: " \
-                         + unicode_str(ex))
+        except Exception as ex:     # Private exception gi._glib.GError when
+                                    # gedit became unresponsive.
+            _logger.info("DomainGenericText.read_context(), text: " +
+                         unicode_str(ex))
             return None
 
-        line = unicode_str(r.content).replace("\n","")
+        line = unicode_str(r.content).replace("\n", "")
         line_caret = max(selection[0] - r.start_offset, 0)
 
         begin = max(selection[0] - 256, 0)
         end   = min(selection[0] + 100, count)
         try:
-            text = Atspi.Text.get_text(accessible, begin, end)
-        except Exception as ex: # Private exception gi._glib.GError when
-                                # gedit became unresponsive.
-            _logger.info("DomainGenericText.read_context(), text2: " \
-                         + unicode_str(ex))
+            text = accessible.get_text(begin, end)
+        except Exception as ex:     # Private exception gi._glib.GError when
+                                    # gedit became unresponsive.
+            _logger.info("DomainGenericText.read_context(), text2: " +
+                         unicode_str(ex))
             return None
 
         text = unicode_str(text)
 
         # Not all text may be available for large selections. We only need the
         # part before the begin of the selection/caret.
-        selection_span = TextSpan(selection[0], selection[1]-selection[0],
-                              text, begin)
+        selection_span = TextSpan(selection[0], selection[1] - selection[0],
+                                  text, begin)
         context = text[:selection[0] - begin]
         begin_of_text = begin == 0
         begin_of_text_offset = 0
@@ -551,8 +537,8 @@ class DomainTerminal(TextDomain):
 
         """
 
-        r = accessible.get_text_at_offset(caret_offset,
-                            Atspi.TextBoundaryType.LINE_START)
+        r = accessible.get_text_at_offset(
+            caret_offset, Atspi.TextBoundaryType.LINE_START)
         line = unicode_str(r.content)
         line_start = r.start_offset
         line_caret = caret_offset - line_start
@@ -580,8 +566,8 @@ class DomainTerminal(TextDomain):
 
             # no prompt yet -> let context reach
             # across one more line break
-            r = accessible.get_text_before_offset(caret_offset,
-                                Atspi.TextBoundaryType.LINE_START)
+            r = accessible.get_text_before_offset(
+                caret_offset, Atspi.TextBoundaryType.LINE_START)
             l = unicode_str(r.content)
 
         result = (context_lines, prompt_length,
@@ -648,13 +634,8 @@ class DomainTerminal(TextDomain):
 class DomainURL(DomainGenericText):
     """ (Firefox) address bar """
 
-    def matches(self,  **kwargs):
-        attributes = kwargs.get("attributes")
-        if attributes:
-            # firefox url bar?
-            if "urlbar" in attributes.get("class", ""):
-                return True
-        return False
+    def matches(self, **kwargs):
+        return kwargs.get("urlbar", False)
 
     def get_auto_separator(self, context):
         """

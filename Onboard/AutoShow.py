@@ -300,7 +300,7 @@ class AutoShow(object):
 
             accessible = self._active_accessible
             if accessible:
-                if self._atspi_state_tracker.is_single_line():
+                if accessible.is_single_line():
                     self._on_text_entry_activated(accessible)
 
     def _on_text_entry_activated(self, accessible):
@@ -386,7 +386,8 @@ class AutoShow(object):
         if not accessible:
             return None
 
-        acc_rect = self._atspi_state_tracker.get_accessible_extents(accessible)
+        accessible.invalidate_extents()
+        acc_rect = accessible.get_extents()
         if acc_rect.is_empty() or \
            self._lock_visible:
             return None
@@ -406,13 +407,13 @@ class AutoShow(object):
 
         # "Follow active window" method
         if method == RepositionMethodEnum.REDUCE_POINTER_TRAVEL:
-            frame = self._atspi_state_tracker.get_frame()
-            app_rect = self._atspi_state_tracker.get_accessible_extents(frame) \
-                        if frame else Rect()
+            frame = accessible.get_frame()
+            app_rect = frame.get_extents() \
+                if frame else Rect()
             x, y = self._find_close_position(view, rh,
-                                                app_rect, acc_rect, limit_rects,
-                                                test_clearance, move_clearance,
-                                                horizontal, vertical)
+                                             app_rect, acc_rect, limit_rects,
+                                             test_clearance, move_clearance,
+                                             horizontal, vertical)
 
         # "Only move when necessary" method
         if method == RepositionMethodEnum.PREVENT_OCCLUSION:
