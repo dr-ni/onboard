@@ -142,11 +142,10 @@ class CachedAccessible:
         if ext is not None:
             scale = config.window_scaling_factor
             if scale != 1.0:
-                attributes = self.get_attributes()
                 # Only Gtk-3 widgets return scaled coordinates, all others,
                 # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
                 # apparently don't.
-                if AtspiStateTracker.is_toolkit_gtk3(attributes):
+                if self.is_toolkit_gtk3():
                     scale = 1.0
                 else:
                     scale = 1.0 / config.window_scaling_factor
@@ -232,7 +231,7 @@ class CachedAccessible:
             self._state[name] = value
         return value
 
-    # ### uncached, but still exception safe accessors ###
+    # ### uncached, but still exception safe functions ###
 
     def get_selection(self, selection_num=0):
         selection = None
@@ -259,6 +258,23 @@ class CachedAccessible:
         except Exception as ex:  # Private exception gi._glib.GErro
             _logger.info("CachedAccessible.set_caret_offset(): " +
                          unicode_str(ex))
+
+    def insert_text(self, position, text):
+        try:
+            return self._accessible.insert_text(position, text, -1)
+        except Exception as ex:  # Private exception gi._glib.GErro
+            _logger.info("CachedAccessible.insert_text(): " +
+                         unicode_str(ex))
+        return False
+
+    def delete_text(self, start_pos, end_pos):
+        try:
+            print(start_pos, end_pos)
+            return self._accessible.delete_text(start_pos, end_pos)
+        except Exception as ex:  # Private exception gi._glib.GErro
+            _logger.info("CachedAccessible.delete_text(): " +
+                         unicode_str(ex))
+        return False
 
     # ### uncached, raising exceptions ###
 
@@ -355,11 +371,47 @@ class CachedAccessible:
         state_set = self.get_state_set()
         return state_set and state_set.contains(Atspi.StateType.SINGLE_LINE)
 
-    @staticmethod
-    def is_toolkit_gtk3(attributes):
+    def is_toolkit_gtk3(self):
         """ Are the accessible attributes from a gtk3 widget? """
+        attributes = self.get_attributes()
         return attributes and \
             "toolkit" in attributes and attributes["toolkit"] == "gtk"
+
+    def get_character_extents(self, accessible, offset):
+        """ Screen rect of the character at offset """
+        try:
+            rect = self._get_character_extents(offset)
+        except Exception as ex:  # private exception gi._glib.GError when
+                # right clicking onboards unity2d launcher (Precise)
+            _logger.atspi("Invalid accessible,"
+                          " failed to get character extents: " +
+                          unicode_str(ex))
+            rect = Rect()
+        return rect
+
+    def _get_character_extents(self, offset):
+        """
+        Screen rect of the character at offset of the accessible, little
+        caching and exception handling.
+        """
+        scale = config.window_scaling_factor
+        if scale != 1.0:
+            # Only Gtk-3 widgets return scaled coordinates, all others,
+            # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
+            # apparently don't.
+            if self.is_toolkit_gtk3():
+                scale = 1.0
+            else:
+                scale = 1.0 / config.window_scaling_factor
+
+        ext = self._accessible.get_character_extents(offset,
+                                                     Atspi.CoordType.SCREEN)
+        # x, y = ext.x + ext.width / 2, ext.y + ext.height / 2
+        # offset_control = self._accessible.get_offset_at_point(x, y,
+        #                                                Atspi.CoordType.SCREEN)
+        # print(offset, offset_control)
+        return Rect(ext.x * scale, ext.y * scale,
+                    ext.width * scale, ext.height * scale)
 
 
 class AsyncEvent:
@@ -748,45 +800,6 @@ class AtspiStateTracker(EventSource):
     def _on_async_text_caret_moved(self, event):
         if event.accessible == self._active_accessible:
             self.emit("text-caret-moved", event)
-
-    @staticmethod
-    def get_accessible_character_extents(accessible, offset):
-        """ Screen rect of the character at offset of the accessible """
-        try:
-            rect = AtspiStateTracker._get_accessible_character_extents(
-                accessible, offset)
-        except Exception as ex:  # private exception gi._glib.GError when
-                # right clicking onboards unity2d launcher (Precise)
-            _logger.atspi("Invalid accessible,"
-                          " failed to get character extents: " +
-                          unicode_str(ex))
-            rect = Rect()
-        return rect
-
-    @staticmethod
-    def _get_accessible_character_extents(accessible, offset):
-        """
-        Screen rect of the character at offset of the accessible, no caching,
-        no exception handling.
-        """
-        scale = config.window_scaling_factor
-        if scale != 1.0:
-            attributes = accessible.get_attributes()
-            # Only Gtk-3 widgets return scaled coordinates, all others,
-            # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
-            # apparently don't.
-            if CachedAccessible.is_toolkit_gtk3(attributes):
-                scale = 1.0
-            else:
-                scale = 1.0 / config.window_scaling_factor
-
-        ext = accessible.get_character_extents(offset, Atspi.CoordType.SCREEN)
-        # x, y = ext.x + ext.width / 2, ext.y + ext.height / 2
-        # offset_control = accessible.get_offset_at_point(x, y,
-        #                                                Atspi.CoordType.SCREEN)
-        # print(offset, offset_control)
-        return Rect(ext.x * scale, ext.y * scale,
-                    ext.width * scale, ext.height * scale)
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):

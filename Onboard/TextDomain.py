@@ -359,7 +359,8 @@ class DomainGenericText(TextDomain):
                 offset = accessible.get_caret_offset()
 
                 # In Zesty, firefox 50.1 often returns caret position -1
-                # when typing. Assume we are at the end of the text.
+                # when typing into the urlbar. Assume we are at the end
+                # of the text when that happens.
                 if offset < 0:
                     _logger.warning("DomainGenericText.read_context(): "
                                     "Atspi.Text.get_caret_offset() "

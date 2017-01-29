@@ -215,8 +215,7 @@ class AtspiTextContext(TextContext):
     def get_character_extents(self, offset):
         accessible = self._accessible
         if accessible:
-            return self._state_tracker.get_accessible_character_extents(
-                accessible, offset)
+            return accessible.get_character_extents(offset)
         else:
             return None
 
@@ -262,7 +261,7 @@ class AtspiTextContext(TextContext):
         """
         Can delete or insert text into the accessible?
         """
-        #return False # support for inserting is spotty: not in firefox, terminal
+        # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and self._can_insert_text
 
     def delete_text(self, offset, length=1):
@@ -284,7 +283,7 @@ class AtspiTextContext(TextContext):
         """
         Insert directly, without going through faking key presses.
         """
-        self._accessible.insert_text(offset, text, -1)
+        self._accessible.insert_text(offset, text)
 
         # Move the caret after insertion if the accessible itself
         # hasn't done so already. This assumes the insertion begins at
@@ -344,7 +343,7 @@ class AtspiTextContext(TextContext):
                 # even if they claim to implement the EditableText interface.
 
                 # Allow direct text insertion for gtk widgets
-                if accessible.is_toolkit_gtk3(accessible.get_attributes()):
+                if accessible.is_toolkit_gtk3():
                     can_insert_text = True
 
         return can_insert_text
