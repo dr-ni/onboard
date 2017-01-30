@@ -777,3 +777,20 @@ class LayoutView:
             return layout.get_key_at(point, keyboard.active_layer)
         return None
 
+    def get_xid(self):
+        # Zesty, X, Gtk 3.22: XInput select_events() on self leads to
+        # LP: #1636252. On the first call to get_xid() of a child widget,
+        # Gtk creates a new native X Window with broken transparency.
+        # The toplevel window ought to always have a native X window, so
+        # we'll pick that one instead and skip on-the fly creation.
+        # TouchInput isn't used for anything other than full client areas
+        # yet, so in principle this shouldn't be a problem.
+
+        toplevel = self.get_toplevel()
+        if toplevel:
+            topwin = toplevel.get_window()
+            if topwin:
+                return topwin.get_xid()
+        return 0
+
+
