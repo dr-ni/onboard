@@ -663,7 +663,7 @@ class DomainURL(DomainGenericText):
     """ (Firefox) address bar """
 
     def matches(self, **kwargs):
-        return kwargs.get("urlbar", False)
+        return kwargs.get("is_urlbar", False)
 
     def get_auto_separator(self, context):
         """
