@@ -77,7 +77,7 @@ class TextDomain:
         """ Called on being selected as the currently active domain. """
         pass
 
-    def read_context(self, accessible):
+    def read_context(self, keyboard, accessible):
         return NotImplementedError()
 
     def get_text_begin_marker(self):
@@ -321,7 +321,7 @@ class DomainNOP(TextDomain):
     def matches(self, **kwargs):
         return True
 
-    def read_context(self, accessible):
+    def read_context(self, keyboard, accessible):
         return "", "", 0, TextSpan(), False, 0
 
     def get_auto_separator(self, context):
@@ -345,7 +345,7 @@ class DomainGenericText(TextDomain):
     def matches(self, **kwargs):
         return TextDomain.matches(self, **kwargs)
 
-    def read_context(self, accessible):
+    def read_context(self, keyboard, accessible):
         """ Extract prediction context from the accessible """
 
         # get caret position from selection
@@ -467,21 +467,22 @@ class DomainTerminal(TextDomain):
     def init_domain(self):
         pass
 
-    def read_context(self, accessible, offset=None):
+    def read_context(self, keyboard, accessible):
         """
         Extract prediction context from the accessible
         """
-        if offset is None:
-            try:
-                offset = accessible.get_caret_offset()
-            except Exception as ex:     # Private exception gi._glib.GError
-                                        # when gedit became unresponsive.
-                _logger.info("DomainTerminal.read_context(): " +
-                             unicode_str(ex))
-                return None
+        try:
+            offset = accessible.get_caret_offset()
+        except Exception as ex:     # Private exception gi._glib.GError
+                                    # when gedit became unresponsive.
+            _logger.info("DomainTerminal.read_context(): " +
+                         unicode_str(ex))
+            return None
 
         context_lines, prompt_length, line, line_start, line_caret = \
-            self._get_text_after_prompt(accessible, offset)
+            self._get_text_after_prompt(
+                accessible, offset,
+                keyboard.get_last_typed_was_separator())
 
         if prompt_length:
             begin_of_text = True
@@ -500,7 +501,8 @@ class DomainTerminal(TextDomain):
                   begin_of_text, begin_of_text_offset)
         return result
 
-    def _get_text_after_prompt(self, accessible, caret_offset):
+    def _get_text_after_prompt(self, accessible, caret_offset,
+                               last_typed_was_separator=None):
         """
         Return text from the input area of the terminal after the prompt.
 
@@ -520,6 +522,8 @@ class DomainTerminal(TextDomain):
         ...         return r
         ...     def get_text_before_offset(self, offset, boundary):
         ...         return self.get_text_at_offset(offset - self._width, boundary)
+        ...     def is_byobu(self):
+        ...         return False
 
         >>> d = DomainTerminal()
 
@@ -557,11 +561,20 @@ class DomainTerminal(TextDomain):
         line = unicode_str(r.content)
         line_start = r.start_offset
         line_caret = caret_offset - line_start
-
         # remove prompt from the current or previous lines
         context_lines = []
         prompt_length = None
         l = line[:line_caret]
+
+        # Zesty: byobu running in gnome-terminal doesn't report trailing
+        # spaces in text and caret-position.
+        # Awful hack: assume there is always a trailing space when the caret
+        # is at the end of the line and we just typed a separator.
+        if line[line_caret:] == "\n" and \
+           last_typed_was_separator and \
+           accessible.is_byobu():
+            l += " "
+
         for i in range(2):
 
             # matching blacklisted prompt? -> cancel whole context

@@ -455,6 +455,8 @@ class WordSuggestions:
             else:
                 # Insert separator now, so we suppress_modifiers only once.
                 self._replace_text_at_caret(deletion, insertion, separator)
+                if separator:
+                    self.set_last_typed_was_separator(True)
 
         # Separator becomes the new pending separator
         separator_span = TextSpan(simulated_result.begin(),
@@ -1047,6 +1049,8 @@ class WordSuggestions:
         # been added from somewhere.
         if self._spell_checker:
             self._spell_checker.invalidate_query_cache()
+
+        self.set_last_typed_was_separator(False)
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
@@ -1811,6 +1815,7 @@ class Punctuator:
             # always generate key-strokes and are likely to arrive
             # after the separator.
             self._wp.get_text_changer().insert_string_at_caret(string)
+            self.set_last_typed_was_separator(True)
 
     def insert_separator_at_distance(self, separator_span):
         """

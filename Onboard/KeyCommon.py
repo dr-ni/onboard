@@ -447,6 +447,11 @@ class KeyCommon(LayoutItem):
         return (id == "RTRN" or
                 id == "KPEN")
 
+    def is_separator(self):
+        id = self.id
+        return (id == "SPCE" or
+                id == "TAB")
+
     def is_separator_cancelling(self):
         """ Should this key cancel pending word separators? """
         return (self.is_correction_key() or

@@ -665,6 +665,7 @@ class Keyboard(WordSuggestions):
         self._application = weakref.ref(application)
         self._pressed_key = None
         self._last_typing_time = 0
+        self._last_typed_was_separator = False
 
         self._temporary_modifiers = None
         self._locked_temporary_modifiers = {}
@@ -1046,6 +1047,12 @@ class Keyboard(WordSuggestions):
         key = self.get_pressed_key()
         return key and self._is_text_insertion_key(key) or \
             time.time() - self._last_typing_time <= 0.5
+
+    def set_last_typed_was_separator(self, value):
+        self._last_typed_was_separator = value
+
+    def get_last_typed_was_separator(self):
+        return self._last_typed_was_separator
 
     def _is_text_insertion_key(self, key):
         """ Does key actually insert any characters (not a navigation key)? """
@@ -1673,6 +1680,8 @@ class Keyboard(WordSuggestions):
 
             # undo temporary suppression of the text display
             WordSuggestions.show_input_line_on_key_release(self, key)
+
+        self.set_last_typed_was_separator(key.is_separator())
 
         # Insert words on button release to avoid having the wordlist
         # change between button press and release.

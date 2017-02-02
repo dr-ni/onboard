@@ -547,7 +547,7 @@ class AtspiTextContext(TextContext):
                    self._pending_separator_span.begin():
                     self.set_pending_separator(None)
 
-        result = self._text_domain.read_context(self._accessible)
+        result = self._text_domain.read_context(self._wp, self._accessible)
         if result is not None:
             (self._context,
              self._line,

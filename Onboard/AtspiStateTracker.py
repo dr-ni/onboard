@@ -202,11 +202,17 @@ class CachedAccessible:
         """ Is this a (most likely firefox') URL bar? """
         def func():
             attributes = self.get_attributes()
-            if attributes and "urlbar" in attributes.get("class", ""):
-                return True
-            return False
+            return bool(attributes and "urlbar" in attributes.get("class", ""))
 
-        return self._get_value_noex("urlbar", func)
+        return self._get_value_noex("is_urlbar", func)
+
+    def is_byobu(self):
+        """ Is this possibly byobu running in a terminal? """
+        def func():
+            description = self.get_description()
+            return bool(description and "byobu" in description.lower())
+
+        return self._get_value_noex("is_byobu", func)
 
     def _get_value(self, name, func, default=None):
         """ Return cached return value of func(). """

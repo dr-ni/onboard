@@ -626,8 +626,8 @@ class AutoSaveTimer(Timer):
 
     def postpone(self):
         """
-        Postpone saving a little, while the user is still typing.
-        Helps to mask the delay when saving large models during which
+        Postpone saving a little while the user is still typing.
+        Helps to mask the delay when saving large models, during which
         Onboard briefly becomes unresponsive.
         """
         elapsed = time.time() - self._last_save_time
