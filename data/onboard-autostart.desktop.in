@@ -3,6 +3,7 @@ _Name=Onboard
 _GenericName=Onboard onscreen keyboard
 _Comment=Flexible onscreen keyboard
 Exec=onboard --not-show-in=GNOME,GNOME-Classic:GNOME --startup-delay=3.0
+Icon=onboard
 Type=Application
 NoDisplay=true
 X-Ubuntu-Gettext-Domain=onboard
