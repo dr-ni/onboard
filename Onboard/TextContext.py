@@ -382,7 +382,7 @@ class AtspiTextContext(TextContext):
             log("Accessible focused: ")
             indent = " " * 4
             if accessible:
-                state = accessible.get_state()
+                state = accessible.get_all_state()
                 for key, value in sorted(state.items()):
                     msg = str(key) + "="
                     if key == "state-set":

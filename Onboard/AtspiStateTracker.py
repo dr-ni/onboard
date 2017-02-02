@@ -55,11 +55,31 @@ class CachedAccessible:
         """ All cached state of the accessible """
         return self._state
 
-    def invalidate(self, name):
-        try:
-            del self._state[name]
-        except KeyError:
-            pass
+    def get_all_state(self):
+        """
+        Return _state filled with all kinds of properties, for easy printint
+        as debug output in TextContext.
+        """
+        self.get_role()
+        self.get_state_set()
+        self.get_id()
+        self.get_attributes()
+        self.get_interfaces()
+        self.get_description()
+        self.get_pid()
+        self.get_process_name()
+        self.get_toolkit_name()
+        self.get_toolkit_version()
+        self.get_editable_text_iface()
+        self.get_editable_text_iface()
+        self.get_app_name()
+        self.get_app_description()
+        self.get_extents()
+        self.get_frame()
+        self.get_frame_extents()
+        self.is_urlbar()
+        self.is_byobu()
+        return self._state
 
     # ### Cached, exception-safe accessor functions ###
 
@@ -135,25 +155,22 @@ class CachedAccessible:
         """
         Screen rect after scaling.
         """
-        ext = self._get_value(
-            "extents",
-            lambda : self._accessible.get_extents(Atspi.CoordType.SCREEN))
+        scale = config.window_scaling_factor
+        if scale != 1.0:
+            # Only Gtk-3 widgets return scaled coordinates, all others,
+            # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
+            # apparently don't.
+            if self.is_toolkit_gtk3():
+                scale = 1.0
+            else:
+                scale = 1.0 / config.window_scaling_factor
 
-        if ext is not None:
-            scale = config.window_scaling_factor
-            if scale != 1.0:
-                # Only Gtk-3 widgets return scaled coordinates, all others,
-                # including Gtk-2 apps like firefox, clawsmail and Qt-apps,
-                # apparently don't.
-                if self.is_toolkit_gtk3():
-                    scale = 1.0
-                else:
-                    scale = 1.0 / config.window_scaling_factor
-
+        def func():
+            ext = self._accessible.get_extents(Atspi.CoordType.SCREEN)
             return Rect(ext.x * scale, ext.y * scale,
                         ext.width * scale, ext.height * scale)
 
-        return Rect()
+        return self._get_value("extents", func, Rect())
 
     def get_frame(self):
         def func():
@@ -170,6 +187,8 @@ class CachedAccessible:
             if frame:
                 return frame.get_extents()
             return Rect()
+
+        return self._get_value_noex("frame_extents", func)
 
     @staticmethod
     def _get_accessible_frame(accessible):
@@ -236,6 +255,16 @@ class CachedAccessible:
             value = func()
             self._state[name] = value
         return value
+
+    def invalidate(self, name):
+        """
+        Force re-reading property from the accessible.
+        May cause a D-Bus round-trip on the next read-attempt.
+        """
+        try:
+            del self._state[name]
+        except KeyError:
+            pass
 
     # ### uncached, but still exception safe functions ###
 
