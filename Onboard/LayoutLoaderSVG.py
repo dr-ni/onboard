@@ -21,10 +21,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
-### Logging ###
 import logging
 _logger = logging.getLogger("LayoutLoaderSVG")
-###############
 
 import os
 import re
@@ -34,23 +32,21 @@ from xml.dom import minidom
 
 from Onboard                 import Exceptions
 from Onboard                 import KeyCommon
-from Onboard.KeyCommon       import StickyBehavior, ImageSlot, \
-                                    KeyPath, KeyGeometry
+from Onboard.KeyCommon       import (StickyBehavior, ImageSlot,
+                                     KeyPath, KeyGeometry)
 from Onboard.Layout          import LayoutRoot, LayoutBox, LayoutPanel
-from Onboard.utils           import modifiers, Rect, \
-                                    toprettyxml, Version, open_utf8, \
-                                    permute_mask, LABEL_MODIFIERS, \
-                                    unicode_str, XDGDirs
+from Onboard.utils           import (modifiers, Rect,
+                                     toprettyxml, Version, open_utf8,
+                                     permute_mask, LABEL_MODIFIERS,
+                                     unicode_str, XDGDirs)
 
 # Layout items that can be created dynamically via the 'class' XML attribute.
-from Onboard.WordSuggestions import WordListPanel
-from Onboard.KeyGtk          import RectKey, WordlistKey, BarKey, \
-                                    WordKey, InputlineKey
+from Onboard.WordSuggestions import WordListPanel  # noqa: flake8
+from Onboard.KeyGtk          import (RectKey, WordlistKey, BarKey, # noqa: flake8
+                                     WordKey, InputlineKey)
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 
 class LayoutLoaderSVG:
@@ -101,8 +97,8 @@ class LayoutLoaderSVG:
     def load(self, vk, layout_filename, color_scheme):
         """ Load layout root file. """
         self._system_layout, self._system_variant = \
-                                      self._get_system_keyboard_layout(vk)
-        _logger.info("current system keyboard layout(variant): '{}'" \
+            self._get_system_keyboard_layout(vk)
+        _logger.info("current system keyboard layout(variant): '{}'"
                      .format(self._get_system_layout_string()))
 
         layout = self._load(vk, layout_filename, color_scheme,
@@ -110,9 +106,9 @@ class LayoutLoaderSVG:
         if layout:
             # purge attributes only used during loading
             for item in layout.iter_items():
-                if not item.templates is None:
+                if item.templates is not None:
                     item.templates = None
-                if not item.keysym_rules is None:
+                if item.keysym_rules is not None:
                     item.keysym_rules = None
 
             # enable caching
@@ -120,8 +116,8 @@ class LayoutLoaderSVG:
 
         return layout
 
-
-    def _load(self, vk, layout_filename, color_scheme, root_layout_dir, parent_item = None):
+    def _load(self, vk, layout_filename, color_scheme,
+              root_layout_dir, parent_item=None):
         """ Load or include layout file at any depth level. """
         self._vk = vk
         self._layout_filename = layout_filename
@@ -129,7 +125,7 @@ class LayoutLoaderSVG:
         self._root_layout_dir = root_layout_dir
         return self._load_layout(layout_filename, parent_item)
 
-    def _load_layout(self, layout_filename, parent_item = None):
+    def _load_layout(self, layout_filename, parent_item=None):
         self._svg_cache = {}
         layout = None
 
@@ -146,11 +142,11 @@ class LayoutLoaderSVG:
             # check layout format, no format version means legacy layout
             format = self.LAYOUT_FORMAT_LEGACY
             if dom.hasAttribute("format"):
-               format = Version.from_string(dom.attributes["format"].value)
+                format = Version.from_string(dom.attributes["format"].value)
             self._format = format
 
-            root = LayoutPanel() # root, representing the 'keyboard' tag
-            root.set_id("__root__") # id for debug prints
+            root = LayoutPanel()  # root, representing the 'keyboard' tag
+            root.set_id("__root__")  # id for debug prints
 
             # Init included root with the parent item's svg filename.
             # -> Allows to skip specifying svg filenames in includes.
@@ -161,7 +157,8 @@ class LayoutLoaderSVG:
                 self._parse_dom_node(dom, root)
                 layout = root
             else:
-                _logger.warning(_format("Loading legacy layout, format '{}'. "
+                _logger.warning(
+                    _format("Loading legacy layout, format '{}'. "
                             "Please consider upgrading to current format '{}'",
                             format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
@@ -171,7 +168,7 @@ class LayoutLoaderSVG:
 
         f.close()
 
-        self._svg_cache = {} # Free the memory
+        self._svg_cache = {}  # Free the memory
         return layout
 
     def _parse_dom_node(self, dom_node, parent_item):
@@ -192,7 +189,7 @@ class LayoutLoaderSVG:
                     can_load = True
                 else:
                     id = child.attributes["id"].value
-                    if not id in loaded_ids:
+                    if id not in loaded_ids:
                         if child.hasAttribute("layout"):
                             layout = child.attributes["layout"].value
                             can_load = self._has_matching_layout(layout)
@@ -202,7 +199,6 @@ class LayoutLoaderSVG:
                                 loaded_ids.add(id)
                         else:
                             can_load = True
-
 
                 if can_load:
                     tag = child.tagName
@@ -247,7 +243,7 @@ class LayoutLoaderSVG:
                 parent.append_items(incl_root.items)
                 parent.update_keysym_rules(incl_root.keysym_rules)
                 parent.update_templates(incl_root.templates)
-                incl_root.items = None # help garbage collector
+                incl_root.items = None  # help garbage collector
                 incl_root.keysym_rules = None
                 incl_root.templates = None
 
@@ -260,10 +256,9 @@ class LayoutLoaderSVG:
         id = attributes.get("id")
         if not id:
             raise Exceptions.LayoutFileError(
-                "'id' attribute required for template '{} {}' "
-                "in layout '{}'" \
-                .format(tag,
-                        str(list(attributes.values())),
+                "'id' attribute required for template '{}' "
+                "in layout '{}'"
+                .format(str(list(attributes.values())),
                         self._layout_filename))
 
         parent.update_templates({(id, RectKey) : attributes})
@@ -301,39 +296,39 @@ class LayoutLoaderSVG:
         item = item_class()
 
         value = attributes.get("id")
-        if not value is None:
+        if value is not None:
             item.id = value
 
         value = attributes.get("group")
-        if not value is None:
+        if value is not None:
             item.group = value
 
         value = attributes.get("layer")
-        if not value is None:
+        if value is not None:
             item.layer_id = value
 
         value = attributes.get("filename")
-        if not value is None:
+        if value is not None:
             item.filename = value
 
         value = attributes.get("visible")
-        if not value is None:
+        if value is not None:
             item.visible = value == "true"
 
         value = attributes.get("sensitive")
-        if not value is None:
+        if value is not None:
             item.sensitive = value == "true"
 
         value = attributes.get("border")
-        if not value is None:
+        if value is not None:
             item.border = float(value)
 
         value = attributes.get("expand")
-        if not value is None:
+        if value is not None:
             item.expand = value == "true"
 
         value = attributes.get("unlatch_layer")
-        if not value is None:
+        if value is not None:
             item.unlatch_layer = value == "true"
 
         value = attributes.get("scannable")
@@ -341,7 +336,7 @@ class LayoutLoaderSVG:
             item.scannable = False
 
         value = attributes.get("scan_priority")
-        if not value is None:
+        if value is not None:
             item.scan_priority = int(value)
 
         return item
@@ -349,7 +344,9 @@ class LayoutLoaderSVG:
     def _parse_sublayout(self, node, parent):
         attributes = dict(node.attributes.items())
         item = self._init_item(attributes, LayoutPanel)
-        item.sublayout_parent = parent # make templates accessible in the subl.
+
+        # make templates accessible in the sublayout
+        item.sublayout_parent = parent
         return item
 
     def _parse_box(self, node):
@@ -421,7 +418,7 @@ class LayoutLoaderSVG:
                     result = key
                 else:
                     _logger.info("Ignoring key '{}'."
-                                 " No svg object found for '{}'." \
+                                 " No svg object found for '{}'."
                                  .format(key.id, key.svg_id))
 
         return result  # ignore keys not found in an svg file
@@ -435,7 +432,7 @@ class LayoutLoaderSVG:
         key.set_id(full_id, theme_id, svg_id)
 
         if "_" in key.get_id():
-            _logger.warning("underscore in key id '{}', please use dashes" \
+            _logger.warning("underscore in key id '{}', please use dashes"
                             .format(key.get_id()))
 
         value = attributes.get("modifier")
@@ -444,7 +441,8 @@ class LayoutLoaderSVG:
                 key.modifier = modifiers[value]
             except KeyError as ex:
                 (strerror) = ex
-                raise Exceptions.LayoutFileError("Unrecognized modifier %s in" \
+                raise Exceptions.LayoutFileError(
+                    "Unrecognized modifier %s in"
                     "definition of %s" (strerror, full_id))
 
         value = attributes.get("action")
@@ -453,7 +451,8 @@ class LayoutLoaderSVG:
                 key.action = KeyCommon.actions[value]
             except KeyError as ex:
                 (strerror) = ex
-                raise Exceptions.LayoutFileError("Unrecognized key action {} in" \
+                raise Exceptions.LayoutFileError(
+                    "Unrecognized key action {} in"
                     "definition of {}".format(strerror, full_id))
 
         if "char" in attributes:
@@ -462,10 +461,10 @@ class LayoutLoaderSVG:
         elif "keysym" in attributes:
             value = attributes["keysym"]
             key.type = KeyCommon.KEYSYM_TYPE
-            if value[1] == "x":#Deals for when keysym is hex
-                key.code = int(value,16)
+            if value[1] == "x":  # for hex keysym
+                key.code = int(value, 16)
             else:
-                key.code = int(value,10)
+                key.code = int(value, 10)
         elif "keypress_name" in attributes:
             key.code = attributes["keypress_name"]
             key.type = KeyCommon.KEYPRESS_NAME_TYPE
@@ -497,10 +496,13 @@ class LayoutLoaderSVG:
 
         # get the optional image filename
         if "image" in attributes:
-            if not key.image_filenames: key.image_filenames = {}
-            key.image_filenames[ImageSlot.NORMAL] = attributes["image"].split(";")[0]
+            if not key.image_filenames:
+                key.image_filenames = {}
+            key.image_filenames[ImageSlot.NORMAL] = \
+                attributes["image"].split(";")[0]
         if "image_active" in attributes:
-            if not key.image_filenames: key.image_filenames = {}
+            if not key.image_filenames:
+                key.image_filenames = {}
             key.image_filenames[ImageSlot.ACTIVE] = attributes["image_active"]
 
         # get labels
@@ -552,10 +554,10 @@ class LayoutLoaderSVG:
             key.label_y_align = float(attributes["label_y_align"])
 
         if "label_margin" in attributes:
-            values = attributes["label_margin"].replace(" ","").split(",")
-            margin = [float(x) if x else key.label_margin[i] \
+            values = attributes["label_margin"].replace(" ", "").split(",")
+            margin = [float(x) if x else key.label_margin[i]
                       for i, x in enumerate(values[:2])]
-            margin += margin[:1]*(2 - len(margin))
+            margin += margin[:1] * (2 - len(margin))
             if margin:
                 key.label_margin = margin
 
@@ -567,7 +569,7 @@ class LayoutLoaderSVG:
                 key.sticky = False
             else:
                 raise Exceptions.LayoutFileError(
-                    "Invalid value '{}' for 'sticky' attribute of key '{}'" \
+                    "Invalid value '{}' for 'sticky' attribute of key '{}'"
                     .format(sticky, key.id))
         else:
             key.sticky = False
@@ -583,7 +585,8 @@ class LayoutLoaderSVG:
                 key.sticky_behavior = StickyBehavior.from_string(value)
             except KeyError as ex:
                 (strerror) = ex
-                raise Exceptions.LayoutFileError("Unrecognized sticky behavior {} in" \
+                raise Exceptions.LayoutFileError(
+                    "Unrecognized sticky behavior {} in"
                     "definition of {}".format(strerror, full_id))
 
         if "tooltip" in attributes:
@@ -602,11 +605,11 @@ class LayoutLoaderSVG:
 
         # Get labels from keyboard mapping first.
         if key.type == KeyCommon.KEYCODE_TYPE and \
-           not key.id in ["BKSP"]:
-            if self._vk: # xkb keyboard found?
+           key.id not in ["BKSP"]:
+            if self._vk:  # xkb keyboard found?
                 vkmodmasks = self._label_modifier_masks
                 if sys.version_info.major == 2:
-                    vkmodmasks = [long(m) for m in vkmodmasks]
+                    vkmodmasks = [int(m) for m in vkmodmasks]
                 vklabels = self._vk.labels_from_keycode(key.code, vkmodmasks)
                 if sys.version_info.major == 2:
                     vklabels = [x.decode("UTF-8") for x in vklabels]
@@ -619,8 +622,7 @@ class LayoutLoaderSVG:
 
         # If key is a macro (snippet) generate label from its number.
         elif key.type == KeyCommon.MACRO_TYPE:
-            label, text = config.snippets.get(int(key.code), \
-                                                       (None, None))
+            label, text = config.snippets.get(int(key.code), (None, None))
             tooltip = _format("Snippet {}", key.code)
             if not label:
                 labels[0] = "     --     "
@@ -638,11 +640,11 @@ class LayoutLoaderSVG:
         # override with per-keysym labels
         keysym_rules = self._get_keysym_rules(key)
         if key.type == KeyCommon.KEYCODE_TYPE:
-            if self._vk: # xkb keyboard found?
+            if self._vk:  # xkb keyboard found?
                 vkmodmasks = self._label_modifier_masks
                 try:
                     if sys.version_info.major == 2:
-                        vkmodmasks = [long(m) for m in vkmodmasks]
+                        vkmodmasks = [int(m) for m in vkmodmasks]
                     vkkeysyms  = self._vk.keysyms_from_keycode(key.code,
                                                                vkmodmasks)
                 except AttributeError:
@@ -654,14 +656,14 @@ class LayoutLoaderSVG:
                     attributes = keysym_rules.get(keysym)
                     if attributes:
                         label = attributes.get("label")
-                        if not label is None:
+                        if label is not None:
                             mask = vkmodmasks[i]
                             labels[mask] = label
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
-        return { mask : lab and _(lab) or None
-                 for mask, lab in labels.items()}
+        return {mask : lab and _(lab) or None
+                for mask, lab in labels.items()}
 
     def _parse_layout_labels(self, attributes):
         """ Deprecated label definitions up to v0.98.x """
@@ -699,7 +701,7 @@ class LayoutLoaderSVG:
         except Exceptions.LayoutFileError as ex:
             raise Exceptions.LayoutFileError(
                 "error loading '{}'".format(filename),
-                chained_exception = (ex))
+                chained_exception=(ex))
         return svg_nodes
 
     def _parse_svg(self, node):
@@ -714,10 +716,10 @@ class LayoutLoaderSVG:
 
                     if tag == "rect":
                         svg_node.bounds = \
-                                   Rect(float(child.attributes['x'].value),
-                                        float(child.attributes['y'].value),
-                                        float(child.attributes['width'].value),
-                                        float(child.attributes['height'].value))
+                            Rect(float(child.attributes['x'].value),
+                                 float(child.attributes['y'].value),
+                                 float(child.attributes['width'].value),
+                                 float(child.attributes['height'].value))
 
                     elif tag == "path":
                         data = child.attributes['d'].value
@@ -726,8 +728,9 @@ class LayoutLoaderSVG:
                             svg_node.path = KeyPath.from_svg_path(data)
                         except ValueError as ex:
                             raise Exceptions.LayoutFileError(
-                                  "while reading geometry with id '{}'".format(id),
-                                  chained_exception = (ex))
+                                "while reading geometry with id '{}'"
+                                .format(id),
+                                chained_exception=(ex))
 
                         svg_node.bounds = svg_node.path.get_bounds()
 
@@ -749,7 +752,7 @@ class LayoutLoaderSVG:
             if templates:
                 for id in ids:
                     match = templates.get((id, classinfo))
-                    if not match is None:
+                    if match is not None:
                         return match
         return {}
 
@@ -760,7 +763,7 @@ class LayoutLoaderSVG:
         """
         keysym_rules = {}
         for item in reversed(list(scope_item.iter_to_root())):
-            if not item.keysym_rules is None:
+            if item.keysym_rules is not None:
                 keysym_rules.update(item.keysym_rules)
 
         return keysym_rules
@@ -768,7 +771,7 @@ class LayoutLoaderSVG:
     def _get_system_keyboard_layout(self, vk):
         """ get names of the currently active layout group and variant """
 
-        if vk: # xkb keyboard found?
+        if vk:  # xkb keyboard found?
             group = vk.get_current_group()
             names = vk.get_rules_names()
         else:
@@ -826,7 +829,6 @@ class LayoutLoaderSVG:
                 return True
         return False
 
-
     # --------------------------------------------------------------------------
     # Legacy pane layout support
     # --------------------------------------------------------------------------
@@ -874,8 +876,9 @@ class LayoutLoaderSVG:
         for key in layer_area.iter_keys():
             w = key.get_border_rect().w
             histogram[w] = histogram.get(w, 0) + 1
-        most_frequent_width = max(list(zip(list(histogram.values()), list(histogram.keys()))))[1] \
-                              if histogram else 18
+        most_frequent_width = max(list(zip(list(histogram.values()),
+                                           list(histogram.keys()))))[1] \
+            if histogram else 18
 
         # Legacy onboard had automatic tab-keys for pane switching.
         # Simulate this by generating layer buttons from scratch.
@@ -949,12 +952,14 @@ class LayoutLoaderSVG:
                 # check layout format
                 format = LayoutLoaderSVG.LAYOUT_FORMAT_LEGACY
                 if keyboard_node.hasAttribute("format"):
-                   format = Version.from_string(keyboard_node.attributes["format"].value)
+                    format = Version.from_string(
+                        keyboard_node.attributes["format"].value)
                 keyboard_node.attributes["id"] = dst_basename
 
                 if format < LayoutLoaderSVG.LAYOUT_FORMAT_LAYOUT_TREE:
-                    raise Exceptions.LayoutFileError( \
-                        _format("copy_layouts failed, unsupported layout format '{}'.",
+                    raise Exceptions.LayoutFileError(
+                        _format("copy_layouts failed, "
+                                "unsupported layout format '{}'.",
                                 format))
                 else:
                     # replace the basename of all svg filenames
@@ -963,18 +968,23 @@ class LayoutLoaderSVG:
                             if node.hasAttribute("filename"):
                                 filename = node.attributes["filename"].value
 
-                                # Create a replacement layer name for the unlikely
-                                # case  that the svg-filename doesn't contain a
-                                # layer section (as in path/basename-layer.ext).
-                                fallback_layer_name = fallback_layers.get(filename,
-                                             "Layer" + str(len(fallback_layers)))
+                                # Create a replacement layer name for the
+                                # unlikely case  that the svg-filename doesn't
+                                # contain a layer section
+                                # (as in path/basename-layer.ext).
+                                fallback_layer_name = fallback_layers.get(
+                                    filename,
+                                    "Layer" + str(len(fallback_layers)))
                                 fallback_layers[filename] = fallback_layer_name
 
                                 # replace the basename of this filename
-                                new_filename = LayoutLoaderSVG._replace_basename( \
-                                     filename, dst_basename, fallback_layer_name)
+                                new_filename = \
+                                    LayoutLoaderSVG._replace_basename(
+                                        filename, dst_basename,
+                                        fallback_layer_name)
 
-                                node.attributes["filename"].value = new_filename
+                                node.attributes["filename"].value = \
+                                    new_filename
                                 svg_filenames[filename] = new_filename
 
             if domdoc:
@@ -997,15 +1007,14 @@ class LayoutLoaderSVG:
                         if not dir:
                             dst = os.path.join(dst_dir, name)
 
-                        _logger.info(_format("copying svg file '{}' to '{}'", \
+                        _logger.info(_format("copying svg file '{}' to '{}'",
                                      src, dst))
                         shutil.copyfile(src, dst)
         except OSError as ex:
-            _logger.error("copy_layout failed: " + \
+            _logger.error("copy_layout failed: " +
                           unicode_str(ex))
         except Exceptions.LayoutFileError as ex:
             _logger.error(unicode_str(ex))
-
 
     @staticmethod
     def remove_layout(filename):
@@ -1056,7 +1065,7 @@ class LayoutLoaderSVG:
         if name:
             index = name.rfind("-")
             if index >= 0:
-                layer = name[index+1:]
+                layer = name[index + 1:]
             else:
                 layer = fallback_layer_name
             return "{}-{}{}".format(new_basename, layer, ext)
