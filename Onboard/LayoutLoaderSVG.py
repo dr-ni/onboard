@@ -44,6 +44,7 @@ from Onboard.utils           import (modifiers, Rect,
 from Onboard.WordSuggestions import WordListPanel  # noqa: flake8
 from Onboard.KeyGtk          import (RectKey, WordlistKey, BarKey, # noqa: flake8
                                      WordKey, InputlineKey)
+from Onboard.CharacterPalette import CharacterPalettePanel, CharacterPaletteKey  # noqa: flake8
 
 from Onboard.Config import Config
 config = Config()
@@ -114,6 +115,9 @@ class LayoutLoaderSVG:
             # enable caching
             layout = LayoutRoot(layout)
 
+            # Fill in missing target_layer_id attributes
+            self._fill_in_target_layer_id(layout)
+
         return layout
 
     def _load(self, vk, layout_filename, color_scheme,
@@ -170,6 +174,19 @@ class LayoutLoaderSVG:
 
         self._svg_cache = {}  # Free the memory
         return layout
+
+    @staticmethod
+    def _fill_in_target_layer_id(layout):
+        """
+        Make sure the target_layer_id attribute is set for all layer buttons.
+        """
+        layer_ids = layout.get_layer_ids()
+        if layer_ids:
+            for item in layout.iter_items():
+                if item.is_key() and \
+                   item.is_layer_button() and \
+                   not item.target_layer_id:
+                    item.target_layer_id = layer_ids[item.get_layer_index()]
 
     def _parse_dom_node(self, dom_node, parent_item):
         """ Recursively traverse the dom nodes of the layout tree. """
@@ -284,20 +301,23 @@ class LayoutLoaderSVG:
     def _init_item(self, attributes, item_class):
         """ Parses attributes common to all LayoutItems """
 
+        id = attributes.get("id")
+
         # allow to override the item's default class
         if "class" in attributes:
             class_name = attributes["class"]
             try:
                 item_class = globals()[class_name]
-            except KeyError:
-                pass
+            except KeyError as ex:
+                _logger.warning("key {}: class {} not found - "
+                                .format(repr(id), repr(class_name)) +
+                                unicode_str(ex))
 
         # create the item
         item = item_class()
 
-        value = attributes.get("id")
-        if value is not None:
-            item.id = value
+        if id is not None:
+            item.id = id
 
         value = attributes.get("group")
         if value is not None:
@@ -417,9 +437,9 @@ class LayoutLoaderSVG:
                     key.geometry = geometry
                     result = key
                 else:
-                    _logger.info("Ignoring key '{}'."
-                                 " No svg object found for '{}'."
-                                 .format(key.id, key.svg_id))
+                    _logger.warning("Ignoring key '{}'."
+                                    " No svg object found for '{}' in '{}'."
+                                    .format(key.id, key.svg_id, filename))
 
         return result  # ignore keys not found in an svg file
 
@@ -477,6 +497,10 @@ class LayoutLoaderSVG:
         elif "keycode" in attributes:
             key.code = int(attributes["keycode"])
             key.type = KeyCommon.KEYCODE_TYPE
+        elif "target_layer" in attributes:
+            key.code = key.id[:]
+            key.type = KeyCommon.BUTTON_TYPE
+            key.target_layer = attributes["target_layer"]
         elif "button" in attributes:
             key.code = key.id[:]
             key.type = KeyCommon.BUTTON_TYPE

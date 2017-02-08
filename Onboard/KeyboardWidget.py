@@ -95,7 +95,7 @@ class AutoReleaseTimer(Timer):
             config.word_suggestions.set_pause_learning(0)
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys(release_all_keys)
-        self._keyboard.active_layer_index = 0
+        self._keyboard.set_active_layer_id(None)
         self._keyboard.invalidate_ui_no_resize()
         self._keyboard.commit_ui_updates()
         return False

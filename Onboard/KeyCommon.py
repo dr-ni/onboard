@@ -254,6 +254,9 @@ class KeyCommon(LayoutItem):
     # can show label popup
     label_popup = True
 
+    # name of the layer to control (for layer buttons)
+    target_layer_id = None
+
 ###################
 
     def __init__(self):
@@ -390,7 +393,7 @@ class KeyCommon(LayoutItem):
         return theme_id
 
     def is_layer_button(self):
-        return self.id.startswith("layer")
+        return bool(self.target_layer_id) or self.id.startswith("layer")
 
     def is_prediction_key(self):
         return self.id.startswith("prediction")
@@ -471,6 +474,9 @@ class KeyCommon(LayoutItem):
     def get_layer_index(self):
         assert(self.is_layer_button())
         return int(self.id[5:])
+
+    def get_target_layer_id(self):
+        return self.target_layer_id
 
     def get_popup_layout(self):
         if self.popup_id:

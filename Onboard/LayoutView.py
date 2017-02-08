@@ -774,7 +774,7 @@ class LayoutView:
         layout = self.get_layout()
         keyboard = self.keyboard
         if layout and keyboard:  # may be gone on exit
-            return layout.get_key_at(point, keyboard.active_layer)
+            return layout.get_key_at(point, keyboard.get_active_layer_id())
         return None
 
     def get_xid(self):

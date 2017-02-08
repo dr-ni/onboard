@@ -279,8 +279,8 @@ class LayoutRoot:
         """
         Find the topmost key at point.
         """
-        # After motion-notify-event the query-tooltit event calls this
-        # a second time with the same point. Avoid re-searching in that case.
+        # After motion-notify-event the query-tooltip event calls this
+        # a second time with the same point. Don't search again in that case.
         args = (point, active_layer)
         if self._last_hit_args == args:
             return self._last_hit_key
@@ -658,7 +658,7 @@ class LayoutItem(TreeItem):
 
     def get_filename(self):
         """
-        Recursively finds the closeset definition of the svg filename.
+        Recursively searches for the closest definition of the svg filename.
         """
         if self.filename:
             return self.filename
@@ -668,7 +668,7 @@ class LayoutItem(TreeItem):
 
     def can_unlatch_layer(self):
         """
-        Recursively finds the closeset definition of the
+        Recursively searches for the closest definition of the
         unlatch_layer attribute.
         """
         if not self.unlatch_layer is None:

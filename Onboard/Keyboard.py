@@ -563,6 +563,7 @@ class Keyboard(WordSuggestions):
 
     color_scheme = None
 
+    _active_layer_id = None
     _layer_locked = False
     _last_alt_key = None
     _alt_locked   = False
@@ -620,44 +621,6 @@ class Keyboard(WordSuggestions):
             if nkeys:
                 self._mods[mod] = nkeys
                 self.get_text_changer().lock_mod(mod)
-
-    # currently active layer
-    def _get_active_layer_index(self):
-        return config.active_layer_index
-
-    def _set_active_layer_index(self, index):
-        config.active_layer_index = index
-    active_layer_index = property(_get_active_layer_index,
-                                  _set_active_layer_index)
-
-    def _get_active_layer(self):
-        layers = self.get_layers()
-        if not layers:
-            return None
-        index = self.active_layer_index
-        if index < 0 or index >= len(layers):
-            index = 0
-        return layers[index]
-
-    def _set_active_layer(self, layer):
-        index = 0
-        for i, layer in enumerate(self.get_layers()):
-            if layer is layer:
-                index = i
-                break
-        self.active_layer_index = index
-    active_layer = property(_get_active_layer, _set_active_layer)
-
-    def assure_valid_active_layer(self):
-        """
-        Reset layer index if it is out of range. e.g. due to
-        loading a layout with fewer panes.
-        """
-        index = self.active_layer_index
-        if index < 0 or index >= len(self.get_layers()):
-            self.active_layer_index = 0
-
-##################
 
     def __init__(self, application):
         WordSuggestions.__init__(self)
@@ -978,7 +941,6 @@ class Keyboard(WordSuggestions):
         for key in self.layout.iter_global_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
-                bc.layer_index = key.get_layer_index()
                 self.button_controllers[key] = bc
             else:
                 type = types.get(key.id)
@@ -997,7 +959,8 @@ class Keyboard(WordSuggestions):
                 self.scanner = Scanner(self._on_scanner_redraw,
                                        self._on_scanner_activate)
             if self.layout:
-                self.scanner.update_layer(self.layout, self.active_layer)
+                self.scanner.update_layer(self.layout,
+                                          self.get_active_layer_id())
             else:
                 _logger.warning("Failed to update scanner. No layout.")
         else:
@@ -1023,6 +986,49 @@ class Keyboard(WordSuggestions):
         if self.layout:
             return self.layout.get_layer_ids()
         return []
+
+    def is_first_layer_id(self, layer_id):
+        layers = self.get_layers()
+        if not layers:
+            return False
+        return layers[0] == layer_id
+
+    def get_active_layer_id(self):
+        """ Return currently active layer id """
+        layers = self.get_layers()
+        if not layers:
+            return None
+
+        if self._active_layer_id is None or \
+           self._active_layer_id not in layers:
+            return layers[0]
+
+        return self._active_layer_id
+
+    def set_active_layer_id(self, layer_id=None):
+        """ Set currently active layer id. """
+        """ None = make first layer active """
+        if not layer_id:
+            layers = self.get_layers()
+            if layers:
+                self._active_layer_id = layers[0]
+        else:
+            self._active_layer_id = layer_id
+
+    def is_first_layer_active(self):
+        return self.is_first_layer_id(self._active_layer_id)
+
+    def assure_valid_active_layer(self):
+        """
+        Reset layer index if it is out of range. e.g. due to
+        loading a layout with fewer panes.
+        """
+        layers = self.get_layers()
+        if layers:
+            if self._active_layer_id not in layers:
+                self._active_layer_id = layers[0]
+        else:
+            self._active_layer_id = None
 
     def iter_keys(self, group_name=None):
         """ iterate through all keys or all keys of a group """
@@ -1747,7 +1753,7 @@ class Keyboard(WordSuggestions):
         """
         Activate the first layer if key allows it.
         """
-        if self.active_layer_index != 0 and \
+        if not self.is_first_layer_active() != 0 and \
            not self._layer_locked:
 
             unlatch = key.can_unlatch_layer()
@@ -1757,7 +1763,7 @@ class Keyboard(WordSuggestions):
                            key.id not in ["move", "showclick"])
 
             if unlatch:
-                self.active_layer_index = 0
+                self.set_active_layer_id(None)
                 self.invalidate_visible_layers()
                 self.invalidate_canvas()
                 self.invalidate_context_ui()  # update layer button state
@@ -2233,7 +2239,8 @@ class Keyboard(WordSuggestions):
         if layout:
             layers = layout.get_layer_ids()
             if layers:
-                layout.set_visible_layers([layers[0], self.active_layer])
+                layout.set_visible_layers([layers[0],
+                                           self.get_active_layer_id()])
 
     def update_scanner(self):
         """ tell scanner to update on layout changes """
@@ -2241,7 +2248,8 @@ class Keyboard(WordSuggestions):
         if self.scanner:
             layout = self.layout
             if layout:
-                self.scanner.update_layer(layout, self.active_layer, True)
+                self.scanner.update_layer(layout,
+                                          self.get_active_layer_id(), True)
             else:
                 _logger.warning("Failed to update scanner. No layout.")
 
@@ -2778,18 +2786,21 @@ class BCMove(ButtonController):
 
 
 class BCLayer(ButtonController):
-    """ layer switch button, switches to layer <layer_index> when released """
+    """ layer switch button, switches to layer <layer_id> when released """
 
-    layer_index = None
+    def __init__(self, keyboard, key):
+        super(BCLayer, self).__init__(keyboard, key)
+        self._layer_id = key.get_target_layer_id()
 
     def _get_id(self):
-        return "layer" + str(self.layer_index)
+        return self._layer_id
+
     id = property(_get_id)
 
     def release(self, view, button, event_type):
         keyboard = self.keyboard
 
-        active_before = keyboard.active_layer_index == self.layer_index
+        active_before = keyboard.get_active_layer_id() == self._layer_id
         locked_before = active_before and keyboard._layer_locked
 
         active, locked = \
@@ -2801,22 +2812,26 @@ class BCLayer(ButtonController):
         if not keyboard.can_activate_key(self.key):
             active = True
 
-        keyboard.active_layer_index = (self.layer_index
-                                       if active else 0)
+        keyboard.set_active_layer_id(self._layer_id
+                                     if active else None)
 
-        keyboard._layer_locked       = (locked
-                                        if self.layer_index else False)
+        keyboard._layer_locked = \
+            (locked
+             if not keyboard.is_first_layer_id(self._layer_id)
+             else False)
 
         if active_before != active:
             keyboard.invalidate_visible_layers()
             keyboard.invalidate_canvas()
 
     def update(self):
+        key = self.key
+
         # don't show active state for layer 0, it'd be visible all the time
-        active = self.key.show_active and \
-            self.key.get_layer_index() == self.keyboard.active_layer_index
+        active = key.show_active and \
+            key.get_target_layer_id() == self.keyboard.get_active_layer_id()
         if active:
-            active = self.keyboard.can_activate_key(self.key)
+            active = self.keyboard.can_activate_key(key)
 
         self.set_active(active)
         self.set_locked(active and self.keyboard._layer_locked)

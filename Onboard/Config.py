@@ -183,9 +183,6 @@ class Config(ConfigObject):
     # Gap between wordlist predictions and correctios
     WORDLIST_ENTRY_SPACING = (1.0, 1.0)
 
-    # index of currently active pane, not stored in gsettings
-    active_layer_index = 0
-
     # threshold protect window move/resize
     drag_protection = True
 
