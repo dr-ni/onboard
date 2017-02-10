@@ -93,9 +93,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
                         <key group='shifts'    id='LFSH'/>
                         <key group='shifts'    id='RTSH'/>
                         <key group='bottomrow' id='LCTL'/>
+                        <key group="bottomrow" id="LWIN"/>
                         <key group='bottomrow' id='LALT'/>
                         <key group='bottomrow' id='RALT'/>
-                        <key group="bottomrow" id="LWIN"/>
 
                         <key group="bottomrow" id="SPCE"/>
                         <key group="bottomrow" id="DELE.next-to-backspace"/>
@@ -153,26 +153,52 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
                         <key group="editing" id="Pause" scan_priority="1"/>
                         <key group="editing" id="Scroll" scan_priority="1"/>
                     </panel>
-                    <panel layer="utils" filename="Compact-Utils.svg" border="2">
-                        <key group='snippets' id='m0'/>
-                        <key group='snippets' id='m1'/>
-                        <key group='snippets' id='m2'/>
-                        <key group='snippets' id='m3'/>
-                        <key group='snippets' id='m4'/>
-                        <key group='snippets' id='m5'/>
-                        <key group='snippets' id='m6'/>
-                        <key group='snippets' id='m7'/>
-                        <key group='snippets' id='m8'/>
-                        <key group='snippets' id='m9'/>
-                        <key group='snippets' id='m10'/>
-                        <key group='snippets' id='m11'/>
-                        <key group='snippets' id='m12'/>
-                        <key group='snippets' id='m13'/>
-                        <key group='snippets' id='m14'/>
-                        <key group='snippets' id='m15'/>
-                        <key group='bottomrow' id='quit' scan_priority="1"/>
-                        <key group='bottomrow' id='settings' scan_priority="1"/>
+
+                    <panel layer="utils" filename="Compact-Utils.svg">
+                        <panel layer="utils.emoji">
+                            <panel id='emoji-palette-panel' class="EmojiPalettePanel">
+                                <key id='character-palette' group='character-palette' label='' visible='false' sensitive='false' scannable='false'/>
+                                <key id='palette-header-template' group='character-palette' label='' visible='false' scannable='false'/>
+                                <key id='palette-key-template' group='character-palette' label='' visible='false' scannable='false'/>
+                            </panel>
+                        </panel>
+
+                        <panel layer="utils.symbols">
+                            <panel id='symbol-palette-panel' class="SymbolPalettePanel">
+                                <key id='character-palette' group='character-palette' label='' visible='false' sensitive='false' scannable='false'/>
+                                <key id='palette-header-template' group='character-palette' label='' visible='false' scannable='false'/>
+                                <key id='palette-key-template' group='character-palette' label='' visible='false' scannable='false'/>
+                            </panel>
+                        </panel>
+
+                        <panel layer="utils.snippets">
+                            <key group='snippets' id='m0'/>
+                            <key group='snippets' id='m1'/>
+                            <key group='snippets' id='m2'/>
+                            <key group='snippets' id='m3'/>
+                            <key group='snippets' id='m4'/>
+                            <key group='snippets' id='m5'/>
+                            <key group='snippets' id='m6'/>
+                            <key group='snippets' id='m7'/>
+                            <key group='snippets' id='m8'/>
+                            <key group='snippets' id='m9'/>
+                            <key group='snippets' id='m10'/>
+                            <key group='snippets' id='m11'/>
+                            <key group='snippets' id='m12'/>
+                            <key group='snippets' id='m13'/>
+                            <key group='snippets' id='m14'/>
+                            <key group='snippets' id='m15'/>
+                            <key group='bottomrow' id='quit' scan_priority="1"/>
+                            <key group='bottomrow' id='settings' scan_priority="1"/>
+                        </panel>
+
+                        <key id="BKSP" group="bottomrow" unlatch_layer="false"/>
+                        <key id="DELE" group="bottomrow" unlatch_layer="false"/>
+                        <key id='sublayer0' group='sublayer0' target_layer='utils.emoji' image='emoji.svg' button='true'/>
+                        <key id='sublayer1' group='bottomrow' target_layer='utils.symbols' label='Σ' button='true'/>
+                        <key id='sublayer2' group='bottomrow' target_layer='utils.snippets' image='snippets.svg' button='true'/>
                     </panel>
+
                 </panel>
 
             </box>
@@ -187,7 +213,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             </panel>
 
             <!--- side bar -->
-            <panel id="paneswitch" filename="Compact-Alpha.svg">        
+            <panel id="paneswitch" filename="Compact-Alpha.svg">
                 <box compact="true" orientation='vertical'>
                     <panel group='nowordlist'>
                         <key group='bottomrow' id='hide'/>
@@ -204,10 +230,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
                     <panel group='wordlist'>
                         <box orientation='vertical'>
                             <key group='sidebar' id='move' svg_id='move.wordlist' expand='false' label_margin='2.5'/>
-                            <key group='sidebar' id='showclick' svg_id='showclick.wordlist' label_margin='2' expand='false'/>
-                            <key group='bottomrow' id='layer0' show_active="false" svg_id='layer0.wordlist' scan_priority='3'/>
+                            <key group='sidebar' id='showclick' svg_id='showclick.wordlist' scan_priority="3"/>
+                            <key group='bottomrow' id='layer0' svg_id='layer0.wordlist' show_active="false" scan_priority='3'/>
                             <key group='bottomrow' id='layer1' svg_id='layer1.wordlist' scan_priority='3'/>
-                            <key group="bottomrow" id="layer2" svg_id='layer2.wordlist' scan_priority="3"/>
+                            <key group="bottomrow" id="layer2" svg_id='layer2.wordlist' image="emoji_snippets.svg" scan_priority="3"/>
                         </box>
                     </panel>
                 </box>

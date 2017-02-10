@@ -44,7 +44,9 @@ from Onboard.utils           import (modifiers, Rect,
 from Onboard.WordSuggestions import WordListPanel  # noqa: flake8
 from Onboard.KeyGtk          import (RectKey, WordlistKey, BarKey, # noqa: flake8
                                      WordKey, InputlineKey)
-from Onboard.CharacterPalette import CharacterPalettePanel, CharacterPaletteKey  # noqa: flake8
+from Onboard.CharacterPalette import (EmojiPalettePanel,    # noqa: flake8
+                                      SymbolPalettePanel,
+                                      CharacterPaletteKey)
 
 from Onboard.Config import Config
 config = Config()
@@ -500,7 +502,7 @@ class LayoutLoaderSVG:
         elif "target_layer" in attributes:
             key.code = key.id[:]
             key.type = KeyCommon.BUTTON_TYPE
-            key.target_layer = attributes["target_layer"]
+            key.target_layer_id = attributes["target_layer"]
         elif "button" in attributes:
             key.code = key.id[:]
             key.type = KeyCommon.BUTTON_TYPE

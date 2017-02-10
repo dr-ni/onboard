@@ -35,14 +35,15 @@ class KeyContext(object):
     Transforms logical coordinates to canvas coordinates and vice versa.
     """
     def __init__(self):
-        # logical rectangle as defined by the keyboard layout,
-        # never changed after loading.
+        # Logical rectangle as defined by the keyboard layout.
+        # Never changed after loading.
         self.initial_log_rect = Rect(0.0, 0.0, 1.0, 1.0)  # includes border
 
-        # logical rectangle as defined by the keyboard layout
+        # Logical rectangle as defined by the keyboard layout.
+        # May be changed after loading e.g. for word suggestion keys.
         self.log_rect = Rect(0.0, 0.0, 1.0, 1.0)  # includes border
 
-        # canvas rectangle in drawing units
+        # Canvas rectangle in drawing units.
         self.canvas_rect = Rect(0.0, 0.0, 1.0, 1.0)
 
     def __repr__(self):
@@ -163,6 +164,8 @@ class LayoutRoot:
         self.__dict__['_item'] = item    # item to decorate
         self.invalidate_caches()
         self.init_chamfer_sizes()
+        self._font_sizes_valid = False
+        self._item.root_decorator = self  # point back here from the tree root
 
     def __getattr__(self, name):
         return getattr(self._item, name)
@@ -191,6 +194,18 @@ class LayoutRoot:
         self._cached_hit_rects = {}
         self._last_hit_args = None
         self._last_hit_key = None
+
+    def invalidate_font_sizes(self):
+        """
+        Update font_sizes at the next possible chance.
+        """
+        self._font_sizes_valid = False
+
+    def get_font_sizes_valid(self):
+        return self._font_sizes_valid
+
+    def set_font_sizes_valid(self, valid):
+        self._font_sizes_valid = valid
 
     def fit_inside_canvas(self, canvas_border_rect):
         self._item.fit_inside_canvas(canvas_border_rect)
@@ -250,7 +265,7 @@ class LayoutRoot:
             self._cached_layer_keys[layer_id] = items
         return items
 
-    def iter_layer_items(self, layer_id = None, only_visible = True):
+    def iter_layer_items(self, layer_id=None, only_visible=True):
         args = (layer_id, only_visible)
         items = self._cached_layer_items.get(args)
         if not items:
@@ -258,11 +273,16 @@ class LayoutRoot:
             self._cached_layer_items[args] = items
         return items
 
-    def get_layer_ids(self):
+    def get_layer_ids(self, parent_layer_id=None):
         layer_ids = self._cached_layer_ids
         if not layer_ids:
             layer_ids = self._item.get_layer_ids()
             self._cached_layer_ids = layer_ids
+
+        if parent_layer_id:
+            prefix = parent_layer_id + "."
+            return [id for id in layer_ids if id.startswith(prefix)]
+
         return layer_ids
 
     def get_key_groups(self):
@@ -275,19 +295,21 @@ class LayoutRoot:
             self._cached_key_groups = key_groups
         return key_groups
 
-    def get_key_at(self, point, active_layer):
+    def get_key_at(self, point, active_layer_ids):
         """
         Find the topmost key at point.
         """
+        active_layer_ids = tuple(active_layer_ids)
+
         # After motion-notify-event the query-tooltip event calls this
         # a second time with the same point. Don't search again in that case.
-        args = (point, active_layer)
+        args = (point, active_layer_ids)
         if self._last_hit_args == args:
             return self._last_hit_key
 
         key = None
         x, y = point
-        hit_rects = self._get_hit_rects(active_layer)
+        hit_rects = self._get_hit_rects(active_layer_ids)
         for x0, y0, x1, y1, k in hit_rects:
             # Inlined test, not using Rect.is_point_within for speed.
             if x >= x0 and x < x1 and \
@@ -302,20 +324,26 @@ class LayoutRoot:
 
         return key
 
-    def _get_hit_rects(self, active_layer):
+    def _get_hit_rects(self, active_layer_ids):
         try:
-            hit_rects = self._cached_hit_rects[active_layer]
+            hit_rects = self._cached_hit_rects[active_layer_ids]
         except KeyError:
-            # All visible and sensitive key items sorted in z-order.
+            # All visible and sensitive key items sorted by z-order.
             # Keys of the active layer have priority over non-layer keys
             # (layer switcher, hide, etc.).
             iter_layer_keys = self.iter_layer_keys
-            items = list(reversed(list(iter_layer_keys(active_layer)))) + \
-                    list(reversed(list(iter_layer_keys(None))))
+            items = []
+            for layer_id in reversed(active_layer_ids):
+                items.extend(list(reversed(list(iter_layer_keys(layer_id)))))
+            items.extend(list(reversed(list(iter_layer_keys(None)))))
 
-            hit_rects = [item.get_hit_rect().to_extents() + (item,) \
-                     for item in items]
-            self._cached_hit_rects[active_layer] = hit_rects
+            hit_rects = []
+            for item in items:
+                r = item.get_hit_rect()
+                if r is not None:  # not clipped away?
+                    hit_rects.append(r.to_extents() + (item,))
+
+            self._cached_hit_rects[active_layer_ids] = hit_rects
 
         return hit_rects
 
@@ -325,7 +353,7 @@ class LayoutRoot:
             if key.chamfer_size is None:
                 layer_id = key.get_layer()
                 chamfer_size = chamfer_sizes.get(layer_id)
-                if not chamfer_size is None:
+                if chamfer_size is not None:
                     key.chamfer_size = chamfer_size
 
     def _calc_chamfer_sizes(self):
@@ -404,6 +432,12 @@ class LayoutItem(TreeItem):
     # parsing helpers, only valid while loading a layout
     templates = None
     keysym_rules = None
+
+    # root decorator
+    root_decorator = None
+
+    # Clip children?
+    clip_rect = None
 
     def __init__(self):
         self.context = KeyContext()
@@ -499,7 +533,7 @@ class LayoutItem(TreeItem):
         Scale item and its children to fit inside the given canvas_rect.
         """
         # recursively update item's bounding boxes
-        self.update_log_rect()
+        self.update_log_rects()
 
         # recursively fit inside canvas
         self.do_fit_inside_canvas(canvas_border_rect)
@@ -510,12 +544,16 @@ class LayoutItem(TreeItem):
         """
         self.context.canvas_rect = canvas_border_rect
 
-    def update_log_rect(self):
-        for item in self.iter_depth_first():
-            item._update_log_rect()
-
-    def _update_log_rect(self):
+    def update_log_rects(self):
         """
+        Recursively update the log_rects of this sub-tree.
+        """
+        for item in self.iter_depth_first():
+            item.update_log_rect()
+
+    def update_log_rect(self):
+        """
+        Update the log_rect of this item.
         Override this for layout items that have to calculate their
         logical rectangle.
         """
@@ -523,11 +561,30 @@ class LayoutItem(TreeItem):
 
     def get_hit_rect(self):
         """ Returns true if the point lies within the items borders. """
-        return self.get_canvas_border_rect().inflate(1)
+        rect = self.get_canvas_border_rect().inflate(1)
+
+        # attempt to clip at the parents clip_rect
+        parent = self.get_parent()
+        if parent and parent.clip_rect is not None:
+            rect = parent.clip(rect)
+            if rect.is_empty():
+                return None
+
+        return rect
+
+    def set_clip_rect(self, canvas_rect):
+        """ Set clipping rectangle in canvas coordinates. """
+        self.clip_rect = canvas_rect
+
+    def clip(self, canvas_rect):
+        """ Clip rect at the current clipping rect """
+        return self.clip_rect.intersection(canvas_rect)
 
     def is_point_within(self, canvas_point):
         """ Returns true if the point lies within the items borders. """
         rect = self.get_hit_rect()
+        if rect is None:
+            return False
         return rect.is_point_within(canvas_point)
 
     def set_visible(self, visible):
@@ -582,13 +639,9 @@ class LayoutItem(TreeItem):
                 return item
             item = item.parent
 
-    def get_global_layout_root(self):
-        """ Return the root layout item """
-        item = self
-        while item:
-            if item.parent is None:
-                return item
-            item = item.parent
+    def get_root_decorator(self):
+        """ Return the root decorator if available """
+        return self.get_layout_root().root_decorator
 
     def get_layer(self):
         """ Return the first layer_id on the path from the tree root to self """
@@ -600,11 +653,33 @@ class LayoutItem(TreeItem):
             item = item.parent
         return layer_id
 
+    @staticmethod
+    def layer_to_parent_id(layer_id):
+        """
+        Doctests:
+        >>> repr(LayoutItem.layer_to_parent_id(None))
+        'None'
+        >>> repr(LayoutItem.layer_to_parent_id("abc"))
+        'None'
+        >>> LayoutItem.layer_to_parent_id("abc.cde")
+        'abc'
+        >>> LayoutItem.layer_to_parent_id("abc.cde.fgh")
+        'abc.cde'
+        """
+        if layer_id is None:
+            return None
+
+        pos = layer_id.rfind(".")
+        if pos >= 0:
+            return layer_id[:pos]
+        return None
+
     def set_visible_layers(self, layer_ids):
         """
-        Show all items of layers <layer_ids>, hide all items of the other layers.
+        Show all items of layers <layer_ids>, hide all items of
+        the other layers.
         """
-        if not self.layer_id is None:
+        if self.layer_id is not None:
             if not self.is_key():
                 self.visible = self.layer_id in layer_ids
 
@@ -618,8 +693,8 @@ class LayoutItem(TreeItem):
         if _layer_ids is None:
             _layer_ids = []
 
-        if not self.layer_id is None and \
-           not self.layer_id in _layer_ids:
+        if self.layer_id is not None and \
+           self.layer_id not in _layer_ids:
             _layer_ids.append(self.layer_id)
 
         for item in self.items:
@@ -694,12 +769,38 @@ class LayoutItem(TreeItem):
                 for visible_item in item.iter_visible_items():
                     yield visible_item
 
-    def iter_keys(self, group_name = None):
+    def draw_tree(self, context):
+        """
+        Traverses top to bottom all visible layout items of the
+        layout tree. Invisible paths are cut short.
+        """
+        if self.visible:
+            if context.draw_rect.intersects(self.get_canvas_border_rect()):
+                if self.clip_rect is not None:
+                    cr = context.cr
+                    cr.save()
+                    cr.rectangle(*self.clip_rect)
+                    cr.clip()
+
+                self.draw_item(context)
+
+                for item in self.items:
+                    item.draw_tree(context)
+
+                if self.clip_rect is not None:
+                    context.cr.restore()
+
+    def draw_item(self, context):
+        if self.layer_id:
+            context.draw_layer_background(self)
+
+    def iter_keys(self, group_name=None):
+
         """
         Iterates through all keys of the layout tree.
         """
         if self.is_key():
-            if group_name is None or key.group == group_name:
+            if group_name is None or self.group == group_name:
                 yield self
 
         for item in self.items:
@@ -721,12 +822,12 @@ class LayoutItem(TreeItem):
                 for child in item.iter_global_items():
                     yield child
 
-    def iter_global_keys(self, group_name = None):
+    def iter_global_keys(self, group_name=None):
         """
         Iterates through all keys of the layout tree including sublayouts.
         """
         if self.is_key():
-            if group_name is None or key.group == group_name:
+            if group_name is None or self.group == group_name:
                 yield self
 
         for item in self.items:
@@ -746,8 +847,8 @@ class LayoutItem(TreeItem):
             if item.is_key():
                 yield item
 
-    def iter_layer_items(self, layer_id = None, only_visible = True,
-                              _found_layer_id = None):
+    def iter_layer_items(self, layer_id=None, only_visible=True,
+                         _found_layer_id=None):
         """
         Iterate through all items of the given layer.
         The first layer definition found in the path to each key wins.
@@ -760,7 +861,11 @@ class LayoutItem(TreeItem):
         if self.layer_id == layer_id:
             _found_layer_id = layer_id
 
-        if self.layer_id and self.layer_id != _found_layer_id:
+        if self.layer_id and \
+           self.layer_id != _found_layer_id and \
+           (not layer_id or
+            not (self.layer_id.startswith(layer_id + ".") or
+                 layer_id.startswith(self.layer_id + "."))):
             return
 
         if _found_layer_id == layer_id:
@@ -772,7 +877,9 @@ class LayoutItem(TreeItem):
                 yield item
 
     def find_instance_in_path(self, classinfo):
-        """ Find an item of a certain type in the path from self to the root. """
+        """
+        Find an item of a certain type in the path from self to the root.
+        """
         item = self
         while item:
             if isinstance(item, classinfo):
@@ -823,6 +930,12 @@ class LayoutItem(TreeItem):
             yield item
             item = item.parent or item.sublayout_parent
 
+    def on_press(self, view, button, event_type):
+        pass
+
+    def on_release(self, view, button, event_type):
+        pass
+
 
 class LayoutBox(LayoutItem):
     """
@@ -844,7 +957,7 @@ class LayoutBox(LayoutItem):
         if self.horizontal != horizontal:
             self.horizontal = horizontal
 
-    def _update_log_rect(self):
+    def update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):
@@ -989,13 +1102,13 @@ class LayoutPanel(LayoutItem):
         else:
             context = KeyContext()
             context.log_rect = self.get_border_rect()
-            context.canvas_rect = self.get_canvas_rect() # exclude border
+            context.canvas_rect = self.get_canvas_rect()  # exclude border
 
             for item in self.items:
                 rect = context.log_to_canvas_rect(item.context.log_rect)
                 item.do_fit_inside_canvas(rect)
 
-    def _update_log_rect(self):
+    def update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):
@@ -1018,4 +1131,123 @@ class LayoutPanel(LayoutItem):
         if bounds is None:
             return Rect()
         return bounds
+
+
+class ScrolledLayoutPanel(LayoutPanel):
+
+    def update_log_rect(self):
+        pass
+
+
+class DrawingItem(LayoutItem):
+
+    # extended id for key specific theme tweaks
+    # e.g. theme_id=DELE.numpad (with id=DELE)
+    theme_id = None
+
+    # extended id for layout specific tweaks
+    # e.g. "hide.wordlist", for hide button in wordlist mode
+    svg_id = None
+
+    # color scheme
+    color_scheme = None
+
+    def __init__(self):
+        LayoutItem.__init__(self)
+        self.colors = {}
+
+    def get_svg_id(self):
+        return ""
+
+    def set_id(self, id, theme_id=None, svg_id=None):
+        self.theme_id, self.id = self.parse_id(id)
+        if theme_id:
+            self.theme_id = theme_id
+        self.svg_id = self.id if not svg_id else svg_id
+
+    @staticmethod
+    def parse_id(value):
+        """
+        The theme id has the form <id>.<arbitrary identifier>, where
+        the identifier should be a description of the location of
+        the key relative to its surroundings, e.g. 'DELE.next-to-backspace'.
+        Don't use layout names or layer ids for the theme id, they lose
+        their meaning when layouts are copied or renamed by users.
+        """
+        theme_id = value
+        id = value.split(".")[0]
+        return theme_id, id
+
+    @staticmethod
+    def split_theme_id(theme_id):
+        """
+        Simple split in prefix (id) before the dot and suffix after the dot.
+        """
+        components = theme_id.split(".")
+        if len(components) == 1:
+            return components[0], ""
+        return components[0], components[1]
+
+    @staticmethod
+    def build_theme_id(prefix, postfix):
+        if postfix:
+            return prefix + "." + postfix
+        return prefix
+
+    def get_similar_theme_id(self, prefix=None):
+        if prefix is None:
+            prefix = self.id
+        theme_id = prefix
+        comps = self.theme_id.split(".")[1:]
+        if comps:
+            theme_id += "." + comps[0]
+        return theme_id
+
+    def get_fill_color(self):
+        return self.get_color("fill")
+
+    def get_stroke_color(self):
+        return self.get_color("stroke")
+
+    def get_label_color(self):
+        return self.get_color("label")
+
+    def get_secondary_label_color(self):
+        return self.get_color("secondary-label")
+
+    def get_dwell_progress_color(self):
+        return self.get_color("dwell-progress")
+
+    def get_color(self, element, state=None):
+        color_key = (element)
+        try:
+            return self.colors[color_key]
+        except KeyError:
+            return self.cache_color(element, color_key, state)
+
+    def cache_color(self, element, color_key, state=None):
+        if self.color_scheme:
+            rgba = self.color_scheme.get_key_rgba(self, element, state)
+        elif element == "label":
+            rgba = [0.0, 0.0, 0.0, 1.0]
+        else:
+            rgba = [1.0, 1.0, 1.0, 1.0]
+        self.colors[color_key] = rgba
+        return rgba
+
+    def get_state(self):
+        state = {}
+        return state
+
+
+class RectangleItem(DrawingItem):
+
+    def draw_item(self, context):
+        cr = context.cr
+        cr.save()
+        cr.set_source_rgba(*self.get_fill_color())
+        cr.rectangle(*self.get_canvas_rect())
+        cr.fill()
+        cr.restore()
+
 

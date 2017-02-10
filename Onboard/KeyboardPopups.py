@@ -500,7 +500,7 @@ class LayoutBuilder:
         frame_width = LayoutBuilder._calc_frame_width(context)
 
         layout = LayoutRoot(layout)
-        layout.update_log_rect()
+        layout.update_log_rects()
         log_rect = layout.get_border_rect()
         canvas_rect = Rect(frame_width, frame_width,
                            log_rect.w * context.scale_log_to_canvas_x(1.0),

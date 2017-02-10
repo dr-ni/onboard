@@ -467,7 +467,7 @@ class ColorScheme(object):
                 return True
         return False
 
-    def get_key_rgba(self, key, element, state = None):
+    def get_key_rgba(self, key, element, state=None):
         """
         Get the color for the given key element and optionally key state.
         If <state> is None the key state is retrieved from <key>.
@@ -475,8 +475,9 @@ class ColorScheme(object):
 
         if state is None:
             state = key.get_state()
-            state["insensitive"] = not key.sensitive
-            del state["sensitive"]
+            if "insensitive" in state:
+                state["insensitive"] = not key.sensitive
+                del state["sensitive"]
 
         rgb = None
         opacity = None
@@ -490,17 +491,18 @@ class ColorScheme(object):
         # Let numbered keys fall back to their base id, e.g. instead
         # of prediction0, prediction1,... have only "prediction" in
         # the color scheme.
-        if key.id == "correctionsbg":
-            ids.append("wordlist")
-        elif key.id == "predictionsbg":
-            ids.append("wordlist")
-        elif key.is_prediction_key():
-            ids.append("prediction")
-        elif key.is_correction_key():
-            ids.append("correction")
-        elif key.is_layer_button():
-            ids.append(key.get_similar_theme_id("layer"))
-            ids.append("layer")
+        if key.is_key():  # can be a DrawingItem too
+            if key.id == "correctionsbg":
+                ids.append("wordlist")
+            elif key.id == "predictionsbg":
+                ids.append("wordlist")
+            elif key.is_prediction_key():
+                ids.append("prediction")
+            elif key.is_correction_key():
+                ids.append("correction")
+            elif key.is_layer_button():
+                ids.append(key.get_similar_theme_id("layer"))
+                ids.append("layer")
 
         # look for a matching key_group and color in the color scheme
         for id in ids:
@@ -519,8 +521,9 @@ class ColorScheme(object):
         # Special case for layer buttons:
         # don't take fill color from the root group,
         # we want the layer fill color instead (via get_key_default_rgba()).
-        if element == "fill" and key.is_layer_button() or \
-           element == "label" and key.is_correction_key():
+        if key.is_key() and \
+           (element == "fill" and key.is_layer_button() or \
+            element == "label" and key.is_correction_key()):
             # Don't pick layer fill opacity when there is
             # an rgb color defined in the color scheme.
             if not rgb is None and \
@@ -560,7 +563,8 @@ class ColorScheme(object):
         rgba = [0.0, 0.0, 0.0, 1.0]
 
         if element == "fill":
-            if key.is_layer_button() and \
+            if key.is_key() and \
+               key.is_layer_button() and \
                not any(state.values()):
                 # Special case for base fill color of layer buttons:
                 # default color is layer fill color (as in onboard <=0.95).

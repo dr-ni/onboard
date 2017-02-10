@@ -480,7 +480,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         rect = self.get_canvas_content_rect()
 
-        layout.update_log_rect()  # update logical tree to base aspect ratio
+        layout.update_log_rects()  # update logical tree to base aspect ratio
         rect = self._get_aspect_corrected_layout_rect(
             rect, self.get_base_aspect_rect())
         layout.do_fit_inside_canvas(rect)  # update contexts to final aspect
@@ -1148,7 +1148,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
                hit_key.sensitive:
-                controller = self.keyboard.button_controllers.get(hit_key)
+                controller = self.keyboard.get_button_controller(hit_key)
                 if controller and controller.can_dwell() and \
                    not self.is_dwelling() and \
                    not self.already_dwelled(hit_key) and \
@@ -1983,5 +1983,91 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
             if self._radio1.get_active():
                 return 1
         return 0
+
+
+    class AuxcharSelection:
+        """ Select emoji or other special characters """
+
+        def __init__(self, keyboard, parent):
+            self._keyboard = keyboard
+            self._parent = parent
+
+        def show(self):
+
+            # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
+            self._keyboard.on_focusable_gui_opening()
+
+            dialog = Gtk.Dialog(title=title,
+                            transient_for=self._parent.get_toplevel(),
+                            flags=0)
+            dialog.add_button(_("_Close"), Gtk.ResponseType.OK)
+
+            # Don't hide dialog behind the keyboard in force-to-top mode.
+            if config.is_force_to_top():
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+
+            dialog.set_default_response(Gtk.ResponseType.OK)
+
+            # outer vertical box
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                          spacing=12, border_width=5)
+
+            # search entry
+            search_entry = Gtk.SearchEntry()
+            box.add(search_entry)
+
+            # glyph tree
+            self._glyph_tree_view = Gtl.TreeView()
+            init_glyph_tree_view()
+            box.add(self._glyph_tree_view)
+
+            dialog.get_content_area().add(box)
+
+            dialog.connect("response", self._on_dialog_response)
+            dialog.show_all()
+
+        def _on_dialog_response(self, dialog, response, snippet_id, \
+                                        label_entry, text_entry):
+            dialog.destroy()
+
+            # Reenable AT-SPI keystroke listeners.
+            # Delay this until the dialog is really gone.
+            GLib.idle_add(self._keyboard.on_focusable_gui_closed)
+
+        def init_glyph_tree_view(self):
+            (
+                self.GLYPH_COL_GLYPH,
+                self.GLYPH_COL_DESCRIPTION
+            ) = range(2)
+
+            self._glyph_model = Gtk.TreeStore(str, int)
+            self._glyph_tree_view.set_model(self._glyph_model)
+            #model.clear()
+
+            self._add_layout_section(model, system, _("Core layouts"))
+            self._add_layout_section(model, contributed, _("Contributions"))
+            self._add_layout_section(model, user, _("My layouts"))
+
+            self.layout_view.expand_all()
+            self.update_layout_view_selection()
+
+        def update_layout_view_selection(self):
+            self.select_tree_view_row(self.layout_view, self.LAYOUT_COL_FILENAME,
+                                    config.layout_filename)
+
+        def _add_layout_section(self, model, lis, section_name):
+            if lis:
+                parent_iter = model.append(None)
+                model.set(parent_iter,
+                        self.LAYOUT_COL_NAME, "<b>{}</b>" \
+                        .format(escape_markup(section_name)))
+                for li in lis:
+                    child_iter = model.append(parent_iter)
+                    model.set(child_iter,
+                            self.LAYOUT_COL_NAME, li.id_string,
+                            self.LAYOUT_COL_SUMMARY, li.summary,
+                            self.LAYOUT_COL_FILENAME, li.filename,
+                            self.LAYOUT_COL_HAS_ABOUT_INFO, li.has_about_info,
+                            self.LAYOUT_COL_IS_ROW_SENSITIVE, bool(li.filename))
 
 

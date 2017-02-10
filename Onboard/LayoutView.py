@@ -59,7 +59,6 @@ class LayoutView:
         self.supports_alpha = False
 
         self._lod = LOD.FULL
-        self._font_sizes_valid = False
         self._shadow_quality_valid = False
         self._last_canvas_shadow_rect = Rect()
 
@@ -90,18 +89,14 @@ class LayoutView:
         return self.keyboard.color_scheme
 
     def invalidate_for_resize(self, lod=LOD.FULL):
-        self.invalidate_keys()
-        if self._lod == LOD.FULL:
-            self.invalidate_shadows()
-        self.invalidate_font_sizes()
-        # self.invalidate_label_extents()
-        self.keyboard.invalidate_for_resize()
-
-    def invalidate_font_sizes(self):
-        """
-        Update font_sizes at the next possible chance.
-        """
-        self._font_sizes_valid = False
+        layout = self.get_layout()
+        if layout:
+            self.invalidate_keys()
+            if self._lod == LOD.FULL:
+                self.invalidate_shadows()
+            layout.invalidate_font_sizes()
+            # self.invalidate_label_extents()
+            self.keyboard.invalidate_for_resize()
 
     def invalidate_keys(self):
         """
@@ -239,13 +234,13 @@ class LayoutView:
     def render(self, context):
         """ Pre-render key surfaces for instant initial drawing. """
 
-        # lazily update font sizes and labels
-        if not self._font_sizes_valid:
-            self.update_labels()
-
         layout = self.get_layout()
         if not layout:
             return
+
+        # lazily update font sizes and labels
+        if not layout.get_font_sizes_valid():
+            self.update_labels()
 
         self._auto_select_shadow_quality(context)
 
@@ -270,25 +265,23 @@ class LayoutView:
         return (lod == LOD.FULL) and \
                (not self._starting_up or self._keys_pre_rendered)
 
-    def draw(self, widget, context):
-        if not Gtk.cairo_should_draw_window(context, widget.get_window()):
+    def draw(self, widget, cr):
+        if not Gtk.cairo_should_draw_window(cr, widget.get_window()):
+            return
+
+        layout = self.get_layout()
+        if not layout:
             return
 
         lod = self._lod
         draw_cached = self._can_draw_cached(lod)
 
         # lazily update font sizes and labels
-        if not self._font_sizes_valid:
+        if not layout.get_font_sizes_valid():
             self.update_labels(lod)
 
-        draw_rect = self.get_damage_rect(context)
-
         # draw background
-        decorated = self._draw_background(context, lod)
-
-        layout = self.get_layout()
-        if not layout:
-            return
+        decorated = self._draw_background(cr, lod)
 
         # draw layer 0 and None-layer background
         layer_ids = layout.get_layer_ids()
@@ -298,24 +291,27 @@ class LayoutView:
             alpha = self.get_background_rgba()[3]
         else:
             alpha = 1.0
-        self._draw_layer_key_background(context, alpha,
+        self._draw_layer_key_background(cr, alpha,
                                         None, None, lod)
         if layer_ids:
-            self._draw_layer_key_background(context, alpha,
+            self._draw_layer_key_background(cr, alpha,
                                             None, layer_ids[0], lod)
 
-        # run through all visible layout items
-        for item in layout.iter_visible_items():
-            if item.layer_id:
-                self._draw_layer_background(context, item, layer_ids, decorated)
+        # Yet another context; this one helps pass all the
+        # accumulated values for easier in-tree drawing.
+        class DrawingContext:
+            def draw_layer_background(self, item):
+                self.view._draw_layer_background(self.cr, item,
+                                                 layer_ids, decorated)
+        context = DrawingContext()
+        context.cr = cr
+        context.draw_rect = self.get_damage_rect(cr)
+        context.lod = lod
+        context.draw_cached = draw_cached
+        context.view = self
 
-            # draw key
-            if item.is_key() and \
-               draw_rect.intersects(item.get_canvas_border_rect()):
-                if draw_cached:
-                    item.draw_cached(context)
-                else:
-                    item.draw(context, lod)
+        # draw all visible layout items
+        layout.draw_tree(context)
 
         self._starting_up = False
 
@@ -742,12 +738,14 @@ class LayoutView:
         if layout:
             if lod == LOD.FULL:  # no label changes necessary while dragging
 
+                # update label text
                 for key in layout.iter_keys():
                     old_label = key.get_label()
                     key.configure_label(mod_mask)
                     if key.get_label() != old_label:
                         changed_keys.add(key)
 
+            # update font sizes
             for keys in layout.get_key_groups().values():
                 max_size = 0
                 for key in keys:
@@ -767,14 +765,15 @@ class LayoutView:
                         key.font_size = max_size
                         changed_keys.add(key)
 
-        self._font_sizes_valid = True
+        layout.set_font_sizes_valid(True)
+
         return tuple(changed_keys)
 
     def get_key_at_location(self, point):
         layout = self.get_layout()
         keyboard = self.keyboard
         if layout and keyboard:  # may be gone on exit
-            return layout.get_key_at(point, keyboard.get_active_layer_id())
+            return layout.get_key_at(point, keyboard.get_active_layer_ids())
         return None
 
     def get_xid(self):

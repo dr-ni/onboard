@@ -2414,10 +2414,7 @@ class WordListPanel(LayoutPanel):
         return bg_keys + keys + exp_keys, used_rect
 
     def _get_child_button(self, id):
-        items = list(self.find_ids([id]))
-        if items:
-            return items[0]
-        return None
+        return self.find_id(id)
 
     def _create_correction_choices(self, choices, rect,
                                    key_context, font_size,

@@ -31,12 +31,15 @@ from Onboard.Version import require_gi_versions
 require_gi_versions()
 from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
+from Onboard.KeyCommon   import (KeyCommon, RectKeyCommon,
+                                 LOD, InputlineKeyCommon)
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
-from Onboard.utils       import brighten, unicode_str, \
-                                gradient_line, drop_shadow, \
-                                roundrect_curve, rounded_path, \
-                                rounded_polygon_path_to_cairo_path
+from Onboard.utils       import (brighten, unicode_str,
+                                 gradient_line, drop_shadow,
+                                 roundrect_curve, roundrect_curve_custom,
+                                 rounded_path,
+                                 rounded_polygon_path_to_cairo_path)
 
 ### Logging ###
 import logging
@@ -49,6 +52,7 @@ config = Config()
 ########################
 
 PangoUnscale = 1.0 / Pango.SCALE
+
 
 class Key(KeyCommon):
     _pango_layouts = None
@@ -182,12 +186,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.draw(cr)
         cr.restore()
 
-        Gdk.flush()   # else artefacts in labels and images
-                      # on Nexus 7, Raring
+        Gdk.flush()  # else artefacts in labels and images on Nexus 7, Raring
 
         return surface, clip_rect
 
-    def draw(self, cr, lod = LOD.FULL):
+    def draw_item(self, context):
+        if context.draw_cached:
+            self.draw_cached(context.cr)
+        else:
+            self.draw(context.cr, context.lod)
+
+    def draw(self, cr, lod=LOD.FULL):
         self.draw_geometry(cr, lod)
         self.draw_image(cr, lod)
         self.draw_label(cr, lod)
@@ -732,7 +741,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         else:
             if not rect:
                 rect = self.get_canvas_rect()
-            self._build_rect_path(cr, rect)
+            self.build_rect_path(cr, rect)
 
     def _build_complex_path(self, cr, path):
         roundness = config.theme_settings.roundrect_radius
@@ -740,10 +749,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         chamfer_size = self.context.scale_log_to_canvas_y(chamfer_size)
         rounded_path(cr, path, roundness, chamfer_size)
 
-    def _build_rect_path(self, context, rect):
+    def build_rect_path(self, context, rect):
         roundness = config.theme_settings.roundrect_radius
         if roundness:
             roundrect_curve(context, rect, roundness)
+        else:
+            context.rectangle(*rect)
+
+    def build_rect_path_custom(self, context, rect, corner_mask):
+        roundness = config.theme_settings.roundrect_radius
+        if roundness:
+            roundrect_curve_custom(context, rect, roundness, corner_mask)
         else:
             context.rectangle(*rect)
 
@@ -948,7 +964,6 @@ class WordlistKey(RectKey):
         pass
 
 
-
 class FullSizeKey(WordlistKey):
     def __init__(self, id = "", border_rect = None):
         super(FullSizeKey, self).__init__(id, border_rect)
@@ -959,19 +974,16 @@ class FullSizeKey(WordlistKey):
         return self.get_fullsize_rect()
 
 
-class BarKey(FullSizeKey):
-    def __init__(self, id = "", border_rect = None):
-        super(BarKey, self).__init__(id, border_rect)
+class FlatKey(FullSizeKey):
+    def __init__(self, id="", border_rect=None):
+        super(FlatKey, self).__init__(id, border_rect)
 
-    def draw(self, context, lod = LOD.FULL):
+    def draw(self, context, lod=LOD.FULL):
         # draw only when pressed, to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             self.draw_geometry(context, lod)
         self.draw_image(context, lod)
         self.draw_label(context, lod)
-
-    def can_show_label_popup(self):
-        return False
 
     def get_stroke_width(self):
         # Turn down stroke width -> no annoying banding at
@@ -979,8 +991,16 @@ class BarKey(FullSizeKey):
         return 0.0
 
 
+class BarKey(FlatKey):
+    def __init__(self, id="", border_rect=None):
+        super(BarKey, self).__init__(id, border_rect)
+
+    def can_show_label_popup(self):
+        return False
+
+
 class WordKey(FixedFontMixin, BarKey):
-    def __init__(self, id="", border_rect = None):
+    def __init__(self, id="", border_rect=None):
         super(WordKey, self).__init__(id, border_rect)
 
 
