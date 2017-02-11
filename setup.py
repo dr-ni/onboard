@@ -456,6 +456,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/scripts', glob.glob('scripts/*')),
                   ('share/onboard/models', glob.glob('models/*.lm')),
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
+                  ('share/onboard/emojione/svg', glob.glob('emojione/svg/*.svg')),
 
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
                       glob_files('gnome/Onboard_Indicator@onboard.org/*')),
