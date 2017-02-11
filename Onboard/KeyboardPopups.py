@@ -286,16 +286,17 @@ class LabelPopup(KeyboardPopup):
         context.fill()
 
         # draw label/image
-        label_color = self._key.get_label_color()
         pixbuf = self._key.get_image(label_rect.w, label_rect.h)
         if pixbuf:
-            pixbuf.draw(context, label_rect, label_color)
+            color = self._key.get_image_color()
+            pixbuf.draw(context, label_rect, color)
         else:
             label = self._key.get_label()
             if label:
                 if label == " ":
                     label = "␣"
-                self._draw_text(context, label, label_rect, label_color)
+                color = self._key.get_label_color()
+                self._draw_text(context, label, label_rect, color)
 
         context.pop_group_to_source()
         context.paint_with_alpha(self._opacity)

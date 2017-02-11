@@ -104,7 +104,7 @@ emoji_data = [
             ('🙉', None),                          # 🙉 hear-no-evil monkey
             ('🙊', None),                          # 🙊 speak-no-evil monkey
         ]],
-    ['👦',                                         # category: People
+    ['👧',                                         # category: People
         [
             ('👦',                                 # 👦 boy
                 ('👦🏻',                            # 👦🏻 boy: light skin tone
@@ -1293,7 +1293,7 @@ emoji_data = [
             ('💍', None),                          # 💍 ring
             ('💎', None),                          # 💎 gem stone
         ]],
-    ['🐱',                                         # category: Animals & Nature
+    ['🐘',                                         # category: Animals & Nature
         [
             ('🐵', None),                          # 🐵 monkey face
             ('🐒', None),                          # 🐒 monkey
@@ -1403,7 +1403,7 @@ emoji_data = [
             ('🍂', None),                          # 🍂 fallen leaf
             ('🍃', None),                          # 🍃 leaf fluttering in wind
         ]],
-    ['🍒',                                         # category: Food & Drink
+    ['🍕',                                         # category: Food & Drink
         [
             ('🍇', None),                          # 🍇 grapes
             ('🍈', None),                          # 🍈 melon
@@ -2150,7 +2150,7 @@ emoji_data = [
             ('🔴', None),                          # 🔴 red circle
             ('🔵', None),                          # 🔵 blue circle
         ]],
-    ['🏁',                                         # category: Flags
+    ['🚩',                                         # category: Flags
         [
             ('🏁', None),                          # 🏁 chequered flag
             ('🚩', None),                          # 🚩 triangular flag

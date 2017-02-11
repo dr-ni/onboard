@@ -343,15 +343,17 @@ class UnicodeData:
         # categories: [category label, starting codepoint, comment]
         categories = [
             ["😀", "😀", "Smileys", False],
-            ["👦", "👦", "People", False],
+            # ["😐", "🤔", "face-neutral", False],
+            # ["😇", "😇", "face-role", False],
+            ["👧", "👦", "People", False],
             ["❤", "💋", "Emotion", False],
-            ["🐱", "🐵", "Animals & Nature", False],
-            ["🍒", "🍇", "Food & Drink", False],
+            ["🐘", "🐵", "Animals & Nature", False],
+            ["🍕", "🍇", "Food & Drink", False],
             ["🏛", "🌍", "Travel & Places", False],
             ["⚽", "🎃", "Activities", False],
             ["🔔", "🔇", "Objects", False],
             ["🔶", "🏧", "Symbols", False],
-            ["🏁", "🏁", "Flags", False],
+            ["🚩", "🏁", "Flags", False],
         ]
 
         print("#")

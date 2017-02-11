@@ -19,14 +19,33 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import os
 import logging
 _logger = logging.getLogger(__name__)
 
 from Onboard.Layout            import (LayoutPanel, ScrolledLayoutPanel,
                                        RectangleItem)
 from Onboard.KeyGtk            import FlatKey
+from Onboard.KeyCommon         import ImageSlot
 from Onboard                   import KeyCommon
 from Onboard.UnicodeData       import UnicodeData
+
+from Onboard.Config import Config
+config = Config()
+
+
+EMOJI_IMAGE_MARGIN = (3, 3)
+
+
+def emoji_filename_from_sequence(label):
+    fn = ""
+    for c in label:
+        cp = ord(c)
+        if cp not in (0x200D, 0xfe0f):
+            if fn:
+                fn += "-"
+            fn += hex(cp)[2:]
+    return fn + ".svg"
 
 
 class CharacterPaletteKey(FlatKey):
@@ -51,19 +70,23 @@ class PaletteHeaderKey(FlatKey):
     def build_rect_path(self, context, rect):
         # Only round top corners.
         r = rect.copy()
-        r.h += 1
-        self.build_rect_path_custom(context, r, 0b0011)
+        r.y -= 1
+        self.build_rect_path_custom(context, r, 0b1100)
 
     def on_release(self, view, button, event_type):
         self.palette_panel.set_active_category_index(self.code)
 
 
 class CharacterPaletteBackground(RectangleItem):
+
+    # def get_fill_color(self):
+    #    return (0.125, 0.125, 0.125, 1)
     pass
 
 
 class CharacterGridPanel(ScrolledLayoutPanel):
     characters = ""
+    has_emoji = False
     key_rect = None
     key_group = None
     color_scheme = None
@@ -81,7 +104,8 @@ class CharacterGridPanel(ScrolledLayoutPanel):
                                            self.key_rect,
                                            self.key_group,
                                            self.color_scheme,
-                                           self.characters)
+                                           self.characters,
+                                           self.has_emoji)
 
         item = CharacterPaletteBackground()
         item.set_border_rect(self.get_border_rect())
@@ -91,7 +115,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
 
     @staticmethod
     def _create_content(grid_rect, key_rect, key_group,
-                        color_scheme, sequence):
+                        color_scheme, sequence, has_emoji):
         spacing = (0, 0)
 
         key_rects, bounds = grid_rect.flow_layout(key_rect, len(sequence),
@@ -102,9 +126,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
             id = "_palette_character" + str(i)
             key = CharacterPaletteKey()
             key.type = KeyCommon.CHAR_TYPE
-            key.labels = {0: label}
             key.code  = label
-            # generate key on key_up and allow drag selection
             key.action = KeyCommon.DELAYED_STROKE_ACTION
             key.set_border_rect(key_rects[i])
             if len(label) <= 2:
@@ -112,6 +134,17 @@ class CharacterGridPanel(ScrolledLayoutPanel):
             else:
                 key.group = id
             key.color_scheme = color_scheme
+
+            if has_emoji:
+                fn = emoji_filename_from_sequence(label)
+                if fn:
+                    key.image_filenames = {ImageSlot.NORMAL : fn}
+                    key.images_are_masks = False
+                    key.label_margin = EMOJI_IMAGE_MARGIN
+
+            if not key.image_filenames:
+                key.labels = {0: label}
+
             keys.append(key)
 
         return keys, bounds
@@ -126,7 +159,7 @@ class CharacterPalettePanel(LayoutPanel):
         self._unicode_data = UnicodeData()
         self._character_grid = None
         self._header_keys = None
-        self._active_category_index = 0
+        self._active_category_index = -1
         self._character_grid = None
 
     def update_log_rect(self):
@@ -156,9 +189,9 @@ class CharacterPalettePanel(LayoutPanel):
         ks, r = self._create_header_keys(
             remaining_rect,
             header_template.get_border_rect(),
+            "_" + self.content_type + "_header",
             color_scheme, headers)
         keys += ks
-        remaining_rect.y += r.h
         remaining_rect.h -= r.h
 
         # create scrolled panel with grid of keys
@@ -169,6 +202,7 @@ class CharacterPalettePanel(LayoutPanel):
         item.key_rect = key_template.get_border_rect()
         item.key_group = "_" + self.content_type
         item.color_scheme = color_scheme
+        item.has_emoji = self.content_type == "emoji"
 
         self.set_items([background, header_template,
                         key_template, item] + keys)
@@ -179,31 +213,33 @@ class CharacterPalettePanel(LayoutPanel):
         self.set_active_category_index(0)
 
     def set_active_category_index(self, index):
-        self._active_category_index = index
+        if self._active_category_index != index:
+            self._active_category_index = index
 
-        # update header keys
-        keys_to_redraw = []
-        for key in self._header_keys:
-            active = (key.code == self._active_category_index)
-            if key.active != active:
-                key.active = active
-                keys_to_redraw.append(key)
+            # update header keys
+            keys_to_redraw = []
+            for key in self._header_keys:
+                active = (key.code == self._active_category_index)
+                if key.active != active:
+                    key.active = active
+                    keys_to_redraw.append(key)
 
-        self._character_grid.characters = \
-            self.get_grid_labels(self._active_category_index)
+            self._character_grid.characters = \
+                self.get_grid_labels(self._active_category_index)
 
-        self._character_grid.update_content()
+            self._character_grid.update_content()
 
-        self.keyboard.layout.invalidate_font_sizes()
-        self.keyboard.layout.invalidate_caches()
+            self.keyboard.layout.invalidate_font_sizes()
+            self.keyboard.layout.invalidate_caches()
 
-        self.keyboard.redraw(keys_to_redraw + [self._character_grid])
+            self.keyboard.redraw(keys_to_redraw + [self._character_grid])
 
     def _create_header_keys(self, palette_rect, header_key_rect,
-                            color_scheme, sequence):
+                            header_key_group, color_scheme, sequence):
         spacing = (0, 0)
 
         header_rect = palette_rect.copy()
+        header_rect.y = palette_rect.bottom() - header_key_rect.h
         header_rect.h = header_key_rect.h
         key_rects = header_rect.subdivide(len(sequence), 1, *spacing)
 
@@ -211,16 +247,22 @@ class CharacterPalettePanel(LayoutPanel):
         for i, label in enumerate(sequence):
             key = PaletteHeaderKey("_palette_header" + str(i))
             key.type = KeyCommon.BUTTON_TYPE
-            key.labels = {0: label}
             key.code  = i
             key.set_border_rect(key_rects[i])
-            key.group = "_palette_header"
+            key.group = header_key_group
             key.color_scheme = color_scheme
             key.unlatch_layer = False
             key.palette_panel = self
+
+            self.configure_header_key(key, label)
+
             keys.append(key)
 
         return keys, header_rect
+
+    def configure_header_key(self, key, label):
+        key.labels = {0: label}
+        key.label_margin = (1, 1)
 
 
 class EmojiPalettePanel(CharacterPalettePanel):
@@ -232,11 +274,34 @@ class EmojiPalettePanel(CharacterPalettePanel):
         return self._unicode_data.get_emoji_categories()  # + ["⭐"]
 
     def get_grid_labels(self, category):
-        return self._unicode_data.get_emoji(category)
+        emoji = self._unicode_data.get_emoji(category)
+        return self._filter_images_exist(emoji)
+
+    def configure_header_key(self, key, label):
+        fn = emoji_filename_from_sequence(label)
+        if fn:
+            key.image_filenames = {ImageSlot.NORMAL : fn}
+            key.images_are_masks = False
+            key.label_margin = EMOJI_IMAGE_MARGIN
+
+        if not key.image_filenames:
+            super(EmojiPalettePanel, self).configure_header_key(key, label)
+
+    def _filter_images_exist(self, emoji_sequences):
+        """
+        Drop emoji sequences that have no corresponding EmojiOne image file.
+        """
+        results = []
+        for sequence in emoji_sequences:
+            image_filename = emoji_filename_from_sequence(sequence)
+            path = config.get_image_filename(image_filename)
+            if os.path.isfile(path):
+                results.append(sequence)
+        return results
 
 
 class SymbolPalettePanel(CharacterPalettePanel):
-    """ Emoji palette """
+    """ Symbol palette """
 
     content_type = "symbols"
 

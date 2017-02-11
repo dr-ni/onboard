@@ -741,7 +741,7 @@ class Rect:
         if row_first:
             # self determines width and minimum height.
             # Items may overflow the minimum height.
-            ncols = int((self.w + x_spacing) / (item_rect.h + x_spacing))
+            ncols = int((self.w + x_spacing) / (item_rect.w + x_spacing))
             nrows = int(ceil(num_items / ncols))
 
             for row in range(nrows):

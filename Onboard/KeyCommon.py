@@ -231,6 +231,10 @@ class KeyCommon(DrawingItem):
     # Images displayed by this key (optional)
     image_filenames = None
 
+    # True for mask images to be drawn with the key's label color.
+    # False for multi-color images.
+    images_are_masks = True
+
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
 
@@ -527,7 +531,7 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_style(self):
-        if not self.style is None:
+        if self.style is not None:
             return self.style
         return config.theme_settings.key_style
 
@@ -544,7 +548,12 @@ class RectKeyCommon(KeyCommon):
         rect = self.get_label_rect().inflate(0.5)
         return self.context.log_to_canvas_rect(rect)
 
-    def get_color(self, element, state = None):
+    def get_image_color(self):
+        if self.images_are_masks:
+            return self.get_label_color()
+        return None
+
+    def get_color(self, element, state=None):
         color_key = (element,
                      self.prelight, self.pressed,
                      self.active, self.locked,

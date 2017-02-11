@@ -630,7 +630,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         src_size = (pixbuf.get_width(), pixbuf.get_height())
         xalign, yalign = self.align_label(src_size, (rect.w, rect.h))
 
-        label_rgba = self.get_label_color()
+        image_rgba = self.get_image_color()
         fill = self.get_fill_color()
 
         for dx, dy, lum, last in self._label_iterations(lod):
@@ -639,12 +639,18 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
-            if lum:
-                rgba = brighten(lum, *fill) # darker
-            else:
-                rgba = label_rgba
 
-            pixbuf.draw(context, rect.offset(xalign + dx, yalign + dy), rgba)
+            r = rect.offset(xalign + dx, yalign + dy)
+
+            if image_rgba is None:
+                pixbuf.draw(context, r)
+            else:
+                if lum:
+                    rgba = brighten(lum, *fill)  # darker
+                else:
+                    rgba = image_rgba
+
+                pixbuf.draw(context, r, rgba)
 
     def draw_shadow_cached(self, context):
         entry = self._shadow_surface
@@ -1038,7 +1044,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         context.move_to(*layout_pos)
         PangoCairo.show_layout(context, layout)
 
-        context.restore() # don't clip the caret
+        context.restore()  # don't clip the caret
 
         # draw caret
         context.move_to(cursor_rect.x, cursor_rect.y)
@@ -1254,7 +1260,7 @@ class PixBufScaled:
         self._width = self._real_width / scale
         self._height = self._real_height / scale
 
-    def draw(self, context, rect, rgba):
+    def draw(self, context, rect, rgba=None):
         """
         Draw the image in the theme's label color.
         Only the alpha channel of the image is used.
@@ -1266,10 +1272,14 @@ class PixBufScaled:
         if scale and scale != 1.0:
             context.scale(1.0 / scale, 1.0 / scale)
 
-        Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
-        pattern = context.get_source()
-        context.set_source_rgba(*rgba)
-        context.mask(pattern)
+        if rgba is None:
+            Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+            context.paint()
+        else:
+            Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+            pattern = context.get_source()
+            context.set_source_rgba(*rgba)
+            context.mask(pattern)
 
         context.restore()
 
