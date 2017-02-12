@@ -315,7 +315,6 @@ class CachedAccessible:
 
     def delete_text(self, start_pos, end_pos):
         try:
-            print(start_pos, end_pos)
             return self._accessible.delete_text(start_pos, end_pos)
         except Exception as ex:  # Private exception gi._glib.GErro
             _logger.info("CachedAccessible.delete_text(): " +
@@ -409,6 +408,25 @@ class CachedAccessible:
                 if role in [Atspi.Role.TERMINAL] or \
                    (state_set is not None and
                     state_set.contains(Atspi.StateType.EDITABLE)):
+                    return True
+        return False
+
+    def is_not_focus_stealing(self):
+        """
+        Is this accessible unlikely to steal the focus from
+        a previously focused editable accessible?
+        """
+        role      = self.get_role()
+        state_set = self.get_state_set()
+        if state_set is not None:
+
+            # Mainly firefox elements after the workaround
+            # for firefox 50.
+            if role in [Atspi.Role.DOCUMENT_FRAME,
+                        Atspi.Role.LINK,
+                        ] \
+               and state_set is not None and \
+               not state_set.contains(Atspi.StateType.EDITABLE):
                     return True
         return False
 
@@ -749,7 +767,6 @@ class AtspiStateTracker(EventSource):
     def _on_async_focus_changed(self, event):
         accessible = event.accessible
         focused = event.focused
-        print(focused)
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
@@ -776,6 +793,14 @@ class AtspiStateTracker(EventSource):
                     if accessible.is_editable():
                         self._focused_accessible = accessible
                         self._focused_pid = pid
+
+                    # Static accessible, i.e. something that cannot
+                    # accidentally steal the focus from an editable
+                    # accessible. e.g. firefox ATSPI_ROLE_DOCUMENT_FRAME?
+                    elif accessible.is_not_focus_stealing():
+                        self._focused_accessible = None
+                        self._focused_pid = None
+
                     else:
                         # Wily: prevent random icons, buttons and toolbars
                         # in unity dash from hiding Onboard. Somehow hovering
@@ -803,11 +828,11 @@ class AtspiStateTracker(EventSource):
                                                           pid))
 
             if not ignore_accessible:
+
                 # Has the previously focused accessible lost the focus?
                 active_accessible = self._focused_accessible
                 if active_accessible and \
                    not active_accessible.is_focused(True):
-
 
                     # Zesty: Firefox 50+ loses focus of the URL entry after
                     # typing just a few letters and focuses a completion
@@ -819,6 +844,7 @@ class AtspiStateTracker(EventSource):
 
                     if not is_firefox_completion:
                         active_accessible = None
+
 
                 self._set_active_accessible(active_accessible)
 
