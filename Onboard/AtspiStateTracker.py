@@ -61,6 +61,8 @@ class CachedAccessible:
         as debug output in TextContext.
         """
         self.get_role()
+        self.get_role_name()
+        self.get_name()
         self.get_state_set()
         self.get_id()
         self.get_attributes()
@@ -86,6 +88,14 @@ class CachedAccessible:
     def get_role(self):
         return self._get_value("role",
                                self._accessible.get_role)
+
+    def get_role_name(self):
+        return self._get_value("role-name",
+                               self._accessible.get_role_name)
+
+    def get_name(self):
+        return self._get_value("name",
+                               self._accessible.get_name)
 
     def invalidate_state_set(self):
         self.invalidate("state-set")
@@ -244,8 +254,9 @@ class CachedAccessible:
                              "invalid accessible, failed to read state: "
                              .format(name) + unicode_str(ex))
                 value = default
-            else:
-                self._state[name] = value
+
+            self._state[name] = value
+
         return value
 
     def _get_value_noex(self, name, func):
@@ -738,11 +749,16 @@ class AtspiStateTracker(EventSource):
     def _on_async_focus_changed(self, event):
         accessible = event.accessible
         focused = event.focused
+        print(focused)
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
-        if accessible and not self._frozen:
-            self._log_accessible(accessible, focused)
+        if self._frozen:
+            return
+
+        self._log_accessible(accessible, focused)
+
+        if accessible:
 
             # Since Trusty, focus events no longer come reliably in a
             # predictable order. -> Store the last editable accessible
@@ -792,6 +808,7 @@ class AtspiStateTracker(EventSource):
                 if active_accessible and \
                    not active_accessible.is_focused(True):
 
+
                     # Zesty: Firefox 50+ loses focus of the URL entry after
                     # typing just a few letters and focuses a completion
                     # menu item instead. Let's pretend the accessible is
@@ -839,36 +856,24 @@ class AtspiStateTracker(EventSource):
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             msg = "AT-SPI focus event: focused={}, ".format(focused)
-            if not accessible:
-                msg += "accessible={}".format(accessible)
-            else:
-                name = "unknown"
-                role = None
-                role_name = None
-                editable = None
-                states = None
-                extents = None
+            msg += "accessible={}, ".format(accessible)
 
-                try:
-                    name = accessible.get_name()
-                    role = accessible.get_role()
-                    role_name = accessible.get_role_name()
-                    state_set = accessible.get_state_set()
-                    states = state_set.states
-                    editable = state_set.contains(Atspi.StateType.EDITABLE) \
-                        if state_set else None
-                    extents = self._get_accessible_extents(accessible)
-                # private exception gi._glib.GError when gedit became
-                # unresponsive
-                except:
-                    pass
+            if accessible:
+                name = accessible.get_name()
+                role = accessible.get_role()
+                role_name = accessible.get_role_name()
+                state_set = accessible.get_state_set()
+                states = state_set.states
+                editable = state_set.contains(Atspi.StateType.EDITABLE) \
+                    if state_set else None
+                extents = accessible.get_extents()
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
-                       .format(name=name,
+                       .format(accessible=accessible, name=repr(name),
                                role=role.value_name if role else role,
-                               role_name=role_name,
+                               role_name=repr(role_name),
                                editable=editable,
                                states=states,
                                extents=extents
