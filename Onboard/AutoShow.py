@@ -429,13 +429,17 @@ class AutoShow(object):
     def _find_close_position(self, view, home,
                              app_rect, acc_rect, limit_rects,
                              test_clearance, move_clearance,
-                             horizontal = True, vertical = True):
+                             horizontal=True, vertical=True):
         rh = home
-        move_clearance = Rect(10, 10, 10, 10)
+
+        # Closer clearance for toplevels. There's usually nothing
+        # that can be obscured.
+        move_clearance_frame = Rect(10, 10, 10, 10)
 
         # Leave a different clearance for the new, yet to be found, positions.
         ra = acc_rect.apply_border(*move_clearance)
-        rp = app_rect.apply_border(*move_clearance)
+        if not app_rect.is_empty():
+            rp = app_rect.apply_border(*move_clearance_frame)
 
         # candidate positions
         vp = []
@@ -445,15 +449,15 @@ class AutoShow(object):
                 xc = max(xc, app_rect.left())
                 xc = min(xc, app_rect.right() - rh.w)
 
-            # below window
-            vp.append([xc, rp.bottom(), app_rect])
+            if not app_rect.is_empty():
+                # below window
+                vp.append([xc, rp.bottom(), app_rect])
 
-            # above window
-            vp.append([xc, rp.top() - rh.h, app_rect])
+                # above window
+                vp.append([xc, rp.top() - rh.h, app_rect])
 
             # inside maximized window, y at home.y
             vp.append([xc, home.y, acc_rect])
-            # vp.append([xc, rp.bottom()-ymargin, app_rect.deflate(rh.h+move_clearance[3]+ymargin)])
 
             # below text entry
             vp.append([xc, ra.bottom(), acc_rect])
@@ -469,7 +473,7 @@ class AutoShow(object):
                                      limit_rects)
             r = Rect(pl[0], pl[1], rh.w, rh.h)
             ri = p[2]
-            rcs = [ri, acc_rect] # collision rects
+            rcs = [ri, acc_rect]  # collision rects
             if not any(r.intersects(rc) for rc in rcs):
                 rresult = r
                 break
@@ -496,7 +500,8 @@ class AutoShow(object):
 
         if rh.intersects(ra):
 
-            # Leave a different clearance for the new, yet to be found, positions.
+            # Leave a different clearance for the new,
+            # yet to be found positions.
             ra = acc_rect.apply_border(*move_clearance)
             x, y = rh.get_position()
 
