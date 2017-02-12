@@ -82,7 +82,6 @@ class GlobalKeyListener(EventSource):
         # help debugging disconnecting events on exit
         if had_listeners and not self.has_listeners():
             _logger.info("all listeners disconnected")
-            print("all listeners disconnected")
 
     def _update_registered_events(self):
         self._register_input_events(self.has_listeners())
