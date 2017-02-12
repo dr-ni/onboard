@@ -48,7 +48,7 @@
 layout=Compact
 #layout=Phone
 
-#system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
+#system-theme-associations={'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast', 'ContrastHighInverse' : 'HighContrastInverse'}}
 #system-theme-tracking-enabled=True
 
 # Default theme
