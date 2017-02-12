@@ -1,3 +1,11 @@
+onboard (1.3.0-1ubuntu1) zesty; urgency=medium
+
+  * Sync with Debian. Remaining change:
+    - debian/patches/add_defaults_for_ubuntu.patch:
+      + Adjust defaults for better integration with Ubuntu
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Fri, 21 Oct 2016 19:00:21 -0400
+
 onboard (1.2.0-0ubuntu1) xenial; urgency=medium
 
   * Request for sponsorship for new upstream release (LP: #1547054)
