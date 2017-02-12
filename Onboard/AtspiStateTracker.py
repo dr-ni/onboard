@@ -601,6 +601,8 @@ class AtspiStateTracker(EventSource):
                     handler = "_on_" + name.replace("-", "_")
                     EventSource.connect(self, name, getattr(self, handler))
             else:
+                self._poll_unity_timer.stop()
+
                 self.atspi_disconnect("_listener_focus",
                                       "focus")
                 self.atspi_disconnect("_listener_object_focus",
@@ -898,7 +900,7 @@ class AtspiStateTracker(EventSource):
 
             if state_set and \
                state_set.contains(Atspi.StateType.ACTIVE):
-                self._poll_unity_timer.start(0.3, _poll_unity_dash)
+                self._poll_unity_timer.start(0.5, _poll_unity_dash)
 
     def _set_active_accessible(self, accessible):
         if self._active_accessible != accessible:
