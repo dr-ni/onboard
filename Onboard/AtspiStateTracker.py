@@ -25,14 +25,15 @@ import time
 import logging
 _logger = logging.getLogger(__name__)
 
-from Onboard.Version import require_gi_versions
+from Onboard.Version   import require_gi_versions
 require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:
     _logger.warning("Atspi typelib missing, auto-show unavailable")
 
-from Onboard.utils        import Rect, EventSource, Process, unicode_str
+from Onboard.utils     import Rect, EventSource, Process, unicode_str
+from Onboard.Timer     import Timer
 
 # Config Singleton
 from Onboard.Config import Config
@@ -523,6 +524,8 @@ class AtspiStateTracker(EventSource):
     _active_accessible_activation_time = 0.0  # time since focus received
     _last_active_accessible = None
 
+    _poll_unity_timer = Timer()
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -775,78 +778,127 @@ class AtspiStateTracker(EventSource):
 
         self._log_accessible(accessible, focused)
 
-        if accessible:
+        if not accessible:
+            return
 
-            # Since Trusty, focus events no longer come reliably in a
-            # predictable order. -> Store the last editable accessible
-            # so we can pick it over later focused non-editable ones.
-            # Helps to keep the keyboard open in presence of popup selections
-            # e.g. in GNOME's file dialog and in Unity Dash.
-            ignore_accessible = False
-            if self._focused_accessible == accessible:
-                if not focused:
+        app_name = accessible.get_app_name().lower()
+        if app_name == "unity":
+            self._handle_focus_changed_unity(event)
+        else:
+            self._handle_focus_changed_apps(event)
+
+    def _handle_focus_changed_apps(self, event):
+        """ Focus change in regular applications """
+        accessible = event.accessible
+        focused = event.focused
+
+        # Since Trusty, focus events no longer come reliably in a
+        # predictable order. -> Store the last editable accessible
+        # so we can pick it over later focused non-editable ones.
+        # Helps to keep the keyboard open in presence of popup selections
+        # e.g. in GNOME's file dialog and in Unity Dash.
+        if self._focused_accessible == accessible:
+            if not focused:
+                self._focused_accessible = None
+        else:
+            pid = accessible.get_pid()
+
+            if focused:
+                self._poll_unity_timer.stop()
+
+                if accessible.is_editable():
+                    self._focused_accessible = accessible
+                    self._focused_pid = pid
+
+                # Static accessible, i.e. something that cannot
+                # accidentally steal the focus from an editable
+                # accessible. e.g. firefox ATSPI_ROLE_DOCUMENT_FRAME?
+                elif accessible.is_not_focus_stealing():
                     self._focused_accessible = None
-            else:
-                if focused:
-                    pid = accessible.get_pid()
+                    self._focused_pid = None
 
-                    if accessible.is_editable():
-                        self._focused_accessible = accessible
-                        self._focused_pid = pid
+                else:
+                    # Wily: attempt to hide when unity dash closes
+                    # (there's no focus lost event).
+                    # Also check duration since last activation to
+                    # skip out of order focus events (firefox
+                    # ATSPI_ROLE_DOCUMENT_FRAME) for a short while
+                    # after opening dash.
+                    now = time.time()
+                    if focused and \
+                       now - self._active_accessible_activation_time > .5:
+                        if self._focused_pid != pid:
+                            self._focused_accessible = None
+                            _logger.atspi("Dropping accessible due to "
+                                          "pid change: {} != {} "
+                                          .format(self._focused_pid, pid))
 
-                    # Static accessible, i.e. something that cannot
-                    # accidentally steal the focus from an editable
-                    # accessible. e.g. firefox ATSPI_ROLE_DOCUMENT_FRAME?
-                    elif accessible.is_not_focus_stealing():
-                        self._focused_accessible = None
-                        self._focused_pid = None
+        # Has the previously focused accessible lost the focus?
+        active_accessible = self._focused_accessible
+        if active_accessible and \
+           not active_accessible.is_focused(True):
 
-                    else:
-                        # Wily: prevent random icons, buttons and toolbars
-                        # in unity dash from hiding Onboard. Somehow hovering
-                        # over those buttons silently drops the focus from the
-                        # text entry. Let's pretend the buttons don't exist
-                        # and keep the previously saved text entry active.
-                        app_name = accessible.get_app_name().lower()
-                        if app_name == "unity":
-                            ignore_accessible = True
-                        else:
-                            # Wily: attempt to hide when unity dash closes
-                            # (there's no focus lost event).
-                            # Also check duration since last activation to
-                            # skip out of order focus events (firefox
-                            # ATSPI_ROLE_DOCUMENT_FRAME) for a short while
-                            # after opening dash.
-                            now = time.time()
-                            if now - self._active_accessible_activation_time \
-                               > .5:
-                                if self._focused_pid != pid:
-                                    self._focused_accessible = None
-                                    _logger.atspi("Dropping accessible due to "
-                                                  "pid change: {} != {} "
-                                                  .format(self._focused_pid,
-                                                          pid))
+            # Zesty: Firefox 50+ loses focus of the URL entry after
+            # typing just a few letters and focuses a completion
+            # menu item instead. Let's pretend the accessible is
+            # still focused in that case.
+            is_firefox_completion = \
+                self._focused_accessible.is_urlbar() and \
+                accessible.get_role() == Atspi.Role.MENU_ITEM
 
-            if not ignore_accessible:
+            if not is_firefox_completion:
+                active_accessible = None
 
-                # Has the previously focused accessible lost the focus?
-                active_accessible = self._focused_accessible
-                if active_accessible and \
-                   not active_accessible.is_focused(True):
+        self._set_active_accessible(active_accessible)
 
-                    # Zesty: Firefox 50+ loses focus of the URL entry after
-                    # typing just a few letters and focuses a completion
-                    # menu item instead. Let's pretend the accessible is
-                    # still focused in that case.
-                    is_firefox_completion = \
-                        self._focused_accessible.is_urlbar() and \
-                        accessible.get_role() == Atspi.Role.MENU_ITEM
+    def _handle_focus_changed_unity(self, event):
+        """ Focus change in Unity Dash """
+        accessible = event.accessible
+        focused = event.focused
 
-                    if not is_firefox_completion:
-                        active_accessible = None
+        # Wily: prevent random icons, buttons and toolbars
+        # in unity dash from hiding Onboard. Somehow hovering
+        # over those buttons silently drops the focus from the
+        # text entry. Let's pretend the buttons don't exist
+        # and keep the previously saved text entry active.
 
+        # Zesty: Don't fight lost focus events anymore, only
+        # react to focus events when the text entry gains focus.
+        if focused and \
+           accessible.is_editable():
+            self._focused_accessible = accessible
+            self._set_active_accessible(accessible)
 
-                self._set_active_accessible(active_accessible)
+            # For hiding we poll Dash's toplevel accessible
+            def _poll_unity_dash():
+                frame = accessible.get_frame()
+                state_set = frame.get_state_set()
+
+                _logger.debug(
+                    "polling unity dash state_set: {}"
+                    .format(AtspiStateType.to_strings(state_set)))
+
+                if not state_set or \
+                   not state_set.contains(Atspi.StateType.ACTIVE):
+                    self._focused_accessible = None
+                    self._set_active_accessible(None)
+                    return False
+
+                return True
+
+            # Only ever start polling if Dash is "ACTIVE".
+            # The state_set might change in the future and the
+            # keyboard better fail to auto-hide than to never show.
+            frame = accessible.get_frame()
+            state_set = frame.get_state_set()
+
+            _logger.debug(
+                "dash focused, state_set: {}"
+                .format(AtspiStateType.to_strings(state_set)))
+
+            if state_set and \
+               state_set.contains(Atspi.StateType.ACTIVE):
+                self._poll_unity_timer.start(0.3, _poll_unity_dash)
 
     def _set_active_accessible(self, accessible):
         if self._active_accessible != accessible:
