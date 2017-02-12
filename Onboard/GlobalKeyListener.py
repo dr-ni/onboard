@@ -34,7 +34,8 @@ class GlobalKeyListener(EventSource):
     """
 
     _event_names = ("key-press",
-                    "key-release")
+                    "key-release",
+                    "devices-updated")
 
     def __new__(cls, *args, **kwargs):
         """
@@ -107,6 +108,8 @@ class GlobalKeyListener(EventSource):
                                              self._on_device_event)
                 self._device_manager.connect("device-grab",
                                              self._on_device_grab)
+                self._device_manager.connect("devices-updated",
+                                             self._on_devices_updated)
                 self._select_xinput_devices()
             else:
                 success = False
@@ -118,6 +121,8 @@ class GlobalKeyListener(EventSource):
                                                 self._on_device_event)
                 self._device_manager.disconnect("device-grab",
                                                 self._on_device_grab)
+                self._device_manager.disconnect("devices-updated",
+                                                self._on_devices_updated)
                 self._unselect_xinput_devices()
                 self._device_manager = None
 
@@ -159,17 +164,17 @@ class GlobalKeyListener(EventSource):
         """ Someone grabbed/relased a device. Update our device list. """
         self._select_xinput_devices()
 
+    def _on_devices_updated(self):
+        # re-select devices on changes to the device hierarchy
+        self._select_xinput_devices()
+
+        self.emit("devices-updated")
+
     def _on_device_event(self, event):
         """
         Handler for XI2 events.
         """
         event_type = event.xi_type
-
-        # re-select devices on changes to the device hierarchy
-        if event_type in XIEventType.HierarchyEvents or \
-           event_type == XIEventType.DeviceChanged:
-            self._select_xinput_devices()
-            return
 
         if event_type == XIEventType.KeyPress:
             self.emit("key-press", event)
@@ -180,14 +185,14 @@ class GlobalKeyListener(EventSource):
     def get_key_event_string(self, event, message=""):
         device = event.get_source_device()
         device_name = device.name if device else "None"
-        _logger.info((message + "global key-{}, keycode={}, keyval={}, "
-                      "from device '{}' ({})")
-                     .format("press"
-                             if event.xi_type == XIEventType.KeyPress
-                             else "release",
-                             event.keycode,
-                             event.keyval,
-                             device_name,
-                             event.source_id))
+        return ((message + "global key-{}, keycode={}, keyval={} "
+                 "from device '{}' ({})")
+                .format("press"
+                if event.xi_type == XIEventType.KeyPress
+                else "release",
+                event.keycode,
+                event.keyval,
+                device_name,
+                event.source_id))
 
 
