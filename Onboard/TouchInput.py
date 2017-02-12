@@ -446,7 +446,6 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
             self._on_leave_notify(self, event)
 
     def _log_device_event(self, event):
-        win = self.get_window()
         if not event.xi_type in [ XIEventType.TouchUpdate,
                                   XIEventType.Motion]:
             self.log_event("Device event: dev_id={} src_id={} xi_type={} "
@@ -456,7 +455,7 @@ class InputEventSource(EventSource, XIDeviceEventLogger):
                                     event.source_id,
                                     event.xi_type,
                                     event.xid_event,
-                                    win.get_xid() if win else 0,
+                                    self.get_xid(),
                                     event.x, event.y,
                                     event.x_root, event.y_root,
                                     event.button, event.state,
