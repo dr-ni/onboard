@@ -93,6 +93,12 @@ class CharacterGridPanel(ScrolledLayoutPanel):
     color_scheme = None
     background_rgba = None
 
+    def __init__(self):
+        super(CharacterGridPanel, self).__init__()
+
+        # cache for keys, including expensively rendered images
+        self._key_pool = {}
+
     def update_log_rect(self):
         self.set_clip_rect(self.get_canvas_border_rect())
         super(CharacterGridPanel, self).update_log_rect()
@@ -114,8 +120,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
 
         self.set_items([item] + keys)
 
-    @staticmethod
-    def _create_content(grid_rect, key_rect, key_group,
+    def _create_content(self, grid_rect, key_rect, key_group,
                         color_scheme, sequence, has_emoji):
         spacing = (0, 0)
 
@@ -125,30 +130,46 @@ class CharacterGridPanel(ScrolledLayoutPanel):
 
         for i, label in enumerate(sequence):
             id = "_palette_character" + str(i)
-            key = CharacterPaletteKey()
-            key.type = KeyCommon.CHAR_TYPE
-            key.code  = label
-            key.action = KeyCommon.DELAYED_STROKE_ACTION
-            key.set_border_rect(key_rects[i])
-            if len(label) <= 2:
-                key.group = key_group
-            else:
-                key.group = id
-            key.color_scheme = color_scheme
+            try:
+                key = self._key_pool[label]
+            except KeyError:
+                key = self._create_key(id, label, key_rects[i], key_group,
+                                       color_scheme, has_emoji)
 
-            if has_emoji:
-                fn = emoji_filename_from_sequence(label)
-                if fn:
-                    key.image_filenames = {ImageSlot.NORMAL : fn}
-                    key.image_style = ImageStyle.MULTI_COLOR
-                    key.label_margin = EMOJI_IMAGE_MARGIN
+                # only cach emoji keys, as these are the most expensive ones
+                if has_emoji:
+                    self._key_pool[label] = key
 
-            if not key.image_filenames:
-                key.labels = {0: label}
-
+            key.set_id(id)
             keys.append(key)
 
         return keys, bounds
+
+    def _create_key(self, id, label, key_rect, key_group,
+                    color_scheme, has_emoji):
+        key = CharacterPaletteKey()
+
+        key.type = KeyCommon.CHAR_TYPE
+        key.code  = label
+        key.action = KeyCommon.DELAYED_STROKE_ACTION
+        key.set_border_rect(key_rect)
+        if len(label) <= 2:
+            key.group = key_group
+        else:
+            key.group = id
+        key.color_scheme = color_scheme
+
+        if has_emoji:
+            fn = emoji_filename_from_sequence(label)
+            if fn:
+                key.image_filenames = {ImageSlot.NORMAL : fn}
+                key.image_style = ImageStyle.MULTI_COLOR
+                key.label_margin = EMOJI_IMAGE_MARGIN
+
+        if not key.image_filenames:
+            key.labels = {0: label}
+
+        return key
 
 
 class CharacterPalettePanel(LayoutPanel):
