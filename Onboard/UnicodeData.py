@@ -18,7 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from Onboard.emoji_data import emoji_data
+
+def emoji_filename_from_sequence(label):
+    return emoji_filename_from_codepoints([ord(c) for c in label])
+
+
+def emoji_filename_from_codepoints(codepoints):
+    fn = ""
+    for cp in codepoints:
+        if cp not in (0x200D, 0xfe0f):
+            if fn:
+                fn += "-"
+            fn += (hex(cp)[2:]).zfill(4)
+    return fn + ".svg"
 
 
 class UnicodeData:
@@ -81,6 +93,7 @@ class UnicodeData:
                      for sequence, data in self._get_emoji_data()[category][1])
 
     def _get_emoji_data(self):
+        from Onboard.emoji_data import emoji_data
         return emoji_data
 
     def get_symbol_categories(self):

@@ -30,7 +30,23 @@ import re
 from collections import OrderedDict
 
 
-class UnicodeData:
+def init_import_path():
+    import inspect
+    current_dir = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.insert(0, parent_dir)
+
+
+def get_image_filename(image_filename):
+    return os.path.join("emojione", "svg", image_filename)
+
+
+init_import_path()
+from Onboard.UnicodeData import emoji_filename_from_codepoints
+
+
+class UnicodeDataGenerator:
 
     UNICODE_DATA_PATH = "unicode_data"
 
@@ -40,17 +56,19 @@ class UnicodeData:
         """
         code = 0
 
-        # General_category of UnicodeData.txt, English/untranslated
+        # General_category of UnicodeDataGenerator.txt,
+        # English/untranslated
         category = ""
 
-        # iso_10646_comment_field of UnicodeData.txt, English/untranslated
+        # iso_10646_comment_field of UnicodeDataGenerator.txt,
+        # English/untranslated
         comment = ""
 
         def __init__(self):
             self.annotations = {}
 
         def __str__(self):
-            return ('UnicodeData({},{},{})'
+            return ('UnicodeDataGenerator({},{},{})'
                     .format(repr(self.code),
                             repr(self.category),
                             repr(self.comment),
@@ -105,7 +123,7 @@ class UnicodeData:
     def get_code_point(self, code):
         """
         Doctests:
-        >>> ud = UnicodeData()
+        >>> ud = UnicodeDataGenerator()
         >>> lang_id = "en_US"
         >>> ud.set_language_ids([lang_id])
         >>> ud.get_annotation_for_sequence("🤦", lang_id) #doctest: +ELLIPSIS
@@ -123,9 +141,9 @@ class UnicodeData:
     def get_annotation_for_sequence(self, code_sequence, lang_id):
         """
         Doctests:
-        >>> ud = UnicodeData()
+        >>> ud = UnicodeDataGenerator()
         >>> str(ud.get_code_point(ord('👩')))
-        "UnicodeData(128105,'WOMAN','')"
+        "UnicodeDataGenerator(128105,'WOMAN','')"
         """
         annotations = self._annotations.get(lang_id)
         if annotations:
@@ -165,7 +183,7 @@ class UnicodeData:
     def _get_cldr_locale_base_names(self, lang_id):
         """
         Doctests:
-        >>> ud = UnicodeData()
+        >>> ud = UnicodeDataGenerator()
         >>> ud._get_cldr_locale_base_names('en_DE')
         ['en', 'en_001', 'en_150', 'en_DE']
         >>> ud._get_cldr_locale_base_names('de_DE')
@@ -235,8 +253,8 @@ class UnicodeData:
 
         # code points
         lines = self._read_cached_http(
-            'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt',
-            'UNIDATA', 'UnicodeData.txt')
+            'http://www.unicode.org/Public/UNIDATA/UnicodeDataGenerator.txt',
+            'UNIDATA', 'UnicodeDataGenerator.txt')
         for line in lines:
             if line:
                 line = line.split("#")[0].strip()
@@ -447,28 +465,45 @@ class UnicodeData:
 
                     # Emoji modified with skin color get hidden in
                     # long-press popups.
-                    # The emoji of the popup is the immediate predecessor of
-                    # continues skin color modifier sequences.
+                    # The base emoji of the popup is the immediate predecessor
+                    # of the skin color modifier sequence in collation order.
                     noskincps = tuple(cp for cp in codepoints
                                       if cp not in skincolors)
-                    if codepoints == noskincps:
-                        last_noskin_cps = codepoints
-                        emoji_data[codepoints] = [[], comment]
 
-                    elif not noskincps:  # just a skin modifier alone?
-                        print("dropping emoji: skin modifier", repr(comment),
+                    path = self._emoji_image_path(codepoints)
+                    if not os.path.isfile(path):
+                        print("dropping emoji", repr(comment),
+                              "missing image", repr(path),
                               file=sys.stderr)
-
                     else:
-                        # print(codepoints, comment, last_noskin_comment)
-                        parent = emoji_data.get(last_noskin_cps)
-                        if parent:
-                            parent[0].append([codepoints, comment])
-                        else:
-                            print("dropping emoji: no parent for",
+                        # without skin modifier?
+                        if codepoints == noskincps:
+                            last_noskin_cps = codepoints
+                            emoji_data[codepoints] = [[], comment]
+
+                        # just a skin modifier alone?
+                        elif not noskincps:
+                            print("dropping emoji: skin modifier",
                                   repr(comment), file=sys.stderr)
 
+                        # with skin modifier
+                        else:
+                            # print(codepoints, comment, last_noskin_comment)
+                            parent = emoji_data.get(last_noskin_cps)
+                            if parent:
+                                parent[0].append([codepoints, comment])
+                            else:
+                                print("dropping emoji: no parent for",
+                                      repr(comment), file=sys.stderr)
+
         return emoji_data
+
+    def _emoji_image_path(self, codepoints):
+        """
+        Drop emoji sequences that have no corresponding EmojiOne image file.
+        """
+        image_filename = emoji_filename_from_codepoints(codepoints)
+        return get_image_filename(image_filename)
 
 
 def get_system_default_lang_id(self):
@@ -479,19 +514,19 @@ def get_system_default_lang_id(self):
 
 
 if __name__ == "__main__":
-    ud = UnicodeData()
+    ud = UnicodeDataGenerator()
     ud.gen_emoji_output()
 
     exit()
 
     # Download stuff now (first time), so the output doesn't
     # interfere with doctests.
-    UnicodeData()
+    UnicodeDataGenerator()
 
     import doctest
     doctest.testmod()
     if 1:
-        ud = UnicodeData()
+        ud = UnicodeDataGenerator()
         ud.set_language_ids(["en_US"])
 
         if 0:

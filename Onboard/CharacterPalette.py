@@ -19,7 +19,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import os
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -28,24 +27,14 @@ from Onboard.Layout            import (LayoutPanel, ScrolledLayoutPanel,
 from Onboard.KeyGtk            import FlatKey
 from Onboard.KeyCommon         import ImageSlot, ImageStyle
 from Onboard                   import KeyCommon
-from Onboard.UnicodeData       import UnicodeData
+from Onboard.UnicodeData       import (UnicodeData,
+                                       emoji_filename_from_sequence)
 
 from Onboard.Config import Config
 config = Config()
 
 
 EMOJI_IMAGE_MARGIN = (3, 3)
-
-
-def emoji_filename_from_sequence(label):
-    fn = ""
-    for c in label:
-        cp = ord(c)
-        if cp not in (0x200D, 0xfe0f):
-            if fn:
-                fn += "-"
-            fn += hex(cp)[2:]
-    return fn + ".svg"
 
 
 class CharacterPaletteKey(FlatKey):
@@ -136,7 +125,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
                 key = self._create_key(id, label, key_rects[i], key_group,
                                        color_scheme, has_emoji)
 
-                # only cach emoji keys, as these are the most expensive ones
+                # only cache emoji keys, as these are the most expensive ones
                 if has_emoji:
                     self._key_pool[label] = key
 
@@ -296,8 +285,7 @@ class EmojiPalettePanel(CharacterPalettePanel):
         return self._unicode_data.get_emoji_categories()  # + ["⭐"]
 
     def get_grid_labels(self, category):
-        emoji = self._unicode_data.get_emoji(category)
-        return self._filter_images_exist(emoji)
+        return self._unicode_data.get_emoji(category)
 
     def configure_header_key(self, key, label):
         fn = emoji_filename_from_sequence(label)
@@ -308,18 +296,6 @@ class EmojiPalettePanel(CharacterPalettePanel):
 
         if not key.image_filenames:
             super(EmojiPalettePanel, self).configure_header_key(key, label)
-
-    def _filter_images_exist(self, emoji_sequences):
-        """
-        Drop emoji sequences that have no corresponding EmojiOne image file.
-        """
-        results = []
-        for sequence in emoji_sequences:
-            image_filename = emoji_filename_from_sequence(sequence)
-            path = config.get_image_filename(image_filename)
-            if os.path.isfile(path):
-                results.append(sequence)
-        return results
 
 
 class SymbolPalettePanel(CharacterPalettePanel):

@@ -154,306 +154,42 @@ emoji_data = [
                  '👼🏽',                            # 👼🏽 baby angel: medium skin tone
                  '👼🏾',                            # 👼🏾 baby angel: medium-dark skin tone
                  '👼🏿')),                          # 👼🏿 baby angel: dark skin tone
-            ('👨\u200d⚕️',                         # 👨‍⚕️ man health worker
-                ('👨🏻\u200d⚕️',                    # 👨🏻‍⚕️ man health worker: light skin tone
-                 '👨🏼\u200d⚕️',                    # 👨🏼‍⚕️ man health worker: medium-light skin tone
-                 '👨🏽\u200d⚕️',                    # 👨🏽‍⚕️ man health worker: medium skin tone
-                 '👨🏾\u200d⚕️',                    # 👨🏾‍⚕️ man health worker: medium-dark skin tone
-                 '👨🏿\u200d⚕️')),                  # 👨🏿‍⚕️ man health worker: dark skin tone
-            ('👩\u200d⚕️',                         # 👩‍⚕️ woman health worker
-                ('👩🏻\u200d⚕️',                    # 👩🏻‍⚕️ woman health worker: light skin tone
-                 '👩🏼\u200d⚕️',                    # 👩🏼‍⚕️ woman health worker: medium-light skin tone
-                 '👩🏽\u200d⚕️',                    # 👩🏽‍⚕️ woman health worker: medium skin tone
-                 '👩🏾\u200d⚕️',                    # 👩🏾‍⚕️ woman health worker: medium-dark skin tone
-                 '👩🏿\u200d⚕️')),                  # 👩🏿‍⚕️ woman health worker: dark skin tone
-            ('👨\u200d🎓',                          # 👨‍🎓 man student
-                ('👨🏻\u200d🎓',                     # 👨🏻‍🎓 man student: light skin tone
-                 '👨🏼\u200d🎓',                     # 👨🏼‍🎓 man student: medium-light skin tone
-                 '👨🏽\u200d🎓',                     # 👨🏽‍🎓 man student: medium skin tone
-                 '👨🏾\u200d🎓',                     # 👨🏾‍🎓 man student: medium-dark skin tone
-                 '👨🏿\u200d🎓')),                   # 👨🏿‍🎓 man student: dark skin tone
-            ('👩\u200d🎓',                          # 👩‍🎓 woman student
-                ('👩🏻\u200d🎓',                     # 👩🏻‍🎓 woman student: light skin tone
-                 '👩🏼\u200d🎓',                     # 👩🏼‍🎓 woman student: medium-light skin tone
-                 '👩🏽\u200d🎓',                     # 👩🏽‍🎓 woman student: medium skin tone
-                 '👩🏾\u200d🎓',                     # 👩🏾‍🎓 woman student: medium-dark skin tone
-                 '👩🏿\u200d🎓')),                   # 👩🏿‍🎓 woman student: dark skin tone
-            ('👨\u200d🏫',                          # 👨‍🏫 man teacher
-                ('👨🏻\u200d🏫',                     # 👨🏻‍🏫 man teacher: light skin tone
-                 '👨🏼\u200d🏫',                     # 👨🏼‍🏫 man teacher: medium-light skin tone
-                 '👨🏽\u200d🏫',                     # 👨🏽‍🏫 man teacher: medium skin tone
-                 '👨🏾\u200d🏫',                     # 👨🏾‍🏫 man teacher: medium-dark skin tone
-                 '👨🏿\u200d🏫')),                   # 👨🏿‍🏫 man teacher: dark skin tone
-            ('👩\u200d🏫',                          # 👩‍🏫 woman teacher
-                ('👩🏻\u200d🏫',                     # 👩🏻‍🏫 woman teacher: light skin tone
-                 '👩🏼\u200d🏫',                     # 👩🏼‍🏫 woman teacher: medium-light skin tone
-                 '👩🏽\u200d🏫',                     # 👩🏽‍🏫 woman teacher: medium skin tone
-                 '👩🏾\u200d🏫',                     # 👩🏾‍🏫 woman teacher: medium-dark skin tone
-                 '👩🏿\u200d🏫')),                   # 👩🏿‍🏫 woman teacher: dark skin tone
-            ('👨\u200d⚖️',                         # 👨‍⚖️ man judge
-                ('👨🏻\u200d⚖️',                    # 👨🏻‍⚖️ man judge: light skin tone
-                 '👨🏼\u200d⚖️',                    # 👨🏼‍⚖️ man judge: medium-light skin tone
-                 '👨🏽\u200d⚖️',                    # 👨🏽‍⚖️ man judge: medium skin tone
-                 '👨🏾\u200d⚖️',                    # 👨🏾‍⚖️ man judge: medium-dark skin tone
-                 '👨🏿\u200d⚖️')),                  # 👨🏿‍⚖️ man judge: dark skin tone
-            ('👩\u200d⚖️',                         # 👩‍⚖️ woman judge
-                ('👩🏻\u200d⚖️',                    # 👩🏻‍⚖️ woman judge: light skin tone
-                 '👩🏼\u200d⚖️',                    # 👩🏼‍⚖️ woman judge: medium-light skin tone
-                 '👩🏽\u200d⚖️',                    # 👩🏽‍⚖️ woman judge: medium skin tone
-                 '👩🏾\u200d⚖️',                    # 👩🏾‍⚖️ woman judge: medium-dark skin tone
-                 '👩🏿\u200d⚖️')),                  # 👩🏿‍⚖️ woman judge: dark skin tone
-            ('👨\u200d🌾',                          # 👨‍🌾 man farmer
-                ('👨🏻\u200d🌾',                     # 👨🏻‍🌾 man farmer: light skin tone
-                 '👨🏼\u200d🌾',                     # 👨🏼‍🌾 man farmer: medium-light skin tone
-                 '👨🏽\u200d🌾',                     # 👨🏽‍🌾 man farmer: medium skin tone
-                 '👨🏾\u200d🌾',                     # 👨🏾‍🌾 man farmer: medium-dark skin tone
-                 '👨🏿\u200d🌾')),                   # 👨🏿‍🌾 man farmer: dark skin tone
-            ('👩\u200d🌾',                          # 👩‍🌾 woman farmer
-                ('👩🏻\u200d🌾',                     # 👩🏻‍🌾 woman farmer: light skin tone
-                 '👩🏼\u200d🌾',                     # 👩🏼‍🌾 woman farmer: medium-light skin tone
-                 '👩🏽\u200d🌾',                     # 👩🏽‍🌾 woman farmer: medium skin tone
-                 '👩🏾\u200d🌾',                     # 👩🏾‍🌾 woman farmer: medium-dark skin tone
-                 '👩🏿\u200d🌾')),                   # 👩🏿‍🌾 woman farmer: dark skin tone
-            ('👨\u200d🍳',                          # 👨‍🍳 man cook
-                ('👨🏻\u200d🍳',                     # 👨🏻‍🍳 man cook: light skin tone
-                 '👨🏼\u200d🍳',                     # 👨🏼‍🍳 man cook: medium-light skin tone
-                 '👨🏽\u200d🍳',                     # 👨🏽‍🍳 man cook: medium skin tone
-                 '👨🏾\u200d🍳',                     # 👨🏾‍🍳 man cook: medium-dark skin tone
-                 '👨🏿\u200d🍳')),                   # 👨🏿‍🍳 man cook: dark skin tone
-            ('👩\u200d🍳',                          # 👩‍🍳 woman cook
-                ('👩🏻\u200d🍳',                     # 👩🏻‍🍳 woman cook: light skin tone
-                 '👩🏼\u200d🍳',                     # 👩🏼‍🍳 woman cook: medium-light skin tone
-                 '👩🏽\u200d🍳',                     # 👩🏽‍🍳 woman cook: medium skin tone
-                 '👩🏾\u200d🍳',                     # 👩🏾‍🍳 woman cook: medium-dark skin tone
-                 '👩🏿\u200d🍳')),                   # 👩🏿‍🍳 woman cook: dark skin tone
-            ('👨\u200d🔧',                          # 👨‍🔧 man mechanic
-                ('👨🏻\u200d🔧',                     # 👨🏻‍🔧 man mechanic: light skin tone
-                 '👨🏼\u200d🔧',                     # 👨🏼‍🔧 man mechanic: medium-light skin tone
-                 '👨🏽\u200d🔧',                     # 👨🏽‍🔧 man mechanic: medium skin tone
-                 '👨🏾\u200d🔧',                     # 👨🏾‍🔧 man mechanic: medium-dark skin tone
-                 '👨🏿\u200d🔧')),                   # 👨🏿‍🔧 man mechanic: dark skin tone
-            ('👩\u200d🔧',                          # 👩‍🔧 woman mechanic
-                ('👩🏻\u200d🔧',                     # 👩🏻‍🔧 woman mechanic: light skin tone
-                 '👩🏼\u200d🔧',                     # 👩🏼‍🔧 woman mechanic: medium-light skin tone
-                 '👩🏽\u200d🔧',                     # 👩🏽‍🔧 woman mechanic: medium skin tone
-                 '👩🏾\u200d🔧',                     # 👩🏾‍🔧 woman mechanic: medium-dark skin tone
-                 '👩🏿\u200d🔧')),                   # 👩🏿‍🔧 woman mechanic: dark skin tone
-            ('👨\u200d🏭',                          # 👨‍🏭 man factory worker
-                ('👨🏻\u200d🏭',                     # 👨🏻‍🏭 man factory worker: light skin tone
-                 '👨🏼\u200d🏭',                     # 👨🏼‍🏭 man factory worker: medium-light skin tone
-                 '👨🏽\u200d🏭',                     # 👨🏽‍🏭 man factory worker: medium skin tone
-                 '👨🏾\u200d🏭',                     # 👨🏾‍🏭 man factory worker: medium-dark skin tone
-                 '👨🏿\u200d🏭')),                   # 👨🏿‍🏭 man factory worker: dark skin tone
-            ('👩\u200d🏭',                          # 👩‍🏭 woman factory worker
-                ('👩🏻\u200d🏭',                     # 👩🏻‍🏭 woman factory worker: light skin tone
-                 '👩🏼\u200d🏭',                     # 👩🏼‍🏭 woman factory worker: medium-light skin tone
-                 '👩🏽\u200d🏭',                     # 👩🏽‍🏭 woman factory worker: medium skin tone
-                 '👩🏾\u200d🏭',                     # 👩🏾‍🏭 woman factory worker: medium-dark skin tone
-                 '👩🏿\u200d🏭')),                   # 👩🏿‍🏭 woman factory worker: dark skin tone
-            ('👨\u200d💼',                          # 👨‍💼 man office worker
-                ('👨🏻\u200d💼',                     # 👨🏻‍💼 man office worker: light skin tone
-                 '👨🏼\u200d💼',                     # 👨🏼‍💼 man office worker: medium-light skin tone
-                 '👨🏽\u200d💼',                     # 👨🏽‍💼 man office worker: medium skin tone
-                 '👨🏾\u200d💼',                     # 👨🏾‍💼 man office worker: medium-dark skin tone
-                 '👨🏿\u200d💼')),                   # 👨🏿‍💼 man office worker: dark skin tone
-            ('👩\u200d💼',                          # 👩‍💼 woman office worker
-                ('👩🏻\u200d💼',                     # 👩🏻‍💼 woman office worker: light skin tone
-                 '👩🏼\u200d💼',                     # 👩🏼‍💼 woman office worker: medium-light skin tone
-                 '👩🏽\u200d💼',                     # 👩🏽‍💼 woman office worker: medium skin tone
-                 '👩🏾\u200d💼',                     # 👩🏾‍💼 woman office worker: medium-dark skin tone
-                 '👩🏿\u200d💼')),                   # 👩🏿‍💼 woman office worker: dark skin tone
-            ('👨\u200d🔬',                          # 👨‍🔬 man scientist
-                ('👨🏻\u200d🔬',                     # 👨🏻‍🔬 man scientist: light skin tone
-                 '👨🏼\u200d🔬',                     # 👨🏼‍🔬 man scientist: medium-light skin tone
-                 '👨🏽\u200d🔬',                     # 👨🏽‍🔬 man scientist: medium skin tone
-                 '👨🏾\u200d🔬',                     # 👨🏾‍🔬 man scientist: medium-dark skin tone
-                 '👨🏿\u200d🔬')),                   # 👨🏿‍🔬 man scientist: dark skin tone
-            ('👩\u200d🔬',                          # 👩‍🔬 woman scientist
-                ('👩🏻\u200d🔬',                     # 👩🏻‍🔬 woman scientist: light skin tone
-                 '👩🏼\u200d🔬',                     # 👩🏼‍🔬 woman scientist: medium-light skin tone
-                 '👩🏽\u200d🔬',                     # 👩🏽‍🔬 woman scientist: medium skin tone
-                 '👩🏾\u200d🔬',                     # 👩🏾‍🔬 woman scientist: medium-dark skin tone
-                 '👩🏿\u200d🔬')),                   # 👩🏿‍🔬 woman scientist: dark skin tone
-            ('👨\u200d💻',                          # 👨‍💻 man technologist
-                ('👨🏻\u200d💻',                     # 👨🏻‍💻 man technologist: light skin tone
-                 '👨🏼\u200d💻',                     # 👨🏼‍💻 man technologist: medium-light skin tone
-                 '👨🏽\u200d💻',                     # 👨🏽‍💻 man technologist: medium skin tone
-                 '👨🏾\u200d💻',                     # 👨🏾‍💻 man technologist: medium-dark skin tone
-                 '👨🏿\u200d💻')),                   # 👨🏿‍💻 man technologist: dark skin tone
-            ('👩\u200d💻',                          # 👩‍💻 woman technologist
-                ('👩🏻\u200d💻',                     # 👩🏻‍💻 woman technologist: light skin tone
-                 '👩🏼\u200d💻',                     # 👩🏼‍💻 woman technologist: medium-light skin tone
-                 '👩🏽\u200d💻',                     # 👩🏽‍💻 woman technologist: medium skin tone
-                 '👩🏾\u200d💻',                     # 👩🏾‍💻 woman technologist: medium-dark skin tone
-                 '👩🏿\u200d💻')),                   # 👩🏿‍💻 woman technologist: dark skin tone
-            ('👨\u200d🎤',                          # 👨‍🎤 man singer
-                ('👨🏻\u200d🎤',                     # 👨🏻‍🎤 man singer: light skin tone
-                 '👨🏼\u200d🎤',                     # 👨🏼‍🎤 man singer: medium-light skin tone
-                 '👨🏽\u200d🎤',                     # 👨🏽‍🎤 man singer: medium skin tone
-                 '👨🏾\u200d🎤',                     # 👨🏾‍🎤 man singer: medium-dark skin tone
-                 '👨🏿\u200d🎤')),                   # 👨🏿‍🎤 man singer: dark skin tone
-            ('👩\u200d🎤',                          # 👩‍🎤 woman singer
-                ('👩🏻\u200d🎤',                     # 👩🏻‍🎤 woman singer: light skin tone
-                 '👩🏼\u200d🎤',                     # 👩🏼‍🎤 woman singer: medium-light skin tone
-                 '👩🏽\u200d🎤',                     # 👩🏽‍🎤 woman singer: medium skin tone
-                 '👩🏾\u200d🎤',                     # 👩🏾‍🎤 woman singer: medium-dark skin tone
-                 '👩🏿\u200d🎤')),                   # 👩🏿‍🎤 woman singer: dark skin tone
-            ('👨\u200d🎨',                          # 👨‍🎨 man artist
-                ('👨🏻\u200d🎨',                     # 👨🏻‍🎨 man artist: light skin tone
-                 '👨🏼\u200d🎨',                     # 👨🏼‍🎨 man artist: medium-light skin tone
-                 '👨🏽\u200d🎨',                     # 👨🏽‍🎨 man artist: medium skin tone
-                 '👨🏾\u200d🎨',                     # 👨🏾‍🎨 man artist: medium-dark skin tone
-                 '👨🏿\u200d🎨')),                   # 👨🏿‍🎨 man artist: dark skin tone
-            ('👩\u200d🎨',                          # 👩‍🎨 woman artist
-                ('👩🏻\u200d🎨',                     # 👩🏻‍🎨 woman artist: light skin tone
-                 '👩🏼\u200d🎨',                     # 👩🏼‍🎨 woman artist: medium-light skin tone
-                 '👩🏽\u200d🎨',                     # 👩🏽‍🎨 woman artist: medium skin tone
-                 '👩🏾\u200d🎨',                     # 👩🏾‍🎨 woman artist: medium-dark skin tone
-                 '👩🏿\u200d🎨')),                   # 👩🏿‍🎨 woman artist: dark skin tone
-            ('👨\u200d✈️',                         # 👨‍✈️ man pilot
-                ('👨🏻\u200d✈️',                    # 👨🏻‍✈️ man pilot: light skin tone
-                 '👨🏼\u200d✈️',                    # 👨🏼‍✈️ man pilot: medium-light skin tone
-                 '👨🏽\u200d✈️',                    # 👨🏽‍✈️ man pilot: medium skin tone
-                 '👨🏾\u200d✈️',                    # 👨🏾‍✈️ man pilot: medium-dark skin tone
-                 '👨🏿\u200d✈️')),                  # 👨🏿‍✈️ man pilot: dark skin tone
-            ('👩\u200d✈️',                         # 👩‍✈️ woman pilot
-                ('👩🏻\u200d✈️',                    # 👩🏻‍✈️ woman pilot: light skin tone
-                 '👩🏼\u200d✈️',                    # 👩🏼‍✈️ woman pilot: medium-light skin tone
-                 '👩🏽\u200d✈️',                    # 👩🏽‍✈️ woman pilot: medium skin tone
-                 '👩🏾\u200d✈️',                    # 👩🏾‍✈️ woman pilot: medium-dark skin tone
-                 '👩🏿\u200d✈️')),                  # 👩🏿‍✈️ woman pilot: dark skin tone
-            ('👨\u200d🚀',                          # 👨‍🚀 man astronaut
-                ('👨🏻\u200d🚀',                     # 👨🏻‍🚀 man astronaut: light skin tone
-                 '👨🏼\u200d🚀',                     # 👨🏼‍🚀 man astronaut: medium-light skin tone
-                 '👨🏽\u200d🚀',                     # 👨🏽‍🚀 man astronaut: medium skin tone
-                 '👨🏾\u200d🚀',                     # 👨🏾‍🚀 man astronaut: medium-dark skin tone
-                 '👨🏿\u200d🚀')),                   # 👨🏿‍🚀 man astronaut: dark skin tone
-            ('👩\u200d🚀',                          # 👩‍🚀 woman astronaut
-                ('👩🏻\u200d🚀',                     # 👩🏻‍🚀 woman astronaut: light skin tone
-                 '👩🏼\u200d🚀',                     # 👩🏼‍🚀 woman astronaut: medium-light skin tone
-                 '👩🏽\u200d🚀',                     # 👩🏽‍🚀 woman astronaut: medium skin tone
-                 '👩🏾\u200d🚀',                     # 👩🏾‍🚀 woman astronaut: medium-dark skin tone
-                 '👩🏿\u200d🚀')),                   # 👩🏿‍🚀 woman astronaut: dark skin tone
-            ('👨\u200d🚒',                          # 👨‍🚒 man firefighter
-                ('👨🏻\u200d🚒',                     # 👨🏻‍🚒 man firefighter: light skin tone
-                 '👨🏼\u200d🚒',                     # 👨🏼‍🚒 man firefighter: medium-light skin tone
-                 '👨🏽\u200d🚒',                     # 👨🏽‍🚒 man firefighter: medium skin tone
-                 '👨🏾\u200d🚒',                     # 👨🏾‍🚒 man firefighter: medium-dark skin tone
-                 '👨🏿\u200d🚒')),                   # 👨🏿‍🚒 man firefighter: dark skin tone
-            ('👩\u200d🚒',                          # 👩‍🚒 woman firefighter
-                ('👩🏻\u200d🚒',                     # 👩🏻‍🚒 woman firefighter: light skin tone
-                 '👩🏼\u200d🚒',                     # 👩🏼‍🚒 woman firefighter: medium-light skin tone
-                 '👩🏽\u200d🚒',                     # 👩🏽‍🚒 woman firefighter: medium skin tone
-                 '👩🏾\u200d🚒',                     # 👩🏾‍🚒 woman firefighter: medium-dark skin tone
-                 '👩🏿\u200d🚒')),                   # 👩🏿‍🚒 woman firefighter: dark skin tone
             ('👮',                                 # 👮 police officer
                 ('👮🏻',                            # 👮🏻 police officer: light skin tone
                  '👮🏼',                            # 👮🏼 police officer: medium-light skin tone
                  '👮🏽',                            # 👮🏽 police officer: medium skin tone
                  '👮🏾',                            # 👮🏾 police officer: medium-dark skin tone
                  '👮🏿')),                          # 👮🏿 police officer: dark skin tone
-            ('👮\u200d♂️',                         # 👮‍♂️ man police officer
-                ('👮🏻\u200d♂️',                    # 👮🏻‍♂️ man police officer: light skin tone
-                 '👮🏼\u200d♂️',                    # 👮🏼‍♂️ man police officer: medium-light skin tone
-                 '👮🏽\u200d♂️',                    # 👮🏽‍♂️ man police officer: medium skin tone
-                 '👮🏾\u200d♂️',                    # 👮🏾‍♂️ man police officer: medium-dark skin tone
-                 '👮🏿\u200d♂️')),                  # 👮🏿‍♂️ man police officer: dark skin tone
-            ('👮\u200d♀️',                         # 👮‍♀️ woman police officer
-                ('👮🏻\u200d♀️',                    # 👮🏻‍♀️ woman police officer: light skin tone
-                 '👮🏼\u200d♀️',                    # 👮🏼‍♀️ woman police officer: medium-light skin tone
-                 '👮🏽\u200d♀️',                    # 👮🏽‍♀️ woman police officer: medium skin tone
-                 '👮🏾\u200d♀️',                    # 👮🏾‍♀️ woman police officer: medium-dark skin tone
-                 '👮🏿\u200d♀️')),                  # 👮🏿‍♀️ woman police officer: dark skin tone
             ('🕵',                                 # 🕵 detective
                 ('🕵🏻',                            # 🕵🏻 detective: light skin tone
                  '🕵🏼',                            # 🕵🏼 detective: medium-light skin tone
                  '🕵🏽',                            # 🕵🏽 detective: medium skin tone
                  '🕵🏾',                            # 🕵🏾 detective: medium-dark skin tone
                  '🕵🏿')),                          # 🕵🏿 detective: dark skin tone
-            ('🕵️\u200d♂️',                        # 🕵️‍♂️ man detective
-                ('🕵🏻\u200d♂️',                    # 🕵🏻‍♂️ man detective: light skin tone
-                 '🕵🏼\u200d♂️',                    # 🕵🏼‍♂️ man detective: medium-light skin tone
-                 '🕵🏽\u200d♂️',                    # 🕵🏽‍♂️ man detective: medium skin tone
-                 '🕵🏾\u200d♂️',                    # 🕵🏾‍♂️ man detective: medium-dark skin tone
-                 '🕵🏿\u200d♂️')),                  # 🕵🏿‍♂️ man detective: dark skin tone
-            ('🕵️\u200d♀️',                        # 🕵️‍♀️ woman detective
-                ('🕵🏻\u200d♀️',                    # 🕵🏻‍♀️ woman detective: light skin tone
-                 '🕵🏼\u200d♀️',                    # 🕵🏼‍♀️ woman detective: medium-light skin tone
-                 '🕵🏽\u200d♀️',                    # 🕵🏽‍♀️ woman detective: medium skin tone
-                 '🕵🏾\u200d♀️',                    # 🕵🏾‍♀️ woman detective: medium-dark skin tone
-                 '🕵🏿\u200d♀️')),                  # 🕵🏿‍♀️ woman detective: dark skin tone
             ('💂',                                 # 💂 guard
                 ('💂🏻',                            # 💂🏻 guard: light skin tone
                  '💂🏼',                            # 💂🏼 guard: medium-light skin tone
                  '💂🏽',                            # 💂🏽 guard: medium skin tone
                  '💂🏾',                            # 💂🏾 guard: medium-dark skin tone
                  '💂🏿')),                          # 💂🏿 guard: dark skin tone
-            ('💂\u200d♂️',                         # 💂‍♂️ man guard
-                ('💂🏻\u200d♂️',                    # 💂🏻‍♂️ man guard: light skin tone
-                 '💂🏼\u200d♂️',                    # 💂🏼‍♂️ man guard: medium-light skin tone
-                 '💂🏽\u200d♂️',                    # 💂🏽‍♂️ man guard: medium skin tone
-                 '💂🏾\u200d♂️',                    # 💂🏾‍♂️ man guard: medium-dark skin tone
-                 '💂🏿\u200d♂️')),                  # 💂🏿‍♂️ man guard: dark skin tone
-            ('💂\u200d♀️',                         # 💂‍♀️ woman guard
-                ('💂🏻\u200d♀️',                    # 💂🏻‍♀️ woman guard: light skin tone
-                 '💂🏼\u200d♀️',                    # 💂🏼‍♀️ woman guard: medium-light skin tone
-                 '💂🏽\u200d♀️',                    # 💂🏽‍♀️ woman guard: medium skin tone
-                 '💂🏾\u200d♀️',                    # 💂🏾‍♀️ woman guard: medium-dark skin tone
-                 '💂🏿\u200d♀️')),                  # 💂🏿‍♀️ woman guard: dark skin tone
             ('👷',                                 # 👷 construction worker
                 ('👷🏻',                            # 👷🏻 construction worker: light skin tone
                  '👷🏼',                            # 👷🏼 construction worker: medium-light skin tone
                  '👷🏽',                            # 👷🏽 construction worker: medium skin tone
                  '👷🏾',                            # 👷🏾 construction worker: medium-dark skin tone
                  '👷🏿')),                          # 👷🏿 construction worker: dark skin tone
-            ('👷\u200d♂️',                         # 👷‍♂️ man construction worker
-                ('👷🏻\u200d♂️',                    # 👷🏻‍♂️ man construction worker: light skin tone
-                 '👷🏼\u200d♂️',                    # 👷🏼‍♂️ man construction worker: medium-light skin tone
-                 '👷🏽\u200d♂️',                    # 👷🏽‍♂️ man construction worker: medium skin tone
-                 '👷🏾\u200d♂️',                    # 👷🏾‍♂️ man construction worker: medium-dark skin tone
-                 '👷🏿\u200d♂️')),                  # 👷🏿‍♂️ man construction worker: dark skin tone
-            ('👷\u200d♀️',                         # 👷‍♀️ woman construction worker
-                ('👷🏻\u200d♀️',                    # 👷🏻‍♀️ woman construction worker: light skin tone
-                 '👷🏼\u200d♀️',                    # 👷🏼‍♀️ woman construction worker: medium-light skin tone
-                 '👷🏽\u200d♀️',                    # 👷🏽‍♀️ woman construction worker: medium skin tone
-                 '👷🏾\u200d♀️',                    # 👷🏾‍♀️ woman construction worker: medium-dark skin tone
-                 '👷🏿\u200d♀️')),                  # 👷🏿‍♀️ woman construction worker: dark skin tone
             ('👳',                                 # 👳 person wearing turban
                 ('👳🏻',                            # 👳🏻 person wearing turban: light skin tone
                  '👳🏼',                            # 👳🏼 person wearing turban: medium-light skin tone
                  '👳🏽',                            # 👳🏽 person wearing turban: medium skin tone
                  '👳🏾',                            # 👳🏾 person wearing turban: medium-dark skin tone
                  '👳🏿')),                          # 👳🏿 person wearing turban: dark skin tone
-            ('👳\u200d♂️',                         # 👳‍♂️ man wearing turban
-                ('👳🏻\u200d♂️',                    # 👳🏻‍♂️ man wearing turban: light skin tone
-                 '👳🏼\u200d♂️',                    # 👳🏼‍♂️ man wearing turban: medium-light skin tone
-                 '👳🏽\u200d♂️',                    # 👳🏽‍♂️ man wearing turban: medium skin tone
-                 '👳🏾\u200d♂️',                    # 👳🏾‍♂️ man wearing turban: medium-dark skin tone
-                 '👳🏿\u200d♂️')),                  # 👳🏿‍♂️ man wearing turban: dark skin tone
-            ('👳\u200d♀️',                         # 👳‍♀️ woman wearing turban
-                ('👳🏻\u200d♀️',                    # 👳🏻‍♀️ woman wearing turban: light skin tone
-                 '👳🏼\u200d♀️',                    # 👳🏼‍♀️ woman wearing turban: medium-light skin tone
-                 '👳🏽\u200d♀️',                    # 👳🏽‍♀️ woman wearing turban: medium skin tone
-                 '👳🏾\u200d♀️',                    # 👳🏾‍♀️ woman wearing turban: medium-dark skin tone
-                 '👳🏿\u200d♀️')),                  # 👳🏿‍♀️ woman wearing turban: dark skin tone
             ('👱',                                 # 👱 blond-haired person
                 ('👱🏻',                            # 👱🏻 blond-haired person: light skin tone
                  '👱🏼',                            # 👱🏼 blond-haired person: medium-light skin tone
                  '👱🏽',                            # 👱🏽 blond-haired person: medium skin tone
                  '👱🏾',                            # 👱🏾 blond-haired person: medium-dark skin tone
                  '👱🏿')),                          # 👱🏿 blond-haired person: dark skin tone
-            ('👱\u200d♂️',                         # 👱‍♂️ blond-haired man
-                ('👱🏻\u200d♂️',                    # 👱🏻‍♂️ blond-haired man: light skin tone
-                 '👱🏼\u200d♂️',                    # 👱🏼‍♂️ blond-haired man: medium-light skin tone
-                 '👱🏽\u200d♂️',                    # 👱🏽‍♂️ blond-haired man: medium skin tone
-                 '👱🏾\u200d♂️',                    # 👱🏾‍♂️ blond-haired man: medium-dark skin tone
-                 '👱🏿\u200d♂️')),                  # 👱🏿‍♂️ blond-haired man: dark skin tone
-            ('👱\u200d♀️',                         # 👱‍♀️ blond-haired woman
-                ('👱🏻\u200d♀️',                    # 👱🏻‍♀️ blond-haired woman: light skin tone
-                 '👱🏼\u200d♀️',                    # 👱🏼‍♀️ blond-haired woman: medium-light skin tone
-                 '👱🏽\u200d♀️',                    # 👱🏽‍♀️ blond-haired woman: medium skin tone
-                 '👱🏾\u200d♀️',                    # 👱🏾‍♀️ blond-haired woman: medium-dark skin tone
-                 '👱🏿\u200d♀️')),                  # 👱🏿‍♀️ blond-haired woman: dark skin tone
             ('🎅',                                 # 🎅 Santa Claus
                 ('🎅🏻',                            # 🎅🏻 Santa Claus: light skin tone
                  '🎅🏼',                            # 🎅🏼 Santa Claus: medium-light skin tone
@@ -508,234 +244,78 @@ emoji_data = [
                  '🙍🏽',                            # 🙍🏽 person frowning: medium skin tone
                  '🙍🏾',                            # 🙍🏾 person frowning: medium-dark skin tone
                  '🙍🏿')),                          # 🙍🏿 person frowning: dark skin tone
-            ('🙍\u200d♂️',                         # 🙍‍♂️ man frowning
-                ('🙍🏻\u200d♂️',                    # 🙍🏻‍♂️ man frowning: light skin tone
-                 '🙍🏼\u200d♂️',                    # 🙍🏼‍♂️ man frowning: medium-light skin tone
-                 '🙍🏽\u200d♂️',                    # 🙍🏽‍♂️ man frowning: medium skin tone
-                 '🙍🏾\u200d♂️',                    # 🙍🏾‍♂️ man frowning: medium-dark skin tone
-                 '🙍🏿\u200d♂️')),                  # 🙍🏿‍♂️ man frowning: dark skin tone
-            ('🙍\u200d♀️',                         # 🙍‍♀️ woman frowning
-                ('🙍🏻\u200d♀️',                    # 🙍🏻‍♀️ woman frowning: light skin tone
-                 '🙍🏼\u200d♀️',                    # 🙍🏼‍♀️ woman frowning: medium-light skin tone
-                 '🙍🏽\u200d♀️',                    # 🙍🏽‍♀️ woman frowning: medium skin tone
-                 '🙍🏾\u200d♀️',                    # 🙍🏾‍♀️ woman frowning: medium-dark skin tone
-                 '🙍🏿\u200d♀️')),                  # 🙍🏿‍♀️ woman frowning: dark skin tone
             ('🙎',                                 # 🙎 person pouting
                 ('🙎🏻',                            # 🙎🏻 person pouting: light skin tone
                  '🙎🏼',                            # 🙎🏼 person pouting: medium-light skin tone
                  '🙎🏽',                            # 🙎🏽 person pouting: medium skin tone
                  '🙎🏾',                            # 🙎🏾 person pouting: medium-dark skin tone
                  '🙎🏿')),                          # 🙎🏿 person pouting: dark skin tone
-            ('🙎\u200d♂️',                         # 🙎‍♂️ man pouting
-                ('🙎🏻\u200d♂️',                    # 🙎🏻‍♂️ man pouting: light skin tone
-                 '🙎🏼\u200d♂️',                    # 🙎🏼‍♂️ man pouting: medium-light skin tone
-                 '🙎🏽\u200d♂️',                    # 🙎🏽‍♂️ man pouting: medium skin tone
-                 '🙎🏾\u200d♂️',                    # 🙎🏾‍♂️ man pouting: medium-dark skin tone
-                 '🙎🏿\u200d♂️')),                  # 🙎🏿‍♂️ man pouting: dark skin tone
-            ('🙎\u200d♀️',                         # 🙎‍♀️ woman pouting
-                ('🙎🏻\u200d♀️',                    # 🙎🏻‍♀️ woman pouting: light skin tone
-                 '🙎🏼\u200d♀️',                    # 🙎🏼‍♀️ woman pouting: medium-light skin tone
-                 '🙎🏽\u200d♀️',                    # 🙎🏽‍♀️ woman pouting: medium skin tone
-                 '🙎🏾\u200d♀️',                    # 🙎🏾‍♀️ woman pouting: medium-dark skin tone
-                 '🙎🏿\u200d♀️')),                  # 🙎🏿‍♀️ woman pouting: dark skin tone
             ('🙅',                                 # 🙅 person gesturing NO
                 ('🙅🏻',                            # 🙅🏻 person gesturing NO: light skin tone
                  '🙅🏼',                            # 🙅🏼 person gesturing NO: medium-light skin tone
                  '🙅🏽',                            # 🙅🏽 person gesturing NO: medium skin tone
                  '🙅🏾',                            # 🙅🏾 person gesturing NO: medium-dark skin tone
                  '🙅🏿')),                          # 🙅🏿 person gesturing NO: dark skin tone
-            ('🙅\u200d♂️',                         # 🙅‍♂️ man gesturing NO
-                ('🙅🏻\u200d♂️',                    # 🙅🏻‍♂️ man gesturing NO: light skin tone
-                 '🙅🏼\u200d♂️',                    # 🙅🏼‍♂️ man gesturing NO: medium-light skin tone
-                 '🙅🏽\u200d♂️',                    # 🙅🏽‍♂️ man gesturing NO: medium skin tone
-                 '🙅🏾\u200d♂️',                    # 🙅🏾‍♂️ man gesturing NO: medium-dark skin tone
-                 '🙅🏿\u200d♂️')),                  # 🙅🏿‍♂️ man gesturing NO: dark skin tone
-            ('🙅\u200d♀️',                         # 🙅‍♀️ woman gesturing NO
-                ('🙅🏻\u200d♀️',                    # 🙅🏻‍♀️ woman gesturing NO: light skin tone
-                 '🙅🏼\u200d♀️',                    # 🙅🏼‍♀️ woman gesturing NO: medium-light skin tone
-                 '🙅🏽\u200d♀️',                    # 🙅🏽‍♀️ woman gesturing NO: medium skin tone
-                 '🙅🏾\u200d♀️',                    # 🙅🏾‍♀️ woman gesturing NO: medium-dark skin tone
-                 '🙅🏿\u200d♀️')),                  # 🙅🏿‍♀️ woman gesturing NO: dark skin tone
             ('🙆',                                 # 🙆 person gesturing OK
                 ('🙆🏻',                            # 🙆🏻 person gesturing OK: light skin tone
                  '🙆🏼',                            # 🙆🏼 person gesturing OK: medium-light skin tone
                  '🙆🏽',                            # 🙆🏽 person gesturing OK: medium skin tone
                  '🙆🏾',                            # 🙆🏾 person gesturing OK: medium-dark skin tone
                  '🙆🏿')),                          # 🙆🏿 person gesturing OK: dark skin tone
-            ('🙆\u200d♂️',                         # 🙆‍♂️ man gesturing OK
-                ('🙆🏻\u200d♂️',                    # 🙆🏻‍♂️ man gesturing OK: light skin tone
-                 '🙆🏼\u200d♂️',                    # 🙆🏼‍♂️ man gesturing OK: medium-light skin tone
-                 '🙆🏽\u200d♂️',                    # 🙆🏽‍♂️ man gesturing OK: medium skin tone
-                 '🙆🏾\u200d♂️',                    # 🙆🏾‍♂️ man gesturing OK: medium-dark skin tone
-                 '🙆🏿\u200d♂️')),                  # 🙆🏿‍♂️ man gesturing OK: dark skin tone
-            ('🙆\u200d♀️',                         # 🙆‍♀️ woman gesturing OK
-                ('🙆🏻\u200d♀️',                    # 🙆🏻‍♀️ woman gesturing OK: light skin tone
-                 '🙆🏼\u200d♀️',                    # 🙆🏼‍♀️ woman gesturing OK: medium-light skin tone
-                 '🙆🏽\u200d♀️',                    # 🙆🏽‍♀️ woman gesturing OK: medium skin tone
-                 '🙆🏾\u200d♀️',                    # 🙆🏾‍♀️ woman gesturing OK: medium-dark skin tone
-                 '🙆🏿\u200d♀️')),                  # 🙆🏿‍♀️ woman gesturing OK: dark skin tone
             ('💁',                                 # 💁 person tipping hand
                 ('💁🏻',                            # 💁🏻 person tipping hand: light skin tone
                  '💁🏼',                            # 💁🏼 person tipping hand: medium-light skin tone
                  '💁🏽',                            # 💁🏽 person tipping hand: medium skin tone
                  '💁🏾',                            # 💁🏾 person tipping hand: medium-dark skin tone
                  '💁🏿')),                          # 💁🏿 person tipping hand: dark skin tone
-            ('💁\u200d♂️',                         # 💁‍♂️ man tipping hand
-                ('💁🏻\u200d♂️',                    # 💁🏻‍♂️ man tipping hand: light skin tone
-                 '💁🏼\u200d♂️',                    # 💁🏼‍♂️ man tipping hand: medium-light skin tone
-                 '💁🏽\u200d♂️',                    # 💁🏽‍♂️ man tipping hand: medium skin tone
-                 '💁🏾\u200d♂️',                    # 💁🏾‍♂️ man tipping hand: medium-dark skin tone
-                 '💁🏿\u200d♂️')),                  # 💁🏿‍♂️ man tipping hand: dark skin tone
-            ('💁\u200d♀️',                         # 💁‍♀️ woman tipping hand
-                ('💁🏻\u200d♀️',                    # 💁🏻‍♀️ woman tipping hand: light skin tone
-                 '💁🏼\u200d♀️',                    # 💁🏼‍♀️ woman tipping hand: medium-light skin tone
-                 '💁🏽\u200d♀️',                    # 💁🏽‍♀️ woman tipping hand: medium skin tone
-                 '💁🏾\u200d♀️',                    # 💁🏾‍♀️ woman tipping hand: medium-dark skin tone
-                 '💁🏿\u200d♀️')),                  # 💁🏿‍♀️ woman tipping hand: dark skin tone
             ('🙋',                                 # 🙋 person raising hand
                 ('🙋🏻',                            # 🙋🏻 person raising hand: light skin tone
                  '🙋🏼',                            # 🙋🏼 person raising hand: medium-light skin tone
                  '🙋🏽',                            # 🙋🏽 person raising hand: medium skin tone
                  '🙋🏾',                            # 🙋🏾 person raising hand: medium-dark skin tone
                  '🙋🏿')),                          # 🙋🏿 person raising hand: dark skin tone
-            ('🙋\u200d♂️',                         # 🙋‍♂️ man raising hand
-                ('🙋🏻\u200d♂️',                    # 🙋🏻‍♂️ man raising hand: light skin tone
-                 '🙋🏼\u200d♂️',                    # 🙋🏼‍♂️ man raising hand: medium-light skin tone
-                 '🙋🏽\u200d♂️',                    # 🙋🏽‍♂️ man raising hand: medium skin tone
-                 '🙋🏾\u200d♂️',                    # 🙋🏾‍♂️ man raising hand: medium-dark skin tone
-                 '🙋🏿\u200d♂️')),                  # 🙋🏿‍♂️ man raising hand: dark skin tone
-            ('🙋\u200d♀️',                         # 🙋‍♀️ woman raising hand
-                ('🙋🏻\u200d♀️',                    # 🙋🏻‍♀️ woman raising hand: light skin tone
-                 '🙋🏼\u200d♀️',                    # 🙋🏼‍♀️ woman raising hand: medium-light skin tone
-                 '🙋🏽\u200d♀️',                    # 🙋🏽‍♀️ woman raising hand: medium skin tone
-                 '🙋🏾\u200d♀️',                    # 🙋🏾‍♀️ woman raising hand: medium-dark skin tone
-                 '🙋🏿\u200d♀️')),                  # 🙋🏿‍♀️ woman raising hand: dark skin tone
             ('🙇',                                 # 🙇 person bowing
                 ('🙇🏻',                            # 🙇🏻 person bowing: light skin tone
                  '🙇🏼',                            # 🙇🏼 person bowing: medium-light skin tone
                  '🙇🏽',                            # 🙇🏽 person bowing: medium skin tone
                  '🙇🏾',                            # 🙇🏾 person bowing: medium-dark skin tone
                  '🙇🏿')),                          # 🙇🏿 person bowing: dark skin tone
-            ('🙇\u200d♂️',                         # 🙇‍♂️ man bowing
-                ('🙇🏻\u200d♂️',                    # 🙇🏻‍♂️ man bowing: light skin tone
-                 '🙇🏼\u200d♂️',                    # 🙇🏼‍♂️ man bowing: medium-light skin tone
-                 '🙇🏽\u200d♂️',                    # 🙇🏽‍♂️ man bowing: medium skin tone
-                 '🙇🏾\u200d♂️',                    # 🙇🏾‍♂️ man bowing: medium-dark skin tone
-                 '🙇🏿\u200d♂️')),                  # 🙇🏿‍♂️ man bowing: dark skin tone
-            ('🙇\u200d♀️',                         # 🙇‍♀️ woman bowing
-                ('🙇🏻\u200d♀️',                    # 🙇🏻‍♀️ woman bowing: light skin tone
-                 '🙇🏼\u200d♀️',                    # 🙇🏼‍♀️ woman bowing: medium-light skin tone
-                 '🙇🏽\u200d♀️',                    # 🙇🏽‍♀️ woman bowing: medium skin tone
-                 '🙇🏾\u200d♀️',                    # 🙇🏾‍♀️ woman bowing: medium-dark skin tone
-                 '🙇🏿\u200d♀️')),                  # 🙇🏿‍♀️ woman bowing: dark skin tone
             ('\U0001f926',                        # 🤦 person facepalming
                 ('\U0001f926🏻',                   # 🤦🏻 person facepalming: light skin tone
                  '\U0001f926🏼',                   # 🤦🏼 person facepalming: medium-light skin tone
                  '\U0001f926🏽',                   # 🤦🏽 person facepalming: medium skin tone
                  '\U0001f926🏾',                   # 🤦🏾 person facepalming: medium-dark skin tone
                  '\U0001f926🏿')),                 # 🤦🏿 person facepalming: dark skin tone
-            ('\U0001f926\u200d♂️',                # 🤦‍♂️ man facepalming
-                ('\U0001f926🏻\u200d♂️',           # 🤦🏻‍♂️ man facepalming: light skin tone
-                 '\U0001f926🏼\u200d♂️',           # 🤦🏼‍♂️ man facepalming: medium-light skin tone
-                 '\U0001f926🏽\u200d♂️',           # 🤦🏽‍♂️ man facepalming: medium skin tone
-                 '\U0001f926🏾\u200d♂️',           # 🤦🏾‍♂️ man facepalming: medium-dark skin tone
-                 '\U0001f926🏿\u200d♂️')),         # 🤦🏿‍♂️ man facepalming: dark skin tone
-            ('\U0001f926\u200d♀️',                # 🤦‍♀️ woman facepalming
-                ('\U0001f926🏻\u200d♀️',           # 🤦🏻‍♀️ woman facepalming: light skin tone
-                 '\U0001f926🏼\u200d♀️',           # 🤦🏼‍♀️ woman facepalming: medium-light skin tone
-                 '\U0001f926🏽\u200d♀️',           # 🤦🏽‍♀️ woman facepalming: medium skin tone
-                 '\U0001f926🏾\u200d♀️',           # 🤦🏾‍♀️ woman facepalming: medium-dark skin tone
-                 '\U0001f926🏿\u200d♀️')),         # 🤦🏿‍♀️ woman facepalming: dark skin tone
             ('\U0001f937',                        # 🤷 person shrugging
                 ('\U0001f937🏻',                   # 🤷🏻 person shrugging: light skin tone
                  '\U0001f937🏼',                   # 🤷🏼 person shrugging: medium-light skin tone
                  '\U0001f937🏽',                   # 🤷🏽 person shrugging: medium skin tone
                  '\U0001f937🏾',                   # 🤷🏾 person shrugging: medium-dark skin tone
                  '\U0001f937🏿')),                 # 🤷🏿 person shrugging: dark skin tone
-            ('\U0001f937\u200d♂️',                # 🤷‍♂️ man shrugging
-                ('\U0001f937🏻\u200d♂️',           # 🤷🏻‍♂️ man shrugging: light skin tone
-                 '\U0001f937🏼\u200d♂️',           # 🤷🏼‍♂️ man shrugging: medium-light skin tone
-                 '\U0001f937🏽\u200d♂️',           # 🤷🏽‍♂️ man shrugging: medium skin tone
-                 '\U0001f937🏾\u200d♂️',           # 🤷🏾‍♂️ man shrugging: medium-dark skin tone
-                 '\U0001f937🏿\u200d♂️')),         # 🤷🏿‍♂️ man shrugging: dark skin tone
-            ('\U0001f937\u200d♀️',                # 🤷‍♀️ woman shrugging
-                ('\U0001f937🏻\u200d♀️',           # 🤷🏻‍♀️ woman shrugging: light skin tone
-                 '\U0001f937🏼\u200d♀️',           # 🤷🏼‍♀️ woman shrugging: medium-light skin tone
-                 '\U0001f937🏽\u200d♀️',           # 🤷🏽‍♀️ woman shrugging: medium skin tone
-                 '\U0001f937🏾\u200d♀️',           # 🤷🏾‍♀️ woman shrugging: medium-dark skin tone
-                 '\U0001f937🏿\u200d♀️')),         # 🤷🏿‍♀️ woman shrugging: dark skin tone
             ('💆',                                 # 💆 person getting massage
                 ('💆🏻',                            # 💆🏻 person getting massage: light skin tone
                  '💆🏼',                            # 💆🏼 person getting massage: medium-light skin tone
                  '💆🏽',                            # 💆🏽 person getting massage: medium skin tone
                  '💆🏾',                            # 💆🏾 person getting massage: medium-dark skin tone
                  '💆🏿')),                          # 💆🏿 person getting massage: dark skin tone
-            ('💆\u200d♂️',                         # 💆‍♂️ man getting massage
-                ('💆🏻\u200d♂️',                    # 💆🏻‍♂️ man getting massage: light skin tone
-                 '💆🏼\u200d♂️',                    # 💆🏼‍♂️ man getting massage: medium-light skin tone
-                 '💆🏽\u200d♂️',                    # 💆🏽‍♂️ man getting massage: medium skin tone
-                 '💆🏾\u200d♂️',                    # 💆🏾‍♂️ man getting massage: medium-dark skin tone
-                 '💆🏿\u200d♂️')),                  # 💆🏿‍♂️ man getting massage: dark skin tone
-            ('💆\u200d♀️',                         # 💆‍♀️ woman getting massage
-                ('💆🏻\u200d♀️',                    # 💆🏻‍♀️ woman getting massage: light skin tone
-                 '💆🏼\u200d♀️',                    # 💆🏼‍♀️ woman getting massage: medium-light skin tone
-                 '💆🏽\u200d♀️',                    # 💆🏽‍♀️ woman getting massage: medium skin tone
-                 '💆🏾\u200d♀️',                    # 💆🏾‍♀️ woman getting massage: medium-dark skin tone
-                 '💆🏿\u200d♀️')),                  # 💆🏿‍♀️ woman getting massage: dark skin tone
             ('💇',                                 # 💇 person getting haircut
                 ('💇🏻',                            # 💇🏻 person getting haircut: light skin tone
                  '💇🏼',                            # 💇🏼 person getting haircut: medium-light skin tone
                  '💇🏽',                            # 💇🏽 person getting haircut: medium skin tone
                  '💇🏾',                            # 💇🏾 person getting haircut: medium-dark skin tone
                  '💇🏿')),                          # 💇🏿 person getting haircut: dark skin tone
-            ('💇\u200d♂️',                         # 💇‍♂️ man getting haircut
-                ('💇🏻\u200d♂️',                    # 💇🏻‍♂️ man getting haircut: light skin tone
-                 '💇🏼\u200d♂️',                    # 💇🏼‍♂️ man getting haircut: medium-light skin tone
-                 '💇🏽\u200d♂️',                    # 💇🏽‍♂️ man getting haircut: medium skin tone
-                 '💇🏾\u200d♂️',                    # 💇🏾‍♂️ man getting haircut: medium-dark skin tone
-                 '💇🏿\u200d♂️')),                  # 💇🏿‍♂️ man getting haircut: dark skin tone
-            ('💇\u200d♀️',                         # 💇‍♀️ woman getting haircut
-                ('💇🏻\u200d♀️',                    # 💇🏻‍♀️ woman getting haircut: light skin tone
-                 '💇🏼\u200d♀️',                    # 💇🏼‍♀️ woman getting haircut: medium-light skin tone
-                 '💇🏽\u200d♀️',                    # 💇🏽‍♀️ woman getting haircut: medium skin tone
-                 '💇🏾\u200d♀️',                    # 💇🏾‍♀️ woman getting haircut: medium-dark skin tone
-                 '💇🏿\u200d♀️')),                  # 💇🏿‍♀️ woman getting haircut: dark skin tone
             ('🚶',                                 # 🚶 person walking
                 ('🚶🏻',                            # 🚶🏻 person walking: light skin tone
                  '🚶🏼',                            # 🚶🏼 person walking: medium-light skin tone
                  '🚶🏽',                            # 🚶🏽 person walking: medium skin tone
                  '🚶🏾',                            # 🚶🏾 person walking: medium-dark skin tone
                  '🚶🏿')),                          # 🚶🏿 person walking: dark skin tone
-            ('🚶\u200d♂️',                         # 🚶‍♂️ man walking
-                ('🚶🏻\u200d♂️',                    # 🚶🏻‍♂️ man walking: light skin tone
-                 '🚶🏼\u200d♂️',                    # 🚶🏼‍♂️ man walking: medium-light skin tone
-                 '🚶🏽\u200d♂️',                    # 🚶🏽‍♂️ man walking: medium skin tone
-                 '🚶🏾\u200d♂️',                    # 🚶🏾‍♂️ man walking: medium-dark skin tone
-                 '🚶🏿\u200d♂️')),                  # 🚶🏿‍♂️ man walking: dark skin tone
-            ('🚶\u200d♀️',                         # 🚶‍♀️ woman walking
-                ('🚶🏻\u200d♀️',                    # 🚶🏻‍♀️ woman walking: light skin tone
-                 '🚶🏼\u200d♀️',                    # 🚶🏼‍♀️ woman walking: medium-light skin tone
-                 '🚶🏽\u200d♀️',                    # 🚶🏽‍♀️ woman walking: medium skin tone
-                 '🚶🏾\u200d♀️',                    # 🚶🏾‍♀️ woman walking: medium-dark skin tone
-                 '🚶🏿\u200d♀️')),                  # 🚶🏿‍♀️ woman walking: dark skin tone
             ('🏃',                                 # 🏃 person running
                 ('🏃🏻',                            # 🏃🏻 person running: light skin tone
                  '🏃🏼',                            # 🏃🏼 person running: medium-light skin tone
                  '🏃🏽',                            # 🏃🏽 person running: medium skin tone
                  '🏃🏾',                            # 🏃🏾 person running: medium-dark skin tone
                  '🏃🏿')),                          # 🏃🏿 person running: dark skin tone
-            ('🏃\u200d♂️',                         # 🏃‍♂️ man running
-                ('🏃🏻\u200d♂️',                    # 🏃🏻‍♂️ man running: light skin tone
-                 '🏃🏼\u200d♂️',                    # 🏃🏼‍♂️ man running: medium-light skin tone
-                 '🏃🏽\u200d♂️',                    # 🏃🏽‍♂️ man running: medium skin tone
-                 '🏃🏾\u200d♂️',                    # 🏃🏾‍♂️ man running: medium-dark skin tone
-                 '🏃🏿\u200d♂️')),                  # 🏃🏿‍♂️ man running: dark skin tone
-            ('🏃\u200d♀️',                         # 🏃‍♀️ woman running
-                ('🏃🏻\u200d♀️',                    # 🏃🏻‍♀️ woman running: light skin tone
-                 '🏃🏼\u200d♀️',                    # 🏃🏼‍♀️ woman running: medium-light skin tone
-                 '🏃🏽\u200d♀️',                    # 🏃🏽‍♀️ woman running: medium skin tone
-                 '🏃🏾\u200d♀️',                    # 🏃🏾‍♀️ woman running: medium-dark skin tone
-                 '🏃🏿\u200d♀️')),                  # 🏃🏿‍♀️ woman running: dark skin tone
             ('💃',                                 # 💃 woman dancing
                 ('💃🏻',                            # 💃🏻 woman dancing: light skin tone
                  '💃🏼',                            # 💃🏼 woman dancing: medium-light skin tone
@@ -749,14 +329,7 @@ emoji_data = [
                  '\U0001f57a🏾',                   # 🕺🏾 man dancing: medium-dark skin tone
                  '\U0001f57a🏿')),                 # 🕺🏿 man dancing: dark skin tone
             ('👯', None),                          # 👯 people with bunny ears partying
-            ('👯\u200d♂️', None),                  # 👯‍♂️ men with bunny ears partying
-            ('👯\u200d♀️', None),                  # 👯‍♀️ women with bunny ears partying
-            ('🕴',                                 # 🕴 man in business suit levitating
-                ('🕴🏻',                            # 🕴🏻 man in business suit levitating: light skin tone
-                 '🕴🏼',                            # 🕴🏼 man in business suit levitating: medium-light skin tone
-                 '🕴🏽',                            # 🕴🏽 man in business suit levitating: medium skin tone
-                 '🕴🏾',                            # 🕴🏾 man in business suit levitating: medium-dark skin tone
-                 '🕴🏿')),                          # 🕴🏿 man in business suit levitating: dark skin tone
+            ('🕴', None),                          # 🕴 man in business suit levitating
             ('🗣', None),                          # 🗣 speaking head
             ('👤', None),                          # 👤 bust in silhouette
             ('👥', None),                          # 👥 busts in silhouette
@@ -768,156 +341,50 @@ emoji_data = [
                  '🏇🏾',                            # 🏇🏾 horse racing: medium-dark skin tone
                  '🏇🏿')),                          # 🏇🏿 horse racing: dark skin tone
             ('⛷', None),                          # ⛷ skier
-            ('🏂',                                 # 🏂 snowboarder
-                ('🏂🏻',                            # 🏂🏻 snowboarder: light skin tone
-                 '🏂🏼',                            # 🏂🏼 snowboarder: medium-light skin tone
-                 '🏂🏽',                            # 🏂🏽 snowboarder: medium skin tone
-                 '🏂🏾',                            # 🏂🏾 snowboarder: medium-dark skin tone
-                 '🏂🏿')),                          # 🏂🏿 snowboarder: dark skin tone
-            ('🏌',                                 # 🏌 person golfing
-                ('🏌🏻',                            # 🏌🏻 person golfing: light skin tone
-                 '🏌🏼',                            # 🏌🏼 person golfing: medium-light skin tone
-                 '🏌🏽',                            # 🏌🏽 person golfing: medium skin tone
-                 '🏌🏾',                            # 🏌🏾 person golfing: medium-dark skin tone
-                 '🏌🏿')),                          # 🏌🏿 person golfing: dark skin tone
-            ('🏌️\u200d♂️',                        # 🏌️‍♂️ man golfing
-                ('🏌🏻\u200d♂️',                    # 🏌🏻‍♂️ man golfing: light skin tone
-                 '🏌🏼\u200d♂️',                    # 🏌🏼‍♂️ man golfing: medium-light skin tone
-                 '🏌🏽\u200d♂️',                    # 🏌🏽‍♂️ man golfing: medium skin tone
-                 '🏌🏾\u200d♂️',                    # 🏌🏾‍♂️ man golfing: medium-dark skin tone
-                 '🏌🏿\u200d♂️')),                  # 🏌🏿‍♂️ man golfing: dark skin tone
-            ('🏌️\u200d♀️',                        # 🏌️‍♀️ woman golfing
-                ('🏌🏻\u200d♀️',                    # 🏌🏻‍♀️ woman golfing: light skin tone
-                 '🏌🏼\u200d♀️',                    # 🏌🏼‍♀️ woman golfing: medium-light skin tone
-                 '🏌🏽\u200d♀️',                    # 🏌🏽‍♀️ woman golfing: medium skin tone
-                 '🏌🏾\u200d♀️',                    # 🏌🏾‍♀️ woman golfing: medium-dark skin tone
-                 '🏌🏿\u200d♀️')),                  # 🏌🏿‍♀️ woman golfing: dark skin tone
+            ('🏂', None),                          # 🏂 snowboarder
+            ('🏌', None),                          # 🏌 person golfing
             ('🏄',                                 # 🏄 person surfing
                 ('🏄🏻',                            # 🏄🏻 person surfing: light skin tone
                  '🏄🏼',                            # 🏄🏼 person surfing: medium-light skin tone
                  '🏄🏽',                            # 🏄🏽 person surfing: medium skin tone
                  '🏄🏾',                            # 🏄🏾 person surfing: medium-dark skin tone
                  '🏄🏿')),                          # 🏄🏿 person surfing: dark skin tone
-            ('🏄\u200d♂️',                         # 🏄‍♂️ man surfing
-                ('🏄🏻\u200d♂️',                    # 🏄🏻‍♂️ man surfing: light skin tone
-                 '🏄🏼\u200d♂️',                    # 🏄🏼‍♂️ man surfing: medium-light skin tone
-                 '🏄🏽\u200d♂️',                    # 🏄🏽‍♂️ man surfing: medium skin tone
-                 '🏄🏾\u200d♂️',                    # 🏄🏾‍♂️ man surfing: medium-dark skin tone
-                 '🏄🏿\u200d♂️')),                  # 🏄🏿‍♂️ man surfing: dark skin tone
-            ('🏄\u200d♀️',                         # 🏄‍♀️ woman surfing
-                ('🏄🏻\u200d♀️',                    # 🏄🏻‍♀️ woman surfing: light skin tone
-                 '🏄🏼\u200d♀️',                    # 🏄🏼‍♀️ woman surfing: medium-light skin tone
-                 '🏄🏽\u200d♀️',                    # 🏄🏽‍♀️ woman surfing: medium skin tone
-                 '🏄🏾\u200d♀️',                    # 🏄🏾‍♀️ woman surfing: medium-dark skin tone
-                 '🏄🏿\u200d♀️')),                  # 🏄🏿‍♀️ woman surfing: dark skin tone
             ('🚣',                                 # 🚣 person rowing boat
                 ('🚣🏻',                            # 🚣🏻 person rowing boat: light skin tone
                  '🚣🏼',                            # 🚣🏼 person rowing boat: medium-light skin tone
                  '🚣🏽',                            # 🚣🏽 person rowing boat: medium skin tone
                  '🚣🏾',                            # 🚣🏾 person rowing boat: medium-dark skin tone
                  '🚣🏿')),                          # 🚣🏿 person rowing boat: dark skin tone
-            ('🚣\u200d♂️',                         # 🚣‍♂️ man rowing boat
-                ('🚣🏻\u200d♂️',                    # 🚣🏻‍♂️ man rowing boat: light skin tone
-                 '🚣🏼\u200d♂️',                    # 🚣🏼‍♂️ man rowing boat: medium-light skin tone
-                 '🚣🏽\u200d♂️',                    # 🚣🏽‍♂️ man rowing boat: medium skin tone
-                 '🚣🏾\u200d♂️',                    # 🚣🏾‍♂️ man rowing boat: medium-dark skin tone
-                 '🚣🏿\u200d♂️')),                  # 🚣🏿‍♂️ man rowing boat: dark skin tone
-            ('🚣\u200d♀️',                         # 🚣‍♀️ woman rowing boat
-                ('🚣🏻\u200d♀️',                    # 🚣🏻‍♀️ woman rowing boat: light skin tone
-                 '🚣🏼\u200d♀️',                    # 🚣🏼‍♀️ woman rowing boat: medium-light skin tone
-                 '🚣🏽\u200d♀️',                    # 🚣🏽‍♀️ woman rowing boat: medium skin tone
-                 '🚣🏾\u200d♀️',                    # 🚣🏾‍♀️ woman rowing boat: medium-dark skin tone
-                 '🚣🏿\u200d♀️')),                  # 🚣🏿‍♀️ woman rowing boat: dark skin tone
             ('🏊',                                 # 🏊 person swimming
                 ('🏊🏻',                            # 🏊🏻 person swimming: light skin tone
                  '🏊🏼',                            # 🏊🏼 person swimming: medium-light skin tone
                  '🏊🏽',                            # 🏊🏽 person swimming: medium skin tone
                  '🏊🏾',                            # 🏊🏾 person swimming: medium-dark skin tone
                  '🏊🏿')),                          # 🏊🏿 person swimming: dark skin tone
-            ('🏊\u200d♂️',                         # 🏊‍♂️ man swimming
-                ('🏊🏻\u200d♂️',                    # 🏊🏻‍♂️ man swimming: light skin tone
-                 '🏊🏼\u200d♂️',                    # 🏊🏼‍♂️ man swimming: medium-light skin tone
-                 '🏊🏽\u200d♂️',                    # 🏊🏽‍♂️ man swimming: medium skin tone
-                 '🏊🏾\u200d♂️',                    # 🏊🏾‍♂️ man swimming: medium-dark skin tone
-                 '🏊🏿\u200d♂️')),                  # 🏊🏿‍♂️ man swimming: dark skin tone
-            ('🏊\u200d♀️',                         # 🏊‍♀️ woman swimming
-                ('🏊🏻\u200d♀️',                    # 🏊🏻‍♀️ woman swimming: light skin tone
-                 '🏊🏼\u200d♀️',                    # 🏊🏼‍♀️ woman swimming: medium-light skin tone
-                 '🏊🏽\u200d♀️',                    # 🏊🏽‍♀️ woman swimming: medium skin tone
-                 '🏊🏾\u200d♀️',                    # 🏊🏾‍♀️ woman swimming: medium-dark skin tone
-                 '🏊🏿\u200d♀️')),                  # 🏊🏿‍♀️ woman swimming: dark skin tone
             ('⛹',                                 # ⛹ person bouncing ball
                 ('⛹🏻',                            # ⛹🏻 person bouncing ball: light skin tone
                  '⛹🏼',                            # ⛹🏼 person bouncing ball: medium-light skin tone
                  '⛹🏽',                            # ⛹🏽 person bouncing ball: medium skin tone
                  '⛹🏾',                            # ⛹🏾 person bouncing ball: medium-dark skin tone
                  '⛹🏿')),                          # ⛹🏿 person bouncing ball: dark skin tone
-            ('⛹️\u200d♂️',                        # ⛹️‍♂️ man bouncing ball
-                ('⛹🏻\u200d♂️',                    # ⛹🏻‍♂️ man bouncing ball: light skin tone
-                 '⛹🏼\u200d♂️',                    # ⛹🏼‍♂️ man bouncing ball: medium-light skin tone
-                 '⛹🏽\u200d♂️',                    # ⛹🏽‍♂️ man bouncing ball: medium skin tone
-                 '⛹🏾\u200d♂️',                    # ⛹🏾‍♂️ man bouncing ball: medium-dark skin tone
-                 '⛹🏿\u200d♂️')),                  # ⛹🏿‍♂️ man bouncing ball: dark skin tone
-            ('⛹️\u200d♀️',                        # ⛹️‍♀️ woman bouncing ball
-                ('⛹🏻\u200d♀️',                    # ⛹🏻‍♀️ woman bouncing ball: light skin tone
-                 '⛹🏼\u200d♀️',                    # ⛹🏼‍♀️ woman bouncing ball: medium-light skin tone
-                 '⛹🏽\u200d♀️',                    # ⛹🏽‍♀️ woman bouncing ball: medium skin tone
-                 '⛹🏾\u200d♀️',                    # ⛹🏾‍♀️ woman bouncing ball: medium-dark skin tone
-                 '⛹🏿\u200d♀️')),                  # ⛹🏿‍♀️ woman bouncing ball: dark skin tone
             ('🏋',                                 # 🏋 person lifting weights
                 ('🏋🏻',                            # 🏋🏻 person lifting weights: light skin tone
                  '🏋🏼',                            # 🏋🏼 person lifting weights: medium-light skin tone
                  '🏋🏽',                            # 🏋🏽 person lifting weights: medium skin tone
                  '🏋🏾',                            # 🏋🏾 person lifting weights: medium-dark skin tone
                  '🏋🏿')),                          # 🏋🏿 person lifting weights: dark skin tone
-            ('🏋️\u200d♂️',                        # 🏋️‍♂️ man lifting weights
-                ('🏋🏻\u200d♂️',                    # 🏋🏻‍♂️ man lifting weights: light skin tone
-                 '🏋🏼\u200d♂️',                    # 🏋🏼‍♂️ man lifting weights: medium-light skin tone
-                 '🏋🏽\u200d♂️',                    # 🏋🏽‍♂️ man lifting weights: medium skin tone
-                 '🏋🏾\u200d♂️',                    # 🏋🏾‍♂️ man lifting weights: medium-dark skin tone
-                 '🏋🏿\u200d♂️')),                  # 🏋🏿‍♂️ man lifting weights: dark skin tone
-            ('🏋️\u200d♀️',                        # 🏋️‍♀️ woman lifting weights
-                ('🏋🏻\u200d♀️',                    # 🏋🏻‍♀️ woman lifting weights: light skin tone
-                 '🏋🏼\u200d♀️',                    # 🏋🏼‍♀️ woman lifting weights: medium-light skin tone
-                 '🏋🏽\u200d♀️',                    # 🏋🏽‍♀️ woman lifting weights: medium skin tone
-                 '🏋🏾\u200d♀️',                    # 🏋🏾‍♀️ woman lifting weights: medium-dark skin tone
-                 '🏋🏿\u200d♀️')),                  # 🏋🏿‍♀️ woman lifting weights: dark skin tone
             ('🚴',                                 # 🚴 person biking
                 ('🚴🏻',                            # 🚴🏻 person biking: light skin tone
                  '🚴🏼',                            # 🚴🏼 person biking: medium-light skin tone
                  '🚴🏽',                            # 🚴🏽 person biking: medium skin tone
                  '🚴🏾',                            # 🚴🏾 person biking: medium-dark skin tone
                  '🚴🏿')),                          # 🚴🏿 person biking: dark skin tone
-            ('🚴\u200d♂️',                         # 🚴‍♂️ man biking
-                ('🚴🏻\u200d♂️',                    # 🚴🏻‍♂️ man biking: light skin tone
-                 '🚴🏼\u200d♂️',                    # 🚴🏼‍♂️ man biking: medium-light skin tone
-                 '🚴🏽\u200d♂️',                    # 🚴🏽‍♂️ man biking: medium skin tone
-                 '🚴🏾\u200d♂️',                    # 🚴🏾‍♂️ man biking: medium-dark skin tone
-                 '🚴🏿\u200d♂️')),                  # 🚴🏿‍♂️ man biking: dark skin tone
-            ('🚴\u200d♀️',                         # 🚴‍♀️ woman biking
-                ('🚴🏻\u200d♀️',                    # 🚴🏻‍♀️ woman biking: light skin tone
-                 '🚴🏼\u200d♀️',                    # 🚴🏼‍♀️ woman biking: medium-light skin tone
-                 '🚴🏽\u200d♀️',                    # 🚴🏽‍♀️ woman biking: medium skin tone
-                 '🚴🏾\u200d♀️',                    # 🚴🏾‍♀️ woman biking: medium-dark skin tone
-                 '🚴🏿\u200d♀️')),                  # 🚴🏿‍♀️ woman biking: dark skin tone
             ('🚵',                                 # 🚵 person mountain biking
                 ('🚵🏻',                            # 🚵🏻 person mountain biking: light skin tone
                  '🚵🏼',                            # 🚵🏼 person mountain biking: medium-light skin tone
                  '🚵🏽',                            # 🚵🏽 person mountain biking: medium skin tone
                  '🚵🏾',                            # 🚵🏾 person mountain biking: medium-dark skin tone
                  '🚵🏿')),                          # 🚵🏿 person mountain biking: dark skin tone
-            ('🚵\u200d♂️',                         # 🚵‍♂️ man mountain biking
-                ('🚵🏻\u200d♂️',                    # 🚵🏻‍♂️ man mountain biking: light skin tone
-                 '🚵🏼\u200d♂️',                    # 🚵🏼‍♂️ man mountain biking: medium-light skin tone
-                 '🚵🏽\u200d♂️',                    # 🚵🏽‍♂️ man mountain biking: medium skin tone
-                 '🚵🏾\u200d♂️',                    # 🚵🏾‍♂️ man mountain biking: medium-dark skin tone
-                 '🚵🏿\u200d♂️')),                  # 🚵🏿‍♂️ man mountain biking: dark skin tone
-            ('🚵\u200d♀️',                         # 🚵‍♀️ woman mountain biking
-                ('🚵🏻\u200d♀️',                    # 🚵🏻‍♀️ woman mountain biking: light skin tone
-                 '🚵🏼\u200d♀️',                    # 🚵🏼‍♀️ woman mountain biking: medium-light skin tone
-                 '🚵🏽\u200d♀️',                    # 🚵🏽‍♀️ woman mountain biking: medium skin tone
-                 '🚵🏾\u200d♀️',                    # 🚵🏾‍♀️ woman mountain biking: medium-dark skin tone
-                 '🚵🏿\u200d♀️')),                  # 🚵🏿‍♀️ woman mountain biking: dark skin tone
             ('🏎', None),                          # 🏎 racing car
             ('🏍', None),                          # 🏍 motorcycle
             ('\U0001f938',                        # 🤸 person cartwheeling
@@ -926,88 +393,35 @@ emoji_data = [
                  '\U0001f938🏽',                   # 🤸🏽 person cartwheeling: medium skin tone
                  '\U0001f938🏾',                   # 🤸🏾 person cartwheeling: medium-dark skin tone
                  '\U0001f938🏿')),                 # 🤸🏿 person cartwheeling: dark skin tone
-            ('\U0001f938\u200d♂️',                # 🤸‍♂️ man cartwheeling
-                ('\U0001f938🏻\u200d♂️',           # 🤸🏻‍♂️ man cartwheeling: light skin tone
-                 '\U0001f938🏼\u200d♂️',           # 🤸🏼‍♂️ man cartwheeling: medium-light skin tone
-                 '\U0001f938🏽\u200d♂️',           # 🤸🏽‍♂️ man cartwheeling: medium skin tone
-                 '\U0001f938🏾\u200d♂️',           # 🤸🏾‍♂️ man cartwheeling: medium-dark skin tone
-                 '\U0001f938🏿\u200d♂️')),         # 🤸🏿‍♂️ man cartwheeling: dark skin tone
-            ('\U0001f938\u200d♀️',                # 🤸‍♀️ woman cartwheeling
-                ('\U0001f938🏻\u200d♀️',           # 🤸🏻‍♀️ woman cartwheeling: light skin tone
-                 '\U0001f938🏼\u200d♀️',           # 🤸🏼‍♀️ woman cartwheeling: medium-light skin tone
-                 '\U0001f938🏽\u200d♀️',           # 🤸🏽‍♀️ woman cartwheeling: medium skin tone
-                 '\U0001f938🏾\u200d♀️',           # 🤸🏾‍♀️ woman cartwheeling: medium-dark skin tone
-                 '\U0001f938🏿\u200d♀️')),         # 🤸🏿‍♀️ woman cartwheeling: dark skin tone
             ('\U0001f93c', None),                 # 🤼 people wrestling
-            ('\U0001f93c\u200d♂️', None),         # 🤼‍♂️ men wrestling
-            ('\U0001f93c\u200d♀️', None),         # 🤼‍♀️ women wrestling
             ('\U0001f93d',                        # 🤽 person playing water polo
                 ('\U0001f93d🏻',                   # 🤽🏻 person playing water polo: light skin tone
                  '\U0001f93d🏼',                   # 🤽🏼 person playing water polo: medium-light skin tone
                  '\U0001f93d🏽',                   # 🤽🏽 person playing water polo: medium skin tone
                  '\U0001f93d🏾',                   # 🤽🏾 person playing water polo: medium-dark skin tone
                  '\U0001f93d🏿')),                 # 🤽🏿 person playing water polo: dark skin tone
-            ('\U0001f93d\u200d♂️',                # 🤽‍♂️ man playing water polo
-                ('\U0001f93d🏻\u200d♂️',           # 🤽🏻‍♂️ man playing water polo: light skin tone
-                 '\U0001f93d🏼\u200d♂️',           # 🤽🏼‍♂️ man playing water polo: medium-light skin tone
-                 '\U0001f93d🏽\u200d♂️',           # 🤽🏽‍♂️ man playing water polo: medium skin tone
-                 '\U0001f93d🏾\u200d♂️',           # 🤽🏾‍♂️ man playing water polo: medium-dark skin tone
-                 '\U0001f93d🏿\u200d♂️')),         # 🤽🏿‍♂️ man playing water polo: dark skin tone
-            ('\U0001f93d\u200d♀️',                # 🤽‍♀️ woman playing water polo
-                ('\U0001f93d🏻\u200d♀️',           # 🤽🏻‍♀️ woman playing water polo: light skin tone
-                 '\U0001f93d🏼\u200d♀️',           # 🤽🏼‍♀️ woman playing water polo: medium-light skin tone
-                 '\U0001f93d🏽\u200d♀️',           # 🤽🏽‍♀️ woman playing water polo: medium skin tone
-                 '\U0001f93d🏾\u200d♀️',           # 🤽🏾‍♀️ woman playing water polo: medium-dark skin tone
-                 '\U0001f93d🏿\u200d♀️')),         # 🤽🏿‍♀️ woman playing water polo: dark skin tone
             ('\U0001f93e',                        # 🤾 person playing handball
                 ('\U0001f93e🏻',                   # 🤾🏻 person playing handball: light skin tone
                  '\U0001f93e🏼',                   # 🤾🏼 person playing handball: medium-light skin tone
                  '\U0001f93e🏽',                   # 🤾🏽 person playing handball: medium skin tone
                  '\U0001f93e🏾',                   # 🤾🏾 person playing handball: medium-dark skin tone
                  '\U0001f93e🏿')),                 # 🤾🏿 person playing handball: dark skin tone
-            ('\U0001f93e\u200d♂️',                # 🤾‍♂️ man playing handball
-                ('\U0001f93e🏻\u200d♂️',           # 🤾🏻‍♂️ man playing handball: light skin tone
-                 '\U0001f93e🏼\u200d♂️',           # 🤾🏼‍♂️ man playing handball: medium-light skin tone
-                 '\U0001f93e🏽\u200d♂️',           # 🤾🏽‍♂️ man playing handball: medium skin tone
-                 '\U0001f93e🏾\u200d♂️',           # 🤾🏾‍♂️ man playing handball: medium-dark skin tone
-                 '\U0001f93e🏿\u200d♂️')),         # 🤾🏿‍♂️ man playing handball: dark skin tone
-            ('\U0001f93e\u200d♀️',                # 🤾‍♀️ woman playing handball
-                ('\U0001f93e🏻\u200d♀️',           # 🤾🏻‍♀️ woman playing handball: light skin tone
-                 '\U0001f93e🏼\u200d♀️',           # 🤾🏼‍♀️ woman playing handball: medium-light skin tone
-                 '\U0001f93e🏽\u200d♀️',           # 🤾🏽‍♀️ woman playing handball: medium skin tone
-                 '\U0001f93e🏾\u200d♀️',           # 🤾🏾‍♀️ woman playing handball: medium-dark skin tone
-                 '\U0001f93e🏿\u200d♀️')),         # 🤾🏿‍♀️ woman playing handball: dark skin tone
             ('\U0001f939',                        # 🤹 person juggling
                 ('\U0001f939🏻',                   # 🤹🏻 person juggling: light skin tone
                  '\U0001f939🏼',                   # 🤹🏼 person juggling: medium-light skin tone
                  '\U0001f939🏽',                   # 🤹🏽 person juggling: medium skin tone
                  '\U0001f939🏾',                   # 🤹🏾 person juggling: medium-dark skin tone
                  '\U0001f939🏿')),                 # 🤹🏿 person juggling: dark skin tone
-            ('\U0001f939\u200d♂️',                # 🤹‍♂️ man juggling
-                ('\U0001f939🏻\u200d♂️',           # 🤹🏻‍♂️ man juggling: light skin tone
-                 '\U0001f939🏼\u200d♂️',           # 🤹🏼‍♂️ man juggling: medium-light skin tone
-                 '\U0001f939🏽\u200d♂️',           # 🤹🏽‍♂️ man juggling: medium skin tone
-                 '\U0001f939🏾\u200d♂️',           # 🤹🏾‍♂️ man juggling: medium-dark skin tone
-                 '\U0001f939🏿\u200d♂️')),         # 🤹🏿‍♂️ man juggling: dark skin tone
-            ('\U0001f939\u200d♀️',                # 🤹‍♀️ woman juggling
-                ('\U0001f939🏻\u200d♀️',           # 🤹🏻‍♀️ woman juggling: light skin tone
-                 '\U0001f939🏼\u200d♀️',           # 🤹🏼‍♀️ woman juggling: medium-light skin tone
-                 '\U0001f939🏽\u200d♀️',           # 🤹🏽‍♀️ woman juggling: medium skin tone
-                 '\U0001f939🏾\u200d♀️',           # 🤹🏾‍♀️ woman juggling: medium-dark skin tone
-                 '\U0001f939🏿\u200d♀️')),         # 🤹🏿‍♀️ woman juggling: dark skin tone
             ('👫', None),                          # 👫 man and woman holding hands
             ('👬', None),                          # 👬 two men holding hands
             ('👭', None),                          # 👭 two women holding hands
             ('💏', None),                          # 💏 kiss
-            ('👩\u200d❤️\u200d💋\u200d👨', None),    # 👩‍❤️‍💋‍👨 kiss: woman, man
             ('👨\u200d❤️\u200d💋\u200d👨', None),    # 👨‍❤️‍💋‍👨 kiss: man, man
             ('👩\u200d❤️\u200d💋\u200d👩', None),    # 👩‍❤️‍💋‍👩 kiss: woman, woman
             ('💑', None),                          # 💑 couple with heart
-            ('👩\u200d❤️\u200d👨', None),           # 👩‍❤️‍👨 couple with heart: woman, man
             ('👨\u200d❤️\u200d👨', None),           # 👨‍❤️‍👨 couple with heart: man, man
             ('👩\u200d❤️\u200d👩', None),           # 👩‍❤️‍👩 couple with heart: woman, woman
             ('👪', None),                          # 👪 family
-            ('👨\u200d👩\u200d👦', None),            # 👨‍👩‍👦 family: man, woman, boy
             ('👨\u200d👩\u200d👧', None),            # 👨‍👩‍👧 family: man, woman, girl
             ('👨\u200d👩\u200d👧\u200d👦', None),     # 👨‍👩‍👧‍👦 family: man, woman, girl, boy
             ('👨\u200d👩\u200d👦\u200d👦', None),     # 👨‍👩‍👦‍👦 family: man, woman, boy, boy
@@ -1022,16 +436,6 @@ emoji_data = [
             ('👩\u200d👩\u200d👧\u200d👦', None),     # 👩‍👩‍👧‍👦 family: woman, woman, girl, boy
             ('👩\u200d👩\u200d👦\u200d👦', None),     # 👩‍👩‍👦‍👦 family: woman, woman, boy, boy
             ('👩\u200d👩\u200d👧\u200d👧', None),     # 👩‍👩‍👧‍👧 family: woman, woman, girl, girl
-            ('👨\u200d👦', None),                   # 👨‍👦 family: man, boy
-            ('👨\u200d👦\u200d👦', None),            # 👨‍👦‍👦 family: man, boy, boy
-            ('👨\u200d👧', None),                   # 👨‍👧 family: man, girl
-            ('👨\u200d👧\u200d👦', None),            # 👨‍👧‍👦 family: man, girl, boy
-            ('👨\u200d👧\u200d👧', None),            # 👨‍👧‍👧 family: man, girl, girl
-            ('👩\u200d👦', None),                   # 👩‍👦 family: woman, boy
-            ('👩\u200d👦\u200d👦', None),            # 👩‍👦‍👦 family: woman, boy, boy
-            ('👩\u200d👧', None),                   # 👩‍👧 family: woman, girl
-            ('👩\u200d👧\u200d👦', None),            # 👩‍👧‍👦 family: woman, girl, boy
-            ('👩\u200d👧\u200d👧', None),            # 👩‍👧‍👧 family: woman, girl, girl
             ('💪',                                 # 💪 flexed biceps
                 ('💪🏻',                            # 💪🏻 flexed biceps: light skin tone
                  '💪🏼',                            # 💪🏼 flexed biceps: medium-light skin tone
@@ -1622,12 +1026,7 @@ emoji_data = [
             ('🛰', None),                          # 🛰 satellite
             ('🛎', None),                          # 🛎 bellhop bell
             ('🚪', None),                          # 🚪 door
-            ('🛌',                                 # 🛌 person in bed
-                ('🛌🏻',                            # 🛌🏻 person in bed: light skin tone
-                 '🛌🏼',                            # 🛌🏼 person in bed: medium-light skin tone
-                 '🛌🏽',                            # 🛌🏽 person in bed: medium skin tone
-                 '🛌🏾',                            # 🛌🏾 person in bed: medium-dark skin tone
-                 '🛌🏿')),                          # 🛌🏿 person in bed: dark skin tone
+            ('🛌', None),                          # 🛌 person in bed
             ('🛏', None),                          # 🛏 bed
             ('🛋', None),                          # 🛋 couch and lamp
             ('🚽', None),                          # 🚽 toilet
@@ -2053,9 +1452,6 @@ emoji_data = [
             ('❌', None),                          # ❌ cross mark
             ('❎', None),                          # ❎ cross mark button
             ('➕', None),                          # ➕ heavy plus sign
-            ('♀', None),                          # ♀ female sign
-            ('♂', None),                          # ♂ male sign
-            ('⚕', None),                          # ⚕ medical symbol
             ('➖', None),                          # ➖ heavy minus sign
             ('➗', None),                          # ➗ heavy division sign
             ('➰', None),                          # ➰ curly loop
@@ -2397,7 +1793,6 @@ emoji_data = [
             ('🇺🇦', None),                         # 🇺🇦 Ukraine
             ('🇺🇬', None),                         # 🇺🇬 Uganda
             ('🇺🇲', None),                         # 🇺🇲 U.S. Outlying Islands
-            ('🇺🇳', None),                         # 🇺🇳 United Nations
             ('🇺🇸', None),                         # 🇺🇸 United States
             ('🇺🇾', None),                         # 🇺🇾 Uruguay
             ('🇺🇿', None),                         # 🇺🇿 Uzbekistan
