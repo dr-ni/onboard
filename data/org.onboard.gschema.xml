@@ -52,7 +52,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <description>Switch onboard themes of matching basenames in sync with the current GTK-theme.</description>
         </key>
         <key name="system-theme-associations" type="a{ss}">
-            <default>{'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast'}</default>
+            <default>{'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast', 'ContrastHighInverse' : 'HighContrastInverse'}</default>
             <summary>System theme associations</summary>
             <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>

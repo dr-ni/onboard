@@ -618,7 +618,8 @@ class OnboardGtk(object):
 
     def on_gdk_setting_changed(self, name):
         if name == "gtk-theme-name":
-            self.on_gtk_theme_changed()
+            # In Zesty this has to be delayed too.
+            GLib.timeout_add_seconds(1, self.on_gtk_theme_changed)
 
         elif name in ["gtk-xft-dpi",
                       "gtk-xft-antialias"

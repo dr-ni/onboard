@@ -526,7 +526,7 @@ class TestWindowHandling(_TestGUIBase):
 
     def test_keyboard_moving_remembered_after_restart(self):
         self._disable_docking()
-        
+
         r = self._get_window_rect()
         dx = 100
         dy = 200
@@ -561,7 +561,7 @@ class TestWindowHandling(_TestGUIBase):
 
     def test_keyboard_resizing_remembered_after_restart(self):
         self._disable_docking()
-        
+
         r = self._get_window_rect()
         dx = 100
         dy = 200
@@ -732,7 +732,7 @@ class TestWindowHandling(_TestGUIBase):
 
     def test_keyboard_window_resizing(self):
         self._disable_docking()
-        
+
         self._gsettings_set("org.onboard.window.landscape", "x", 300)
         self._gsettings_set("org.onboard.window.landscape", "y", 300)
         self._test_window_resizing(self._get_window_rect,
@@ -1029,9 +1029,13 @@ class TestMisc(_TestGUIBase):
 
         default_gtk_theme = "Ambiance"  # default in Vivid is Adwaita?
         default_onboard_theme = "Nightshade"  # default in Vivid is Adwaita?
-        contrast_themes = ["HighContrast",
-                           "HighContrastInverse",
-                           "LowContrast"]
+        # system_theme, onboard_theme
+        contrast_themes = [
+            ["HighContrast", "HighContrast"],                # Gtk
+            ["HighContrastInverse", "HighContrastInverse"],  # Gtk
+            ["LowContrast", "LowContrast"],                  # Gtk
+            ["ContrastHighInverse", "HighContrastInverse"],  # MATE
+        ]
 
         # save current gsettings state
         old_theme = self._system_gsettings_get("org.gnome.desktop.interface",
@@ -1045,9 +1049,9 @@ class TestMisc(_TestGUIBase):
         with self._run_onboard(params=["-d", "info"],
                                capture_output=True) as instance:
             time.sleep(2)
-            for contrast_theme in contrast_themes:
+            for system_theme, onboard_theme in contrast_themes:
                 self._system_gsettings_set("org.gnome.desktop.interface",
-                                        "gtk-theme", contrast_theme)
+                                           "gtk-theme", system_theme)
                 time.sleep(3)
 
             self._system_gsettings_set("org.gnome.desktop.interface",
@@ -1059,8 +1063,8 @@ class TestMisc(_TestGUIBase):
                  if "Loading theme" in line]
         self.assertEqual(len(lines), len(contrast_themes) + 2)
         self.assertIn(default_onboard_theme, lines[0])
-        for i, theme in enumerate(contrast_themes):
-            self.assertIn(theme + ".theme", lines[i + 1])
+        for i, (system_theme, onboard_theme) in enumerate(contrast_themes):
+            self.assertIn(onboard_theme + ".theme", lines[i + 1])
         self.assertIn(default_onboard_theme, lines[-1])
 
         # undo our gsettings changes

@@ -25,14 +25,15 @@ import time
 import logging
 _logger = logging.getLogger(__name__)
 
-from Onboard.Version import require_gi_versions
+from Onboard.Version   import require_gi_versions
 require_gi_versions()
 try:
     from gi.repository import Atspi
 except ImportError as e:
     _logger.warning("Atspi typelib missing, auto-show unavailable")
 
-from Onboard.utils        import Rect, EventSource, Process, unicode_str
+from Onboard.utils     import Rect, EventSource, Process, unicode_str
+from Onboard.Timer     import Timer
 
 # Config Singleton
 from Onboard.Config import Config
@@ -61,6 +62,8 @@ class CachedAccessible:
         as debug output in TextContext.
         """
         self.get_role()
+        self.get_role_name()
+        self.get_name()
         self.get_state_set()
         self.get_id()
         self.get_attributes()
@@ -86,6 +89,14 @@ class CachedAccessible:
     def get_role(self):
         return self._get_value("role",
                                self._accessible.get_role)
+
+    def get_role_name(self):
+        return self._get_value("role-name",
+                               self._accessible.get_role_name)
+
+    def get_name(self):
+        return self._get_value("name",
+                               self._accessible.get_name)
 
     def invalidate_state_set(self):
         self.invalidate("state-set")
@@ -244,8 +255,9 @@ class CachedAccessible:
                              "invalid accessible, failed to read state: "
                              .format(name) + unicode_str(ex))
                 value = default
-            else:
-                self._state[name] = value
+
+            self._state[name] = value
+
         return value
 
     def _get_value_noex(self, name, func):
@@ -304,7 +316,6 @@ class CachedAccessible:
 
     def delete_text(self, start_pos, end_pos):
         try:
-            print(start_pos, end_pos)
             return self._accessible.delete_text(start_pos, end_pos)
         except Exception as ex:  # Private exception gi._glib.GErro
             _logger.info("CachedAccessible.delete_text(): " +
@@ -401,6 +412,25 @@ class CachedAccessible:
                     return True
         return False
 
+    def is_not_focus_stealing(self):
+        """
+        Is this accessible unlikely to steal the focus from
+        a previously focused editable accessible?
+        """
+        role      = self.get_role()
+        state_set = self.get_state_set()
+        if state_set is not None:
+
+            # Mainly firefox elements after the workaround
+            # for firefox 50.
+            if role in [Atspi.Role.DOCUMENT_FRAME,
+                        Atspi.Role.LINK,
+                        ] \
+               and state_set is not None and \
+               not state_set.contains(Atspi.StateType.EDITABLE):
+                    return True
+        return False
+
     def is_single_line(self):
         """ Is accessible a single line text entry? """
         state_set = self.get_state_set()
@@ -494,6 +524,8 @@ class AtspiStateTracker(EventSource):
     _active_accessible_activation_time = 0.0  # time since focus received
     _last_active_accessible = None
 
+    _poll_unity_timer = Timer()
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -569,6 +601,8 @@ class AtspiStateTracker(EventSource):
                     handler = "_on_" + name.replace("-", "_")
                     EventSource.connect(self, name, getattr(self, handler))
             else:
+                self._poll_unity_timer.stop()
+
                 self.atspi_disconnect("_listener_focus",
                                       "focus")
                 self.atspi_disconnect("_listener_object_focus",
@@ -741,69 +775,132 @@ class AtspiStateTracker(EventSource):
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
-        if accessible and not self._frozen:
-            self._log_accessible(accessible, focused)
+        if self._frozen:
+            return
 
-            # Since Trusty, focus events no longer come reliably in a
-            # predictable order. -> Store the last editable accessible
-            # so we can pick it over later focused non-editable ones.
-            # Helps to keep the keyboard open in presence of popup selections
-            # e.g. in GNOME's file dialog and in Unity Dash.
-            ignore_accessible = False
-            if self._focused_accessible == accessible:
-                if not focused:
+        self._log_accessible(accessible, focused)
+
+        if not accessible:
+            return
+
+        app_name = accessible.get_app_name().lower()
+        if app_name == "unity":
+            self._handle_focus_changed_unity(event)
+        else:
+            self._handle_focus_changed_apps(event)
+
+    def _handle_focus_changed_apps(self, event):
+        """ Focus change in regular applications """
+        accessible = event.accessible
+        focused = event.focused
+
+        # Since Trusty, focus events no longer come reliably in a
+        # predictable order. -> Store the last editable accessible
+        # so we can pick it over later focused non-editable ones.
+        # Helps to keep the keyboard open in presence of popup selections
+        # e.g. in GNOME's file dialog and in Unity Dash.
+        if self._focused_accessible == accessible:
+            if not focused:
+                self._focused_accessible = None
+        else:
+            pid = accessible.get_pid()
+
+            if focused:
+                self._poll_unity_timer.stop()
+
+                if accessible.is_editable():
+                    self._focused_accessible = accessible
+                    self._focused_pid = pid
+
+                # Static accessible, i.e. something that cannot
+                # accidentally steal the focus from an editable
+                # accessible. e.g. firefox ATSPI_ROLE_DOCUMENT_FRAME?
+                elif accessible.is_not_focus_stealing():
                     self._focused_accessible = None
-            else:
-                if focused:
-                    pid = accessible.get_pid()
+                    self._focused_pid = None
 
-                    if accessible.is_editable():
-                        self._focused_accessible = accessible
-                        self._focused_pid = pid
-                    else:
-                        # Wily: prevent random icons, buttons and toolbars
-                        # in unity dash from hiding Onboard. Somehow hovering
-                        # over those buttons silently drops the focus from the
-                        # text entry. Let's pretend the buttons don't exist
-                        # and keep the previously saved text entry active.
-                        app_name = accessible.get_app_name().lower()
-                        if app_name == "unity":
-                            ignore_accessible = True
-                        else:
-                            # Wily: attempt to hide when unity dash closes
-                            # (there's no focus lost event).
-                            # Also check duration since last activation to
-                            # skip out of order focus events (firefox
-                            # ATSPI_ROLE_DOCUMENT_FRAME) for a short while
-                            # after opening dash.
-                            now = time.time()
-                            if now - self._active_accessible_activation_time \
-                               > .5:
-                                if self._focused_pid != pid:
-                                    self._focused_accessible = None
-                                    _logger.atspi("Dropping accessible due to "
-                                                  "pid change: {} != {} "
-                                                  .format(self._focused_pid,
-                                                          pid))
+                else:
+                    # Wily: attempt to hide when unity dash closes
+                    # (there's no focus lost event).
+                    # Also check duration since last activation to
+                    # skip out of order focus events (firefox
+                    # ATSPI_ROLE_DOCUMENT_FRAME) for a short while
+                    # after opening dash.
+                    now = time.time()
+                    if focused and \
+                       now - self._active_accessible_activation_time > .5:
+                        if self._focused_pid != pid:
+                            self._focused_accessible = None
+                            _logger.atspi("Dropping accessible due to "
+                                          "pid change: {} != {} "
+                                          .format(self._focused_pid, pid))
 
-            if not ignore_accessible:
-                # Has the previously focused accessible lost the focus?
-                active_accessible = self._focused_accessible
-                if active_accessible and \
-                   not active_accessible.is_focused(True):
+        # Has the previously focused accessible lost the focus?
+        active_accessible = self._focused_accessible
+        if active_accessible and \
+           not active_accessible.is_focused(True):
 
-                    # Zesty: Firefox 50+ loses focus of the URL entry after
-                    # typing just a few letters and focuses a completion
-                    # menu item instead. Let's pretend the accessible is
-                    # still focused in that case.
-                    is_firefox_completion = \
-                        self._focused_accessible.is_urlbar() and \
-                        accessible.get_role() == Atspi.Role.MENU_ITEM
+            # Zesty: Firefox 50+ loses focus of the URL entry after
+            # typing just a few letters and focuses a completion
+            # menu item instead. Let's pretend the accessible is
+            # still focused in that case.
+            is_firefox_completion = \
+                self._focused_accessible.is_urlbar() and \
+                accessible.get_role() == Atspi.Role.MENU_ITEM
 
-                    if not is_firefox_completion:
-                        active_accessible = None
+            if not is_firefox_completion:
+                active_accessible = None
 
-                self._set_active_accessible(active_accessible)
+        self._set_active_accessible(active_accessible)
+
+    def _handle_focus_changed_unity(self, event):
+        """ Focus change in Unity Dash """
+        accessible = event.accessible
+        focused = event.focused
+
+        # Wily: prevent random icons, buttons and toolbars
+        # in unity dash from hiding Onboard. Somehow hovering
+        # over those buttons silently drops the focus from the
+        # text entry. Let's pretend the buttons don't exist
+        # and keep the previously saved text entry active.
+
+        # Zesty: Don't fight lost focus events anymore, only
+        # react to focus events when the text entry gains focus.
+        if focused and \
+           accessible.is_editable():
+            self._focused_accessible = accessible
+            self._set_active_accessible(accessible)
+
+            # For hiding we poll Dash's toplevel accessible
+            def _poll_unity_dash():
+                frame = accessible.get_frame()
+                state_set = frame.get_state_set()
+
+                _logger.debug(
+                    "polling unity dash state_set: {}"
+                    .format(AtspiStateType.to_strings(state_set)))
+
+                if not state_set or \
+                   not state_set.contains(Atspi.StateType.ACTIVE):
+                    self._focused_accessible = None
+                    self._set_active_accessible(None)
+                    return False
+
+                return True
+
+            # Only ever start polling if Dash is "ACTIVE".
+            # The state_set might change in the future and the
+            # keyboard better fail to auto-hide than to never show.
+            frame = accessible.get_frame()
+            state_set = frame.get_state_set()
+
+            _logger.debug(
+                "dash focused, state_set: {}"
+                .format(AtspiStateType.to_strings(state_set)))
+
+            if state_set and \
+               state_set.contains(Atspi.StateType.ACTIVE):
+                self._poll_unity_timer.start(0.5, _poll_unity_dash)
 
     def _set_active_accessible(self, accessible):
         if self._active_accessible != accessible:
@@ -839,36 +936,24 @@ class AtspiStateTracker(EventSource):
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
             msg = "AT-SPI focus event: focused={}, ".format(focused)
-            if not accessible:
-                msg += "accessible={}".format(accessible)
-            else:
-                name = "unknown"
-                role = None
-                role_name = None
-                editable = None
-                states = None
-                extents = None
+            msg += "accessible={}, ".format(accessible)
 
-                try:
-                    name = accessible.get_name()
-                    role = accessible.get_role()
-                    role_name = accessible.get_role_name()
-                    state_set = accessible.get_state_set()
-                    states = state_set.states
-                    editable = state_set.contains(Atspi.StateType.EDITABLE) \
-                        if state_set else None
-                    extents = self._get_accessible_extents(accessible)
-                # private exception gi._glib.GError when gedit became
-                # unresponsive
-                except:
-                    pass
+            if accessible:
+                name = accessible.get_name()
+                role = accessible.get_role()
+                role_name = accessible.get_role_name()
+                state_set = accessible.get_state_set()
+                states = state_set.states
+                editable = state_set.contains(Atspi.StateType.EDITABLE) \
+                    if state_set else None
+                extents = accessible.get_extents()
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
-                       .format(name=name,
+                       .format(accessible=accessible, name=repr(name),
                                role=role.value_name if role else role,
-                               role_name=role_name,
+                               role_name=repr(role_name),
                                editable=editable,
                                states=states,
                                extents=extents
