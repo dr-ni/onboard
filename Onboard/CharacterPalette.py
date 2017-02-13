@@ -26,7 +26,7 @@ _logger = logging.getLogger(__name__)
 from Onboard.Layout            import (LayoutPanel, ScrolledLayoutPanel,
                                        RectangleItem)
 from Onboard.KeyGtk            import FlatKey
-from Onboard.KeyCommon         import ImageSlot
+from Onboard.KeyCommon         import ImageSlot, ImageStyle
 from Onboard                   import KeyCommon
 from Onboard.UnicodeData       import UnicodeData
 
@@ -67,7 +67,7 @@ class PaletteHeaderKey(FlatKey):
         state = {} if self.is_active_only() else None
         return self.get_color("fill", state)
 
-    def build_rect_path(self, context, rect):
+    def __build_rect_path(self, context, rect):
         # Only round top corners.
         r = rect.copy()
         r.y -= 1
@@ -79,8 +79,9 @@ class PaletteHeaderKey(FlatKey):
 
 class CharacterPaletteBackground(RectangleItem):
 
-    # def get_fill_color(self):
-    #    return (0.125, 0.125, 0.125, 1)
+    def get_fill_color(self):
+        return (0, 0, 0, 1)
+        return (0.125, 0.125, 0.125, 1)
     pass
 
 
@@ -139,7 +140,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
                 fn = emoji_filename_from_sequence(label)
                 if fn:
                     key.image_filenames = {ImageSlot.NORMAL : fn}
-                    key.images_are_masks = False
+                    key.image_style = ImageStyle.MULTI_COLOR
                     key.label_margin = EMOJI_IMAGE_MARGIN
 
             if not key.image_filenames:
@@ -281,7 +282,7 @@ class EmojiPalettePanel(CharacterPalettePanel):
         fn = emoji_filename_from_sequence(label)
         if fn:
             key.image_filenames = {ImageSlot.NORMAL : fn}
-            key.images_are_masks = False
+            key.image_style = ImageStyle.DESATURATED
             key.label_margin = EMOJI_IMAGE_MARGIN
 
         if not key.image_filenames:

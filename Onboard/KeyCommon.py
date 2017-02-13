@@ -164,9 +164,17 @@ class LOD:
         FULL,       # full detail
     ) = tuple(range(3))
 
+
 class ImageSlot:
     NORMAL = 0
     ACTIVE = 1
+
+
+class ImageStyle:
+    SINGLE_COLOR = 0
+    MULTI_COLOR = 1
+    DESATURATED = 2
+
 
 class KeyCommon(DrawingItem):
     """
@@ -233,7 +241,7 @@ class KeyCommon(DrawingItem):
 
     # True for mask images to be drawn with the key's label color.
     # False for multi-color images.
-    images_are_masks = True
+    image_style = ImageStyle.SINGLE_COLOR
 
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
@@ -549,7 +557,7 @@ class RectKeyCommon(KeyCommon):
         return self.context.log_to_canvas_rect(rect)
 
     def get_image_color(self):
-        if self.images_are_masks:
+        if self.image_style == ImageStyle.SINGLE_COLOR:
             return self.get_label_color()
         return None
 

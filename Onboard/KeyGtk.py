@@ -32,7 +32,7 @@ require_gi_versions()
 from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import (KeyCommon, RectKeyCommon,
-                                 LOD, InputlineKeyCommon)
+                                 LOD, InputlineKeyCommon, ImageStyle)
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
 from Onboard.utils       import (brighten, unicode_str,
@@ -41,15 +41,11 @@ from Onboard.utils       import (brighten, unicode_str,
                                  rounded_path,
                                  rounded_polygon_path_to_cairo_path)
 
-### Logging ###
 import logging
 _logger = logging.getLogger("KeyGTK")
-###############
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 PangoUnscale = 1.0 / Pango.SCALE
 
@@ -643,14 +639,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             r = rect.offset(xalign + dx, yalign + dy)
 
             if image_rgba is None:
-                pixbuf.draw(context, r)
+                pixbuf.draw(context, r, None, self.image_style)
             else:
                 if lum:
                     rgba = brighten(lum, *fill)  # darker
                 else:
                     rgba = image_rgba
 
-                pixbuf.draw(context, r, rgba)
+                pixbuf.draw(context, r, rgba, self.image_style)
 
     def draw_shadow_cached(self, context):
         entry = self._shadow_surface
@@ -1260,7 +1256,7 @@ class PixBufScaled:
         self._width = self._real_width / scale
         self._height = self._real_height / scale
 
-    def draw(self, context, rect, rgba=None):
+    def draw(self, context, rect, rgba, image_style):
         """
         Draw the image in the theme's label color.
         Only the alpha channel of the image is used.
@@ -1272,9 +1268,60 @@ class PixBufScaled:
         if scale and scale != 1.0:
             context.scale(1.0 / scale, 1.0 / scale)
 
-        if rgba is None:
+        # colored?
+        if image_style == ImageStyle.MULTI_COLOR:
             Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
             context.paint()
+
+        # grayscale?
+        elif image_style == ImageStyle.DESATURATED:
+            if 0:
+                # must have non-black background
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+                k = 1 / 256.0
+                context.set_source_rgb(k, k, k)
+                context.mask(pattern)
+
+                # cairo.OPERATOR_HSL_LUMINOSITY doesn't exist in python bindings
+                # CAIRO_OPERATOR_HSL_LUMINOSITY = 28
+                context.set_operator(28)
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+            elif 0:
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+
+                import colorsys
+                rgb = colorsys.hls_to_rgb(0, 0.5, 0.2)
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+
+                context.set_source_rgb(*rgb)
+                context.set_operator(26)
+                context.paint()
+            else:
+
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+
+                context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
+
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+
+                import colorsys
+                saturation = 0.3
+                rgb = colorsys.hls_to_rgb(0, 0.5, saturation)
+
+                context.set_source_rgb(*rgb)
+                context.set_operator(26)
+                context.paint()
+
+                context.pop_group_to_source()
+                context.mask(pattern)
+
+        # single color
         else:
             Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
             pattern = context.get_source()

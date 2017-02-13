@@ -289,7 +289,8 @@ class LabelPopup(KeyboardPopup):
         pixbuf = self._key.get_image(label_rect.w, label_rect.h)
         if pixbuf:
             color = self._key.get_image_color()
-            pixbuf.draw(context, label_rect, color)
+            image_style = self._key.image_style
+            pixbuf.draw(context, label_rect, color, image_style)
         else:
             label = self._key.get_label()
             if label:
