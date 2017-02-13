@@ -28,8 +28,8 @@
 # Keys have to start in column 0. A whitespace in column 0 indicates
 # a line continuation.
 #
-# More complete descriptions of the keys and their allowed values can be 
-# found in Onboard's gsettings schemas. Navigate to 'org.onboard' in 
+# More complete descriptions of the keys and their allowed values can be
+# found in Onboard's gsettings schemas. Navigate to 'org.onboard' in
 # dconf-editor, or read the schema definitions at
 # /usr/share/glib-2.0/schemas/org.onboard.gschema.xml.
 #
