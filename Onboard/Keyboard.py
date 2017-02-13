@@ -1313,7 +1313,7 @@ class Keyboard(WordSuggestions):
                     if alternatives:
                         self._touch_feedback.hide(key)
                         view.show_popup_alternative_chars(key, alternatives)
-                    long_pressed = True
+                        long_pressed = True
 
         if long_pressed:
             key.activated = True  # no more drag selection
