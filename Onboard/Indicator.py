@@ -194,7 +194,8 @@ class Indicator():
                              .format(backend.__name__, unicode_str(ex)))
 
         _logger.info("Status icon provider: '{}' selected"
-                     .format(self._backend and self._backend.__name__))
+                     .format(self._backend and
+                             type(self._backend).__name__))
 
         if self._backend is not None:
             self._backend.set_visible(False)
