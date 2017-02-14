@@ -30,7 +30,7 @@ from gi.repository import GLib, Gtk, Gdk
 
 from Onboard.utils import Rect, Version
 from Onboard.Timer import Timer
-from Onboard.definitions import Handle
+from Onboard.definitions import Handle, HandleFunction
 
 import Onboard.osk as osk
 
@@ -101,9 +101,12 @@ class WindowManipulator(object):
         self._temporary_unlock_time = None
 
     def get_resize_frame_rect(self):
-        return Rect(0, 0,
-                    self.get_allocated_width(),
-                    self.get_allocated_height())
+        try:
+            return self.get_keyboard_frame_rect()
+        except AttributeError:
+            return Rect(0, 0,
+                        self.get_allocated_width(),
+                        self.get_allocated_height())
 
     def get_drag_start_rect(self):
         return self._drag_start_rect
@@ -116,6 +119,9 @@ class WindowManipulator(object):
 
     def set_drag_handles(self, handles):
         self._drag_handles = handles
+
+    def get_handle_function(self, handle):
+        return HandleFunction.NORMAL    
 
     def get_drag_threshold(self):
         return 8
@@ -139,8 +145,11 @@ class WindowManipulator(object):
                 self.start_move_window(sequence.root_point)
             else:
                 self.start_resize_window(hit, sequence.root_point)
-                if hit is Handle.ASPECT_RATIO:
+                
+                function = self.get_handle_function(hit)
+                if function == HandleFunction.ASPECT_RATIO:
                     self.on_handle_aspect_ratio_pressed()
+                    
             return True
 
         if move_on_background and \
@@ -231,20 +240,17 @@ class WindowManipulator(object):
         """
         self.stop_drag()
 
-    def on_handle_aspect_ratio_pressed(self):
-        """ Overload this to process start of dragging of Handle.ASPECT_RATIO """
-        pass
-
-    def on_handle_aspect_ratio_motion(self, wx, wy):
-        """ Overload this to process motion changes of Handle.ASPECT_RATIO """
-        pass
-
     def _handle_motion_fallback(self, dx, dy):
         """ handle dragging for window move and resize """
         if not self.is_drag_initiated():
             return
 
-        if self._drag_handle == Handle.ASPECT_RATIO:
+        function = self.get_handle_function(self._drag_handle)
+        if function == HandleFunction.ASPECT_RATIO:
+        
+            if self._drag_handle == Handle.WEST:
+                dx *= -1
+
             self.on_handle_aspect_ratio_motion(dx, dy)
         else:
             wx = self._drag_start_pointer[0] + dx - self._drag_start_offset[0]
@@ -287,6 +293,20 @@ class WindowManipulator(object):
                 x, y, w, h = x0, y0, x1 -x0, y1 - y0
 
             self._move_resize(x, y, w, h)
+
+    def on_handle_aspect_ratio_pressed(self):
+        """
+        Overload this to process start of dragging of
+        handles with ASPECT_RATIO function.
+        """
+        pass
+
+    def on_handle_aspect_ratio_motion(self, wx, wy):
+        """
+        Overload this to process motion changes of 
+        handles with ASPECT_RATIO function.
+        """
+        pass
 
     def set_drag_cursor_at(self, point, allow_drag_cursors = True):
         """ set the mouse cursor """
@@ -521,10 +541,10 @@ class WindowManipulator(object):
         # then check the edges
         for handle in handles:
             if handle == Handle.WEST:
-                if x < x0 + w:
+                if x < x0 + w and x >= x0 - 1:
                     return handle
             if handle == Handle.EAST:
-                if x > x1 - w:
+                if x > x1 - w and x <= x1 + 1:
                     return handle
             if handle == Handle.NORTH:
                 if y < y0 + h:
@@ -532,7 +552,7 @@ class WindowManipulator(object):
             if handle == Handle.SOUTH:
                 if y > y1 - h:
                     return handle
-
+                    
         return None
 
     def _move_resize(self, x, y, w = None, h = None):
