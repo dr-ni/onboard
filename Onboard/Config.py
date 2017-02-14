@@ -1531,12 +1531,20 @@ class Config(ConfigObject):
 
         return DesktopEnvironmentEnum.Unknown
 
-    def prefer_gtkstatusicon(self):
+    def get_preferred_statusicon_provider(self):
         """
         Auto-detect if we should fall back to GtkStatusIcon.
         """
+        result = StatusIconProviderEnum.AppIndicator
+
         de = self.get_desktop_environment()
-        if de in (
+
+        # Gnome-shell annoys with sliding in their legacy icon panel.
+        # We have our indicator extension now, so turn the status icon off.
+        if de in (DesktopEnvironmentEnum.GNOME_Shell, ):
+            result = None
+
+        elif de in (
             # AppIndicator is supported in XUbuntu 16.04, but w/o left click
             # activation. GtkStatusIcon works well and allows left click.
             DesktopEnvironmentEnum.Cinnamon,
@@ -1556,8 +1564,9 @@ class Config(ConfigObject):
             # click activation. GtkStatusIcon works well too.
             # DesktopEnvironmentEnum.LXQT,
         ):
-            return True
-        return False
+            result = StatusIconProviderEnum.GtkStatusIcon
+
+        return result
 
 
 class ConfigKeyboard(ConfigObject):
