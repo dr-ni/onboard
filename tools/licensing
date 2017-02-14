@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright © 2015-2016 marmuta <marmvta@gmail.com>
-# Copyright © 2016 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2016-2017 Francesco Fumanti <francesco.fumanti@gmx.net>
 #
 # This file is part of Onboard.
 #
@@ -223,9 +223,7 @@ class Command:
         # Merge license-cleanup branch including generated license headers.
         "1962",
         # Update license headers.
-        "1963",
-        # Update license headers.
-        "2178",
+        "1963", "2178", "2248",
     ]
 
     # paths excluded by default (matched with startswith())

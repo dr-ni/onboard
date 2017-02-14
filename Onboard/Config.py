@@ -3,7 +3,7 @@
 # Copyright © 2008-2010 Chris Jones <tortoise@tortuga>
 # Copyright © 2008-2011 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2012 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2009, 2011-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2009, 2011-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #

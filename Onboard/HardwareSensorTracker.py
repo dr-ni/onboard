@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2016 marmuta <marmvta@gmail.com>
+# Copyright © 2016-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
