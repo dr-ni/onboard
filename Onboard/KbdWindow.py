@@ -1465,9 +1465,10 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self._monitor_workarea[monitor] = area
         return area
 
-    def get_monitor_workarea(self, monitor):
-        screen = self.get_screen()
-        area = screen.get_monitor_workarea(monitor)
+    def get_monitor_workarea(self, monitor_index):
+        display = Gdk.Display.get_default()
+        monitor = display.get_monitor(monitor_index)
+        area = monitor.get_workarea()
         area = Rect(area.x, area.y, area.width, area.height)
         return area
 
