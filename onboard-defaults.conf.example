@@ -131,8 +131,8 @@ xembed-background-image-enabled=True
 
 [window]
 #background-transparency=10.0
+docking-enabled=True
 #docking-edge=bottom
-#docking-enabled=False
 #docking-monitor=active
 #docking-shrink-workarea=True
 #enable-inactive-transparency=False
