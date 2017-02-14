@@ -385,7 +385,7 @@ class build_ext_custom(build_ext):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '1.3.0',
+    version = '1.4.0',
     author = 'Onboard Devel Team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
