@@ -3,7 +3,7 @@
 #
 
 emoji_data = [
-    ['😀',                                         # category: Smileys
+    ['😀',                                         # category: face-positive
         [
             ('😀', None),                          # 😀 grinning face
             ('😁', None),                          # 😁 grinning face with smiling eyes
@@ -25,6 +25,9 @@ emoji_data = [
             ('☺', None),                          # ☺ smiling face
             ('🙂', None),                          # 🙂 slightly smiling face
             ('🤗', None),                          # 🤗 hugging face
+        ]],
+    ['😐',                                         # category: face-neutral
+        [
             ('🤔', None),                          # 🤔 thinking face
             ('😐', None),                          # 😐 neutral face
             ('😑', None),                          # 😑 expressionless face
@@ -52,6 +55,9 @@ emoji_data = [
             ('🙃', None),                          # 🙃 upside-down face
             ('🤑', None),                          # 🤑 money-mouth face
             ('😲', None),                          # 😲 astonished face
+        ]],
+    ['☹',                                         # category: face-negative
+        [
             ('☹', None),                          # ☹ frowning face
             ('🙁', None),                          # 🙁 slightly frowning face
             ('😖', None),                          # 😖 confounded face
@@ -71,15 +77,24 @@ emoji_data = [
             ('😵', None),                          # 😵 dizzy face
             ('😡', None),                          # 😡 pouting face
             ('😠', None),                          # 😠 angry face
+        ]],
+    ['😇',                                         # category: face-role
+        [
             ('😇', None),                          # 😇 smiling face with halo
             ('\U0001f920', None),                 # 🤠 cowboy hat face
             ('\U0001f921', None),                 # 🤡 clown face
             ('\U0001f925', None),                 # 🤥 lying face
+        ]],
+    ['😷',                                         # category: face-sick
+        [
             ('😷', None),                          # 😷 face with medical mask
             ('🤒', None),                          # 🤒 face with thermometer
             ('🤕', None),                          # 🤕 face with head-bandage
             ('\U0001f922', None),                 # 🤢 nauseated face
             ('\U0001f927', None),                 # 🤧 sneezing face
+        ]],
+    ['😈',                                         # category: creature-face
+        [
             ('😈', None),                          # 😈 smiling face with horns
             ('👿', None),                          # 👿 angry face with horns
             ('👹', None),                          # 👹 ogre
@@ -91,6 +106,9 @@ emoji_data = [
             ('👾', None),                          # 👾 alien monster
             ('🤖', None),                          # 🤖 robot face
             ('💩', None),                          # 💩 pile of poo
+        ]],
+    ['😺',                                         # category: cat-face
+        [
             ('😺', None),                          # 😺 smiling cat face with open mouth
             ('😸', None),                          # 😸 grinning cat face with smiling eyes
             ('😹', None),                          # 😹 cat face with tears of joy
@@ -100,11 +118,14 @@ emoji_data = [
             ('🙀', None),                          # 🙀 weary cat face
             ('😿', None),                          # 😿 crying cat face
             ('😾', None),                          # 😾 pouting cat face
+        ]],
+    ['🙈',                                         # category: monkey-face
+        [
             ('🙈', None),                          # 🙈 see-no-evil monkey
             ('🙉', None),                          # 🙉 hear-no-evil monkey
             ('🙊', None),                          # 🙊 speak-no-evil monkey
         ]],
-    ['👧',                                         # category: People
+    ['👧',                                         # category: person
         [
             ('👦',                                 # 👦 boy
                 ('👦🏻',                            # 👦🏻 boy: light skin tone
@@ -154,6 +175,9 @@ emoji_data = [
                  '👼🏽',                            # 👼🏽 baby angel: medium skin tone
                  '👼🏾',                            # 👼🏾 baby angel: medium-dark skin tone
                  '👼🏿')),                          # 👼🏿 baby angel: dark skin tone
+        ]],
+    ['👮',                                         # category: person-role
+        [
             ('👮',                                 # 👮 police officer
                 ('👮🏻',                            # 👮🏻 police officer: light skin tone
                  '👮🏼',                            # 👮🏼 police officer: medium-light skin tone
@@ -238,6 +262,9 @@ emoji_data = [
                  '👲🏽',                            # 👲🏽 man with Chinese cap: medium skin tone
                  '👲🏾',                            # 👲🏾 man with Chinese cap: medium-dark skin tone
                  '👲🏿')),                          # 👲🏿 man with Chinese cap: dark skin tone
+        ]],
+    ['🙍',                                         # category: person-gesture
+        [
             ('🙍',                                 # 🙍 person frowning
                 ('🙍🏻',                            # 🙍🏻 person frowning: light skin tone
                  '🙍🏼',                            # 🙍🏼 person frowning: medium-light skin tone
@@ -292,6 +319,9 @@ emoji_data = [
                  '\U0001f937🏽',                   # 🤷🏽 person shrugging: medium skin tone
                  '\U0001f937🏾',                   # 🤷🏾 person shrugging: medium-dark skin tone
                  '\U0001f937🏿')),                 # 🤷🏿 person shrugging: dark skin tone
+        ]],
+    ['💆',                                         # category: person-activity
+        [
             ('💆',                                 # 💆 person getting massage
                 ('💆🏻',                            # 💆🏻 person getting massage: light skin tone
                  '💆🏼',                            # 💆🏼 person getting massage: medium-light skin tone
@@ -329,10 +359,18 @@ emoji_data = [
                  '\U0001f57a🏾',                   # 🕺🏾 man dancing: medium-dark skin tone
                  '\U0001f57a🏿')),                 # 🕺🏿 man dancing: dark skin tone
             ('👯', None),                          # 👯 people with bunny ears partying
-            ('🕴', None),                          # 🕴 man in business suit levitating
+            ('🕴',                                 # 🕴 man in business suit levitating
+                ('🕴🏻',                            # 🕴🏻 man in business suit levitating: light skin tone
+                 '🕴🏼',                            # 🕴🏼 man in business suit levitating: medium-light skin tone
+                 '🕴🏽',                            # 🕴🏽 man in business suit levitating: medium skin tone
+                 '🕴🏾',                            # 🕴🏾 man in business suit levitating: medium-dark skin tone
+                 '🕴🏿')),                          # 🕴🏿 man in business suit levitating: dark skin tone
             ('🗣', None),                          # 🗣 speaking head
             ('👤', None),                          # 👤 bust in silhouette
             ('👥', None),                          # 👥 busts in silhouette
+        ]],
+    ['\U0001f93a',                                # category: person-sport
+        [
             ('\U0001f93a', None),                 # 🤺 person fencing
             ('🏇',                                 # 🏇 horse racing
                 ('🏇🏻',                            # 🏇🏻 horse racing: light skin tone
@@ -341,8 +379,18 @@ emoji_data = [
                  '🏇🏾',                            # 🏇🏾 horse racing: medium-dark skin tone
                  '🏇🏿')),                          # 🏇🏿 horse racing: dark skin tone
             ('⛷', None),                          # ⛷ skier
-            ('🏂', None),                          # 🏂 snowboarder
-            ('🏌', None),                          # 🏌 person golfing
+            ('🏂',                                 # 🏂 snowboarder
+                ('🏂🏻',                            # 🏂🏻 snowboarder: light skin tone
+                 '🏂🏼',                            # 🏂🏼 snowboarder: medium-light skin tone
+                 '🏂🏽',                            # 🏂🏽 snowboarder: medium skin tone
+                 '🏂🏾',                            # 🏂🏾 snowboarder: medium-dark skin tone
+                 '🏂🏿')),                          # 🏂🏿 snowboarder: dark skin tone
+            ('🏌',                                 # 🏌 person golfing
+                ('🏌🏻',                            # 🏌🏻 person golfing: light skin tone
+                 '🏌🏼',                            # 🏌🏼 person golfing: medium-light skin tone
+                 '🏌🏽',                            # 🏌🏽 person golfing: medium skin tone
+                 '🏌🏾',                            # 🏌🏾 person golfing: medium-dark skin tone
+                 '🏌🏿')),                          # 🏌🏿 person golfing: dark skin tone
             ('🏄',                                 # 🏄 person surfing
                 ('🏄🏻',                            # 🏄🏻 person surfing: light skin tone
                  '🏄🏼',                            # 🏄🏼 person surfing: medium-light skin tone
@@ -412,6 +460,9 @@ emoji_data = [
                  '\U0001f939🏽',                   # 🤹🏽 person juggling: medium skin tone
                  '\U0001f939🏾',                   # 🤹🏾 person juggling: medium-dark skin tone
                  '\U0001f939🏿')),                 # 🤹🏿 person juggling: dark skin tone
+        ]],
+    ['👫',                                         # category: family
+        [
             ('👫', None),                          # 👫 man and woman holding hands
             ('👬', None),                          # 👬 two men holding hands
             ('👭', None),                          # 👭 two women holding hands
@@ -436,6 +487,9 @@ emoji_data = [
             ('👩\u200d👩\u200d👧\u200d👦', None),     # 👩‍👩‍👧‍👦 family: woman, woman, girl, boy
             ('👩\u200d👩\u200d👦\u200d👦', None),     # 👩‍👩‍👦‍👦 family: woman, woman, boy, boy
             ('👩\u200d👩\u200d👧\u200d👧', None),     # 👩‍👩‍👧‍👧 family: woman, woman, girl, girl
+        ]],
+    ['💪',                                         # category: body
+        [
             ('💪',                                 # 💪 flexed biceps
                 ('💪🏻',                            # 💪🏻 flexed biceps: light skin tone
                  '💪🏼',                            # 💪🏼 flexed biceps: medium-light skin tone
@@ -636,7 +690,7 @@ emoji_data = [
             ('👅', None),                          # 👅 tongue
             ('👄', None),                          # 👄 mouth
         ]],
-    ['❤',                                         # category: Emotion
+    ['❤',                                         # category: emotion
         [
             ('💋', None),                          # 💋 kiss mark
             ('💘', None),                          # 💘 heart with arrow
@@ -668,6 +722,9 @@ emoji_data = [
             ('🗯', None),                          # 🗯 right anger bubble
             ('💭', None),                          # 💭 thought balloon
             ('🕳', None),                          # 🕳 hole
+        ]],
+    ['👓',                                         # category: clothing
+        [
             ('👓', None),                          # 👓 glasses
             ('🕶', None),                          # 🕶 sunglasses
             ('👔', None),                          # 👔 necktie
@@ -697,7 +754,7 @@ emoji_data = [
             ('💍', None),                          # 💍 ring
             ('💎', None),                          # 💎 gem stone
         ]],
-    ['🐘',                                         # category: Animals & Nature
+    ['🐘',                                         # category: animal-mammal
         [
             ('🐵', None),                          # 🐵 monkey face
             ('🐒', None),                          # 🐒 monkey
@@ -744,6 +801,9 @@ emoji_data = [
             ('🐨', None),                          # 🐨 koala
             ('🐼', None),                          # 🐼 panda face
             ('🐾', None),                          # 🐾 paw prints
+        ]],
+    ['🦃',                                         # category: animal-bird
+        [
             ('🦃', None),                          # 🦃 turkey
             ('🐔', None),                          # 🐔 chicken
             ('🐓', None),                          # 🐓 rooster
@@ -756,13 +816,22 @@ emoji_data = [
             ('\U0001f985', None),                 # 🦅 eagle
             ('\U0001f986', None),                 # 🦆 duck
             ('\U0001f989', None),                 # 🦉 owl
+        ]],
+    ['🐸',                                         # category: animal-amphibian
+        [
             ('🐸', None),                          # 🐸 frog face
+        ]],
+    ['🐊',                                         # category: animal-reptile
+        [
             ('🐊', None),                          # 🐊 crocodile
             ('🐢', None),                          # 🐢 turtle
             ('\U0001f98e', None),                 # 🦎 lizard
             ('🐍', None),                          # 🐍 snake
             ('🐲', None),                          # 🐲 dragon face
             ('🐉', None),                          # 🐉 dragon
+        ]],
+    ['🐳',                                         # category: animal-marine
+        [
             ('🐳', None),                          # 🐳 spouting whale
             ('🐋', None),                          # 🐋 whale
             ('🐬', None),                          # 🐬 dolphin
@@ -775,6 +844,9 @@ emoji_data = [
             ('🦀', None),                          # 🦀 crab
             ('\U0001f990', None),                 # 🦐 shrimp
             ('\U0001f991', None),                 # 🦑 squid
+        ]],
+    ['\U0001f98b',                                # category: animal-bug
+        [
             ('\U0001f98b', None),                 # 🦋 butterfly
             ('🐌', None),                          # 🐌 snail
             ('🐛', None),                          # 🐛 bug
@@ -784,6 +856,9 @@ emoji_data = [
             ('🕷', None),                          # 🕷 spider
             ('🕸', None),                          # 🕸 spider web
             ('🦂', None),                          # 🦂 scorpion
+        ]],
+    ['💐',                                         # category: plant-flower
+        [
             ('💐', None),                          # 💐 bouquet
             ('🌸', None),                          # 🌸 cherry blossom
             ('💮', None),                          # 💮 white flower
@@ -794,6 +869,9 @@ emoji_data = [
             ('🌻', None),                          # 🌻 sunflower
             ('🌼', None),                          # 🌼 blossom
             ('🌷', None),                          # 🌷 tulip
+        ]],
+    ['🌱',                                         # category: plant-other
+        [
             ('🌱', None),                          # 🌱 seedling
             ('🌲', None),                          # 🌲 evergreen tree
             ('🌳', None),                          # 🌳 deciduous tree
@@ -807,7 +885,7 @@ emoji_data = [
             ('🍂', None),                          # 🍂 fallen leaf
             ('🍃', None),                          # 🍃 leaf fluttering in wind
         ]],
-    ['🍕',                                         # category: Food & Drink
+    ['🍏',                                         # category: food-fruit
         [
             ('🍇', None),                          # 🍇 grapes
             ('🍈', None),                          # 🍈 melon
@@ -824,6 +902,9 @@ emoji_data = [
             ('🍓', None),                          # 🍓 strawberry
             ('\U0001f95d', None),                 # 🥝 kiwi fruit
             ('🍅', None),                          # 🍅 tomato
+        ]],
+    ['\U0001f951',                                # category: food-vegetable
+        [
             ('\U0001f951', None),                 # 🥑 avocado
             ('🍆', None),                          # 🍆 eggplant
             ('\U0001f954', None),                 # 🥔 potato
@@ -834,6 +915,9 @@ emoji_data = [
             ('🍄', None),                          # 🍄 mushroom
             ('\U0001f95c', None),                 # 🥜 peanuts
             ('🌰', None),                          # 🌰 chestnut
+        ]],
+    ['🍞',                                         # category: food-prepared
+        [
             ('🍞', None),                          # 🍞 bread
             ('\U0001f950', None),                 # 🥐 croissant
             ('\U0001f956', None),                 # 🥖 baguette bread
@@ -855,6 +939,9 @@ emoji_data = [
             ('🍲', None),                          # 🍲 pot of food
             ('\U0001f957', None),                 # 🥗 green salad
             ('🍿', None),                          # 🍿 popcorn
+        ]],
+    ['🍱',                                         # category: food-asian
+        [
             ('🍱', None),                          # 🍱 bento box
             ('🍘', None),                          # 🍘 rice cracker
             ('🍙', None),                          # 🍙 rice ball
@@ -868,6 +955,9 @@ emoji_data = [
             ('🍤', None),                          # 🍤 fried shrimp
             ('🍥', None),                          # 🍥 fish cake with swirl
             ('🍡', None),                          # 🍡 dango
+        ]],
+    ['🍦',                                         # category: food-sweet
+        [
             ('🍦', None),                          # 🍦 soft ice cream
             ('🍧', None),                          # 🍧 shaved ice
             ('🍨', None),                          # 🍨 ice cream
@@ -880,6 +970,9 @@ emoji_data = [
             ('🍭', None),                          # 🍭 lollipop
             ('🍮', None),                          # 🍮 custard
             ('🍯', None),                          # 🍯 honey pot
+        ]],
+    ['🍼',                                         # category: drink
+        [
             ('🍼', None),                          # 🍼 baby bottle
             ('\U0001f95b', None),                 # 🥛 glass of milk
             ('☕', None),                          # ☕ hot beverage
@@ -893,13 +986,16 @@ emoji_data = [
             ('🍻', None),                          # 🍻 clinking beer mugs
             ('\U0001f942', None),                 # 🥂 clinking glasses
             ('\U0001f943', None),                 # 🥃 tumbler glass
+        ]],
+    ['🍽',                                         # category: dishware
+        [
             ('🍽', None),                          # 🍽 fork and knife with plate
             ('🍴', None),                          # 🍴 fork and knife
             ('\U0001f944', None),                 # 🥄 spoon
             ('🔪', None),                          # 🔪 kitchen knife
             ('🏺', None),                          # 🏺 amphora
         ]],
-    ['🏛',                                         # category: Travel & Places
+    ['🌍',                                         # category: place-map
         [
             ('🌍', None),                          # 🌍 globe showing Europe-Africa
             ('🌎', None),                          # 🌎 globe showing Americas
@@ -907,6 +1003,9 @@ emoji_data = [
             ('🌐', None),                          # 🌐 globe with meridians
             ('🗺', None),                          # 🗺 world map
             ('🗾', None),                          # 🗾 map of Japan
+        ]],
+    ['🏔',                                         # category: place-geographic
+        [
             ('🏔', None),                          # 🏔 snow-capped mountain
             ('⛰', None),                          # ⛰ mountain
             ('🌋', None),                          # 🌋 volcano
@@ -916,6 +1015,9 @@ emoji_data = [
             ('🏜', None),                          # 🏜 desert
             ('🏝', None),                          # 🏝 desert island
             ('🏞', None),                          # 🏞 national park
+        ]],
+    ['🏟',                                         # category: place-building
+        [
             ('🏟', None),                          # 🏟 stadium
             ('🏛', None),                          # 🏛 classical building
             ('🏗', None),                          # 🏗 building construction
@@ -940,11 +1042,17 @@ emoji_data = [
             ('💒', None),                          # 💒 wedding
             ('🗼', None),                          # 🗼 Tokyo tower
             ('🗽', None),                          # 🗽 Statue of Liberty
+        ]],
+    ['⛪',                                         # category: place-religious
+        [
             ('⛪', None),                          # ⛪ church
             ('🕌', None),                          # 🕌 mosque
             ('🕍', None),                          # 🕍 synagogue
             ('⛩', None),                          # ⛩ shinto shrine
             ('🕋', None),                          # 🕋 kaaba
+        ]],
+    ['⛲',                                         # category: place-other
+        [
             ('⛲', None),                          # ⛲ fountain
             ('⛺', None),                          # ⛺ tent
             ('🌁', None),                          # 🌁 foggy
@@ -965,6 +1073,9 @@ emoji_data = [
             ('🖼', None),                          # 🖼 framed picture
             ('🎨', None),                          # 🎨 artist palette
             ('🎰', None),                          # 🎰 slot machine
+        ]],
+    ['🚂',                                         # category: transport-ground
+        [
             ('🚂', None),                          # 🚂 locomotive
             ('🚃', None),                          # 🚃 railway car
             ('🚄', None),                          # 🚄 high-speed train
@@ -1005,6 +1116,9 @@ emoji_data = [
             ('🚦', None),                          # 🚦 vertical traffic light
             ('🚧', None),                          # 🚧 construction
             ('\U0001f6d1', None),                 # 🛑 stop sign
+        ]],
+    ['⚓',                                         # category: transport-water
+        [
             ('⚓', None),                          # ⚓ anchor
             ('⛵', None),                          # ⛵ sailboat
             ('\U0001f6f6', None),                 # 🛶 canoe
@@ -1013,6 +1127,9 @@ emoji_data = [
             ('⛴', None),                          # ⛴ ferry
             ('🛥', None),                          # 🛥 motor boat
             ('🚢', None),                          # 🚢 ship
+        ]],
+    ['✈',                                         # category: transport-air
+        [
             ('✈', None),                          # ✈ airplane
             ('🛩', None),                          # 🛩 small airplane
             ('🛫', None),                          # 🛫 airplane departure
@@ -1024,9 +1141,17 @@ emoji_data = [
             ('🚡', None),                          # 🚡 aerial tramway
             ('🚀', None),                          # 🚀 rocket
             ('🛰', None),                          # 🛰 satellite
+        ]],
+    ['🛎',                                         # category: hotel
+        [
             ('🛎', None),                          # 🛎 bellhop bell
             ('🚪', None),                          # 🚪 door
-            ('🛌', None),                          # 🛌 person in bed
+            ('🛌',                                 # 🛌 person in bed
+                ('🛌🏻',                            # 🛌🏻 person in bed: light skin tone
+                 '🛌🏼',                            # 🛌🏼 person in bed: medium-light skin tone
+                 '🛌🏽',                            # 🛌🏽 person in bed: medium skin tone
+                 '🛌🏾',                            # 🛌🏾 person in bed: medium-dark skin tone
+                 '🛌🏿')),                          # 🛌🏿 person in bed: dark skin tone
             ('🛏', None),                          # 🛏 bed
             ('🛋', None),                          # 🛋 couch and lamp
             ('🚽', None),                          # 🚽 toilet
@@ -1038,6 +1163,9 @@ emoji_data = [
                  '🛀🏾',                            # 🛀🏾 person taking bath: medium-dark skin tone
                  '🛀🏿')),                          # 🛀🏿 person taking bath: dark skin tone
             ('🛁', None),                          # 🛁 bathtub
+        ]],
+    ['⌛',                                         # category: time
+        [
             ('⌛', None),                          # ⌛ hourglass
             ('⏳', None),                          # ⏳ hourglass with flowing sand
             ('⌚', None),                          # ⌚ watch
@@ -1069,6 +1197,9 @@ emoji_data = [
             ('🕥', None),                          # 🕥 ten-thirty
             ('🕚', None),                          # 🕚 eleven o’clock
             ('🕦', None),                          # 🕦 eleven-thirty
+        ]],
+    ['🌑',                                         # category: sky & weather
+        [
             ('🌑', None),                          # 🌑 new moon
             ('🌒', None),                          # 🌒 waxing crescent moon
             ('🌓', None),                          # 🌓 first quarter moon
@@ -1115,7 +1246,7 @@ emoji_data = [
             ('💧', None),                          # 💧 droplet
             ('🌊', None),                          # 🌊 water wave
         ]],
-    ['⚽',                                         # category: Activities
+    ['🎃',                                         # category: event
         [
             ('🎃', None),                          # 🎃 jack-o-lantern
             ('🎄', None),                          # 🎄 Christmas tree
@@ -1136,12 +1267,18 @@ emoji_data = [
             ('🎗', None),                          # 🎗 reminder ribbon
             ('🎟', None),                          # 🎟 admission tickets
             ('🎫', None),                          # 🎫 ticket
+        ]],
+    ['🎖',                                         # category: award-medal
+        [
             ('🎖', None),                          # 🎖 military medal
             ('🏆', None),                          # 🏆 trophy
             ('🏅', None),                          # 🏅 sports medal
             ('\U0001f947', None),                 # 🥇 1st place medal
             ('\U0001f948', None),                 # 🥈 2nd place medal
             ('\U0001f949', None),                 # 🥉 3rd place medal
+        ]],
+    ['⚽',                                         # category: sport
+        [
             ('⚽', None),                          # ⚽ soccer ball
             ('⚾', None),                          # ⚾ baseball
             ('🏀', None),                          # 🏀 basketball
@@ -1165,6 +1302,9 @@ emoji_data = [
             ('🎣', None),                          # 🎣 fishing pole
             ('🎽', None),                          # 🎽 running shirt
             ('🎿', None),                          # 🎿 skis
+        ]],
+    ['🎮',                                         # category: game
+        [
             ('🎮', None),                          # 🎮 video game
             ('🕹', None),                          # 🕹 joystick
             ('🎲', None),                          # 🎲 game die
@@ -1176,7 +1316,7 @@ emoji_data = [
             ('🀄', None),                          # 🀄 mahjong red dragon
             ('🎴', None),                          # 🎴 flower playing cards
         ]],
-    ['🔔',                                         # category: Objects
+    ['🔔',                                         # category: sound
         [
             ('🔇', None),                          # 🔇 muted speaker
             ('🔈', None),                          # 🔈 speaker low volume
@@ -1187,6 +1327,9 @@ emoji_data = [
             ('📯', None),                          # 📯 postal horn
             ('🔔', None),                          # 🔔 bell
             ('🔕', None),                          # 🔕 bell with slash
+        ]],
+    ['🎼',                                         # category: music
+        [
             ('🎼', None),                          # 🎼 musical score
             ('🎵', None),                          # 🎵 musical note
             ('🎶', None),                          # 🎶 musical notes
@@ -1196,18 +1339,27 @@ emoji_data = [
             ('🎤', None),                          # 🎤 microphone
             ('🎧', None),                          # 🎧 headphone
             ('📻', None),                          # 📻 radio
+        ]],
+    ['🎷',                                         # category: musical-instrument
+        [
             ('🎷', None),                          # 🎷 saxophone
             ('🎸', None),                          # 🎸 guitar
             ('🎹', None),                          # 🎹 musical keyboard
             ('🎺', None),                          # 🎺 trumpet
             ('🎻', None),                          # 🎻 violin
             ('\U0001f941', None),                 # 🥁 drum
+        ]],
+    ['📱',                                         # category: phone
+        [
             ('📱', None),                          # 📱 mobile phone
             ('📲', None),                          # 📲 mobile phone with arrow
             ('☎', None),                          # ☎ telephone
             ('📞', None),                          # 📞 telephone receiver
             ('📟', None),                          # 📟 pager
             ('📠', None),                          # 📠 fax machine
+        ]],
+    ['🔋',                                         # category: computer
+        [
             ('🔋', None),                          # 🔋 battery
             ('🔌', None),                          # 🔌 electric plug
             ('💻', None),                          # 💻 laptop computer
@@ -1220,6 +1372,9 @@ emoji_data = [
             ('💾', None),                          # 💾 floppy disk
             ('💿', None),                          # 💿 optical disk
             ('📀', None),                          # 📀 dvd
+        ]],
+    ['🎥',                                         # category: light & video
+        [
             ('🎥', None),                          # 🎥 movie camera
             ('🎞', None),                          # 🎞 film frames
             ('📽', None),                          # 📽 film projector
@@ -1238,6 +1393,9 @@ emoji_data = [
             ('💡', None),                          # 💡 light bulb
             ('🔦', None),                          # 🔦 flashlight
             ('🏮', None),                          # 🏮 red paper lantern
+        ]],
+    ['📔',                                         # category: book-paper
+        [
             ('📔', None),                          # 📔 notebook with decorative cover
             ('📕', None),                          # 📕 closed book
             ('📖', None),                          # 📖 open book
@@ -1255,6 +1413,9 @@ emoji_data = [
             ('📑', None),                          # 📑 bookmark tabs
             ('🔖', None),                          # 🔖 bookmark
             ('🏷', None),                          # 🏷 label
+        ]],
+    ['💰',                                         # category: money
+        [
             ('💰', None),                          # 💰 money bag
             ('💴', None),                          # 💴 yen banknote
             ('💵', None),                          # 💵 dollar banknote
@@ -1265,6 +1426,9 @@ emoji_data = [
             ('💹', None),                          # 💹 chart increasing with yen
             ('💱', None),                          # 💱 currency exchange
             ('💲', None),                          # 💲 heavy dollar sign
+        ]],
+    ['✉',                                         # category: mail
+        [
             ('✉', None),                          # ✉ envelope
             ('📧', None),                          # 📧 e-mail
             ('📨', None),                          # 📨 incoming envelope
@@ -1278,6 +1442,9 @@ emoji_data = [
             ('📭', None),                          # 📭 open mailbox with lowered flag
             ('📮', None),                          # 📮 postbox
             ('🗳', None),                          # 🗳 ballot box with ballot
+        ]],
+    ['✏',                                         # category: writing
+        [
             ('✏', None),                          # ✏ pencil
             ('✒', None),                          # ✒ black nib
             ('🖋', None),                          # 🖋 fountain pen
@@ -1285,6 +1452,9 @@ emoji_data = [
             ('🖌', None),                          # 🖌 paintbrush
             ('🖍', None),                          # 🖍 crayon
             ('📝', None),                          # 📝 memo
+        ]],
+    ['💼',                                         # category: office
+        [
             ('💼', None),                          # 💼 briefcase
             ('📁', None),                          # 📁 file folder
             ('📂', None),                          # 📂 open file folder
@@ -1308,12 +1478,18 @@ emoji_data = [
             ('🗃', None),                          # 🗃 card file box
             ('🗄', None),                          # 🗄 file cabinet
             ('🗑', None),                          # 🗑 wastebasket
+        ]],
+    ['🔒',                                         # category: lock
+        [
             ('🔒', None),                          # 🔒 locked
             ('🔓', None),                          # 🔓 unlocked
             ('🔏', None),                          # 🔏 locked with pen
             ('🔐', None),                          # 🔐 locked with key
             ('🔑', None),                          # 🔑 key
             ('🗝', None),                          # 🗝 old key
+        ]],
+    ['🔨',                                         # category: tool
+        [
             ('🔨', None),                          # 🔨 hammer
             ('⛏', None),                          # ⛏ pick
             ('⚒', None),                          # ⚒ hammer and pick
@@ -1331,8 +1507,14 @@ emoji_data = [
             ('⚖', None),                          # ⚖ balance scale
             ('🔗', None),                          # 🔗 link
             ('⛓', None),                          # ⛓ chains
+        ]],
+    ['💉',                                         # category: medical
+        [
             ('💉', None),                          # 💉 syringe
             ('💊', None),                          # 💊 pill
+        ]],
+    ['🚬',                                         # category: other-object
+        [
             ('🚬', None),                          # 🚬 cigarette
             ('⚰', None),                          # ⚰ coffin
             ('⚱', None),                          # ⚱ funeral urn
@@ -1341,7 +1523,7 @@ emoji_data = [
             ('🔮', None),                          # 🔮 crystal ball
             ('\U0001f6d2', None),                 # 🛒 shopping cart
         ]],
-    ['🔶',                                         # category: Symbols
+    ['🔶',                                         # category: transport-sign
         [
             ('🏧', None),                          # 🏧 ATM sign
             ('🚮', None),                          # 🚮 litter in bin sign
@@ -1356,6 +1538,9 @@ emoji_data = [
             ('🛃', None),                          # 🛃 customs
             ('🛄', None),                          # 🛄 baggage claim
             ('🛅', None),                          # 🛅 left luggage
+        ]],
+    ['⚠',                                         # category: warning
+        [
             ('⚠', None),                          # ⚠ warning
             ('🚸', None),                          # 🚸 children crossing
             ('⛔', None),                          # ⛔ no entry
@@ -1369,6 +1554,9 @@ emoji_data = [
             ('🔞', None),                          # 🔞 no one under eighteen
             ('☢', None),                          # ☢ radioactive
             ('☣', None),                          # ☣ biohazard
+        ]],
+    ['⬆',                                         # category: arrow
+        [
             ('⬆', None),                          # ⬆ up arrow
             ('↗', None),                          # ↗ up-right arrow
             ('➡', None),                          # ➡ right arrow
@@ -1390,6 +1578,9 @@ emoji_data = [
             ('🔛', None),                          # 🔛 ON! arrow
             ('🔜', None),                          # 🔜 SOON arrow
             ('🔝', None),                          # 🔝 TOP arrow
+        ]],
+    ['🛐',                                         # category: religion
+        [
             ('🛐', None),                          # 🛐 place of worship
             ('⚛', None),                          # ⚛ atom symbol
             ('🕉', None),                          # 🕉 om
@@ -1402,6 +1593,9 @@ emoji_data = [
             ('☮', None),                          # ☮ peace symbol
             ('🕎', None),                          # 🕎 menorah
             ('🔯', None),                          # 🔯 dotted six-pointed star
+        ]],
+    ['♈',                                         # category: zodiac
+        [
             ('♈', None),                          # ♈ Aries
             ('♉', None),                          # ♉ Taurus
             ('♊', None),                          # ♊ Gemini
@@ -1415,6 +1609,9 @@ emoji_data = [
             ('♒', None),                          # ♒ Aquarius
             ('♓', None),                          # ♓ Pisces
             ('⛎', None),                          # ⛎ Ophiuchus
+        ]],
+    ['🔀',                                         # category: av-symbol
+        [
             ('🔀', None),                          # 🔀 shuffle tracks button
             ('🔁', None),                          # 🔁 repeat button
             ('🔂', None),                          # 🔂 repeat single button
@@ -1439,6 +1636,9 @@ emoji_data = [
             ('📶', None),                          # 📶 antenna bars
             ('📳', None),                          # 📳 vibration mode
             ('📴', None),                          # 📴 mobile phone off
+        ]],
+    ['♻',                                         # category: other-symbol
+        [
             ('♻', None),                          # ♻ recycling symbol
             ('📛', None),                          # 📛 name badge
             ('⚜', None),                          # ⚜ fleur-de-lis
@@ -1470,6 +1670,9 @@ emoji_data = [
             ('©', None),                          # © copyright
             ('®', None),                          # ® registered
             ('™', None),                          # ™ trade mark
+        ]],
+    ['#️⃣',                                       # category: keycap
+        [
             ('#️⃣', None),                        # #️⃣ keycap: #
             ('*️⃣', None),                        # *️⃣ keycap: *
             ('0️⃣', None),                        # 0️⃣ keycap: 0
@@ -1483,6 +1686,9 @@ emoji_data = [
             ('8️⃣', None),                        # 8️⃣ keycap: 8
             ('9️⃣', None),                        # 9️⃣ keycap: 9
             ('🔟', None),                          # 🔟 keycap 10
+        ]],
+    ['💯',                                         # category: alphanum
+        [
             ('💯', None),                          # 💯 hundred points
             ('🔠', None),                          # 🔠 input latin uppercase
             ('🔡', None),                          # 🔡 input latin lowercase
@@ -1523,6 +1729,9 @@ emoji_data = [
             ('㊙', None),                          # ㊙ Japanese “secret” button
             ('🈺', None),                          # 🈺 Japanese “open for business” button
             ('🈵', None),                          # 🈵 Japanese “no vacancy” button
+        ]],
+    ['▪',                                         # category: geometric
+        [
             ('▪', None),                          # ▪ black small square
             ('▫', None),                          # ▫ white small square
             ('◻', None),                          # ◻ white medium square
@@ -1546,7 +1755,7 @@ emoji_data = [
             ('🔴', None),                          # 🔴 red circle
             ('🔵', None),                          # 🔵 blue circle
         ]],
-    ['🚩',                                         # category: Flags
+    ['🚩',                                         # category: flag
         [
             ('🏁', None),                          # 🏁 chequered flag
             ('🚩', None),                          # 🚩 triangular flag
@@ -1554,6 +1763,9 @@ emoji_data = [
             ('🏴', None),                          # 🏴 black flag
             ('🏳', None),                          # 🏳 white flag
             ('🏳️\u200d🌈', None),                  # 🏳️‍🌈 rainbow flag
+        ]],
+    ['🇦🇨',                                        # category: country-flag
+        [
             ('🇦🇨', None),                         # 🇦🇨 Ascension Island
             ('🇦🇩', None),                         # 🇦🇩 Andorra
             ('🇦🇪', None),                         # 🇦🇪 United Arab Emirates

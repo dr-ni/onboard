@@ -32,7 +32,8 @@ require_gi_versions()
 from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import (KeyCommon, RectKeyCommon,
-                                 LOD, InputlineKeyCommon, ImageStyle)
+                                 LOD, InputlineKeyCommon, ImageStyle,
+                                 ImageSlot)
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
 from Onboard.utils       import (brighten, unicode_str,
@@ -114,7 +115,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     _requested_image_size = None
     _shadow_surface = None
 
-    def __init__(self, id = "", border_rect = None):
+    can_draw_cached = True
+
+    def __init__(self, id="", border_rect=None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
 
@@ -187,7 +190,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         return surface, clip_rect
 
     def draw_item(self, context):
-        if context.draw_cached:
+        if context.draw_cached and self.can_draw_cached:
             self.draw_cached(context.cr)
         else:
             self.draw(context.cr, context.lod)

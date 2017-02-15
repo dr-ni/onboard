@@ -1025,19 +1025,25 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         if self.touch_handles.active:
             hit_handle = self.touch_handles.hit_test(point)
             self.touch_handles.set_pressed(hit_handle)
-            if not hit_handle is None:
+            if hit_handle is not None:
                 # handle clicked -> stop auto-hide until button release
                 self.stop_touch_handles_auto_hide()
             else:
                 # no handle clicked -> hide them now
                 self.show_touch_handles(False)
 
-        # hit-test keys
+        # ask layout tree
         if hit_handle is None:
-            key = self.get_key_at_location(point)
+            layout = self.get_layout()
+            handled = layout.dispatch_input_sequence_begin(sequence) \
+                if layout else None
+
+            # hit-test keys
+            if not handled:
+                key = self.get_key_at_location(point)
 
         # enable/disable the drag threshold
-        if not hit_handle is None:
+        if hit_handle is not None:
             self.enable_drag_protection(False)
         elif key and key.id == "move":
             # Move key needs to support long press;
@@ -1108,18 +1114,28 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             hit_handle = self.touch_handles.hit_test(point)
             self.touch_handles.set_prelight(hit_handle)
 
-        # hit-test keys
+        # ask layout tree
         if hit_handle is None:
-            hit_key = self.get_key_at_location(point)
+            layout = self.get_layout()
+            handled = layout.dispatch_input_sequence_update(sequence) \
+                if layout else None
+
+            # hack that hides popups when ScrolledLayoutPanel starts scrolling
+            if handled:
+                self.keyboard.hide_touch_feedback()
+
+            # hit-test keys
+            if not handled:
+                hit_key = self.get_key_at_location(point)
 
         if sequence.state & BUTTON123_MASK:
 
             # move/resize
             # fallback=False for faster system resizing (LP: #959035)
-            fallback = True #self.is_moving() or config.is_force_to_top()
+            fallback = True  # self.is_moving() or config.is_force_to_top()
 
             # move/resize
-            WindowManipulator.handle_motion(self, sequence, fallback = fallback)
+            WindowManipulator.handle_motion(self, sequence, fallback=fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -1172,6 +1188,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
            popup.got_motion():  # keep popup open if it wasn't entered
             popup.redirect_sequence_end(sequence,
                                         popup.on_input_sequence_end)
+
+        # layout tree
+        layout = self.get_layout()
+        layout.dispatch_input_sequence_end(sequence) \
+            if layout else None
 
         # key up
         active_key = sequence.active_key

@@ -358,20 +358,102 @@ class UnicodeDataGenerator:
         return os.path.join(self.UNICODE_DATA_PATH, fn)
 
     def gen_emoji_output(self):
-        # categories: [category label, starting codepoint, comment]
+        # Comments taken from
+        # http://unicode.org/emoji/charts/emoji-ordering.html
+        # categories: [level, label, starting codepoint, comment, found]
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
         categories = [
-            ["😀", "😀", "Smileys", False],
-            # ["😐", "🤔", "face-neutral", False],
-            # ["😇", "😇", "face-role", False],
-            ["👧", "👦", "People", False],
-            ["❤", "💋", "Emotion", False],
-            ["🐘", "🐵", "Animals & Nature", False],
-            ["🍕", "🍇", "Food & Drink", False],
-            ["🏛", "🌍", "Travel & Places", False],
-            ["⚽", "🎃", "Activities", False],
-            ["🔔", "🔇", "Objects", False],
-            ["🔶", "🏧", "Symbols", False],
-            ["🚩", "🏁", "Flags", False],
+
+            # Smileys & People
+            [0, "😀", "😀", "face-positive", False],
+            [1, "😐", "🤔", "face-neutral", False],
+            [1, "☹", "☹", "face-negative", False],
+            [1, "😇", "😇", "face-role", False],
+            [1, "😷", "😷", "face-sick", False],
+            [1, "😈", "😈", "creature-face", False],
+            [1, "😺", "😺", "cat-face", False],
+            [1, "🙈", "🙈", "monkey-face", False],
+            [0, "👧", "👦", "person", False],
+            [1, "👮", "👨\U0000200d⚕️", "person-role", False],
+            [1, "🙍", "🙍", "person-gesture", False],
+            [1, "💆", "💆", "person-activity", False],
+            [1, "🤺", "🤺", "person-sport", False],
+            [1, "👫", "👫", "family", False],
+            # [1, "🏻", "🏻", "skin-tone", False],
+            [1, "💪", "💪", "body", False],
+            [0, "❤", "💋", "emotion", False],
+            [1, "👓", "👓", "clothing", False],
+
+            # Animals & Nature
+            [0, "🐘", "🐵", "animal-mammal", False],
+            [1, "🦃", "🦃", "animal-bird", False],
+            [1, "🐸", "🐸", "animal-amphibian", False],
+            [1, "🐊", "🐊", "animal-reptile", False],
+            [1, "🐳", "🐳", "animal-marine", False],
+            [1, "🦋", "🦋", "animal-bug", False],
+            [1, "💐", "💐", "plant-flower", False],
+            [1, "🌱", "🌱", "plant-other", False],
+
+            # Food & Drink
+            [0, "🍏", "🍇", "food-fruit", False],
+            [1, "🥑", "🥑", "food-vegetable", False],
+            [1, "🍞", "🍞", "food-prepared", False],
+            [1, "🍱", "🍱", "food-asian", False],
+            [1, "🍦", "🍦", "food-sweet", False],
+            [1, "🍼", "🍼", "drink", False],
+            [1, "🍽", "🍽", "dishware", False],
+
+            # Travel & Places "🏛"
+            [0, "🌍", "🌍", "place-map", False],
+            [1, "🏔", "🏔", "place-geographic", False],
+            [1, "🏟", "🏟", "place-building", False],
+            [1, "⛪", "⛪", "place-religious", False],
+            [1, "⛲", "⛲", "place-other", False],
+            [1, "🚂", "🚂", "transport-ground", False],
+            [1, "⚓", "⚓", "transport-water", False],
+            [1, "✈", "✈", "transport-air", False],
+            [1, "🛎", "🛎", "hotel", False],
+            [1, "⌛", "⌛", "time", False],
+            [1, "🌑", "🌑", "sky & weather", False],
+
+            # Activities "⚽"
+            [0, "🎃", "🎃", "event", False],
+            [1, "🎖", "🎖", "award-medal", False],
+            [1, "⚽", "⚽", "sport", False],
+            [1, "🎮", "🎮", "game", False],
+
+            # Objects
+            [0, "🔔", "🔇", "sound", False],
+            [1, "🎼", "🎼", "music", False],
+            [1, "🎷", "🎷", "musical-instrument", False],
+            [1, "📱", "📱", "phone", False],
+            [1, "🔋", "🔋", "computer", False],
+            [1, "🎥", "🎥", "light & video", False],
+            [1, "📔", "📔", "book-paper", False],
+            [1, "💰", "💰", "money", False],
+            [1, "✉", "✉", "mail", False],
+            [1, "✏", "✏", "writing", False],
+            [1, "💼", "💼", "office", False],
+            [1, "🔒", "🔒", "lock", False],
+            [1, "🔨", "🔨", "tool", False],
+            [1, "💉", "💉", "medical", False],
+            [1, "🚬", "🚬", "other-object", False],
+
+            # Symbols
+            [0, "🔶", "🏧", "transport-sign", False],
+            [1, "⚠", "⚠", "warning", False],
+            [1, "⬆", "⬆", "arrow", False],
+            [1, "🛐", "🛐", "religion", False],
+            [1, "♈", "♈", "zodiac", False],
+            [1, "🔀", "🔀", "av-symbol", False],
+            [1, "♻", "♻", "other-symbol", False],
+            [1, "#️⃣", "#️⃣", "keycap", False],
+            [1, "💯", "💯", "alphanum", False],
+            [1, "▪", "▪", "geometric", False],
+
+            # Flags
+            [0, "🚩", "🏁", "flag", False],
+            [1, "🇦🇨", "🇦🇨", "country-flag", False],
         ]
 
         print("#")
@@ -389,10 +471,12 @@ class UnicodeDataGenerator:
             # new category?
             new_category_index = -1
             for i, category in enumerate(categories):
-                if len(codepoints) == 1 and \
-                   codepoints[0] == ord(category[1]):
+                cps = tuple(ord(c) for c in category[CODEPOINT])
+                if codepoints == cps:
                     new_category_index = i
-                    category[3] = True  # mark as found, for later checks
+
+                    # mark as found, for later check
+                    category[FOUND] = True
                     break
 
             # category header
@@ -401,8 +485,8 @@ class UnicodeDataGenerator:
 
             if new_category_index >= 0:
                 category = categories[new_category_index]
-                clabel = category[0]
-                ccomment = category[2]
+                clabel = category[LABEL]
+                ccomment = category[COMMENT]
 
                 line = " " * 4 + "[" + repr(clabel) + ", "
                 line = line.ljust(comment_row) + \
@@ -412,31 +496,40 @@ class UnicodeDataGenerator:
 
                 new_category_index = -1
 
-            # main emoji
-            line = " " * 12 + "(" + \
-                repr("".join([chr(cp) for cp in codepoints])) + ", " + \
-                ("None), " if not alternatives else "")
-            line = line.ljust(comment_row) + "# " + comment
-            print(line)
-
-            # skin tones for the long-press popup
-            for i, (acodepoints, acomment) in enumerate(alternatives):
-                line = " " * 16 + \
-                    ("(" if i == 0 else " ") +\
-                    repr("".join([chr(cp) for cp in acodepoints])) + \
-                    (")), " if i == len(alternatives) - 1 else ", ")
-                line = line.ljust(comment_row) + "# " + acomment
+            # Does image file exist?
+            path = self._emoji_image_path(codepoints)
+            if not os.path.isfile(path):
+                print("dropping emoji", repr(comment),
+                        "missing image", repr(path),
+                        file=sys.stderr)
+            else:
+                # main emoji
+                line = " " * 12 + "(" + \
+                    repr("".join([chr(cp) for cp in codepoints])) + ", " + \
+                    ("None), " if not alternatives else "")
+                line = line.ljust(comment_row) + "# " + comment
                 print(line)
+
+                # skin tones for the long-press popup
+                for i, (acodepoints, acomment) in enumerate(alternatives):
+                    line = " " * 16 + \
+                        ("(" if i == 0 else " ") +\
+                        repr("".join([chr(cp) for cp in acodepoints])) + \
+                        (")), " if i == len(alternatives) - 1 else ", ")
+                    line = line.ljust(comment_row) + "# " + acomment
+                    print(line)
 
         print(" " * 8 + "]],")
         print("]")
 
         # plausibility check: have all categories been found?
-        if not all(category[3] for category in categories):
-            print()
-            print("Warning: emoji categories were not all used")
+        if not all(category[FOUND] for category in categories):
+            print(file=sys.stderr)
+            print("Warning: emoji categories were not all used",
+                  file=sys.stderr)
             for category in categories:
-                print(" " * 4 + str(category))
+                print(" " * 4 + str(category),
+                      file=sys.stderr)
 
     def _read_emoji_data(self):
         lines = self._read_cached_http(
@@ -470,31 +563,25 @@ class UnicodeDataGenerator:
                     noskincps = tuple(cp for cp in codepoints
                                       if cp not in skincolors)
 
-                    path = self._emoji_image_path(codepoints)
-                    if not os.path.isfile(path):
-                        print("dropping emoji", repr(comment),
-                              "missing image", repr(path),
-                              file=sys.stderr)
+                    # without skin modifier?
+                    if codepoints == noskincps:
+                        last_noskin_cps = codepoints
+                        emoji_data[codepoints] = [[], comment]
+
+                    # just a skin modifier alone?
+                    elif not noskincps:
+                        print("dropping emoji: skin modifier",
+                                repr(comment), file=sys.stderr)
+
+                    # with skin modifier
                     else:
-                        # without skin modifier?
-                        if codepoints == noskincps:
-                            last_noskin_cps = codepoints
-                            emoji_data[codepoints] = [[], comment]
-
-                        # just a skin modifier alone?
-                        elif not noskincps:
-                            print("dropping emoji: skin modifier",
-                                  repr(comment), file=sys.stderr)
-
-                        # with skin modifier
+                        # print(codepoints, comment, last_noskin_comment)
+                        parent = emoji_data.get(last_noskin_cps)
+                        if parent:
+                            parent[0].append([codepoints, comment])
                         else:
-                            # print(codepoints, comment, last_noskin_comment)
-                            parent = emoji_data.get(last_noskin_cps)
-                            if parent:
-                                parent[0].append([codepoints, comment])
-                            else:
-                                print("dropping emoji: no parent for",
-                                      repr(comment), file=sys.stderr)
+                            print("dropping emoji: no parent for",
+                                    repr(comment), file=sys.stderr)
 
         return emoji_data
 

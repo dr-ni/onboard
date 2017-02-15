@@ -86,9 +86,11 @@ class UnicodeData:
         pass
 
     def get_emoji_categories(self):
+        # print(len([label for label, data in self._get_emoji_data()]))
         return [label for label, data in self._get_emoji_data()]
 
     def get_emoji(self, category):
+        # return self.get_emoji_categories()
         return tuple(sequence
                      for sequence, data in self._get_emoji_data()[category][1])
 
