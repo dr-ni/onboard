@@ -403,6 +403,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),
                   ('share/onboard', glob.glob('onboard-defaults.conf.example')),
+                  ('share/onboard', glob.glob('onboard-default-settings.gschema.override.example')),
                   ('share/icons/hicolor/16x16/apps', glob.glob('icons/hicolor/16/*')),
                   ('share/icons/hicolor/22x22/apps', glob.glob('icons/hicolor/22/*')),
                   ('share/icons/hicolor/24x24/apps', glob.glob('icons/hicolor/24/*')),
