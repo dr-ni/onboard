@@ -18,5 +18,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 cp data/org.onboard.gschema.xml /usr/share/glib-2.0/schemas/
+
+# optional: distro-specific customization
+cp onboard-default-settings.gschema.override.example /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
+
 glib-compile-schemas /usr/share/glib-2.0/schemas
 
