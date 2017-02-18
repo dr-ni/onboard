@@ -14,9 +14,7 @@ Build-Depends: debhelper (>=9),
                python3-distutils-extra (>= 2.10),
                python3-gi,
                libudev-dev,
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-XSBC-Original-Maintainer: MATE Packaging Team <pkg-mate-team@lists.alioth.debian.org>
-Uploaders: Mike Gabriel <sunweaver@debian.org>, Jeremy Bicha <jbicha@ubuntu.com>
+Maintainer: Francesco Fumanti <francesco.fumanti@gmail.com>
 Standards-Version: 3.9.8
 Homepage: https://launchpad.net/onboard
 Vcs-Browser: https://anonscm.debian.org/git/pkg-mate/onboard.git
