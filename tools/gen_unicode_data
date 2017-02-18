@@ -365,7 +365,7 @@ class UnicodeDataGenerator:
         categories = [
 
             # Smileys & People
-            [0, "😀", "😀", "face-positive", False],
+            [0, "🙂", "😀", "face-positive", False],
             [1, "😐", "🤔", "face-neutral", False],
             [1, "☹", "☹", "face-negative", False],
             [1, "😇", "😇", "face-role", False],
@@ -388,14 +388,14 @@ class UnicodeDataGenerator:
             [0, "🐘", "🐵", "animal-mammal", False],
             [1, "🦃", "🦃", "animal-bird", False],
             [1, "🐸", "🐸", "animal-amphibian", False],
-            [1, "🐊", "🐊", "animal-reptile", False],
+            # [1, "🐊", "🐊", "animal-reptile", False],
             [1, "🐳", "🐳", "animal-marine", False],
             [1, "🦋", "🦋", "animal-bug", False],
             [1, "💐", "💐", "plant-flower", False],
             [1, "🌱", "🌱", "plant-other", False],
 
             # Food & Drink
-            [0, "🍏", "🍇", "food-fruit", False],
+            [0, "🍉", "🍇", "food-fruit", False],
             [1, "🥑", "🥑", "food-vegetable", False],
             [1, "🍞", "🍞", "food-prepared", False],
             [1, "🍱", "🍱", "food-asian", False],
@@ -417,7 +417,7 @@ class UnicodeDataGenerator:
             [1, "🌑", "🌑", "sky & weather", False],
 
             # Activities "⚽"
-            [0, "🎃", "🎃", "event", False],
+            [0, "✨", "🎃", "event", False],
             [1, "🎖", "🎖", "award-medal", False],
             [1, "⚽", "⚽", "sport", False],
             [1, "🎮", "🎮", "game", False],
@@ -485,10 +485,12 @@ class UnicodeDataGenerator:
 
             if new_category_index >= 0:
                 category = categories[new_category_index]
+                clevel = category[LEVEL]
                 clabel = category[LABEL]
                 ccomment = category[COMMENT]
 
-                line = " " * 4 + "[" + repr(clabel) + ", "
+                line = " " * 4 + "[" + repr(clevel) + ", " + \
+                    repr(clabel) + ", "
                 line = line.ljust(comment_row) + \
                     "# category: " + ccomment
                 print(line)
@@ -500,8 +502,8 @@ class UnicodeDataGenerator:
             path = self._emoji_image_path(codepoints)
             if not os.path.isfile(path):
                 print("dropping emoji", repr(comment),
-                        "missing image", repr(path),
-                        file=sys.stderr)
+                      "missing image", repr(path),
+                      file=sys.stderr)
             else:
                 # main emoji
                 line = " " * 12 + "(" + \

@@ -26,7 +26,7 @@ import time
 import math
 
 from Onboard.utils import Rect, TreeItem
-from Onboard.Timer import Timer
+from Onboard.Timer import Timer, idle_call
 
 from Onboard.Config import Config
 config = Config()
@@ -1302,13 +1302,7 @@ class ScrolledLayoutPanel(LayoutPanel):
         super(ScrolledLayoutPanel, self).__init__()
 
         self._scroll_rect = Rect()  # area to be scrolled, logical coordinates
-
-        self._last_step_time = None
-        self._target_offset = [None, None]
-        self._scroll_acceleration = [0, 0]
-        self._scroll_velocity = [0, 0]
         self._scroll_offset = [0, 0]          # canvas coordinate
-        self._dampening = [0, 0]
 
         self._drag_begin_point = None
         self._drag_begin_scroll_offset = [0, 0]
@@ -1318,6 +1312,10 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._lock_x_axis         = False
         self._lock_y_axis         = False
 
+        self.scrolled_context = KeyContext()
+
+        self.stop_scrolling()
+
     def update_log_rect(self):
         # do not calculate bounds from content
         pass
@@ -1325,6 +1323,19 @@ class ScrolledLayoutPanel(LayoutPanel):
     def set_scroll_rect(self, rect):
         self._scroll_rect = rect.copy()
         self.set_damage(self.get_visible_scrolled_rect())
+
+    def set_scroll_offset(self, offset_x, offset_y):
+        self.stop_scrolling()
+        self._scroll_offset = [offset_x, offset_y]
+        self._update_contents()
+
+    def stop_scrolling(self):
+        self._last_step_time = None
+        self._target_offset = [None, None]
+        self._scroll_acceleration = [0, 0]
+        self._scroll_velocity = [0, 0]
+        self._dampening = [0, 0]
+        self._step_timer.stop()
 
     def lock_x_axis(self, lock):
         """ Set to False to constraint movement in x. """
@@ -1371,14 +1382,15 @@ class ScrolledLayoutPanel(LayoutPanel):
             dx = point[0] - self._drag_begin_point[0]
             dy = point[1] - self._drag_begin_point[1]
 
+            # initiate scrolling?
             start_scrolling = False
             if not self.is_drag_active():
-                # no key hit yet?
-                if not sequence.active_key:
-                    start_scrolling = True
-                else:
-                    dt = time.time() - self._drag_begin_time
-                    if dt < 0.5:
+                dt = time.time() - self._drag_begin_time
+                if dt < 0.5:
+                    # no key hit yet?
+                    if not sequence.active_key:
+                        start_scrolling = True
+                    else:
                         ldx = 0 if self._lock_x_axis else dx
                         ldy = 0 if self._lock_y_axis else dy
                         d = math.sqrt(ldx * ldx + ldy * ldy)
@@ -1411,7 +1423,7 @@ class ScrolledLayoutPanel(LayoutPanel):
         return self._drag_active
 
     def _start_animation(self):
-        self._step_timer.start(0.05, self._step_scroll_position)
+        self._step_timer.start(1.0 / 60.0, self._step_scroll_position)
 
     def _stop_animation(self):
         self._step_timer.stop()
@@ -1424,7 +1436,8 @@ class ScrolledLayoutPanel(LayoutPanel):
         if self._last_step_time is not None:
             dt = t - self._last_step_time
             mass = 0.005
-            edge_dampening = 15
+            limit_dampening = 15
+            limit_force_scale = 0.25
 
             canvas_rect = self.get_canvas_rect()
             scroll_rect = self.context.log_to_canvas_rect(self._scroll_rect)
@@ -1441,35 +1454,34 @@ class ScrolledLayoutPanel(LayoutPanel):
             tbottom = canvas_rect.bottom() - scroll_rect.bottom()
             dbottom = self._scroll_offset[1] - tbottom
 
-
             # left limit
             if dleft > 0:
-                force[0] -= dleft
-                self._dampening[0] = edge_dampening
+                force[0] -= dleft * limit_force_scale
+                self._dampening[0] = limit_dampening
                 if not self.is_drag_active() and \
                    self._target_offset[0] is None:
                     self._target_offset[0] = tleft   # snap to edge
 
             # right limit
             elif dright < 0:
-                force[0] -= dright
-                self._dampening[0] = edge_dampening
+                force[0] -= dright * limit_force_scale
+                self._dampening[0] = limit_dampening
                 if not self.is_drag_active() and \
                    self._target_offset[0] is None:
                     self._target_offset[0] = tright
 
             # top limit
             if dtop > 0:
-                force[1] -= dtop
-                self._dampening[1] = edge_dampening
+                force[1] -= dtop * limit_force_scale
+                self._dampening[1] = limit_dampening
                 if not self.is_drag_active() and \
                    self._target_offset[1] is None:
                     self._target_offset[1] = ttop
 
             # bottom limit
             elif dbottom < 0:
-                force[1] -= dbottom
-                self._dampening[1] = edge_dampening
+                force[1] -= dbottom * limit_force_scale
+                self._dampening[1] = limit_dampening
                 if not self.is_drag_active() and \
                    self._target_offset[1] is None:
                     self._target_offset[1] = tbottom
@@ -1490,7 +1502,7 @@ class ScrolledLayoutPanel(LayoutPanel):
             if not self._lock_y_axis:
                 self._scroll_offset[1] += self._scroll_velocity[1] * dt
 
-            self._update_contents()
+            idle_call(self._update_contents)
 
         self._last_step_time = t
 
@@ -1518,6 +1530,13 @@ class ScrolledLayoutPanel(LayoutPanel):
         rect.y -= context.scale_canvas_to_log_y(self._scroll_offset[1])
         return rect
 
+    def log_to_scrolled_canvas_rect(self):
+        """ Portion of the virtual scroll rect visible in the Panel. """
+        rect = self.get_rect()
+        context = self.context
+        rect.x -= context.scale_canvas_to_log_x(self._scroll_offset[0])
+        rect.y -= context.scale_canvas_to_log_y(self._scroll_offset[1])
+        return rect
     def do_fit_inside_canvas(self, canvas_border_rect):
         """
         Translate children.
@@ -1535,6 +1554,7 @@ class ScrolledLayoutPanel(LayoutPanel):
             context.canvas_rect = self.get_canvas_rect()  # exclude border
             context.canvas_rect.x += self._scroll_offset[0]
             context.canvas_rect.y += self._scroll_offset[1]
+            self.scrolled_context = context
 
             for item in self.items:
                 rect = context.log_to_canvas_rect(item.context.log_rect)

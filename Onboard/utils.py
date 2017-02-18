@@ -514,6 +514,12 @@ class Rect:
     def get_center(self):
         return (self.x + self.w / 2.0, self.y + self.h / 2.0)
 
+    def get_center_x(self):
+        return self.x + self.w / 2.0
+
+    def get_center_y(self):
+        return self.y + self.h / 2.0
+
     def top(self):
         return self.y
 
@@ -1048,7 +1054,7 @@ def gradient_line(rect, alpha):
             r * sin(alpha) + y0 + b,
            -r * cos(alpha) + x0 + a,
            -r * sin(alpha) + y0 + b)
-import cairo
+
 def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
                                   alpha=0.06, steps=4):
     """

@@ -39,25 +39,25 @@ class UnicodeData:
     """
 
     _symbol_data = [
-        ["α", "αβγδεζηθικλμνξοπρςστυφχψω"        # Greek
-              "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],
+        [0, "α", "αβγδεζηθικλμνξοπρςστυφχψω"        # Greek
+                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],
 
-        ["ℝ", "ℝℂℕℙℚℤ"                           # math & physics
-              "∅∃∄∈∉∀∑∥∦∡⊾∞"
-              "∩∪⊂⊃⊄⊅⊈⊉⊆⊇…"
-              "≤≥≦≧≨≩"
-              "≁≂≃≄≅≆≇≈≉≊≋≌≍"
-              "√∛∜"
-              "∫∬∭"
-              "℃℉№"
+        [0, "ℝ", "ℝℂℕℙℚℤ"                           # math & physics
+                 "∅∃∄∈∉∀∑∥∦∡⊾∞"
+                 "∩∪⊂⊃⊄⊅⊈⊉⊆⊇…"
+                 "≤≥≦≧≨≩"
+                 "≁≂≃≄≅≆≇≈≉≊≋≌≍"
+                 "√∛∜"
+                 "∫∬∭"
+                 "℃℉№"
          ],
-        ["€", "$₠₡₢₣₤₥₦₧₨₩₪₫€₭₮₯₰₱₲₳₴₵₶₷₸₹₺₻₼₽₾"   # currency
-              ""
+        [0, "€", "$₠₡₢₣₤₥₦₧₨₩₪₫€₭₮₯₰₱₲₳₴₵₶₷₸₹₺₻₼₽₾"   # currency
+                 ""
          ],
-        ["²₂", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾"                 # super- and subscript
-               "ⁱ"
-               "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎"
-               "ₐₑₒₓₔₕₖₗₘₙₚₛₜ"
+        [0, "²₂", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾"                 # super- and subscript
+                  "ⁱ"
+                  "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎"
+                  "ₐₑₒₓₔₕₖₗₘₙₚₛₜ"
          ],
     ]
 
@@ -85,26 +85,52 @@ class UnicodeData:
     def cleanup(self):
         pass
 
-    def get_emoji_categories(self):
-        # print(len([label for label, data in self._get_emoji_data()]))
-        return [label for label, data in self._get_emoji_data()]
+    def get_category_labels(self, content_type):
+        return [label for level, label, data
+                in self._get_symbol_data(content_type)
+                if level == 0]
 
-    def get_emoji(self, category):
-        # return self.get_emoji_categories()
-        return tuple(sequence
-                     for sequence, data in self._get_emoji_data()[category][1])
+    def get_subcategory_labels(self, content_type):
+        return [label for level, label, data
+                in self._get_symbol_data(content_type)]
 
-    def _get_emoji_data(self):
-        from Onboard.emoji_data import emoji_data
-        return emoji_data
+    def get_subcategories(self, content_type, category):
+        results = []
+        for label, data in self._iter_category(content_type, category):
+            results.append(self._get_subcategory_sequences(data))
+        return results
 
-    def get_symbol_categories(self):
-        return [label for label, data in self._get_symbol_data()]
+    def get_sequences(self, content_type, category):
+        results = []
+        for label, data in self._iter_category(content_type, category):
+            results.extend(self._get_subcategory_sequences(data))
+        return results
 
-    def get_symbols(self, category):
-        return tuple(self._get_symbol_data()[category][1])
+    @staticmethod
+    def _get_subcategory_sequences(data):
+        if isinstance(data, str):
+            return data
+        else:
+            return [sequence for sequence, children in data]
 
-    def _get_symbol_data(self):
-        return self._symbol_data
+    def _iter_category(self, content_type, category):
+        """ Walk along the subcategories of category """
+        i = -1
+        for level, label, data in self._get_symbol_data(content_type):
+            if level == 0:
+                i += 1
+                if i > category:
+                    break
+
+            if i == category:
+                yield label, data
+
+    def _get_symbol_data(self, content_type):
+        if content_type == "emoji":
+            from Onboard.emoji_data import emoji_data
+            return emoji_data
+        elif content_type == "symbols":
+            return self._symbol_data
+        return None
 
 

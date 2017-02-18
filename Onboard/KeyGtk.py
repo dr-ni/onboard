@@ -1314,7 +1314,7 @@ class PixBufScaled:
                 context.paint()
 
                 import colorsys
-                saturation = 0.3
+                saturation = 0.4
                 rgb = colorsys.hls_to_rgb(0, 0.5, saturation)
 
                 context.set_source_rgb(*rgb)
