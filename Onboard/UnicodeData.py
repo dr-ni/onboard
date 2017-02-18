@@ -39,10 +39,10 @@ class UnicodeData:
     """
 
     _symbol_data = [
-        [0, "α", "αβγδεζηθικλμνξοπρςστυφχψω"        # Greek
-                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],
+        [0, "α", "αβγδεζηθικλμνξοπρςστυφχψω"],        # Greek
+        [1, "Α", "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],
 
-        [0, "ℝ", "ℝℂℕℙℚℤ"                           # math & physics
+        [0, "ℝ", "ℝℂℕℙℚℤ"                             # math & physics
                  "∅∃∄∈∉∀∑∥∦∡⊾∞"
                  "∩∪⊂⊃⊄⊅⊈⊉⊆⊇…"
                  "≤≥≦≧≨≩"
@@ -51,13 +51,14 @@ class UnicodeData:
                  "∫∬∭"
                  "℃℉№"
          ],
+        [0, "²₂", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾"                   # super- and subscript
+                  "ⁱ"
+         ],
+        [1, "₂", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎"
+                 "ₐₑₒₓₔₕₖₗₘₙₚₛₜ"
+         ],
         [0, "€", "$₠₡₢₣₤₥₦₧₨₩₪₫€₭₮₯₰₱₲₳₴₵₶₷₸₹₺₻₼₽₾"   # currency
                  ""
-         ],
-        [0, "²₂", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾"                 # super- and subscript
-                  "ⁱ"
-                  "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎"
-                  "ₐₑₒₓₔₕₖₗₘₙₚₛₜ"
          ],
     ]
 
@@ -85,52 +86,35 @@ class UnicodeData:
     def cleanup(self):
         pass
 
-    def get_category_labels(self, content_type):
+    def get_symbol_data(self, content_type):
+        if content_type == "emoji":
+            from Onboard.emoji_data import emoji_data
+            return SymbolData(emoji_data)
+        elif content_type == "symbols":
+            return SymbolData(self._symbol_data)
+        return None
+
+
+class SymbolData:
+
+    def __init__(self, symbol_data):
+        self. _symbol_data = symbol_data
+
+    def get_category_labels(self):
         return [label for level, label, data
-                in self._get_symbol_data(content_type)
+                in self._symbol_data
                 if level == 0]
 
-    def get_subcategory_labels(self, content_type):
-        return [label for level, label, data
-                in self._get_symbol_data(content_type)]
-
-    def get_subcategories(self, content_type, category):
-        results = []
-        for label, data in self._iter_category(content_type, category):
-            results.append(self._get_subcategory_sequences(data))
-        return results
-
-    def get_sequences(self, content_type, category):
-        results = []
-        for label, data in self._iter_category(content_type, category):
-            results.extend(self._get_subcategory_sequences(data))
-        return results
+    def get_subcategories(self):
+        """ Walk along all subcategories. """
+        return self._symbol_data
 
     @staticmethod
-    def _get_subcategory_sequences(data):
+    def get_subcategory_sequences(data):
         if isinstance(data, str):
             return data
         else:
-            return [sequence for sequence, children in data]
-
-    def _iter_category(self, content_type, category):
-        """ Walk along the subcategories of category """
-        i = -1
-        for level, label, data in self._get_symbol_data(content_type):
-            if level == 0:
-                i += 1
-                if i > category:
-                    break
-
-            if i == category:
-                yield label, data
-
-    def _get_symbol_data(self, content_type):
-        if content_type == "emoji":
-            from Onboard.emoji_data import emoji_data
-            return emoji_data
-        elif content_type == "symbols":
-            return self._symbol_data
-        return None
+            return [item if isinstance(item, str) else item[0]
+                    for item in data]
 
 

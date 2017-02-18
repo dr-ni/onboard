@@ -37,6 +37,7 @@ config = Config()
 EMOJI_IMAGE_MARGIN = (1.5, 2.5)
 EMOJI_HEADER_MARGIN = (2.5, 3.5)
 
+
 class CharacterPaletteKey(FlatKey):
     pass
 
@@ -75,8 +76,8 @@ class CharacterPaletteBackground(RectangleItem):
 
 
 class CharacterGridPanel(ScrolledLayoutPanel):
+    symbol_data = None
     keyboard = None
-    subcategories = []
     has_emoji = False
     key_border_rect = None
     key_group = None
@@ -91,6 +92,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         self._key_slots = []
         self._key_pool = {}
         self._separator_rects = []
+        self._category_rects = []
 
     def get_fill_color(self):
         return (0, 0, 0, 1)
@@ -109,8 +111,13 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         key_rects = []
         separator_rects = []
         bounding_box = None
+        category_rect = None
 
-        for i, sequences in enumerate(self.subcategories):
+        subcategories = self.symbol_data.get_subcategories()
+
+        for i, (level, label, data) in enumerate(subcategories):
+            sequences = self.symbol_data.get_subcategory_sequences(data)
+
             rects, bounds = flow_rect.flow_layout(
                 key_rect, len(sequences), *key_spacing, False)
 
@@ -119,16 +126,25 @@ class CharacterGridPanel(ScrolledLayoutPanel):
             bounding_box = bounding_box.union(bounds) \
                 if bounding_box is not None else bounds
 
+            # keep track of category bounds (spanning multiple subcategories)
+            if level == 0:  # start of category?
+                if i > 0:
+                    self._category_rects.append(category_rect)
+                category_rect = bounds
+            category_rect = category_rect.union(bounds)
+
             flow_rect.x += bounds.w
 
-            # create separator
-            if i < len(self.subcategories) - 1:
+            # separator
+            if i < len(subcategories) - 1:
                 r = flow_rect.copy()
                 r.w = subcategory_spacing
                 r = r.grow(0.125, 0.75)
                 separator_rects.append(r)
 
             flow_rect.x += subcategory_spacing
+
+        self._category_rects.append(category_rect)
 
         self._key_labels = key_labels
         self._key_slots = [None] * len(key_rects)
@@ -138,6 +154,10 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         self.lock_y_axis(True)
         self.set_scroll_rect(bounding_box)
 
+    def scroll_to_category(self, category_index):
+        x = self._category_rects[category_index].x
+        self.set_scroll_offset(-x, 0)
+
     def on_damage(self, damage_rect):
         keys_to_redraw = [self]
         for i, rect in enumerate(self._key_rects):
@@ -146,7 +166,6 @@ class CharacterGridPanel(ScrolledLayoutPanel):
                 if key  is None:
                     key = self._get_key(i)
                     self._key_slots[i] = key
-                # keys_to_redraw.append(key)
             else:
                 self._key_slots[i] = None
 
@@ -155,7 +174,8 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         if keys_to_redraw:
             layout = self.keyboard.layout
             if layout:
-                layout.invalidate_font_sizes()
+                if not self.has_emoji:
+                    layout.invalidate_font_sizes()
                 layout.invalidate_caches()
 
                 self.keyboard.redraw(keys_to_redraw)
@@ -172,7 +192,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
                                    self.has_emoji)
 
             # only cache emoji keys, as these are the most expensive ones
-            if self.has_emoji:
+            if 0:  # self.has_emoji:
                 self._key_pool[label] = key
 
         key.set_id(id)
@@ -211,55 +231,26 @@ class CharacterGridPanel(ScrolledLayoutPanel):
     def draw_tree(self, context):
         super(CharacterGridPanel, self).draw_tree(context)
 
+        import cairo
         cr = context.cr
         rgba = (0.3, 0.3, 0.3, 1.0)
-        cr.set_source_rgba(*rgba)
+        dark_rgba = (0, 0, 0, 1)
+        bright_rgba = rgba
+
+        r = self.get_canvas_rect()
+        pat = cairo.LinearGradient(r.x, r.top(), r.x, r.bottom())
+        pat.add_color_stop_rgba(0.0, *dark_rgba)
+        pat.add_color_stop_rgba(0.5, *bright_rgba)
+        pat.add_color_stop_rgba(1.0, *dark_rgba)
+        cr.set_source(pat)
+        cr.set_line_width(2)
 
         for rect in self._separator_rects:
             rect = self.scrolled_context.log_to_canvas_rect(rect)
-
-            if 0:
-                cr.rectangle(*rect)
-                cr.fill()
-            if 1:
-                xc = rect.get_center_x()
-                cr.move_to(xc, rect.top())
-                cr.line_to(xc, rect.bottom())
-                cr.set_line_width(1)
-                cr.stroke()
-            if 0:
-                from math import pi
-                xc, yc = rect.get_center()
-                cr.save()
-
-                cr.translate(xc, yc)
-                cr.rotate(pi / 4)
-                # context.scale(scale, scale)
-                s = rect.w
-                rect.x = -s
-                rect.y = -s
-                rect.w = s * 2
-                rect.h = s * 2
-                cr.rectangle(*rect)
-                cr.fill()
-
-                cr.restore()
-            if 1:
-                import cairo
-                xc = rect.get_center_x()
-                dark_rgba = (0, 0, 0, 1)
-                bright_rgba = rgba
-
-                pat = cairo.LinearGradient(xc, rect.top(), xc, rect.bottom())
-                pat.add_color_stop_rgba(0.0, *dark_rgba)
-                pat.add_color_stop_rgba(0.5, *bright_rgba)
-                pat.add_color_stop_rgba(1.0, *dark_rgba)
-                cr.set_source(pat)
-
-                cr.move_to(xc, rect.top())
-                cr.line_to(xc, rect.bottom())
-                cr.set_line_width(1)
-                cr.stroke()
+            xc = rect.get_center_x()
+            cr.move_to(xc, rect.top())
+            cr.line_to(xc, rect.bottom())
+            cr.stroke()
 
 
 class CharacterPalettePanel(LayoutPanel):
@@ -268,7 +259,7 @@ class CharacterPalettePanel(LayoutPanel):
     def __init__(self):
         LayoutPanel.__init__(self)
         self.keyboard = None
-        self._unicode_data = UnicodeData()
+        self._symbol_data = UnicodeData().get_symbol_data(self.content_type)
         self._character_grid = None
         self._header_keys = None
         self._active_category_index = -1
@@ -299,7 +290,7 @@ class CharacterPalettePanel(LayoutPanel):
         remaining_rect = background.get_fullsize_rect().copy()
 
         # create header keys
-        headers = self.get_header_labels()
+        headers = self._symbol_data.get_category_labels() + self.extra_labels
         ks, r = self._create_header_keys(
             remaining_rect,
             header_template.get_border_rect(),
@@ -315,6 +306,7 @@ class CharacterPalettePanel(LayoutPanel):
 
         # create scrolled panel with grid of keys
         grid = CharacterGridPanel()
+        grid.symbol_data = self._symbol_data
         grid.set_id("_character_grid")
         grid.set_border_rect(remaining_rect)
         grid.keyboard = self.keyboard
@@ -330,6 +322,7 @@ class CharacterPalettePanel(LayoutPanel):
         self._character_grid = grid
         self._header_keys = keys
 
+        grid.update_content()
         self.set_active_category_index(0)
 
     def _create_header_keys(self, palette_rect, header_key_border_rect,
@@ -373,27 +366,9 @@ class CharacterPalettePanel(LayoutPanel):
                 key.active = active
                 keys_to_redraw.append(key)
 
-        self._character_grid.subcategories = \
-            self.get_grid_subcategories(self._active_category_index)
-
-        self._character_grid.update_content()
-        self._character_grid.set_scroll_offset(0, 0)
-
-        self.keyboard.layout.invalidate_font_sizes()
-        self.keyboard.layout.invalidate_caches()
-
         self.keyboard.redraw(keys_to_redraw + [self._character_grid])
 
-    def get_header_labels(self):
-        return (self._unicode_data.get_category_labels(self.content_type) +
-                self.extra_labels)
-
-    def get_grid_labels(self, category):
-        return self._unicode_data.get_sequences(self.content_type, category)
-
-    def get_grid_subcategories(self, category):
-        return self._unicode_data.get_subcategories(self.content_type,
-                                                    category)
+        self._character_grid.scroll_to_category(self._active_category_index)
 
 
 class EmojiPalettePanel(CharacterPalettePanel):

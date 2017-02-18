@@ -78,6 +78,9 @@ class KeyContext(object):
         return (self.scale_log_to_canvas_x(coord[0]),
                 self.scale_log_to_canvas_y(coord[1]))
 
+    def scale_log_to_canvas_l(self, coord):
+        return list(self.scale_log_to_canvas(coord))
+
     def scale_log_to_canvas_x(self, x):
         return x * self.canvas_rect.w / self.log_rect.w
 
@@ -104,6 +107,13 @@ class KeyContext(object):
         log_rect = self.log_rect
         return (y - canvas_rect.y) * log_rect.h / canvas_rect.h + log_rect.y
 
+    def scale_canvas_to_log(self, coord):
+        return (self.scale_canvas_to_log_x(coord[0]),
+                self.scale_canvas_to_log_y(coord[1]))
+
+    def scale_canvas_to_log_l(self, coord):
+        return list(self.scale_canvas_to_log(coord))
+
     def scale_canvas_to_log_x(self, x):
         return x * self.log_rect.w / self.canvas_rect.w
 
@@ -122,7 +132,7 @@ class KeyContext(object):
 
     # ##### Speed-optimized overloads #####
 
-    def log_to_canvas(self, coord):
+    def log_to_canvas(self, coord):   # noqa: flake8
         canvas_rect = self.canvas_rect
         log_rect = self.log_rect
         return (canvas_rect.x + (coord[0] - log_rect.x) *
@@ -130,7 +140,7 @@ class KeyContext(object):
                 canvas_rect.y + (coord[1] - log_rect.y) *
                 canvas_rect.h / log_rect.h)
 
-    def log_to_canvas_rect(self, rect):
+    def log_to_canvas_rect(self, rect):   # noqa: flake8
         """ ~50% faster than the above. """
         w = rect.w
         h = rect.h
@@ -147,7 +157,7 @@ class KeyContext(object):
                     w * scale_w,
                     h * scale_h)
 
-    def scale_log_to_canvas(self, coord):
+    def scale_log_to_canvas(self, coord):   # noqa: flake8
         canvas_rect = self.canvas_rect
         log_rect = self.log_rect
         return (coord[0] * canvas_rect.w / log_rect.w,
@@ -923,32 +933,38 @@ class LayoutItem(TreeItem):
                         return True
 
     def dispatch_input_sequence_update(self, sequence):
-        if self.visible and self.sensitive:
-            point = sequence.point
-            rect = self.get_canvas_border_rect()
-            if rect.is_point_within(point):
+        if sequence.active_item is not None:
+            sequence.active_item.on_input_sequence_update(sequence)
+        else:
+            if self.visible and self.sensitive:
+                point = sequence.point
+                rect = self.get_canvas_border_rect()
+                if rect.is_point_within(point):
 
-                if self.on_input_sequence_update(sequence):
-                    return True
-
-                for item in self.items:
-                    if item.dispatch_input_sequence_update(sequence):
+                    if self.on_input_sequence_update(sequence):
                         return True
+
+                    for item in self.items:
+                        if item.dispatch_input_sequence_update(sequence):
+                            return True
 
     def dispatch_input_sequence_end(self, sequence):
-        if self.visible and self.sensitive:
-            point = sequence.point
-            rect = self.get_canvas_border_rect()
-            if rect.is_point_within(point):
+        if sequence.active_item is not None:
+            sequence.active_item.on_input_sequence_end(sequence)
+        else:
+            if self.visible and self.sensitive:
+                point = sequence.point
+                rect = self.get_canvas_border_rect()
+                if rect.is_point_within(point):
 
-                # allow self to handle it first
-                if self.on_input_sequence_end(sequence):
-                    return True
-
-                # then ask the children
-                for item in self.items:
-                    if item.dispatch_input_sequence_end(sequence):
+                    # allow self to handle it first
+                    if self.on_input_sequence_end(sequence):
                         return True
+
+                    # then ask the children
+                    for item in self.items:
+                        if item.dispatch_input_sequence_end(sequence):
+                            return True
 
     def on_input_sequence_begin(self, sequence):
         return False
@@ -1302,7 +1318,7 @@ class ScrolledLayoutPanel(LayoutPanel):
         super(ScrolledLayoutPanel, self).__init__()
 
         self._scroll_rect = Rect()  # area to be scrolled, logical coordinates
-        self._scroll_offset = [0, 0]          # canvas coordinate
+        self._scroll_offset = [0, 0]          # logical coordinate
 
         self._drag_begin_point = None
         self._drag_begin_scroll_offset = [0, 0]
@@ -1326,14 +1342,19 @@ class ScrolledLayoutPanel(LayoutPanel):
 
     def set_scroll_offset(self, offset_x, offset_y):
         self.stop_scrolling()
+
+        r = self.get_visible_scrolled_rect()
+        offset_x = max(r.w - self._scroll_rect.w, offset_x)
+        offset_y = max(r.h - self._scroll_rect.h, offset_y)
+
         self._scroll_offset = [offset_x, offset_y]
         self._update_contents()
 
     def stop_scrolling(self):
         self._last_step_time = None
         self._target_offset = [None, None]
-        self._scroll_acceleration = [0, 0]
-        self._scroll_velocity = [0, 0]
+        self._acceleration = [0, 0]
+        self._velocity = [0, 0]
         self._dampening = [0, 0]
         self._step_timer.stop()
 
@@ -1352,7 +1373,8 @@ class ScrolledLayoutPanel(LayoutPanel):
         pass
 
     def on_input_sequence_begin(self, sequence):
-        self._drag_begin(sequence)
+        if sequence.primary:
+            self._drag_begin(sequence)
         return False
 
     def on_input_sequence_update(self, sequence):
@@ -1360,14 +1382,15 @@ class ScrolledLayoutPanel(LayoutPanel):
 
         if self.is_drag_active():
             sequence.cancel_key_action = True
-            return True
+            sequence.active_item = self
 
         return False
 
     def on_input_sequence_end(self, sequence):
-        was_drag_active = self.is_drag_active()
-        self._drag_end()
-        return was_drag_active
+        if self.is_drag_active():
+            self._drag_end()
+            sequence.active_item = None
+        return False
 
     def _drag_begin(self, sequence):
         point = sequence.point
@@ -1403,9 +1426,12 @@ class ScrolledLayoutPanel(LayoutPanel):
 
             if self.is_drag_active() or start_scrolling:
                 self._drag_active = True
+                context = self.context
                 self._target_offset = \
-                    [self._drag_begin_scroll_offset[0] + dx,
-                     self._drag_begin_scroll_offset[1] + dy]
+                    [self._drag_begin_scroll_offset[0] +
+                     context.scale_canvas_to_log_x(dx),
+                     self._drag_begin_scroll_offset[1] +
+                     context.scale_canvas_to_log_y(dy)]
 
     def _drag_end(self):
         self._drag_active = False
@@ -1431,6 +1457,7 @@ class ScrolledLayoutPanel(LayoutPanel):
 
     def _step_scroll_position(self):
         force = [0.0, 0.0]
+        context = self.context
 
         t = time.time()
         if self._last_step_time is not None:
@@ -1440,67 +1467,80 @@ class ScrolledLayoutPanel(LayoutPanel):
             limit_force_scale = 0.25
 
             canvas_rect = self.get_canvas_rect()
-            scroll_rect = self.context.log_to_canvas_rect(self._scroll_rect)
+            scroll_rect = context.log_to_canvas_rect(self._scroll_rect)
+            scroll_offset = context.scale_log_to_canvas_l(self._scroll_offset)
+            target_offset = [
+                None if self._target_offset[0] is None
+                else context.scale_log_to_canvas_x(self._target_offset[0]),
+                None if self._target_offset[1] is None
+                else context.scale_log_to_canvas_y(self._target_offset[1])]
 
             tleft = canvas_rect.left() - scroll_rect.left()
-            dleft = self._scroll_offset[0] - tleft
+            dleft = scroll_offset[0] - tleft
 
             tright = canvas_rect.right() - scroll_rect.right()
-            dright = self._scroll_offset[0] - tright
+            dright = scroll_offset[0] - tright
 
             ttop = canvas_rect.top() - scroll_rect.top()
-            dtop = self._scroll_offset[1] - ttop
+            dtop = scroll_offset[1] - ttop
 
             tbottom = canvas_rect.bottom() - scroll_rect.bottom()
-            dbottom = self._scroll_offset[1] - tbottom
+            dbottom = scroll_offset[1] - tbottom
 
             # left limit
             if dleft > 0:
                 force[0] -= dleft * limit_force_scale
                 self._dampening[0] = limit_dampening
                 if not self.is_drag_active() and \
-                   self._target_offset[0] is None:
-                    self._target_offset[0] = tleft   # snap to edge
+                   target_offset[0] is None:
+                    target_offset[0] = tleft   # snap to edge
 
             # right limit
             elif dright < 0:
                 force[0] -= dright * limit_force_scale
                 self._dampening[0] = limit_dampening
                 if not self.is_drag_active() and \
-                   self._target_offset[0] is None:
-                    self._target_offset[0] = tright
+                   target_offset[0] is None:
+                    target_offset[0] = tright
 
             # top limit
             if dtop > 0:
                 force[1] -= dtop * limit_force_scale
                 self._dampening[1] = limit_dampening
                 if not self.is_drag_active() and \
-                   self._target_offset[1] is None:
-                    self._target_offset[1] = ttop
+                   target_offset[1] is None:
+                    target_offset[1] = ttop
 
             # bottom limit
             elif dbottom < 0:
                 force[1] -= dbottom * limit_force_scale
                 self._dampening[1] = limit_dampening
                 if not self.is_drag_active() and \
-                   self._target_offset[1] is None:
-                    self._target_offset[1] = tbottom
+                   target_offset[1] is None:
+                    target_offset[1] = tbottom
 
-            if self._target_offset[0] is not None:
-                force[0] += self._target_offset[0] - self._scroll_offset[0]
-            if self._target_offset[1] is not None:
-                force[1] += self._target_offset[1] - self._scroll_offset[1]
+            if target_offset[0] is not None:
+                force[0] += target_offset[0] - scroll_offset[0]
+            if target_offset[1] is not None:
+                force[1] += target_offset[1] - scroll_offset[0]
 
-            self._scroll_acceleration[0] = force[0] / mass
-            self._scroll_acceleration[1] = force[1] / mass
-            self._scroll_velocity[0] *= math.exp(dt * -self._dampening[0])
-            self._scroll_velocity[1] *= math.exp(dt * -self._dampening[1])
-            self._scroll_velocity[0] += self._scroll_acceleration[0] * dt
-            self._scroll_velocity[1] += self._scroll_acceleration[1] * dt
+            self._acceleration[0] = force[0] / mass
+            self._acceleration[1] = force[1] / mass
+            self._velocity[0] *= math.exp(dt * -self._dampening[0])
+            self._velocity[1] *= math.exp(dt * -self._dampening[1])
+            self._velocity[0] += self._acceleration[0] * dt
+            self._velocity[1] += self._acceleration[1] * dt
             if not self._lock_x_axis:
-                self._scroll_offset[0] += self._scroll_velocity[0] * dt
+                scroll_offset[0] += self._velocity[0] * dt
             if not self._lock_y_axis:
-                self._scroll_offset[1] += self._scroll_velocity[1] * dt
+                scroll_offset[1] += self._velocity[1] * dt
+
+            self._scroll_offset = context.scale_canvas_to_log_l(scroll_offset)
+
+            self._target_offset[0] = None if target_offset[0] is None \
+                else context.scale_canvas_to_log_x(target_offset[0])
+            self._target_offset[1] = None if target_offset[1] is None \
+                else context.scale_canvas_to_log_y(target_offset[1])
 
             idle_call(self._update_contents)
 
@@ -1509,8 +1549,8 @@ class ScrolledLayoutPanel(LayoutPanel):
         # stop updates when movement has died down
         if not self.is_drag_initiated():
             eps = 0.5
-            velocity2 = (self._scroll_velocity[0] * self._scroll_velocity[0] +
-                         self._scroll_velocity[1] * self._scroll_velocity[1])
+            velocity2 = (self._velocity[0] * self._velocity[0] +
+                         self._velocity[1] * self._velocity[1])
             if force[0] < eps and \
                force[1] < eps and\
                velocity2 < eps * eps:
@@ -1523,20 +1563,15 @@ class ScrolledLayoutPanel(LayoutPanel):
         self.set_damage(self.get_visible_scrolled_rect())
 
     def get_visible_scrolled_rect(self):
-        """ Portion of the virtual scroll rect visible in the Panel. """
+        """
+        Portion of the virtual scroll rect visible in the Panel,
+        in logical coordinates.
+        """
         rect = self.get_rect()
-        context = self.context
-        rect.x -= context.scale_canvas_to_log_x(self._scroll_offset[0])
-        rect.y -= context.scale_canvas_to_log_y(self._scroll_offset[1])
+        rect.x -= self._scroll_offset[0]
+        rect.y -= self._scroll_offset[1]
         return rect
 
-    def log_to_scrolled_canvas_rect(self):
-        """ Portion of the virtual scroll rect visible in the Panel. """
-        rect = self.get_rect()
-        context = self.context
-        rect.x -= context.scale_canvas_to_log_x(self._scroll_offset[0])
-        rect.y -= context.scale_canvas_to_log_y(self._scroll_offset[1])
-        return rect
     def do_fit_inside_canvas(self, canvas_border_rect):
         """
         Translate children.
@@ -1552,8 +1587,10 @@ class ScrolledLayoutPanel(LayoutPanel):
             context = KeyContext()
             context.log_rect = self.get_border_rect()
             context.canvas_rect = self.get_canvas_rect()  # exclude border
-            context.canvas_rect.x += self._scroll_offset[0]
-            context.canvas_rect.y += self._scroll_offset[1]
+            context.canvas_rect.x += \
+                self.context.scale_log_to_canvas_x(self._scroll_offset[0])
+            context.canvas_rect.y += \
+                self.context.scale_log_to_canvas_y(self._scroll_offset[1])
             self.scrolled_context = context
 
             for item in self.items:

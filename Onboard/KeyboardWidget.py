@@ -1117,16 +1117,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         # ask layout tree
         if hit_handle is None:
             layout = self.get_layout()
-            handled = layout.dispatch_input_sequence_update(sequence) \
+            layout.dispatch_input_sequence_update(sequence) \
                 if layout else None
 
-            # hack that hides popups when ScrolledLayoutPanel starts scrolling
-            if handled:
-                self.keyboard.hide_touch_feedback()
-
-            # hit-test keys
-            if not handled:
+            if sequence.active_item is None:
+                # hit-test keys
                 hit_key = self.get_key_at_location(point)
+            else:
+                # hack that hides popups when ScrolledLayoutPanel
+                # starts scrolling
+                self.keyboard.hide_touch_feedback()
 
         if sequence.state & BUTTON123_MASK:
 
