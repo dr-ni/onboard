@@ -730,9 +730,10 @@ class Rect:
 
     def flow_layout(self, item_rect, num_items,
                     x_spacing=None, y_spacing=None,
-                    row_first=True):
+                    flow_horizontally=True,
+                    grow_horizontally=True):
         """
-        Layout num_items sub-rectangles of size item_rect in row_first or
+        Layout num_items sub-rectangles of size item_rect in grow_horizontal or
         columns-first order.
         """
 
@@ -744,12 +745,20 @@ class Rect:
         rects = []
         bounds = self.copy()
 
-        if row_first:
+        if grow_horizontally:
+            # self determines height and minimum width.
+            # Items may overflow the minimum width.
+            nrows = int((self.h + y_spacing) / (item_rect.h + y_spacing))
+            ncols = int(ceil(num_items / nrows))
+            bounds.w = 0
+        else:
             # self determines width and minimum height.
             # Items may overflow the minimum height.
             ncols = int((self.w + x_spacing) / (item_rect.w + x_spacing))
             nrows = int(ceil(num_items / ncols))
+            bounds.h = 0
 
+        if flow_horizontally:
             for row in range(nrows):
                 for col in range(ncols):
                     x = self.x + item_rect.w * col + \
@@ -757,19 +766,15 @@ class Rect:
                     y = self.y + item_rect.h * row + \
                         y_spacing * max((row - 1), 0)
                     r = Rect(x, y, item_rect.w, item_rect.h)
+                    bounds = bounds.union(r)
                     rects.append(r)
-
-                    bounds.h = max(r.bottom(), self.bottom()) - self.top()
 
                     if len(rects) >= num_items:
                         break
 
+                if len(rects) >= num_items:
+                    break
         else:
-            # self determines height and minimum width.
-            # Items may overflow the minimum width.
-            nrows = int((self.h + y_spacing) / (item_rect.h + y_spacing))
-            ncols = int(ceil(num_items / nrows))
-
             for col in range(ncols):
                 for row in range(nrows):
                     x = self.x + item_rect.w * col + \
@@ -777,12 +782,14 @@ class Rect:
                     y = self.y + item_rect.h * row + \
                         y_spacing * max((row - 1), 0)
                     r = Rect(x, y, item_rect.w, item_rect.h)
+                    bounds = bounds.union(r)
                     rects.append(r)
-
-                    bounds.w = max(r.right(), self.right()) - self.left()
 
                     if len(rects) >= num_items:
                         break
+
+                if len(rects) >= num_items:
+                    break
 
         return rects, bounds
 

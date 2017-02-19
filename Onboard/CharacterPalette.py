@@ -64,15 +64,7 @@ class PaletteHeaderKey(FlatKey):
         self.build_rect_path_custom(context, r, 0b1100)
 
     def on_release(self, view, button, event_type):
-        self.palette_panel.set_active_category_index(self.code)
-
-
-class CharacterPaletteBackground(RectangleItem):
-
-    def get_fill_color(self):
-        return (0, 0, 0, 1)
-        return (0.125, 0.125, 0.125, 1)
-    pass
+        self.palette_panel.scroll_to_category_index(self.code)
 
 
 class CharacterGridPanel(ScrolledLayoutPanel):
@@ -119,7 +111,7 @@ class CharacterGridPanel(ScrolledLayoutPanel):
             sequences = self.symbol_data.get_subcategory_sequences(data)
 
             rects, bounds = flow_rect.flow_layout(
-                key_rect, len(sequences), *key_spacing, False)
+                key_rect, len(sequences), *key_spacing, True, True)
 
             key_labels.extend(sequences)
             key_rects.extend(rects)
@@ -155,8 +147,22 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         self.set_scroll_rect(bounding_box)
 
     def scroll_to_category(self, category_index):
-        x = self._category_rects[category_index].x
+        x = 0
+        if category_index >= 0 and \
+           category_index < len(self._category_rects):
+            x = self._category_rects[category_index].x
         self.set_scroll_offset(-x, 0)
+
+    def on_scroll_offset_changed(self):
+        offset = -self.get_scroll_offset()[0]
+        category_index = 0
+        for i, r in enumerate(self._category_rects):
+            if offset < r.x:
+                break
+            category_index = i
+
+        character_panel = self.get_parent()
+        character_panel.set_active_category_index(category_index)
 
     def on_damage(self, damage_rect):
         keys_to_redraw = [self]
@@ -299,11 +305,6 @@ class CharacterPalettePanel(LayoutPanel):
         keys += ks
         remaining_rect.h -= r.h
 
-        # create background rectangle
-        # bg = CharacterPaletteBackground()
-        # bg.set_border_rect(remaining_rect)
-        # bg.color_scheme = color_scheme
-
         # create scrolled panel with grid of keys
         grid = CharacterGridPanel()
         grid.symbol_data = self._symbol_data
@@ -323,7 +324,7 @@ class CharacterPalettePanel(LayoutPanel):
         self._header_keys = keys
 
         grid.update_content()
-        self.set_active_category_index(0)
+        self.scroll_to_category_index(0)
 
     def _create_header_keys(self, palette_rect, header_key_border_rect,
                             header_key_group, color_scheme, sequence):
@@ -356,18 +357,20 @@ class CharacterPalettePanel(LayoutPanel):
         key.label_margin = (1, 1)
 
     def set_active_category_index(self, index):
-        self._active_category_index = index
+        if self._active_category_index != index:
+            self._active_category_index = index
 
-        # update header keys
-        keys_to_redraw = []
-        for key in self._header_keys:
-            active = (key.code == self._active_category_index)
-            if key.active != active:
-                key.active = active
-                keys_to_redraw.append(key)
+            keys_to_redraw = []
+            for key in self._header_keys:
+                active = (key.code == self._active_category_index)
+                if key.active != active:
+                    key.active = active
+                    keys_to_redraw.append(key)
 
-        self.keyboard.redraw(keys_to_redraw + [self._character_grid])
+            self.keyboard.redraw(keys_to_redraw)
 
+    def scroll_to_category_index(self, index):
+        self.set_active_category_index(index)
         self._character_grid.scroll_to_category(self._active_category_index)
 
 

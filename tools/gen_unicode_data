@@ -423,7 +423,7 @@ class UnicodeDataGenerator:
             [1, "🎮", "🎮", "game", False],
 
             # Objects
-            [0, "🔔", "🔇", "sound", False],
+            [0, "💡", "🔇", "sound", False],
             [1, "🎼", "🎼", "music", False],
             [1, "🎷", "🎷", "musical-instrument", False],
             [1, "📱", "📱", "phone", False],
@@ -440,7 +440,7 @@ class UnicodeDataGenerator:
             [1, "🚬", "🚬", "other-object", False],
 
             # Symbols
-            [0, "🔶", "🏧", "transport-sign", False],
+            [0, "🔷", "🏧", "transport-sign", False],
             [1, "⚠", "⚠", "warning", False],
             [1, "⬆", "⬆", "arrow", False],
             [1, "🛐", "🛐", "religion", False],

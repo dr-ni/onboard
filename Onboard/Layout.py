@@ -20,8 +20,6 @@
 
 """ Classes for recursive layout definition """
 
-from __future__ import division, print_function, unicode_literals
-
 import time
 import math
 
@@ -448,6 +446,9 @@ class LayoutItem(TreeItem):
 
     # Clip children?
     clip_rect = None
+
+    # Function to continue event processing on cancelling a gesture
+    sequence_begin_retry_func = None
 
     def __init__(self):
         self.context = KeyContext()
@@ -1323,7 +1324,9 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._drag_begin_point = None
         self._drag_begin_scroll_offset = [0, 0]
         self._drag_active = False
+        self._drag_cancelled = False
         self._step_timer = Timer()
+        self._cancel_timer = Timer()
 
         self._lock_x_axis         = False
         self._lock_y_axis         = False
@@ -1350,6 +1353,9 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._scroll_offset = [offset_x, offset_y]
         self._update_contents()
 
+    def get_scroll_offset(self):
+        return self._scroll_offset
+
     def stop_scrolling(self):
         self._last_step_time = None
         self._target_offset = [None, None]
@@ -1374,15 +1380,19 @@ class ScrolledLayoutPanel(LayoutPanel):
 
     def on_input_sequence_begin(self, sequence):
         if sequence.primary:
-            self._drag_begin(sequence)
+            sequence.active_item = self
+            self._drag_initiate(sequence)
         return False
 
     def on_input_sequence_update(self, sequence):
-        self._drag_update(sequence)
+        if self.is_drag_initiated() and \
+           not self.is_drag_cancelled():
 
-        if self.is_drag_active():
-            sequence.cancel_key_action = True
-            sequence.active_item = self
+            self._drag_update(sequence)
+
+            if self.is_drag_active():
+                sequence.cancel_key_action = True
+                sequence.active_item = self
 
         return False
 
@@ -1390,48 +1400,56 @@ class ScrolledLayoutPanel(LayoutPanel):
         if self.is_drag_active():
             self._drag_end()
             sequence.active_item = None
+        elif self.is_drag_initiated() and not \
+           self.is_drag_cancelled():
+            self._drag_cancel(sequence)
+
         return False
 
-    def _drag_begin(self, sequence):
+    def _drag_initiate(self, sequence):
         point = sequence.point
+        self._drag_active = False
+        self._drag_cancelled = False
         self._drag_begin_point = point[:]
         self._drag_begin_scroll_offset = self._scroll_offset[:]
         self._drag_begin_time = time.time()
         self._dampening = [20, 20]
+        self._cancel_timer.start(0.25, self._drag_cancel, sequence)
 
     def _drag_update(self, sequence):
-        if self.is_drag_initiated():
-            point = sequence.point
-            dx = point[0] - self._drag_begin_point[0]
-            dy = point[1] - self._drag_begin_point[1]
+        point = sequence.point
+        dx = point[0] - self._drag_begin_point[0]
+        dy = point[1] - self._drag_begin_point[1]
 
-            # initiate scrolling?
-            start_scrolling = False
-            if not self.is_drag_active():
-                dt = time.time() - self._drag_begin_time
-                if dt < 0.5:
-                    # no key hit yet?
-                    if not sequence.active_key:
-                        start_scrolling = True
+        # initiate scrolling?
+        if not self.is_drag_active():
+            dt = time.time() - self._drag_begin_time
+            d_thresh = 12.0
+            v_thresh = 100.0
+
+            d = abs(dx)
+            vx = d / dt
+            if d > d_thresh and vx > v_thresh:
+                if self._lock_x_axis:
+                    self._drag_cancel(sequence)
+                else:
+                    self._drag_activate()
+            else:
+                d = abs(dy)
+                vy = d / dt
+                if d > d_thresh and vy > v_thresh:
+                    if self._lock_y_axis:
+                        self._drag_cancel(sequence)
                     else:
-                        ldx = 0 if self._lock_x_axis else dx
-                        ldy = 0 if self._lock_y_axis else dy
-                        d = math.sqrt(ldx * ldx + ldy * ldy)
-                        v = d / dt
-                        if d >= 12.0 and v >= 100.0:
-                            start_scrolling = True
+                        self._drag_activate()
 
-            if start_scrolling:
-                self._start_animation()
-
-            if self.is_drag_active() or start_scrolling:
-                self._drag_active = True
-                context = self.context
-                self._target_offset = \
-                    [self._drag_begin_scroll_offset[0] +
-                     context.scale_canvas_to_log_x(dx),
-                     self._drag_begin_scroll_offset[1] +
-                     context.scale_canvas_to_log_y(dy)]
+        if self.is_drag_active():
+            context = self.context
+            self._target_offset = \
+                [self._drag_begin_scroll_offset[0] +
+                    context.scale_canvas_to_log_x(dx),
+                    self._drag_begin_scroll_offset[1] +
+                    context.scale_canvas_to_log_y(dy)]
 
     def _drag_end(self):
         self._drag_active = False
@@ -1439,6 +1457,22 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._drag_begin_scroll_offset = None
         self._target_offset = [None, None]
         self._dampening = [3, 3]
+        self._cancel_timer.stop()
+
+    def _drag_activate(self):
+        self._drag_active = True
+        self._cancel_timer.stop()
+        self._start_animation()
+
+    def _drag_cancel(self, sequence):
+        self._drag_cancelled = True
+        self._drag_end()
+
+        sequence.active_item = None
+        if self.sequence_begin_retry_func is not None:
+            self.sequence_begin_retry_func(sequence)
+
+        return False
 
     def is_drag_initiated(self):
         """ Sequence begin received, but not yet actually dragging. """
@@ -1447,6 +1481,10 @@ class ScrolledLayoutPanel(LayoutPanel):
     def is_drag_active(self):
         """ Are we actually dragging? """
         return self._drag_active
+
+    def is_drag_cancelled(self):
+        """ Has gesture been cancelled before it could become active? """
+        return self._drag_cancelled
 
     def _start_animation(self):
         self._step_timer.start(1.0 / 60.0, self._step_scroll_position)
@@ -1542,7 +1580,7 @@ class ScrolledLayoutPanel(LayoutPanel):
             self._target_offset[1] = None if target_offset[1] is None \
                 else context.scale_canvas_to_log_y(target_offset[1])
 
-            idle_call(self._update_contents)
+            idle_call(self._update_contents_on_scroll)
 
         self._last_step_time = t
 
@@ -1558,9 +1596,16 @@ class ScrolledLayoutPanel(LayoutPanel):
 
         return True
 
+    def _update_contents_on_scroll(self):
+        self._update_contents()
+        self.on_scroll_offset_changed()
+
     def _update_contents(self):
         self.do_fit_inside_canvas(self.get_canvas_border_rect())
         self.set_damage(self.get_visible_scrolled_rect())
+
+    def on_scroll_offset_changed(self):
+        pass
 
     def get_visible_scrolled_rect(self):
         """

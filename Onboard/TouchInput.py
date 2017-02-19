@@ -783,9 +783,11 @@ class TouchInput(InputEventSource):
         self._num_tap_sequences += 1
 
     def _gesture_sequence_update(self, sequence):
+        #print("_gesture_sequence_update", self._gesture_detected)
         if self._gesture_detected and \
            sequence.state & BUTTON123_MASK and \
            self._gesture == NO_GESTURE:
+            print("_gesture_sequence_update")
             point = sequence.point
             dx = self._gesture_begin_point[0] - point[0]
             dy = self._gesture_begin_point[1] - point[1]

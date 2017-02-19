@@ -1224,6 +1224,8 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
         return cursor_index
 
+zf = None
+count = 0
 
 class PixBufScaled:
     """
@@ -1252,8 +1254,9 @@ class PixBufScaled:
         load_width = width * scale
         load_height = height * scale
 
-        self._pixbuf = GdkPixbuf.Pixbuf. \
-                    new_from_file_at_size(filename, load_width, load_height)
+        self._pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            filename, load_width, load_height)
+
         self._real_width = self._pixbuf.get_width()
         self._real_height = self._pixbuf.get_height()
         self._width = self._real_width / scale
@@ -1278,6 +1281,7 @@ class PixBufScaled:
 
         # grayscale?
         elif image_style == ImageStyle.DESATURATED:
+            # gdk_pixbuf_saturate_and_pixelate ()
             if 0:
                 # must have non-black background
                 Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)

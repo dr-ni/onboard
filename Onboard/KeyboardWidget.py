@@ -1017,13 +1017,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
 
-        point = sequence.point
-        key = None
-
         # hit-test touch handles first
         hit_handle = None
         if self.touch_handles.active:
-            hit_handle = self.touch_handles.hit_test(point)
+            hit_handle = self.touch_handles.hit_test(sequence.point)
             self.touch_handles.set_pressed(hit_handle)
             if hit_handle is not None:
                 # handle clicked -> stop auto-hide until button release
@@ -1035,12 +1032,22 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         # ask layout tree
         if hit_handle is None:
             layout = self.get_layout()
-            handled = layout.dispatch_input_sequence_begin(sequence) \
-                if layout else None
+            if layout:
+                layout.dispatch_input_sequence_begin(sequence)
 
-            # hit-test keys
-            if not handled:
-                key = self.get_key_at_location(point)
+        if sequence.active_item is None:
+            self.on_input_sequence_begin_delayed(sequence, hit_handle)
+        else:
+            sequence.active_item.sequence_begin_retry_func = \
+                self.on_input_sequence_begin_delayed
+
+    def on_input_sequence_begin_delayed(self, sequence, hit_handle=None):
+        point = sequence.point
+        key = None
+
+        # hit-test keys
+        if sequence.active_item is None:
+            key = self.get_key_at_location(point)
 
         # enable/disable the drag threshold
         if hit_handle is not None:
@@ -1117,8 +1124,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         # ask layout tree
         if hit_handle is None:
             layout = self.get_layout()
-            layout.dispatch_input_sequence_update(sequence) \
-                if layout else None
+            if layout:
+                layout.dispatch_input_sequence_update(sequence)
 
             if sequence.active_item is None:
                 # hit-test keys
@@ -1191,8 +1198,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         # layout tree
         layout = self.get_layout()
-        layout.dispatch_input_sequence_end(sequence) \
-            if layout else None
+        if layout:
+            layout.dispatch_input_sequence_end(sequence)
 
         # key up
         active_key = sequence.active_key
@@ -1219,6 +1226,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             self.inactivity_timer.begin_transition(False)
 
     def on_drag_gesture_begin(self, num_touches):
+        """ Called only for num_touches >= 2  """
         self.stop_long_press()
 
         if Handle.MOVE in self.get_drag_handles() and \

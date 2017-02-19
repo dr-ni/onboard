@@ -72,7 +72,7 @@ class Timer(object):
 
     def finish(self):
         """
-        Run one last time and stop.
+        Run callback one last time and stop.
         """
         if self.is_running():
             self.stop()

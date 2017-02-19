@@ -1313,7 +1313,7 @@ emoji_data = [
             ('🀄', None),                          # 🀄 mahjong red dragon
             ('🎴', None),                          # 🎴 flower playing cards
         ]],
-    [0, '🔔',                                      # category: sound
+    [0, '💡',                                      # category: sound
         [
             ('🔇', None),                          # 🔇 muted speaker
             ('🔈', None),                          # 🔈 speaker low volume
@@ -1520,7 +1520,7 @@ emoji_data = [
             ('🔮', None),                          # 🔮 crystal ball
             ('\U0001f6d2', None),                 # 🛒 shopping cart
         ]],
-    [0, '🔶',                                      # category: transport-sign
+    [0, '🔷',                                      # category: transport-sign
         [
             ('🏧', None),                          # 🏧 ATM sign
             ('🚮', None),                          # 🚮 litter in bin sign

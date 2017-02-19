@@ -62,6 +62,10 @@ class UnicodeData:
          ],
     ]
 
+    _short_emoji_data = [
+        [0, "", ["♥", "😂", "", ""]],
+    ]
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
