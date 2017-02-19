@@ -1,4 +1,4 @@
-onboard (1.4.1+rev-0foo0) zesty; urgency=medium
+onboard (1.4.1+rev-0local0) zesty; urgency=medium
 
   * debian/onboard.docs: remove
   * debian/source.lintian-overrides: remove
@@ -12,13 +12,13 @@ onboard (1.4.1+rev-0foo0) zesty; urgency=medium
 
  -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 18 Feb 2017 21:53:55 +0100
 
-onboard (1.4.1-0foo0) zesty; urgency=medium
+onboard (1.4.1-0local0) zesty; urgency=medium
 
   * Add more gsettings keys to allow using gsettings overrides
 
  -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 17 Feb 2017 17:21:37 +0100
 
-onboard (1.4.0-0foo0) zesty; urgency=medium
+onboard (1.4.0-0local0) zesty; urgency=medium
 
   * Tablet-mode: (LP: #1366421)
     - Add detection based on acpid reporting the SW_TABLET_MODE switch
