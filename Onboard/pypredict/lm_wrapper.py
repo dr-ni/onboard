@@ -624,17 +624,6 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
             target_word = re.search("^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
             choices = query_model.predict(context, limit)
 
-            if 0:  # step mode for debugging
-                print("cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys))
-                print("sentence= '%s'" % sentence)
-                print("inputline='%s'" % inputline)
-                print("prefix='%s'" % prefix)
-                print("prefix_to_end='%s'" % prefix_to_end)
-                print("target_word='%s'" % (target_word))
-                print("context=", context)
-                print("choices=", choices)
-                input()
-
             if target_word in choices:
                 added_chars = len(target_word) - len(prefix)
                 if added_chars == 0: # still right after insertion point?
@@ -648,6 +637,19 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
                 total_chars += 1
 
             pressed_keys += 1
+
+            if 0:  # step mode for debugging
+                print("learn_model.get_counts=", learn_model.get_counts())
+                print("cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys))
+                print("sentence= '%s'" % sentence)
+                print("inputline='%s'" % inputline)
+                print("prefix='%s'" % prefix)
+                print("prefix_to_end='%s'" % prefix_to_end)
+                print("target_word='%s'" % (target_word))
+                print("context=", context)
+                print("choices=", choices)
+                print("added_chars=", added_chars)
+                input()
 
         # learn the sentence
         if learn_model:
