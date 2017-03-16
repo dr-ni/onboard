@@ -1025,8 +1025,14 @@ class WordSuggestions:
 
     def commit_changes(self):
         """ Learn all accumulated changes and clear them """
-        if self.has_changes():
+        has_changes = self.has_changes()
+
+        _logger.debug("commit_changes(): has_changes={}"
+                      .format(has_changes))
+
+        if has_changes:
             self._learn_strategy.commit_changes()
+
         self._clear_changes()  # clear input line too
 
     def discard_changes(self):
@@ -1375,6 +1381,15 @@ class LearnStrategy:
 
     def _learn_spans(self, spans, bot_marker="", bot_offset=None,
                      text_domain=None):
+
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug("LearnStrategy._learn_spans("
+                          "bot_marker={}, bot_offset={}, text_domain={}): "
+                          "can_auto_learn={} ({})"
+                          .format(bot_marker, bot_offset, text_domain,
+                                  config.wp.can_auto_learn(),
+                                  config.wp.get_can_auto_learn_debug_string()))
+
         if config.wp.can_auto_learn():
             texts = self._get_learn_texts(spans, bot_marker, bot_offset,
                                           text_domain)
@@ -1670,6 +1685,10 @@ class LearnStrategyLRU(LearnStrategy):
         text_context = self._wp.text_context
         changes = text_context.get_changes()  # by reference
         spans = changes.get_spans()  # by reference
+
+        _logger.debug("LearnStrategyLRU.commit_changes(): "
+                      "changes={} engine={}"
+                      .format(changes, self._wp._wpengine))
         if spans:
             engine = self._wp._wpengine
             if engine:

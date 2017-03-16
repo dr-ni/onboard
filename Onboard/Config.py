@@ -2125,13 +2125,26 @@ class ConfigWordSuggestions(ConfigObject):
         self.punctuation_assistance_notify_add(callback)
         self.stealth_mode_notify_add(callback)
 
+    def get_can_auto_learn_debug_string(self):
+        return ("enabled={} auto_learn={} "
+                "is_learning_paused={} learning_behavior_paused={} "
+                "pause_learning_locked={} _pause_learning={} "
+                "stealth_mode={}"
+                .format(self.enabled,
+                        self.auto_learn,
+                        self.is_learning_paused(),
+                        self.learning_behavior_paused,
+                        self.pause_learning_locked,
+                        self._pause_learning,
+                        self.stealth_mode
+                        ))
+
     def can_auto_learn(self):
-        return self.enabled and \
-               self.auto_learn and \
-               (not self.is_learning_paused() or \
-                self.learning_behavior_paused != \
-                    LearningBehavior.NOTHING) and \
-               not self.stealth_mode
+        return (self.enabled and
+                self.auto_learn and
+                (not self.is_learning_paused() or
+                 self.learning_behavior_paused != LearningBehavior.NOTHING) and
+                not self.stealth_mode)
 
     def is_learning_paused(self):
         return self.get_pause_learning() > 0
