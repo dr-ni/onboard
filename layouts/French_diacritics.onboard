@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+<!--
+Copyright © 2011-2014 marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
+Onboard is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+Onboard is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<keyboard
+    id="French diacritics"
+    format="3.2"
+    section="contributions"
+    summary="French letters with diacritics (accents)."
+    description="Partial keyboard with only French special characters. All keys are located on a single layer for quick access."
+    author="marmuta"
+    >
+
+  <include file="key_defs.xml"/>
+  <panel filename="French_diacritics.svg" scan_priority="1">
+    <key group="alphanumeric" id="AE01" char="à" label="à"/>
+    <key group="alphanumeric" id="AE02" char="â" label="â"/>
+    <key group="alphanumeric" id="AE03" char="ä" label="ä"/>
+    <key group="alphanumeric" id="AE04" char="æ" label="æ"/>
+    <key group="alphanumeric" id="AE05" char="ç" label="ç"/>
+    <key group="alphanumeric" id="AE06" char="è" label="è"/>
+    <key group="alphanumeric" id="AE07" char="é" label="é"/>
+    <key group="alphanumeric" id="AE08" char="ê" label="ê"/>
+    <key group="alphanumeric" id="AE09" char="ë" label="ë"/>
+    <key group="alphanumeric" id="AE10" char="î" label="î"/>
+    <key group="alphanumeric" id="AE11" char="ï" label="ï"/>
+    <key group="alphanumeric" id="AE12" char="ô" label="ô"/>
+    <key group="alphanumeric" id="AE13" char="œ" label="œ"/>
+    <key group="alphanumeric" id="AE14" char="ù" label="ù"/>
+    <key group="alphanumeric" id="AE15" char="û" label="û"/>
+    <key group="alphanumeric" id="AE16" char="ü" label="ü"/>
+    <key group="alphanumeric" id="AE17" char="ÿ" label="ÿ"/>
+    
+    <key group="alphanumeric" id="AD01" char="À" label="À"/>
+    <key group="alphanumeric" id="AD02" char="Â" label="Â"/>
+    <key group="alphanumeric" id="AD03" char="Ä" label="Ä"/>
+    <key group="alphanumeric" id="AD04" char="Æ" label="Æ"/>
+    <key group="alphanumeric" id="AD05" char="Ç" label="Ç"/>
+    <key group="alphanumeric" id="AD06" char="È" label="È"/>
+    <key group="alphanumeric" id="AD07" char="É" label="É"/>
+    <key group="alphanumeric" id="AD08" char="Ê" label="Ê"/>
+    <key group="alphanumeric" id="AD09" char="Ë" label="Ë"/>
+    <key group="alphanumeric" id="AD10" char="Î" label="Î"/>
+    <key group="alphanumeric" id="AD11" char="Ï" label="Ï"/>
+    <key group="alphanumeric" id="AD12" char="Ô" label="Ô"/>
+    <key group="alphanumeric" id="AD13" char="Œ" label="Œ"/>
+    <key group="alphanumeric" id="AD14" char="Ù" label="Ù"/>
+    <key group="alphanumeric" id="AD15" char="Û" label="Û"/>
+    <key group="alphanumeric" id="AD16" char="Ü" label="Ü"/>
+    <key group="alphanumeric" id="AD17" char="Ÿ" label="Ÿ"/>
+    
+    <key group="alphanumeric" id="AC01" char="€" label="€"/>
+    <key group="alphanumeric" id="AC02" char="°" label="°"/>
+    <key group="alphanumeric" id="AC03" char="«" label="«"/>
+    <key group="alphanumeric" id="AC04" char="»" label="»"/>
+    
+    <key group="tools" id="quit" scan_priority="1"/>
+    <key group="tools" id="settings" scan_priority="1"/>
+    <key group="tools" id="move" tooltip="Move keyboard"/>
+    </panel>
+</keyboard>
