@@ -1467,10 +1467,12 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
     def get_monitor_workarea(self, monitor_index):
         display = Gdk.Display.get_default()
-        monitor = display.get_monitor(monitor_index)
         try:
+            # From Zesty, new in Gtk 3.22
+            monitor = display.get_monitor(monitor_index)
             area = monitor.get_workarea()
-        except AttributeError:    # new in Gtk 3.22, does not exist in Xenial
+        except AttributeError:
+            # Around Xenial and below, deprecated and returning unexpected values in Zesty
             screen = self.get_screen()
             area = screen.get_monitor_workarea(monitor_index)
 
