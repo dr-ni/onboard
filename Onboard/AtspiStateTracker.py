@@ -920,10 +920,16 @@ class AtspiStateTracker(EventSource):
 
     def _on_async_text_changed(self, event):
         if event.accessible == self._active_accessible:
+
             type = event.type
             insert = type.endswith(("insert", "insert:system"))
             delete = type.endswith(("delete", "delete:system"))
             # print(event.accessible.get_id(), type, insert)
+
+            _logger.atspi("_on_async_text_changed: "
+                          "type={} insert={} delete={}"
+                          .format(type, insert, delete))
+
             if insert or delete:
                 event.insert = insert
                 self.emit("text-changed", event)

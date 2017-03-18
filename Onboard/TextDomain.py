@@ -627,9 +627,14 @@ class DomainTerminal(TextDomain):
         # Only record (for learning) when there is a known prompt in sight.
         # Problem: learning won't happen for uncommon prompts, but less random
         # junk scrolling by should enter the user model in return.
-        context_lines, prompt_length, line, line_start, line_caret = \
-            self._get_text_after_prompt(accessible, offset)
-        return bool(prompt_length)
+        params = self._get_text_after_prompt(accessible, offset)
+        context_lines, prompt_length, line, line_start, line_caret = params
+        result = bool(prompt_length)
+
+        _logger.atspi("DomainTerminal.can_record_insertion("
+                      "offset={}, length={}): params={} result={}"
+                      .format(offset, length, params, result))
+        return result
 
     def can_suggest_before_typing(self):
         """ Can give word suggestions before typing has started? """
