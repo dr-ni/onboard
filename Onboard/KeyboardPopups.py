@@ -148,7 +148,7 @@ class TouchFeedback:
 class KeyboardPopup(WindowRectTracker, Gtk.Window):
     """ Abstract base class for popups. """
 
-    def __init__(self):
+    def __init__(self, **window_args):
         self._opacity = 1.0
 
         WindowRectTracker.__init__(self)
@@ -162,30 +162,22 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
             "opacity" : 1.0,
             "app_paintable" : True,
         }
+
         if gtk_has_resize_grip_support():
             args["has_resize_grip"] = False
+
+        args.update(window_args)
 
         Gtk.Window.__init__(self, **args)
 
         self.set_keep_above(True)
 
-        # In Precise, directly drawing on the top level window has no effect.
-        # The Cairo target surface is correctly rendered, but somehow it
-        # doesn't become visible. Compositing or not doesn't matter.
-        # It's most likely an old issue with Gtk/Gdk. Later releases like
-        # Trusty, Vivid are unaffected.
-        # -> Create a widget we can successfully draw on anywhere.
-        self.drawing_area = Gtk.DrawingArea()
-        self.add(self.drawing_area)
-        self.drawing_area.connect("draw", self.on_draw)
-
-        # use transparency if available
+        # use transparency if available)
         screen = Gdk.Screen.get_default()
         visual = screen.get_rgba_visual()
         self.supports_alpha = False
         if visual:
             self.set_visual(visual)
-            self.drawing_area.set_visual(visual)
 
             # Somehow Gtk 3.4 still needs these now deprecated calls
             # for LayoutPopups, even though IconPalette and LabelPopups
@@ -193,8 +185,6 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
             gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
             if gtk_version < Version(3, 18):  # Xenial doesn't need them
                 self.override_background_color(
-                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-                self.drawing_area.override_background_color(
                     Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
             self.supports_alpha = True
 
@@ -229,7 +219,41 @@ class KeyboardPopup(WindowRectTracker, Gtk.Window):
         return Rect(x, y, rect.w, rect.h)
 
 
-class LabelPopup(KeyboardPopup):
+class KeyboardPopupDrawable(KeyboardPopup):
+    """ Abstract base class for popups. """
+
+    def __init__(self):
+        super(KeyboardPopupDrawable,self).__init__()
+
+        # In Precise, directly drawing on the top level window has no effect.
+        # The Cairo target surface is correctly rendered, but somehow it
+        # doesn't become visible. Compositing or not doesn't matter.
+        # It's most likely an old issue with Gtk/Gdk. Later releases like
+        # Trusty, Vivid are unaffected.
+        # -> Create a widget we can successfully draw on anywhere.
+        self.drawing_area = Gtk.DrawingArea()
+        self.add(self.drawing_area)
+        self.drawing_area.connect("draw", self.on_draw)
+
+        # use transparency if available
+        screen = Gdk.Screen.get_default()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.drawing_area.set_visual(visual)
+
+            # Somehow Gtk 3.4 still needs these now deprecated calls
+            # for LayoutPopups, even though IconPalette and LabelPopups
+            # don't. Otherwise there will be a white background.
+            gtk_version = Version(Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION)
+            if gtk_version < Version(3, 18):  # Xenial doesn't need them
+                self.drawing_area.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+
+    def on_draw(self, widget, context):
+        raise NotImplementedError()
+
+
+class LabelPopup(KeyboardPopupDrawable):
     """ Ephemeral popup displaying a key label without user interaction. """
 
     ARROW_HEIGHT = 0.13
@@ -240,7 +264,7 @@ class LabelPopup(KeyboardPopup):
     _osk_util = osk.Util()
 
     def __init__(self):
-        KeyboardPopup.__init__(self)
+        KeyboardPopupDrawable.__init__(self)
         self._key = None
         self.connect("realize", self._on_realize_event)
 
@@ -357,7 +381,7 @@ class LabelPopup(KeyboardPopup):
         self._key = key
 
 
-class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
+class LayoutPopup(KeyboardPopupDrawable, LayoutView, TouchInput):
     """ Popup showing a (sub-)layout tree. """
 
     IDLE_CLOSE_DELAY = 0  # seconds of inactivity until window closes
@@ -367,7 +391,7 @@ class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
         self._notify_done_callback = notify_done_callback
         self._drag_selected = False # grazed by the pointer?
 
-        KeyboardPopup.__init__(self)
+        KeyboardPopupDrawable.__init__(self)
         LayoutView.__init__(self, keyboard)
         TouchInput.__init__(self)
 
@@ -655,13 +679,13 @@ class LayoutBuilderAlternatives(LayoutBuilderKeySequence):
                                               key_sequence)
 
 
-class PendingSeparatorPopup(KeyboardPopup):
+class PendingSeparatorPopup(KeyboardPopupDrawable):
     """ Ephemeral popup displaying the pending word separator. """
 
     _osk_util = osk.Util()
 
     def __init__(self):
-        KeyboardPopup.__init__(self)
+        KeyboardPopupDrawable.__init__(self)
         self.connect("realize", self._on_realize_event)
         self._visible = False
 
@@ -683,7 +707,7 @@ class PendingSeparatorPopup(KeyboardPopup):
         self._visible = True
 
     def hide(self):
-        KeyboardPopup.hide(self)
+        KeyboardPopupDrawable.hide(self)
         self._visible = False
 
     def is_visible(self):
