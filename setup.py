@@ -3,9 +3,9 @@
 
 # Copyright © 2007 Martin Böhme <martin.bohm@kubuntu.org>
 # Copyright © 2012-2013 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2009-2016 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2009-2017 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2015 Reiner Herrmann <reiner@reiner-h.de>
-# Copyright © 2011-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2011-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -421,7 +421,7 @@ class UninstallCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '1.3.0',
+    version = '1.4.1+2252',
     author = 'Onboard Devel Team',
     author_email = 'https://launchpad.net/~onboard/+contactuser',
     url = 'http://launchpad.net/onboard/',
@@ -432,13 +432,14 @@ DistUtilsExtra.auto.setup(
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/dbus-1/services', glob.glob('data/org.onboard.Onboard.service')),
-                  ('share/onboard', glob.glob('AUTHORS')),
-                  ('share/onboard', glob.glob('CHANGELOG')),
-                  ('share/onboard', glob.glob('COPYING*')),
-                  ('share/onboard', glob.glob('HACKING')),
-                  ('share/onboard', glob.glob('NEWS')),
-                  ('share/onboard', glob.glob('README')),
-                  ('share/onboard', glob.glob('onboard-defaults.conf.example')),
+                  ('share/doc/onboard', glob.glob('AUTHORS')),
+                  ('share/doc/onboard', glob.glob('CHANGELOG')),
+                  ('share/doc/onboard', glob.glob('COPYING*')),
+                  ('share/doc/onboard', glob.glob('HACKING')),
+                  ('share/doc/onboard', glob.glob('NEWS')),
+                  ('share/doc/onboard', glob.glob('README')),
+                  ('share/doc/onboard', glob.glob('onboard-defaults.conf.example')),
+                  ('share/doc/onboard', glob.glob('onboard-default-settings.gschema.override.example')),
                   ('share/icons/hicolor/16x16/apps', glob.glob('icons/hicolor/16/*')),
                   ('share/icons/hicolor/22x22/apps', glob.glob('icons/hicolor/22/*')),
                   ('share/icons/hicolor/24x24/apps', glob.glob('icons/hicolor/24/*')),

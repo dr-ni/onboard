@@ -2055,9 +2055,74 @@ Requires restart.</property>
                                     <property name="can_focus">False</property>
                                     <property name="margin_top">6</property>
                                     <property name="orientation">vertical</property>
-                                    <property name="spacing">10</property>
+                                    <property name="spacing">5</property>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkBox" id="box31">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                          <object class="GtkCheckButton" id="audio_feedback_enabled_toggle">
+                                            <property name="label" translatable="yes">Play sound</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">False</property>
+                                            <property name="has_tooltip">True</property>
+                                            <property name="tooltip_markup" translatable="yes">Play click sound on keypress.</property>
+                                            <property name="tooltip_text" translatable="yes">Play click sound on keypress.</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="xalign">0</property>
+                                            <property name="draw_indicator">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox" id="box32">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="margin_left">20</property>
+                                            <property name="margin_top">4</property>
+                                            <property name="orientation">vertical</property>
+                                            <child>
+                                              <object class="GtkCheckButton" id="audio_feedback_place_in_space_toggle">
+                                                <property name="label" translatable="yes">Place sound in space</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="receives_default">False</property>
+                                                <property name="no_show_all">True</property>
+                                                <property name="tooltip_text" translatable="yes">Place sound in space between speakers depending on the key's position on screen</property>
+                                                <property name="use_underline">True</property>
+                                                <property name="xalign">0</property>
+                                                <property name="draw_indicator">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <placeholder/>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="box42">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
@@ -2081,24 +2146,24 @@ Requires restart.</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkAlignment">
+                                          <object class="GtkAlignment" id="alignment2">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="left_padding">24</property>
                                             <child>
-                                              <object class="GtkBox">
+                                              <object class="GtkBox" id="box46">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
                                                 <property name="orientation">vertical</property>
                                                 <property name="spacing">5</property>
                                                 <child>
-                                                  <object class="GtkBox">
+                                                  <object class="GtkBox" id="box47">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
                                                     <property name="margin_top">4</property>
                                                     <property name="spacing">10</property>
                                                     <child>
-                                                      <object class="GtkLabel">
+                                                      <object class="GtkLabel" id="label69">
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">False</property>
                                                         <property name="label" translatable="yes">Popup size:</property>
@@ -2163,76 +2228,11 @@ Requires restart.</property>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">0</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <placeholder/>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="box31">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="orientation">vertical</property>
-                                        <child>
-                                          <object class="GtkCheckButton" id="audio_feedback_enabled_toggle">
-                                            <property name="label" translatable="yes">Play sound</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">False</property>
-                                            <property name="has_tooltip">True</property>
-                                            <property name="tooltip_markup" translatable="yes">Play click sound on keypress.</property>
-                                            <property name="tooltip_text" translatable="yes">Play click sound on keypress.</property>
-                                            <property name="use_underline">True</property>
-                                            <property name="xalign">0</property>
-                                            <property name="draw_indicator">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox" id="box32">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="margin_left">20</property>
-                                            <property name="margin_top">4</property>
-                                            <property name="orientation">vertical</property>
-                                            <child>
-                                              <object class="GtkCheckButton" id="audio_feedback_place_in_space_toggle">
-                                                <property name="label" translatable="yes">Place sound in space</property>
-                                                <property name="can_focus">True</property>
-                                                <property name="receives_default">False</property>
-                                                <property name="no_show_all">True</property>
-                                                <property name="tooltip_text" translatable="yes">Place sound in space between speakers depending on the key's position on screen</property>
-                                                <property name="use_underline">True</property>
-                                                <property name="xalign">0</property>
-                                                <property name="draw_indicator">True</property>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
-                                            </child>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">2</property>
-                                      </packing>
                                     </child>
                                   </object>
                                 </child>
@@ -2958,11 +2958,11 @@ Requires restart.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkNotebook">
+                      <object class="GtkNotebook" id="notebook4">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="box48">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">9</property>
@@ -3203,7 +3203,7 @@ Requires restart.</property>
                           </object>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label71">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">General</property>
@@ -3235,14 +3235,14 @@ Requires restart.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkBox" id="box49">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_left">20</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">14</property>
                                 <child>
-                                  <object class="GtkLabel">
+                                  <object class="GtkLabel" id="label72">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Requires driver support for SW_TABLET_MODE and a running instance of acpid.</property>
@@ -3257,12 +3257,12 @@ Requires restart.</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="box50">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="orientation">vertical</property>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="label73">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="margin_bottom">9</property>
@@ -3279,7 +3279,7 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkBox" id="box51">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="spacing">6</property>
@@ -3317,7 +3317,7 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkBox" id="box52">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="spacing">6</property>
@@ -3355,12 +3355,12 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkBox" id="box53">
                                         <property name="can_focus">False</property>
                                         <property name="no_show_all">True</property>
                                         <property name="spacing">6</property>
                                         <child>
-                                          <object class="GtkLabel">
+                                          <object class="GtkLabel" id="label74">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">File that contains the current device state:</property>
@@ -3372,7 +3372,7 @@ Requires restart.</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry">
+                                          <object class="GtkEntry" id="entry1">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                           </object>
@@ -3390,12 +3390,12 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkBox" id="box54">
                                         <property name="can_focus">False</property>
                                         <property name="no_show_all">True</property>
                                         <property name="spacing">6</property>
                                         <child>
-                                          <object class="GtkLabel">
+                                          <object class="GtkLabel" id="label75">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="label" translatable="yes">Regular expression to match for tablet-mode:</property>
@@ -3407,7 +3407,7 @@ Requires restart.</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry">
+                                          <object class="GtkEntry" id="entry2">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                           </object>
@@ -3450,7 +3450,7 @@ Requires restart.</property>
                           </packing>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label76">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Convertible Devices</property>
@@ -3483,7 +3483,7 @@ Requires restart.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkAlignment">
+                              <object class="GtkAlignment" id="alignment3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_left">21</property>
@@ -3494,7 +3494,7 @@ Requires restart.</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="label77">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="halign">start</property>
@@ -3508,7 +3508,7 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkScrolledWindow">
+                                      <object class="GtkScrolledWindow" id="scrolledwindow3">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="shadow_type">in</property>
@@ -3518,7 +3518,7 @@ Requires restart.</property>
                                             <property name="can_focus">True</property>
                                             <property name="enable_search">False</property>
                                             <child internal-child="selection">
-                                              <object class="GtkTreeSelection"/>
+                                              <object class="GtkTreeSelection" id="treeselection1"/>
                                             </child>
                                           </object>
                                         </child>
@@ -3530,7 +3530,7 @@ Requires restart.</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="label78">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="halign">start</property>
@@ -3559,7 +3559,7 @@ Requires restart.</property>
                           </packing>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label79">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">External Keyboards</property>
@@ -3582,7 +3582,7 @@ Requires restart.</property>
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="label80">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Auto-show</property>

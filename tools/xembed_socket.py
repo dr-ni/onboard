@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright © 2014-2015 marmuta <marmvta@gmail.com>
@@ -18,53 +18,56 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import string
 import optparse
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
-import pygtk
-pygtk.require('2.0')
-import gtk,sys
-
-parser = optparse.OptionParser(usage=
-            "Usage: %prog [options] [model1 model2 ...]")
-parser.add_option("-v", "--verbose",
-            action="store_true", dest="verbose", default=False,
-            help="Print a few status messages")
+parser = optparse.OptionParser(
+    usage="Usage: %prog [options] [model1 model2 ...]")
+parser.add_option(
+    "-v", "--verbose",
+    action="store_true", dest="verbose", default=False,
+    help="Print a few status messages")
 parser.add_option("-x", type="int", dest="x", help="Window x position")
 parser.add_option("-y", type="int", dest="y", help="Window y position")
-parser.add_option("-s", "--size", dest="size", default="800x200",
-        help="Window size, widthxheight")
-parser.add_option("-t", "--title", dest="title",
-        help="Window title")
+parser.add_option(
+    "-s", "--size", dest="size", default="800x200",
+    help="Window size, widthxheight")
+parser.add_option(
+    "-t", "--title", dest="title",
+    help="Window title")
 options, args = parser.parse_args()
 
 verbose = options.verbose
 size = [int(val) for val in options.size.split("x")]
 
-window = gtk.Window()
+window = Gtk.Window()
 window.resize(*size)
 if options.title:
     window.set_title(options.title)
 window.show()
-if not options.x is None and \
-   not options.y is None:
+if options.x is not None and \
+   options.y is not None:
     window.move(options.x, options.y)
 
-socket = gtk.Socket()
+socket = Gtk.Socket()
 socket.show()
 window.add(socket)
 
 if verbose:
-    print "Socket ID=", socket.get_id()
-window.connect("destroy", lambda w: gtk.main_quit())
+    print("Socket ID=", socket.get_id())
+window.connect("destroy", lambda w: Gtk.main_quit())
+
 
 def plugged_event(widget):
     if verbose:
-        print "I (", widget, ") have just had a plug inserted!"
+        print("I (", widget, ") have just had a plug inserted!")
+
 
 socket.connect("plug-added", plugged_event)
 
 if args:
-    socket.add_id(long(args[0]))
+    socket.add_id(int(args[0]))
 
-gtk.main()
+Gtk.main()

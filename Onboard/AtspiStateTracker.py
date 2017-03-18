@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2012-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2012-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -74,7 +74,6 @@ class CachedAccessible:
         self.get_toolkit_name()
         self.get_toolkit_version()
         self.get_editable_text_iface()
-        self.get_editable_text_iface()
         self.get_app_name()
         self.get_app_description()
         self.get_extents()
@@ -142,8 +141,12 @@ class CachedAccessible:
                                self._accessible.get_toolkit_version)
 
     def get_editable_text_iface(self):
-        return self._get_value("editable-text-iface",
-                               self._accessible.get_editable_text_iface)
+        try:
+            func = self._accessible.get_editable_text_iface
+        except AttributeError:  # function does not exist in Precise
+            return None
+
+        return self._get_value("editable-text-iface", func)
 
     def get_app_name(self):
         def func():
@@ -917,10 +920,16 @@ class AtspiStateTracker(EventSource):
 
     def _on_async_text_changed(self, event):
         if event.accessible == self._active_accessible:
+
             type = event.type
             insert = type.endswith(("insert", "insert:system"))
             delete = type.endswith(("delete", "delete:system"))
             # print(event.accessible.get_id(), type, insert)
+
+            _logger.atspi("_on_async_text_changed: "
+                          "type={} insert={} delete={}"
+                          .format(type, insert, delete))
+
             if insert or delete:
                 event.insert = insert
                 self.emit("text-changed", event)

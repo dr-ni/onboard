@@ -537,5 +537,5 @@ class TextChanges:
         return sorted([[span.pos, span.length] for span in spans])
 
     def __repr__(self):
-        return "TextChanges " + repr([str(span) for span in self._spans])
+        return "TextChanges(" + repr([str(span) for span in self._spans]) + ")"
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2013-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2013-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -126,6 +126,12 @@ class WPLocalEngine(object):
 
     def learn_text(self, text, allow_new_words):
         """ Count n-grams and add words to the auto-learn models. """
+
+        _logger.debug("learn_text(text={}, allow_new_words={}): "
+                      "auto_learn_models={}"
+                      .format(repr(text), allow_new_words,
+                              self.auto_learn_models))
+
         if self.auto_learn_models:
             tokens, spans = pypredict.tokenize_text(text)
 
@@ -176,7 +182,6 @@ class WPLocalEngine(object):
             model.learn_tokens(tokens, True)
 
     def clear_scratch_models(self):
-        """ Count n-grams and add words to the scratch models. """
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
             model.clear()

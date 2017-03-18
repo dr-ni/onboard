@@ -4,7 +4,7 @@
 # Copyright © 2007-2009 Chris Jones <tortoise@tortuga>
 # Copyright © 2010 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2012 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2009, 2011-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2009, 2011-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -767,6 +767,10 @@ class Keyboard(WordSuggestions):
     def set_visible(self, visible):
         self.unlock_visibility()  # unlock frequenty in case of stuck keys
         self.update_auto_show_on_visibility_change(visible)
+
+        if not visible:
+            self.hide_touch_feedback()
+
         for view in self._layout_views:
             view.set_visible(visible)
 

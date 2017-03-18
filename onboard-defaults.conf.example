@@ -1,5 +1,5 @@
-# Copyright © 2011 Francesco Fumanti <francesco.fumanti@gmx.net>
-# Copyright © 2011-2014, 2016 marmuta <marmvta@gmail.com>
+# Copyright © 2011, 2017 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2011-2014, 2016-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -28,8 +28,8 @@
 # Keys have to start in column 0. A whitespace in column 0 indicates
 # a line continuation.
 #
-# More complete descriptions of the keys and their allowed values can be 
-# found in Onboard's gsettings schemas. Navigate to 'org.onboard' in 
+# More complete descriptions of the keys and their allowed values can be
+# found in Onboard's gsettings schemas. Navigate to 'org.onboard' in
 # dconf-editor, or read the schema definitions at
 # /usr/share/glib-2.0/schemas/org.onboard.gschema.xml.
 #
@@ -48,7 +48,7 @@
 layout=Compact
 #layout=Phone
 
-#system-theme-associations={'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast', 'ContrastHighInverse' : 'HighContrastInverse'}}
+#system-theme-associations={'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast', 'ContrastHighInverse' : 'HighContrastInverse'}
 #system-theme-tracking-enabled=True
 
 # Default theme
@@ -114,7 +114,7 @@ xembed-unity-greeter-offset-x=85.0
 # Color of the background bar that is rendered on top of the
 # background image in unity-greeter and gnome-screensaver.
 # If not specified, the color is taken from the keyboard's background color.
-xembed-background-color='#0000007F'
+xembed-background-color=#0000007F
 
 # Enable drawing the current GNOME background image as background in
 # unity-greeter and gnome-screensaver.
@@ -131,8 +131,8 @@ xembed-background-image-enabled=True
 
 [window]
 #background-transparency=10.0
+docking-enabled=True
 #docking-edge=bottom
-#docking-enabled=False
 #docking-monitor=active
 #docking-shrink-workarea=True
 #enable-inactive-transparency=False

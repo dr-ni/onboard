@@ -2,7 +2,7 @@
 
 # Copyright © 2010 Chris Jones <tortoise@tortuga>
 # Copyright © 2010 Francesco Fumanti <francesco.fumanti@gmx.net>
-# Copyright © 2011-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2011-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -172,16 +172,15 @@ class Indicator():
 
         if sip == StatusIconProviderEnum.auto:
             # auto-detection
-            if config.prefer_gtkstatusicon():
-                sip = StatusIconProviderEnum.GtkStatusIcon
-            else:
-                sip = StatusIconProviderEnum.AppIndicator
+            sip = config.get_preferred_statusicon_provider()
 
         if sip == StatusIconProviderEnum.GtkStatusIcon:
             backends = [BackendGtkStatusIcon]
         elif sip == StatusIconProviderEnum.AppIndicator:
             backends = [BackendAppIndicator, BackendGtkStatusIcon]
-        else:
+        elif sip is None:
+            backends = []
+        else:  # sip == StatusIconProviderEnum.auto
             backends = [BackendAppIndicator,
                         BackendGtkStatusIcon]
 
@@ -195,11 +194,11 @@ class Indicator():
                              .format(backend.__name__, unicode_str(ex)))
 
         _logger.info("Status icon provider: '{}' selected"
-                     .format(backend.__name__))
+                     .format(self._backend and
+                             type(self._backend).__name__))
 
-        if self._backend:
+        if self._backend is not None:
             self._backend.set_visible(False)
-
 
     def cleanup(self):
         if self._backend:
@@ -217,7 +216,8 @@ class Indicator():
         self._menu.update_items()
 
     def set_visible(self, visible):
-        self._backend.set_visible(visible)
+        if self._backend is not None:
+            self._backend.set_visible(visible)
 
 
 class BackendBase():

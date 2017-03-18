@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2012-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2012-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -405,6 +405,9 @@ class AtspiTextContext(TextContext):
         self._wp.on_text_entry_activated()
 
     def _on_text_changed(self, event):
+        _logger.atspi("_on_text_changed: pos={}, length={}, insert={}"
+                      .format(event.pos, event.length, event.insert))
+
         insertion_span = self._record_text_change(event.pos,
                                                   event.length,
                                                   event.insert)
@@ -470,40 +473,56 @@ class AtspiTextContext(TextContext):
                         # when closing a tab in gnome-terminal.
                 char_count = None
 
+        if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
+            _logger.atspi("_record_text_change1(pos={}, length={}, "
+                          "insert={}): "
+                          "accessible={} char_count={}"
+                          .format(pos, length, insert,
+                                  accessible, char_count))
+
         if char_count is not None:
             # record the change
             spans_to_update = []
 
             if insert:
-                if self._entering_text and \
-                   self.can_record_insertion(accessible, pos, length):
-                    if self._wp.is_typing() or length < 30:
-                        # Remember all of the insertion, might have been
-                        # a pressed snippet or wordlist button.
-                        include_length = -1
-                    else:
-                        # Remember only the first few characters.
-                        # Large inserts can be paste, reload or scroll
-                        # operations. Only learn the first word of these.
-                        include_length = 2
+                # None = remember nothing, just update existing spans.
+                include_length = None
 
-                    # simple span for current insertion
-                    begin = max(pos - 100, 0)
-                    end = min(pos + length + 100, char_count)
-                    try:
-                        text = accessible.get_text(begin, end)
-                    except Exception as ex:
-                        _logger.info("TextContext._record_text_change() 1: " +
-                                     unicode_str(ex))
-                    else:
-                        insertion_span = TextSpan(pos, length, text, begin)
-                else:
-                    # Remember nothing, just update existing spans.
-                    include_length = None
+                if self._entering_text:
+                    can_record_insertion = \
+                        self.can_record_insertion(accessible, pos, length)
+
+                    if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
+                        _logger.atspi("_record_text_change2(): "
+                                      "can_record_insertion={} "
+                                      "is_typing={} "
+                                      .format(can_record_insertion,
+                                              self._wp.is_typing()))
+
+                    if can_record_insertion:
+                        if self._wp.is_typing() or length < 30:
+                            # Remember all of the insertion, might have been
+                            # a pressed snippet or wordlist button.
+                            include_length = -1
+                        else:
+                            # Remember only the first few characters.
+                            # Large inserts can be paste, reload or scroll
+                            # operations. Only learn the first word of these.
+                            include_length = 2
+
+                        # simple span for current insertion
+                        begin = max(pos - 100, 0)
+                        end = min(pos + length + 100, char_count)
+                        try:
+                            text = accessible.get_text(begin, end)
+                        except Exception as ex:
+                            _logger.info("_record_text_change() exception 1: "
+                                         + unicode_str(ex))
+                        else:
+                            insertion_span = TextSpan(pos, length, text, begin)
 
                 spans_to_update = self._changes.insert(pos, length,
                                                        include_length)
-
             else:
                 spans_to_update = self._changes.delete(pos, length,
                                                        self._entering_text)
@@ -517,12 +536,19 @@ class AtspiTextContext(TextContext):
                 try:
                     span.text = accessible.get_text(begin, end)
                 except Exception as ex:
-                    _logger.info("TextContext._record_text_change() 2: " +
+                    _logger.info("_record_text_change() exception 2: " +
                                  unicode_str(ex))
                     span.text = ""
                 span.text_pos = begin
 
         self._text_changed = True
+
+        if _logger.isEnabledFor(_logger.LEVEL_ATSPI):
+            _logger.atspi("_record_text_change3(): "
+                          "insertion_span={} spans_to_update={} "
+                          "changes={} "
+                          .format(insertion_span, spans_to_update,
+                                  self._changes))
 
         return insertion_span
 

@@ -25,37 +25,41 @@ import subprocess
 from optparse import OptionParser
 from collections import Counter
 
-import sys
-from os.path import dirname, abspath
-
-from pypredict import *
-
+from pypredict import (timeit, read_vocabulary, read_corpus,
+                       filter_tokens, tokenize_text, split_tokens,
+                       UnigramModel, DynamicModel)
 
 
 def main():
-    global model # for debugging
+    global model  # for debugging
 
-    parser = OptionParser(usage="Usage: %prog [options] model corpus corpus-pattern")
-    parser.add_option("-o", "--order", type="int", dest="order", default=3,
-              help="order of the language model, defaults to 3")
-    parser.add_option("-l", "--language", type="str", dest="lang_id", default="",
-              help="language id for the spell checker, e.g. en_US")
-    parser.add_option("-q", "--quiet",
-              action="store_true", dest="quiet", default=False,
-              help="only show the final summary")
-    parser.add_option("-v", "--vocabulary", type="str", dest="vocabulary_file",
-              help="list of words to consider during model creation")
-    parser.add_option("-u", "--max-unigrams", type="int",
-              dest="max_unigrams", default=0,
-              help="prune n-grams with counts below or equal the one of the "
-                   "least frequent of the top max_unigrams unigram;"
-                   "default 0, disabled")
+    parser = OptionParser(
+        usage="Usage: %prog [options] model corpus corpus-pattern")
+    parser.add_option(
+        "-o", "--order", type="int", dest="order", default=3,
+        help="order of the language model, defaults to 3")
+    parser.add_option(
+        "-l", "--language", type="str", dest="lang_id", default="",
+        help="language id for the spell checker, e.g. en_US")
+    parser.add_option(
+        "-q", "--quiet",
+        action="store_true", dest="quiet", default=False,
+        help="only show the final summary")
+    parser.add_option(
+        "-v", "--vocabulary", type="str", dest="vocabulary_file",
+        help="list of words to consider during model creation")
+    parser.add_option(
+        "-u", "--max-unigrams", type="int",
+        dest="max_unigrams", default=0,
+        help="prune n-grams with counts below or equal the one of the "
+             "least frequent of the top max_unigrams unigram;"
+             "default 0, disabled")
     options, args = parser.parse_args()
 
     order = options.order
     out = None if options.quiet else sys.stdout
     vocabulary = read_vocabulary(options.vocabulary_file) \
-                 if options.vocabulary_file else None
+        if options.vocabulary_file else None
 
     if order == 1:
         model = UnigramModel()
@@ -63,6 +67,11 @@ def main():
         model = DynamicModel()
         model.order = order
     max_unigrams = options.max_unigrams
+
+    if len(args) < 1:
+        parser.print_help()
+        sys.exit(0)
+
     model_filename = args[0]
     lang_id = options.lang_id
 
@@ -75,18 +84,19 @@ def main():
         spelling_cache = {"<unk>" : True,
                           "<s>" : True,
                           "</s>" : True,
-                          "<num>" : True,}
+                          "<num>" : True,
+                          }
 
     if len(args) >= 3:
         filenames = rglob(args[1], args[2])
         n = len(filenames)
         for i, filename in enumerate(filenames):
             count = i + 1
-            print("{:6}/{} {:7.2f}%: {}" \
+            print("{:6}/{} {:7.2f}%: {}"
                   .format(count, n, 100.0 * count / n, filename))
             text = read_corpus(filename)
             tokens, spans = tokenize_text(text)
-            #tokens += ["Anti-Corrutpion","生辰八字"]
+            # tokens += ["Anti-Corrutpion","生辰八字"]
 
             if vocabulary:
                 tokens = filter_tokens(tokens, vocabulary)
@@ -111,7 +121,7 @@ def main():
             if count % 3000 == 0:
                 print("saving", repr(model_filename))
                 model.save(model_filename)
-                #print_stats(model)
+                # print_stats(model)
 
     elif len(args) >= 2:
         filename = args[1]
@@ -135,7 +145,7 @@ def main():
             if most_common:
                 min_token = most_common[-1]
                 prune_count = min_token[1]
-                #print("pruning", min_token, prune_count)
+                # print("pruning", min_token, prune_count)
                 model = model.prune(prune_count)
 
     with timeit("save", out):
@@ -143,44 +153,46 @@ def main():
 
     print_stats(model)
 
+
 def spell_check(spell_checker, spelling_cache, tokens):
     unknowns = {}
-    num_new = 0
     for itoken, token in enumerate(tokens):
-        if not token in spelling_cache:
+        if token not in spelling_cache:
             try:
                 unknowns[token].append(itoken)
             except KeyError:
                 unknowns[token] = [itoken]
 
     if unknowns:
-        print("spell-checking {} unknowns of {} total tokens" \
+        print("spell-checking {} unknowns of {} total tokens"
               .format(len(unknowns), len(tokens)))
         spell_tokens = unknowns.keys()
         correct_words = set(spell_checker.query(spell_tokens))
         incorrect_words = set(spell_tokens) - correct_words
 
         for token in spell_tokens:
-            spelling_cache[token] = not token in incorrect_words
+            spelling_cache[token] = token not in incorrect_words
 
-        print("known tokens {:7}, dropping {:6} of {:6}: " \
+        print("known tokens {:7}, dropping {:6} of {:6}: "
               .format(len(spelling_cache),
                       len(incorrect_words),
                       len(spell_tokens)))
-        print (incorrect_words)
+        print(incorrect_words)
 
     # finally filter the tokens
     for itoken, token in enumerate(tokens):
         if not spelling_cache[token]:
             tokens[itoken] = "<unk>"
 
+
 def print_stats(model):
     counts, totals = model.get_counts()
     print("calculating stats...")
-    for i,c in enumerate(counts):
-        sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
-              (i+1, counts[i], totals[i]))
+    for i, c in enumerate(counts):
+        sys.stdout.write("%d-grams: types %10d, occurences %10d\n" %
+                         (i + 1, counts[i], totals[i]))
     print(model.memory_size())
+
 
 def rglob(dir_str, pattern_str):
     filenames = []
@@ -220,12 +232,13 @@ class SpellChecker:
 
         p = None
         try:
-            p = subprocess.Popen(args, stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE,
-                                       close_fds=True)
+            p = subprocess.Popen(args,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 close_fds=True)
         except OSError as e:
-            _logger.error(_format("Failed to execute '{}', {}", \
-                            " ".join(args), e))
+            print(format("Failed to execute '{}', {}",
+                  " ".join(args), e), file=sys.stderr)
 
         # Check if the process is still running, it might have
         # exited on start due to an unknown dictinary name.

@@ -3,7 +3,7 @@
 # Copyright © 2008-2010 Chris Jones <tortoise@tortuga>
 # Copyright © 2008-2011 Francesco Fumanti <francesco.fumanti@gmx.net>
 # Copyright © 2012 Gerd Kohlberger <lowfi@chello.at>
-# Copyright © 2009, 2011-2016 marmuta <marmvta@gmail.com>
+# Copyright © 2009, 2011-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -197,7 +197,6 @@ class Config(ConfigObject):
     window_scaling_factor = 1.0
 
     _xembed_background_rgba = None
-    _xembed_background_image_enabled = None
 
     _desktop_environment = None
 
@@ -442,7 +441,6 @@ class Config(ConfigObject):
         used_system_defaults = self.init_properties(self.options)
 
         self._update_xembed_background_rgba()
-        self._update_xembed_background_image_enabled()
 
         # Make sure there is a 'Default' entry when tracking the system theme.
         # 'Default' is the theme used when encountering a so far unknown
@@ -625,11 +623,16 @@ class Config(ConfigObject):
                                                    "AppIndicator" : 2,
                                                   })
         self.add_key("start-minimized", False)
-        self.add_key("xembed-onboard", False, prop="onboard_xembed_enabled")
         self.add_key("show-tooltips", True)
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}, "as") # default labels for all themes
         self.add_key("current-settings-page", 0)
+
+        self.add_key("xembed-onboard", False, prop="onboard_xembed_enabled")
+        self.add_key("xembed-aspect-change-range", [0, 1.6])
+        self.add_key("xembed-background-color", "#0000007F")
+        self.add_key("xembed-background-image-enabled", True)
+        self.add_key("xembed-unity-greeter-offset-x", 85.0)
 
         self.keyboard          = ConfigKeyboard()
         self.window            = ConfigWindow()
@@ -816,12 +819,8 @@ class Config(ConfigObject):
 
     def _convert_sysdef_key(self, gskey, sysdef, value):
         # key exclusive to system defaults?
-        if sysdef in ["superkey-label", \
-                      "superkey-label-independent-size",
-                      "xembed-aspect-change-range",
-                      "xembed-background-color",
-                      "xembed-background-image-enabled",
-                      "xembed-unity-greeter-offset-x"]:
+        if sysdef in ["superkey-label",
+                      "superkey-label-independent-size"]:
             return value
         else:
             return super(self.__class__, self). \
@@ -965,7 +964,7 @@ class Config(ConfigObject):
 
             candidates += [theme_assocs.get(gtk_theme, ""),
                            theme_assocs.get("Default", ""),
-                           ""]
+                           self.theme]
         else:
             candidates += ["",
                            "",
@@ -1216,9 +1215,7 @@ class Config(ConfigObject):
             self.is_keep_docking_frame_aspect_ratio_enabled(orientation_co)
 
     def is_keep_xembed_frame_aspect_ratio_enabled(self):
-        return (self.xid_mode and self.launched_by != self.LAUNCHER_NONE and
-                self.system_defaults.get("xembed_aspect_change_range")
-                is not None)
+        return self.xid_mode and self.launched_by != self.LAUNCHER_NONE
 
     def is_keep_docking_frame_aspect_ratio_enabled(self, orientation_co):
         return (not self.xid_mode and
@@ -1396,40 +1393,19 @@ class Config(ConfigObject):
                             .format(fn, unicode_str(ex)))
         return fn
 
-    def get_xembed_aspect_change_range(self):
-        aspect_change_range = [0.0, 1000.0]
-        value = self.system_defaults.get("xembed_aspect_change_range")
-        if not value is None:
-            value = value[1:-1]
-            begin, end = value.split(",")
-            aspect_change_range[0] = float(begin)
-            aspect_change_range[1] = float(end)
-        return aspect_change_range
-
     def get_xembed_unity_greeter_offset_x(self):
-        offset = self.system_defaults.get("xembed_unity_greeter_offset_x")
-        if not offset is None:
-            try:
-                offset = float(offset)
-            except ValueError:
-                offset = None
-        return offset
+        value = self.gskeys["xembed_unity_greeter_offset_x"].value
+        if value < 0:
+            value = None
+        return value
 
     def get_xembed_background_rgba(self):
         return self._xembed_background_rgba
 
     def _update_xembed_background_rgba(self):
-        value = self.system_defaults.get("xembed_background_color")
-        self._xembed_background_rgba = hexcolor_to_rgba(value[1:-1]) \
-                                       if not value is None else None
+        value = self.xembed_background_color
+        self._xembed_background_rgba = hexcolor_to_rgba(value)
 
-    def get_xembed_background_image_enabled(self):
-        return self._xembed_background_image_enabled
-
-    def _update_xembed_background_image_enabled(self):
-        value = self.system_defaults.get("xembed_background_image_enabled")
-        self._xembed_background_image_enabled = value == "True" \
-                                                if not value is None else None
     def _is_running_from_source(self):
         return bool(self._get_source_path())
 
@@ -1533,12 +1509,20 @@ class Config(ConfigObject):
 
         return DesktopEnvironmentEnum.Unknown
 
-    def prefer_gtkstatusicon(self):
+    def get_preferred_statusicon_provider(self):
         """
         Auto-detect if we should fall back to GtkStatusIcon.
         """
+        result = StatusIconProviderEnum.AppIndicator
+
         de = self.get_desktop_environment()
-        if de in (
+
+        # Gnome-shell annoys with sliding in their legacy icon panel.
+        # We have our indicator extension now, so turn the status icon off.
+        if de in (DesktopEnvironmentEnum.GNOME_Shell, ):
+            result = None
+
+        elif de in (
             # AppIndicator is supported in XUbuntu 16.04, but w/o left click
             # activation. GtkStatusIcon works well and allows left click.
             DesktopEnvironmentEnum.Cinnamon,
@@ -1558,8 +1542,9 @@ class Config(ConfigObject):
             # click activation. GtkStatusIcon works well too.
             # DesktopEnvironmentEnum.LXQT,
         ):
-            return True
-        return False
+            result = StatusIconProviderEnum.GtkStatusIcon
+
+        return result
 
 
 class ConfigKeyboard(ConfigObject):
@@ -2142,13 +2127,26 @@ class ConfigWordSuggestions(ConfigObject):
         self.punctuation_assistance_notify_add(callback)
         self.stealth_mode_notify_add(callback)
 
+    def get_can_auto_learn_debug_string(self):
+        return ("enabled={} auto_learn={} "
+                "is_learning_paused={} learning_behavior_paused={} "
+                "pause_learning_locked={} _pause_learning={} "
+                "stealth_mode={}"
+                .format(self.enabled,
+                        self.auto_learn,
+                        self.is_learning_paused(),
+                        self.learning_behavior_paused,
+                        self.pause_learning_locked,
+                        self._pause_learning,
+                        self.stealth_mode
+                        ))
+
     def can_auto_learn(self):
-        return self.enabled and \
-               self.auto_learn and \
-               (not self.is_learning_paused() or \
-                self.learning_behavior_paused != \
-                    LearningBehavior.NOTHING) and \
-               not self.stealth_mode
+        return (self.enabled and
+                self.auto_learn and
+                (not self.is_learning_paused() or
+                 self.learning_behavior_paused != LearningBehavior.NOTHING) and
+                not self.stealth_mode)
 
     def is_learning_paused(self):
         return self.get_pause_learning() > 0

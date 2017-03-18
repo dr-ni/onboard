@@ -1,3 +1,66 @@
+Version 1.4.0
+-------------
+
+  * Tablet-mode: (LP: #1366421)
+    - Add detection based on acpid reporting the SW_TABLET_MODE switch
+    - Add detection based on hotkey events from XInput
+    - Add detection by reading tablet-mode state from a few known sysfs paths
+    - Add option to the Auto-show page to auto-show Onboard only in tablet-mode
+    - Only run GlobalKeyListener when necessary
+    - Add tablet-mode settings to Preferences->Auto-show->Convertibles
+  * GNOME Shell:
+    - Add edge-drag gesture to show the keyboard in GNOME Shell
+    - Add option to gnome-shell-extension-prefs to disable edge-drag
+    - Enable auto-show only on first start (LP: #1650810)
+    - Fix setup.py to have distutils-extra not open extension dir as a file
+    - Stop the legacy icon panel from sliding in and out all the time
+    - Add license and copyright header to gschema.xml
+    - Fix broken string in prefs.js
+    - Fix copyright information in prefs.js
+    - Clean up prefs.js
+    - Remove debug output
+  * Auto-show:
+    - Refactor settings_auto_show_dialog.ui into new Auto-show preferences page
+    - Improve reliability in Unity Dash by reacting only to crucial events
+    - Add D-Bus property AutoShowPaused for convertible devices (LP: #1366421)
+    - Allow to block auto-show while external keyboards are connected
+    - Don't auto-hide while keys are still pressed.
+  * External keyboard detection:
+    - Detect keyboards with udev
+    - Add new preference subpage Preferences->Auto-show->External Keyboards
+    - Allow devices to be ignored; e.g. always connected keyboard
+  * onboard-autostart.desktop: (LP #1656779)
+    - Rename it to onboard-autostart.desktop.in
+    - Add _GenericName, _Comment and Icon keys
+    - Make it translatable
+  * Move listening for global key presses to new GlobalKeyListener.py file
+  * Have separate resize protection preference for floating icon and keyboard
+  * Add scale for label popup size to Preferences->Keyboard
+  * Switch position of "play sound" and "label popups" in Preferences-Keyboard
+  * Add MATE'S ContrastHighInverse to the map of known accessibility themes
+  * Replace deprecated GdkScreen.get_monitor_workarea()
+  * Delay visibility change via D-Bus until all keys are released (LP: #1648543)
+  * Indicate in log when Onboard has been started from the project directory
+  * Rename tools/socket.py to tools/xembed_socket.py to avoid name collision
+  * Reorganize AtspiStateTracker for saner handling of multiple accessibles
+  * Update licensing tool for gnome shell extension
+  * Explicitely clean up Applndicator status icon on exit
+  * Improve error handling when opening layouts files
+  * Work around firefox 50 urlbar losing focus and giving wrong caret position
+  * Work around broken transparency with Gtk 3.22 (Lp: #1636252)
+  * Work around byobu not reporting trailing spaces
+  * Fix -Wstrict-prototypes warning when building C++ extension lm
+  * Fix negative keyboard window size when screen says zero size (LP: #1633284)
+  * Fix geometry hints for minimum size calculation error on startup
+  * Fix startup failure on Arch Linux when libdbus-glib isn't installed
+  * Fix signed/unsigned comparison warnings when building in Arch Linux
+  * Make sure to hide label popups when the keyboard is hidden
+  * Ease adjustment of aspect ratio with more handles when docked and expanded
+  * Keep more distance when auto-positioning to the Dash search entry
+  * Enable docking by default in onboard-defaults.conf.example
+  * Update build instructions in README for Arch and Mageia
+  * Improve uninstall instructions in README
+
 Version 1.3.0
 -------------
 

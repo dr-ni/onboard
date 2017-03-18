@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright © 2015-2016 marmuta <marmvta@gmail.com>
-# Copyright © 2016 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2016-2017 Francesco Fumanti <francesco.fumanti@gmx.net>
 #
 # This file is part of Onboard.
 #
@@ -117,9 +117,11 @@ class Command:
                   ["luke.yelavich@canonical.com"]),
         Committer("marmuta",
                   ["marmvta@gmail.com",
-                   "user@dingsdale"]),
+                   "user@dingsdale",
+                   "user@box.local.org"]),
         Committer("Mike Gabriel",
-                  ["mike.gabriel@das-netzwerkteam.de"]),
+                  ["mike.gabriel@das-netzwerkteam.de",
+                  "sunweaver@debian.org"]),
         Committer("Martin Böhme",
                   ["martin.bohm@kubuntu.org"]),
         Committer("Martin Wimpress",
@@ -149,6 +151,8 @@ class Command:
          "mike.gabriel@das-netzwerkteam.de", ['20160731']],
         ["data/onboard-settings.desktop.in",
          "mike.gabriel@das-netzwerkteam.de", ['20160731']],
+        ["gnome/Onboard_Indicator@onboard.org/convenience.js",
+         "scampa.giovanni@gmail.com", ['20110101', '20120101']],
         ["gnome/Onboard_Indicator@onboard.org/extension.js",
          "simon.schumann@web.de", ['20160101']],
         ["gnome/Onboard_Indicator@onboard.org/metadata.json",
@@ -181,6 +185,8 @@ class Command:
          "lowfi@chello.at", ['20110101']],
         ["Onboard/osk/osk_struts.c",
          "lowfi@chello.at", ['20120101']],
+        ["Onboard/osk/osk_udev.c",
+         "marmvta@gmail.com", ['20160101']],
         ["Onboard/osk/osk_uinput.c",
          "marmvta@gmail.com", ['20120101']],
         ["Onboard/osk/osk_virtkey.c",
@@ -197,6 +203,8 @@ class Command:
          "lowfi@chello.at", ['20110101', '20130101']],
         ["Onboard/Sound.py",
          "lowfi@chello.at", ['20130101']],
+        ["Onboard/UDevTracker.py",
+         "marmvta@gmail.com", ['20160101']],
         ["Onboard/utils.py",
          "lowfi@chello.at", ['20120101']],
         ["setup.py",
@@ -209,8 +217,6 @@ class Command:
          "alanbell@ubuntu.com", ['20110101']],
         ["themes/Typist.colors",
          "alanbell@ubuntu.com", ['20110101']],
-        ["gnome/Onboard_Indicator@onboard.org/convenience.js",
-         "scampa.giovanni@gmail.com", ['20110101', '20120101']],
     ]
 
     # bzr commits that should not grant copyright
@@ -222,9 +228,7 @@ class Command:
         # Merge license-cleanup branch including generated license headers.
         "1962",
         # Update license headers.
-        "1963",
-        # Update license headers.
-        "2178",
+        "1963", "2178", "2248",
     ]
 
     # paths excluded by default (matched with startswith())

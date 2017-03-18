@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2014, 2016 marmuta <marmvta@gmail.com>
+# Copyright © 2014, 2016-2017 marmuta <marmvta@gmail.com>
 #
 # This file is part of Onboard.
 #
@@ -73,7 +73,8 @@ class AutoHide:
             self._udev_keyboard_devices = None
 
         _logger.debug("AutoHide._on_devices_updated(): {}"
-                      .format([d.name for d in self._udev_keyboard_devices]))
+                      .format(self._udev_keyboard_devices and
+                              [d.name for d in self._udev_keyboard_devices]))
 
     def _on_key_press(self, event):
         if config.is_auto_hide_on_keypress_enabled():
@@ -120,6 +121,7 @@ class AutoHide:
         _logger.debug("_is_real_keyboard_event(): "
                       "xidevice={}, udevdevices={}, result={}"
                       .format(repr(xidevice.name),
+                              self._udev_keyboard_devices and
                               [d.name for d in self._udev_keyboard_devices],
                               result))
 

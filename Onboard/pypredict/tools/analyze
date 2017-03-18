@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright © 2010, 2012 marmuta <marmvta@gmail.com>
 #
@@ -18,14 +18,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import os
 import random
 from optparse import OptionParser
 
 import matplotlib.pyplot as plt
 
 import pypredict
-from pypredict import *
+from pypredict import (timeit, read_corpus, tokenize_text, split_sentences,
+                       DynamicModelKN, CachedDynamicModel,
+                       overlay, linint, loglinint)
+
 
 class ModelConfig:
     def __init__(self):
@@ -33,8 +35,9 @@ class ModelConfig:
         self.perplexities = []
         self.ksrs = []
 
+
 def main():
-    parser = OptionParser(usage= \
+    parser = OptionParser(usage=  # noqa: flake8
 """Usage: %prog [options] merging <training text 1> <training text 2> <testing text>
            <training text 1> trains the base language model
            <training text 2> trains the second language model
@@ -43,9 +46,10 @@ def main():
        %prog [options] caching <base model> <testing text>
            <base model>   the static base language mode
            <testing text> text for entropy and ksr calculations,
-                          incrementally trains the second language model""")
-    parser.add_option("-o", "--order", type="int", dest="order", default=3,
-              help="order of the language model, defaults to  %default")
+                          incrementally trains the second language model""")  # noqa: flake8
+    parser.add_option(
+        "-o", "--order", type="int", dest="order", default=3,
+        help="order of the language model, defaults to  %default")
     options, args = parser.parse_args()
     if len(args) < 1:
         parser.print_usage()
@@ -65,28 +69,30 @@ def main():
             sys.exit(1)
         analyze_caching(args[1], args[2], order)
     else:
-        print "unknown command, exiting"
+        print("unknown command, exiting")
         sys.exit(1)
 
 
 def analyze_merging(training1, training2, testing, order):
-    for filename in [training1, training2]:
-        with timeit("creating model %d from '%s'" % (i+1, filename)):
+    models = []
+
+    for i, filename in enumerate([training1, training2]):
+        with timeit("creating model %d from '%s'" % (i + 1, filename)):
             text = read_corpus(filename)
             tokens, spans = tokenize_text(text)
-#            if i == 0:
-#                vocabulary = extract_vocabulary(tokens, 2, 10000)
-#                tokens = filter_tokens(tokens, vocabulary)
+            # if i == 0:
+            #     vocabulary = extract_vocabulary(tokens, 2, 10000)
+            #    tokens = filter_tokens(tokens, vocabulary)
             model = DynamicModelKN(order)
             model.learn_tokens(tokens)
             models.append(model)
 
-#    print "base vocabulary has %d words" % len(vocabulary)
+    # print("base vocabulary has %d words" % len(vocabulary))
 
     filename = testing
     with timeit("tokenizing '%s'" % (filename,)):
         testing_text = read_corpus(filename)
-        testing_sentences = split_sentences(testing_text)
+        testing_sentences, spans = split_sentences(testing_text)
         testing_tokens, spans = tokenize_text(testing_text)
 
     # model parameters
@@ -94,9 +100,9 @@ def analyze_merging(training1, training2, testing, order):
     smoothings = ["witten-bell", "abs-disc", "kneser-ney"]
     merges = ["overlay", "linint", "loglinint"]
 
-    #markers = ["o", "v", "s", "*", "+"]
+    # markers = ["o", "v", "s", "*", "+"]
     markers = ["o", "^", "*"]
-    colors = ["r", "g", "b", "c", "m", "k" ]
+    colors = ["r", "g", "b", "c", "m", "k"]
 
     configurations = []
     for smoothing in smoothings:
@@ -120,15 +126,16 @@ def analyze_merging(training1, training2, testing, order):
         weights = [w / wsum  for w in weights]
 
         # evenly spread
-        weights = [iteration/float(iterations-1), 1.0-iteration/float(iterations-1)]
+        weights = [iteration / float(iterations - 1),
+                   1.0 - iteration / float(iterations - 1)]
 
         # remember weights for plotting
-        for i,ws in enumerate(weights_series):
+        for i, ws in enumerate(weights_series):
             ws.append(weights[i])
 
-        for i,config in enumerate(configurations):
-            print "iteration %d/%d, config %d/%d" % \
-                  (iteration+1, iterations, i+1, len(configurations))
+        for i, config in enumerate(configurations):
+            print("iteration %d/%d, config %d/%d" %
+                  (iteration + 1, iterations, i + 1, len(configurations)))
 
             # setup model to analyze
             for m in models:
@@ -143,18 +150,19 @@ def analyze_merging(training1, training2, testing, order):
 
             # get statistics
             entropy, perplexity = random.random(), random.random()
-            entropy, perplexity = pypredict.entropy(model, testing_tokens, order)
+            entropy, perplexity = pypredict.entropy(model, testing_tokens,
+                                                    order)
             ksr = random.random() * 100
-            ksr = pypredict.ksr(model, None, testing_sentences, 10,
-                                lambda i,n, c, p: sys.stdout.write("%d/%d\n" % (i+1,n)))
+            ksr = pypredict.ksr(
+                model, None, testing_sentences, 10,
+                lambda i, n, c, p: sys.stdout.write("%d/%d\n" % (i + 1, n)))
 
             config.entropies.append(entropy)
             config.perplexities.append(perplexity)
             config.ksrs.append(ksr)
 
-            print "entropy=%10f, perplexity=%10f, ksr=%6.2f, weights=" % \
-                  (entropy, perplexity, ksr), weights
-
+            print("entropy=%10f, perplexity=%10f, ksr=%6.2f, weights=" %
+                  (entropy, perplexity, ksr), weights)
 
         # plot
         plt.ion()  # interactive mode on
@@ -182,9 +190,9 @@ def analyze_merging(training1, training2, testing, order):
         plt.xlabel('base model weight')
         plt.ylabel('ksr [%]')
 
-        #plt.gcf().suptitle('Smoothing & Interpolation', fontsize=16)
-        plt.figlegend(lines, labels, 'upper right' )  # 'upper right'
-        #plt.subplots_adjust(top=0.92, right=0.74, left=0.06)
+        # plt.gcf().suptitle('Smoothing & Interpolation', fontsize=16)
+        plt.figlegend(lines, labels, 'upper right')  # 'upper right'
+        # plt.subplots_adjust(top=0.92, right=0.74, left=0.06)
         plt.subplots_adjust(left=0.07, top=0.99, right=0.72, bottom=0.08)
         plt.draw()
 
@@ -196,7 +204,7 @@ def analyze_caching(base_model, testing, order):
 
     with timeit("loading base model '%s'" % (base_model,)):
         model = DynamicModelKN(order)
-        #model.load(base_model)
+        # model.load(base_model)
         models.append(model)
 
     model = CachedDynamicModel(order)
@@ -205,25 +213,25 @@ def analyze_caching(base_model, testing, order):
     filename = testing
     with timeit("tokenizing '%s'" % (filename,)):
         testing_text = read_corpus(filename)
-        testing_sentences = split_sentences(testing_text)
+        testing_sentences, spans = split_sentences(testing_text)
         testing_tokens, spans = tokenize_text(testing_text)
 
     # model parameters
     smoothings = ["abs-disc"]
-    #merges = ["overlay", "linint"]
+    # merges = ["overlay", "linint"]
     merges = ["overlay"]
-    #recency_smoothings = ["jelinek-mercer", "witten-bell"]
+    # recency_smoothings = ["jelinek-mercer", "witten-bell"]
     recency_smoothings = ["jelinek-mercer"]
 
-    #markers = ["o", "v", "s", "*", "+"]
+    # markers = ["o", "v", "s", "*", "+"]
     markers = ["o", "^", "*"]
-    colors = ["r", "g", "b", "c", "m", "k" ]
+    colors = ["r", "g", "b", "c", "m", "k"]
 
     paramdesc = [["recency_ratio", None, 0.58, 0, 1],
-                  ["recency_halflife", None, 80, 1, 120],
-                  ["recency_lambdas", 0, 0.3, 0, 1],
-                  ["recency_lambdas", 1, 0.3, 0, 1],
-                  ["recency_lambdas", 2, 0.3, 0, 1],
+                 ["recency_halflife", None, 80, 1, 120],
+                 ["recency_lambdas", 0, 0.3, 0, 1],
+                 ["recency_lambdas", 1, 0.3, 0, 1],
+                 ["recency_lambdas", 2, 0.3, 0, 1],
                  ]
 
     class Parameter:
@@ -233,8 +241,8 @@ def analyze_caching(base_model, testing, order):
         p = Parameter()
         p.name, p.index, p.default, p.min, p.max = pd
         p.xvalues = []
-        p.label = p.name + (str(p.index) if not p.index is None else "") + \
-                  " (def. " + str(p.default) + ")"
+        p.label = p.name + (str(p.index) if p.index is not None else "") + \
+            " (def. " + str(p.default) + ")"
         parameters.append(p)
 
     configurations = []
@@ -245,7 +253,8 @@ def analyze_caching(base_model, testing, order):
                 config.smoothing = smoothing
                 config.merge = merge
                 config.recency_smoothing = recency_smoothing
-                config.label = "%s (frequency), %s (recency), %s" % (smoothing, recency_smoothing, merge)
+                config.label = "%s (frequency), %s (recency), %s" % \
+                    (smoothing, recency_smoothing, merge)
                 config.marker = markers[len(configurations) % len(markers)]
                 config.color = colors[len(configurations) // len(markers)]
                 config.style = config.color + config.marker
@@ -256,14 +265,18 @@ def analyze_caching(base_model, testing, order):
     for iteration in range(iterations):
 
         # evenly spread
-        weight = iteration/float(iterations-1)
+        weight = iteration / float(iterations - 1)
+
+        # evenly spread
+        weights = [iteration / float(iterations - 1),
+                   1.0 - iteration / float(iterations - 1)]
 
         for dimension, param in enumerate(parameters):
-            param.xvalues.append(param.min+(param.max-param.min) * weight)
+            param.xvalues.append(param.min + (param.max - param.min) * weight)
 
-            for i,config in enumerate(configurations):
-                print "iteration %d/%d, config %d/%d" % \
-                      (iteration+1, iterations, i+1, len(configurations))
+            for i, config in enumerate(configurations):
+                print("iteration %d/%d, config %d/%d" %
+                      (iteration + 1, iterations, i + 1, len(configurations)))
 
                 # setup model to analyze
                 for m in models:
@@ -279,30 +292,30 @@ def analyze_caching(base_model, testing, order):
                 learn_model = models[1]
                 learn_model.clear()
                 learn_model.recency_smoothing = config.recency_smoothing
-                #learn_model.lambdas = [1]
-                for d,p in enumerate(parameters):
+                # learn_model.lambdas = [1]
+                for d, p in enumerate(parameters):
                     value = p.default
                     if d == dimension:
                         value = param.xvalues[iteration]
                     if p.index is None:
-                        print p.name,value
+                        print(p.name, value)
                         setattr(learn_model, p.name, value)
                     else:
                         a = list(getattr(learn_model, p.name)) + [0]
                         a[p.index] = value
-                        print p.name,a
+                        print(p.name, a)
                         setattr(learn_model, p.name, a)
-
 
                 # get statistics
                 ksr = random.random() * 100
-                ksr = pypredict.ksr(model, learn_model, testing_sentences, 10,
-                                    lambda i,n, c, p: sys.stdout.write("%d/%d\n" % (i+1,n)))
-                #learn_model.save("out.lm")
+                ksr = pypredict.ksr(
+                    model, learn_model, testing_sentences, 10,
+                    lambda i, n, c, p: sys.stdout.write("%d/%d\n" %
+                                                        (i + 1, n)))
+                # learn_model.save("out.lm")
                 config.ksrs[dimension].append(ksr)
 
-                print "ksr=%6.2f" % (ksr,)
-
+                print("ksr=%6.2f" % (ksr,))
 
         # plot
         plt.ion()  # interactive mode on
@@ -312,24 +325,25 @@ def analyze_caching(base_model, testing, order):
         lines = []
         labels = []
         for config in configurations:
-            for d,p in enumerate(parameters):
-                plt.subplot(3, 2, d+1)
+            for d, p in enumerate(parameters):
+                plt.subplot(3, 2, d + 1)
                 line = plt.plot(p.xvalues, config.ksrs[d], config.style + "-",
-                               label=config.label)
+                                label=config.label)
                 plt.xlim(p.min, p.max)
-                #plt.ylim(0, 35)
-                #plt.xlabel('base model weight')
+                # plt.ylim(0, 35)
+                # plt.xlabel('base model weight')
                 plt.xlabel(p.label)
                 plt.ylabel('ksr [%]')
             lines.append(line)
             labels.append(config.label)
 
-        plt.figlegend(lines, labels, 'upper right' )  # 'upper right'
+        # plt.figlegend(lines, labels, 'upper right')  # 'upper right'
         plt.subplots_adjust(left=0.09, right=0.98, top=0.89, bottom=0.08,
                             hspace=0.38)
         plt.gcf().suptitle('Caching', fontsize=16)
         plt.draw()
 
+    plt.ioff()
     plt.show()  # blocks; allows for interaction, saving images
 
 
