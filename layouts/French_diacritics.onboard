@@ -23,7 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     format="3.2"
     section="contributions"
     summary="French letters with diacritics (accents)."
-    description="Partial keyboard with only French special characters. All keys are located on a single layer for quick access."
+    description="Partial keyboard with only French special characters."
     author="marmuta"
     >
 
