@@ -33,7 +33,7 @@ from gi.repository          import GLib, Gdk, Gtk
 
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
-from Onboard.KeyboardPopups import LayoutPopup, \
+from Onboard.KeyboardPopups import LayoutPopup, KeyboardPopup, \
                                    LayoutBuilderAlternatives, \
                                    LayoutBuilder
 from Onboard.KeyGtk         import Key
@@ -341,6 +341,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         self._language_menu = LanguageMenu(self)
         self._suggestion_menu = SuggestionMenu(self)
+        self._symbol_search_popup = None
 
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -1696,14 +1697,63 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         # Delay this until the dialog is really gone.
         GLib.idle_add(self.keyboard.on_focusable_gui_closed)
 
-    def show_language_menu(self, key, button, closure = None):
+    def show_language_menu(self, key, button, closure=None):
         self._language_menu.popup(key, button, closure)
 
     def is_language_menu_showing(self):
         return self._language_menu.is_showing()
 
-    def show_prediction_menu(self, key, button, closure = None):
+    def show_prediction_menu(self, key, button, closure=None):
         self._suggestion_menu.popup(key, button, closure)
+
+    def show_symbol_search(self, content_type):
+        return
+
+        layout = self.get_layout()
+        if not layout:
+            return
+
+        wordlist = layout.find_id("wordlist")
+        if not wordlist:
+            return
+
+        popup = self._symbol_search_popup
+        if popup is None:
+            popup = SymbolSearchPopup()
+            popup.set_transient_for(self.get_toplevel())
+            popup.realize()
+
+            entry = Gtk.SearchEntry(hexpand=True, width_chars=35)
+            popup.add(entry)
+
+            self._symbol_search_popup = popup
+
+        r = wordlist.get_canvas_rect()
+        root_rect = canvas_to_root_window_rect(self, r)
+        x, y, w, h = root_rect
+        y -= h
+        print(x, y, w, h)
+
+        popup.show_all()
+
+        popup.set_default_size(w, h)
+        popup.resize(w, h)
+        popup.move(x, y)
+
+    def hide_symbol_search(self):
+        if not self._symbol_search_popup:
+            return
+        self._symbol_search_popup.hide()
+
+
+class SymbolSearchPopup(KeyboardPopup):
+
+    def __init__(self):
+        super(SymbolSearchPopup, self).__init__(accept_focus=False)
+
+    def on_draw(self, widget, cr):
+        cr.set_source_rgba(1, 0, 0, 0.5)
+        cr.paint()
 
 
 class KeyMenu:

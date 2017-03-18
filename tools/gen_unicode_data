@@ -373,7 +373,7 @@ class UnicodeDataGenerator:
             [1, "😈", "😈", "creature-face", False],
             [1, "😺", "😺", "cat-face", False],
             [1, "🙈", "🙈", "monkey-face", False],
-            [0, "👧", "👦", "person", False],
+            [1, "👦", "👦", "person", False],
             [1, "👮", "👨\U0000200d⚕️", "person-role", False],
             [1, "🙍", "🙍", "person-gesture", False],
             [1, "💆", "💆", "person-activity", False],

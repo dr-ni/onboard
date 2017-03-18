@@ -21,7 +21,7 @@
 """ Classes for recursive layout definition """
 
 import time
-import math
+from math import exp
 
 from Onboard.utils import Rect, TreeItem
 from Onboard.Timer import Timer, idle_call
@@ -599,11 +599,17 @@ class LayoutItem(TreeItem):
         return rect.is_point_within(canvas_point)
 
     def set_visible(self, visible):
-        self.visible = visible
+        if self.visible != visible:
+            self.visible = visible
+            self.on_visibility_changed(visible)
 
     def is_visible(self):
         """ Returns visibility status """
         return self.visible
+
+    def on_visibility_changed(self, visible):
+        for item in self.items:
+            item.on_visibility_changed(visible)
 
     def is_path_visible(self):
         """ Are all items in the path to the root visible? """
@@ -694,7 +700,7 @@ class LayoutItem(TreeItem):
         """
         if self.layer_id is not None:
             if not self.is_key():
-                self.visible = self.layer_id in layer_ids
+                self.set_visible(self.layer_id in layer_ids)
 
         for item in self.items:
             item.set_visible_layers(layer_ids)
@@ -986,7 +992,7 @@ class LayoutItem(TreeItem):
                 if self.clip_rect is not None:
                     cr = context.cr
                     cr.save()
-                    cr.rectangle(*self.clip_rect)
+                    cr.rectangle(*self.clip_rect.int())  # int clip is faster
                     cr.clip()
 
                 self.draw_item(context)
@@ -1400,8 +1406,7 @@ class ScrolledLayoutPanel(LayoutPanel):
         if self.is_drag_active():
             self._drag_end()
             sequence.active_item = None
-        elif self.is_drag_initiated() and not \
-           self.is_drag_cancelled():
+        elif self.is_drag_initiated() and not self.is_drag_cancelled():
             self._drag_cancel(sequence)
 
         return False
@@ -1414,7 +1419,27 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._drag_begin_scroll_offset = self._scroll_offset[:]
         self._drag_begin_time = time.time()
         self._dampening = [20, 20]
-        self._cancel_timer.start(0.25, self._drag_cancel, sequence)
+
+        log_point = self.scrolled_context.canvas_to_log(sequence.point)
+        if self.is_background_at(log_point):
+            self._drag_activate()
+        else:
+            self._cancel_timer.start(0.25, self._drag_cancel, sequence)
+
+    def _drag_activate(self):
+        self._drag_active = True
+        self._cancel_timer.stop()
+        self._start_animation()
+
+    def _drag_cancel(self, sequence):
+        self._drag_cancelled = True
+        self._drag_end()
+
+        sequence.active_item = None
+        if self.sequence_begin_retry_func is not None:
+            self.sequence_begin_retry_func(sequence)
+
+        return False
 
     def _drag_update(self, sequence):
         point = sequence.point
@@ -1459,21 +1484,6 @@ class ScrolledLayoutPanel(LayoutPanel):
         self._dampening = [3, 3]
         self._cancel_timer.stop()
 
-    def _drag_activate(self):
-        self._drag_active = True
-        self._cancel_timer.stop()
-        self._start_animation()
-
-    def _drag_cancel(self, sequence):
-        self._drag_cancelled = True
-        self._drag_end()
-
-        sequence.active_item = None
-        if self.sequence_begin_retry_func is not None:
-            self.sequence_begin_retry_func(sequence)
-
-        return False
-
     def is_drag_initiated(self):
         """ Sequence begin received, but not yet actually dragging. """
         return self._drag_begin_point is not None
@@ -1499,8 +1509,8 @@ class ScrolledLayoutPanel(LayoutPanel):
 
         t = time.time()
         if self._last_step_time is not None:
-            dt = t - self._last_step_time
-            mass = 0.005
+            dt = min(t - self._last_step_time, 0.1)  # stay in stable range
+            mass = 0.002
             limit_dampening = 15
             limit_force_scale = 0.25
 
@@ -1564,14 +1574,22 @@ class ScrolledLayoutPanel(LayoutPanel):
 
             self._acceleration[0] = force[0] / mass
             self._acceleration[1] = force[1] / mass
-            self._velocity[0] *= math.exp(dt * -self._dampening[0])
-            self._velocity[1] *= math.exp(dt * -self._dampening[1])
             self._velocity[0] += self._acceleration[0] * dt
             self._velocity[1] += self._acceleration[1] * dt
+            self._velocity[0] *= exp(dt * -self._dampening[0])
+            self._velocity[1] *= exp(dt * -self._dampening[1])
+
             if not self._lock_x_axis:
                 scroll_offset[0] += self._velocity[0] * dt
+                if 0 and self.is_drag_active() and \
+                   not target_offset[0] is None:
+                    scroll_offset[0] = target_offset[0]
+
             if not self._lock_y_axis:
                 scroll_offset[1] += self._velocity[1] * dt
+                if 0 and self.is_drag_active() and \
+                   not target_offset[1] is None:
+                    scroll_offset[1] = target_offset[1]
 
             self._scroll_offset = context.scale_canvas_to_log_l(scroll_offset)
 
@@ -1590,13 +1608,14 @@ class ScrolledLayoutPanel(LayoutPanel):
             velocity2 = (self._velocity[0] * self._velocity[0] +
                          self._velocity[1] * self._velocity[1])
             if force[0] < eps and \
-               force[1] < eps and\
+               force[1] < eps and \
                velocity2 < eps * eps:
                 self._stop_animation()
 
         return True
 
     def _update_contents_on_scroll(self):
+        # time.sleep(0.1)
         self._update_contents()
         self.on_scroll_offset_changed()
 

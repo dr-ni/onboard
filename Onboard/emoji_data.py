@@ -125,7 +125,7 @@ emoji_data = [
             ('🙉', None),                          # 🙉 hear-no-evil monkey
             ('🙊', None),                          # 🙊 speak-no-evil monkey
         ]],
-    [0, '👧',                                      # category: person
+    [1, '👦',                                      # category: person
         [
             ('👦',                                 # 👦 boy
                 ('👦🏻',                            # 👦🏻 boy: light skin tone

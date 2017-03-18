@@ -392,17 +392,17 @@ class TextChangerKeyStroke(TextChanger):
     def release_unicode(self, char):
         self._key_synth.release_unicode(char)
 
-    def press_keycode(self, keycode):
-        self._key_synth.press_keycode(keycode)
-
-    def release_keycode(self, keycode):
-        self._key_synth.release_keycode(keycode)
-
     def press_keysym(self, keysym):
         self._key_synth.press_keysym(keysym)
 
     def release_keysym(self, keysym):
         self._key_synth.release_keysym(keysym)
+
+    def press_keycode(self, keycode):
+        self._key_synth.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        self._key_synth.release_keycode(keycode)
 
     def get_current_group(self):
         return self._key_synth.get_current_group()
@@ -2535,6 +2535,17 @@ class Keyboard(WordSuggestions):
     def commit_transition(self):
         return self._broadcast_to_views("commit_transition")
 
+    def show_symbol_search(self, content_type):
+        return self._broadcast_to_views("show_symbol_search", content_type)
+
+    def hide_symbol_search(self):
+        return self._broadcast_to_views("hide_symbol_search")
+
+    def _broadcast_to_views(self, func_name, *params):
+        for view in self._layout_views:
+            if hasattr(view, func_name):
+                getattr(view, func_name)(*params)
+
     def raise_ui_delayed(self):
         """
         Attempt to raise keyboard over popups like the one from the firefox
@@ -2553,11 +2564,6 @@ class Keyboard(WordSuggestions):
 
     def stop_raise_attempts(self):
         self._raise_timer.stop()
-
-    def _broadcast_to_views(self, func_name, *params):
-        for view in self._layout_views:
-            if hasattr(view, func_name):
-                getattr(view, func_name)(*params)
 
     def find_items_from_ids(self, ids):
         if self.layout is None:
