@@ -591,6 +591,7 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
         self._last_configures = []
         self._was_visible = False
         self._user_positioning_begin_rect = Rect()
+        self._realize_docking_time = None
 
         Gtk.Window.__init__(self,
                             urgency_hint = False,
@@ -641,23 +642,34 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
 
         if property == "_NET_WORKAREA":
 
-           if config.is_docking_enabled() and \
-              not config.xid_mode:
-                monitor = self.get_docking_monitor()
-                new_area = self.get_monitor_workarea(monitor)
-                area = self._monitor_workarea.get(monitor)
-                if area:
-                    # Only check for x changes, y is too dangerous for now,
-                    # too easy to get the timing wrong and end up with double docks.
-                    if area.x != new_area.x or \
-                       area.w != new_area.w:
-                        area.x = new_area.x
-                        area.w = new_area.w
+            if config.is_docking_enabled() and \
+               not config.xid_mode:
 
-                        _logger.info("workarea changed to {}, "
-                                     "using {} for docking." \
-                                     .format(str(new_area), str(area)))
-                        self.update_docking()
+                # Precise: Unity launcher reacts to work area change and
+                # Onboard gets trapped in an endles loop of strut resizing
+                # including and excluding the launchers width.
+                # ignore workarea changes most likely caused by us.
+                if self._realize_docking_time is not None and \
+                   time.time() - self._realize_docking_time < 1.0:
+                    _logger.info("workarea change ignored - "
+                                 "it's too soon after setting struts")
+                else:
+                    monitor = self.get_docking_monitor()
+                    new_area = self.get_monitor_workarea(monitor)
+                    area = self._monitor_workarea.get(monitor)
+                    if area:
+                        # Only check for x changes, y is too dangerous
+                        # for now, too easy to get the timing wrong and
+                        # end up with double docks.
+                        if area.x != new_area.x or \
+                        area.w != new_area.w:
+                            area.x = new_area.x
+                            area.w = new_area.w
+
+                            _logger.info("workarea changed to {}, "
+                                        "using {} for docking." \
+                                        .format(str(new_area), str(area)))
+                            self.update_docking()
 
         elif property == "_NET_CURRENT_DESKTOP":
             # OpenBox: Make sure to move the keyboard to the new desktop
@@ -1295,9 +1307,12 @@ class KbdWindow(KbdWindowBase, WindowRectPersist, Gtk.Window):
                                      config.window.docking_edge,
                                      self.get_dock_expand())
             self.restore_window_rect() # knows about docking
+            self._realize_docking_time = time.time()
         else:
             self.restore_window_rect()
             self.clear_struts()
+            self._realize_docking_time = None
+
 
     def update_docking_monitor(self):
         mon_before = self._current_docking_monitor
