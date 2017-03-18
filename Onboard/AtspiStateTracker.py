@@ -74,7 +74,6 @@ class CachedAccessible:
         self.get_toolkit_name()
         self.get_toolkit_version()
         self.get_editable_text_iface()
-        self.get_editable_text_iface()
         self.get_app_name()
         self.get_app_description()
         self.get_extents()
@@ -142,8 +141,12 @@ class CachedAccessible:
                                self._accessible.get_toolkit_version)
 
     def get_editable_text_iface(self):
-        return self._get_value("editable-text-iface",
-                               self._accessible.get_editable_text_iface)
+        try:
+            func = self._accessible.get_editable_text_iface
+        except AttributeError:  # function does not exist in Precise
+            return None
+
+        return self._get_value("editable-text-iface", func)
 
     def get_app_name(self):
         def func():
