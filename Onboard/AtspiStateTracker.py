@@ -624,19 +624,15 @@ class AtspiStateTracker(EventSource):
         if self._text_listeners_registered != register:
             if register:
                 self.atspi_connect("_listener_text_changed",
-                                   "object:text-changed:insert",
-                                   self._on_atspi_text_changed)
-                self.atspi_connect("_listener_text_changed",
-                                   "object:text-changed:delete",
+                                   "object:text-changed",
                                    self._on_atspi_text_changed)
                 self.atspi_connect("_listener_text_caret_moved",
                                    "object:text-caret-moved",
                                    self._on_atspi_text_caret_moved)
+
             else:
                 self.atspi_disconnect("_listener_text_changed",
-                                      "object:text-changed:insert")
-                self.atspi_disconnect("_listener_text_changed",
-                                      "object:text-changed:delete")
+                                      "object:text-changed")
                 self.atspi_disconnect("_listener_text_caret_moved",
                                       "object:text-caret-moved")
 
