@@ -227,10 +227,11 @@ class Extension_osk(Extension):
                            sources = sources,
                            depends = depends,
                            define_macros = defines,
-                           extra_compile_args = [
+                           extra_compile_args=[
                                "-Wsign-compare",
                                "-Wdeclaration-after-statement",
-                               "-Werror=declaration-after-statement"],
+                               "-Werror=declaration-after-statement",
+                               "-Wlogical-op"],
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'xkbfile',
                                        'dconf', 'libcanberra', 'hunspell',
@@ -277,6 +278,9 @@ class Extension_lm(Extension):
                            library_dirs = [],
                            libraries = [],
                            define_macros=[('NDEBUG', '1')],
+                           extra_compile_args=[
+                               "-Wsign-compare",
+                               "-Wlogical-op"],
                           )
 
 extension_lm = Extension_lm("Onboard", "Onboard")
