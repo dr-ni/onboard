@@ -1540,9 +1540,9 @@ static int
 CachedDynamicModel_set_recency_ratio(PyCachedDynamicModel *self, PyObject *value, void *closure)
 {
     double recency_ratio = PyFloat_AsDouble(value);
-    if (recency_ratio < 0.0 && recency_ratio > 1.0)
+    if (recency_ratio < 0.0 || recency_ratio > 1.0)
     {
-        PyErr_SetString(PyExc_ValueError, "The value must be in the range [0..1]");
+        PyErr_SetString(PyExc_ValueError, "value must be in the range [0..1]");
         return -1;
     }
 
