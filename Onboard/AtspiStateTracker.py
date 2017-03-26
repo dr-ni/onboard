@@ -150,17 +150,21 @@ class CachedAccessible:
 
     def get_app_name(self):
         def func():
-            app = self._accessible.get_application()
-            return app.get_name()
+            app = self.get_application()
+            return app.get_name() if app else ""
 
         return self._get_value("app-name", func, "")
 
     def get_app_description(self):
         def func():
-            app = self._accessible.get_application()
-            return app.get_description()
+            app = self.get_application()
+            return app.get_description() if app else ""
 
         return self._get_value("app-description", func, "")
+
+    def get_application(self):
+        return self._get_value("application",
+                               self._accessible.get_application)
 
     def invalidate_extents(self):
         self.invalidate("extents")
