@@ -2134,9 +2134,14 @@ class Keyboard(WordSuggestions):
                     action = KeyCommon.SINGLE_STROKE_ACTION
 
         # Is there a popup defined for this key?
-        if action != KeyCommon.DELAYED_STROKE_ACTION and \
-           key.get_popup_layout():
-            action = KeyCommon.DELAYED_STROKE_ACTION
+        if action != KeyCommon.DELAYED_STROKE_ACTION:
+            if key.get_popup_layout():
+                action = KeyCommon.DELAYED_STROKE_ACTION
+
+            # Unity-greeter gets return stuck on login again in Zesty.
+            # -> sent key-down/key-up on release
+            if config.launched_by == config.LAUNCHER_UNITY_GREETER:
+                action = KeyCommon.DELAYED_STROKE_ACTION
 
         return action
 
