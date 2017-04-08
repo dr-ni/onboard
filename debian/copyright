@@ -7,6 +7,10 @@ Files: *
 Copyright: 2009-2016, marmuta <marmvta@gmail.com>
 License: GPL-3+
 
+Files: emojione/*
+Copyright: Emoji provided free by http://emojione.com
+License: CC-BY 4.0
+
 Files: Onboard/AtspiStateTracker.py
   Onboard/AutoShow.py
   Onboard/TextContext.py

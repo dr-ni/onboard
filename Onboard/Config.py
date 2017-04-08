@@ -183,9 +183,6 @@ class Config(ConfigObject):
     # Gap between wordlist predictions and correctios
     WORDLIST_ENTRY_SPACING = (1.0, 1.0)
 
-    # index of currently active pane, not stored in gsettings
-    active_layer_index = 0
-
     # threshold protect window move/resize
     drag_protection = True
 
@@ -997,7 +994,9 @@ class Config(ConfigObject):
         """
         if not self._image_search_paths:
             self._image_search_paths = \
-                self._get_layout_resource_search_paths("images")
+                self._get_layout_resource_search_paths("images") + \
+                self._get_emojione_image_dirs()
+
         return self._get_resource_filename(image_filename, "image",
                                            self._image_search_paths)
 
@@ -1455,9 +1454,12 @@ class Config(ConfigObject):
     def get_user_layout_dir(self):
         return os.path.join(self.user_dir, "layouts/")
 
+    def _get_emojione_image_dirs(self):
+        return [os.path.join(self.install_dir, "emojione", "svg")]
+
     def get_system_default_lang_id(self):
         lang_id = locale.getdefaultlocale()[0]
-        if not lang_id: # None e.g. with LANG=C
+        if not lang_id:  # None e.g. with LANG=C
             lang_id = "en_US"
         return lang_id
 

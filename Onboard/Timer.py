@@ -31,6 +31,10 @@ from Onboard.utils import Fade
 _logger = logging.getLogger("utils_timers.py")
 
 
+def idle_call(func, *args):
+    GLib.idle_add(func, *args)
+
+
 class Timer(object):
     """
     Simple wrapper around GLib's timer API
@@ -68,7 +72,7 @@ class Timer(object):
 
     def finish(self):
         """
-        Run one last time and stop.
+        Run callback one last time and stop.
         """
         if self.is_running():
             self.stop()

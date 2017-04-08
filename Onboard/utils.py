@@ -29,7 +29,7 @@ import re
 import colorsys
 import gettext
 import subprocess
-from math import pi, sin, cos, sqrt, log
+from math import pi, sin, cos, sqrt, log, ceil
 from contextlib import contextmanager
 
 import logging
@@ -514,6 +514,12 @@ class Rect:
     def get_center(self):
         return (self.x + self.w / 2.0, self.y + self.h / 2.0)
 
+    def get_center_x(self):
+        return self.x + self.w / 2.0
+
+    def get_center_y(self):
+        return self.y + self.h / 2.0
+
     def top(self):
         return self.y
 
@@ -604,30 +610,30 @@ class Rect:
         >>> Rect(0, 1, 1, 1).intersects(Rect(0, 0, 1, 1))
         False
         """
-        #return not self.intersection(rect).is_empty()
-        return not (self.x >= rect.x + rect.w or \
-                    self.x + self.w <= rect.x or \
-                    self.y >= rect.y + rect.h or \
+        # return not self.intersection(rect).is_empty()
+        return not (self.x >= rect.x + rect.w or
+                    self.x + self.w <= rect.x or
+                    self.y >= rect.y + rect.h or
                     self.y + self.h <= rect.y)
 
     def intersection(self, rect):
-       x0 = max(self.x, rect.x)
-       y0 = max(self.y, rect.y)
-       x1 = min(self.x + self.w,  rect.x + rect.w)
-       y1 = min(self.y + self.h,  rect.y + rect.h)
-       if x0 > x1 or y0 > y1:
-           return Rect()
-       else:
-           return Rect(x0, y0, x1 - x0, y1 - y0)
+        x0 = max(self.x, rect.x)
+        y0 = max(self.y, rect.y)
+        x1 = min(self.x + self.w, rect.x + rect.w)
+        y1 = min(self.y + self.h, rect.y + rect.h)
+        if x0 > x1 or y0 > y1:
+            return Rect()
+        else:
+            return Rect(x0, y0, x1 - x0, y1 - y0)
 
     def union(self, rect):
-       x0 = min(self.x, rect.x)
-       y0 = min(self.y, rect.y)
-       x1 = max(self.x + self.w,  rect.x + rect.w)
-       y1 = max(self.y + self.h,  rect.y + rect.h)
-       return Rect(x0, y0, x1 - x0, y1 - y0)
+        x0 = min(self.x, rect.x)
+        y0 = min(self.y, rect.y)
+        x1 = max(self.x + self.w, rect.x + rect.w)
+        y1 = max(self.y + self.h, rect.y + rect.h)
+        return Rect(x0, y0, x1 - x0, y1 - y0)
 
-    def inscribe_with_aspect(self, rect, x_align = 0.5, y_align = 0.5):
+    def inscribe_with_aspect(self, rect, x_align=0.5, y_align=0.5):
         """ Returns a new Rect with the aspect ratio of self
             that fits inside the given rectangle.
         """
@@ -722,6 +728,71 @@ class Rect:
 
         return rects
 
+    def flow_layout(self, item_rect, num_items,
+                    x_spacing=None, y_spacing=None,
+                    flow_horizontally=True,
+                    grow_horizontally=True):
+        """
+        Layout num_items sub-rectangles of size item_rect in grow_horizontal or
+        columns-first order.
+        """
+
+        if y_spacing is None:
+            y_spacing = x_spacing
+        if x_spacing is None:
+            x_spacing = 0
+
+        rects = []
+        bounds = self.copy()
+
+        if grow_horizontally:
+            # self determines height and minimum width.
+            # Items may overflow the minimum width.
+            nrows = int((self.h + y_spacing) / (item_rect.h + y_spacing))
+            ncols = int(ceil(num_items / nrows))
+            bounds.w = 0
+        else:
+            # self determines width and minimum height.
+            # Items may overflow the minimum height.
+            ncols = int((self.w + x_spacing) / (item_rect.w + x_spacing))
+            nrows = int(ceil(num_items / ncols))
+            bounds.h = 0
+
+        if flow_horizontally:
+            for row in range(nrows):
+                for col in range(ncols):
+                    x = self.x + item_rect.w * col + \
+                        x_spacing * max((col - 1), 0)
+                    y = self.y + item_rect.h * row + \
+                        y_spacing * max((row - 1), 0)
+                    r = Rect(x, y, item_rect.w, item_rect.h)
+                    bounds = bounds.union(r)
+                    rects.append(r)
+
+                    if len(rects) >= num_items:
+                        break
+
+                if len(rects) >= num_items:
+                    break
+        else:
+            for col in range(ncols):
+                for row in range(nrows):
+                    x = self.x + item_rect.w * col + \
+                        x_spacing * max((col - 1), 0)
+                    y = self.y + item_rect.h * row + \
+                        y_spacing * max((row - 1), 0)
+                    r = Rect(x, y, item_rect.w, item_rect.h)
+                    bounds = bounds.union(r)
+                    rects.append(r)
+
+                    if len(rects) >= num_items:
+                        break
+
+                if len(rects) >= num_items:
+                    break
+
+        return rects, bounds
+
 
 def brighten(amount, r, g, b, a=0.0):
     """ Make the given color brighter by amount a [-1.0...1.0] """
@@ -766,7 +837,7 @@ def roundrect_arc(context, rect, r = 15):
 
     context.close_path ()
 
-def roundrect_curve(context, rect, r_pct = 100):
+def roundrect_curve(context, rect, r_pct=100):
     """
     Uses B-splines for less even looks than with arcs, but
     still allows for approximate circles at r_pct = 100.
@@ -804,6 +875,66 @@ def roundrect_curve(context, rect, r_pct = 100):
     curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
 
     context.close_path ()
+
+
+def roundrect_curve_custom(context, rect, r_pct=100,
+                           corner_mask=0b1111):
+    """
+    Uses B-splines for less even looks than with arcs, but
+    still allows for approximate circles at r_pct = 100.
+    """
+    x0 = rect.x
+    y0 = rect.y
+    w  = rect.w
+    h  = rect.h
+    x1 = x0 + w
+    y1 = y0 + h
+
+    # full range at 50%
+    r = min(w, h) * min(r_pct / 100.0, 0.5)
+
+    # position of control points for circular curves
+    k = (r - 1) * r_pct / 200.0
+
+    line_to = context.line_to
+    curve_to = context.curve_to
+
+    # top left
+    if corner_mask & 0b0001:
+        context.move_to(x0 + r, y0)
+    else:
+        context.move_to(x0, y0)
+
+    # top right
+    if corner_mask & 0b0010:
+        line_to(x1 - r, y0)
+        curve_to(x1 - k, y0, x1, y0 + k, x1, y0 + r)
+    else:
+        line_to(x1, y0)
+
+    # bottom right
+    if corner_mask & 0b0100:
+        line_to(x1, y1 - r)
+        curve_to(x1, y1 - k, x1 - k, y1, x1 - r, y1)
+    else:
+        line_to(x1, y1)
+
+    # bottom left
+    if corner_mask & 0b1000:
+        line_to(x0 + r, y1)
+        curve_to(x0 + k, y1, x0, y1 - k, x0, y1 - r)
+    else:
+        line_to(x0, y1)
+
+    # top left
+    if corner_mask & 0b0001:
+        line_to(x0, y0 + r)
+        curve_to(x0, y0 + k, x0 + k, y0, x0 + r, y0)
+    else:
+        line_to(x0, y0)
+
+    context.close_path()
+
 
 def rounded_polygon(cr, coords, r_pct, chamfer_size):
     path = polygon_to_rounded_path(coords, r_pct, chamfer_size)
@@ -930,7 +1061,7 @@ def gradient_line(rect, alpha):
             r * sin(alpha) + y0 + b,
            -r * cos(alpha) + x0 + a,
            -r * sin(alpha) + y0 + b)
-import cairo
+
 def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
                                   alpha=0.06, steps=4):
     """
@@ -1006,6 +1137,9 @@ class TreeItem(object):
     # child items
     items = ()
 
+    def get_id(self):
+        return self.id
+
     def set_items(self, items):
         self.items = items
         for item in items:
@@ -1030,6 +1164,13 @@ class TreeItem(object):
 
     def get_parent(self):
         return self.parent
+
+    def find_id(self, id):
+        """ find the first item with matching id """
+        for item in self.iter_items():
+            if item.id == id:
+                return item
+        return None
 
     def find_ids(self, ids):
         """ find all items with matching id """

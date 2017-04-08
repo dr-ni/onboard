@@ -783,9 +783,11 @@ class TouchInput(InputEventSource):
         self._num_tap_sequences += 1
 
     def _gesture_sequence_update(self, sequence):
+        #print("_gesture_sequence_update", self._gesture_detected)
         if self._gesture_detected and \
            sequence.state & BUTTON123_MASK and \
            self._gesture == NO_GESTURE:
+            print("_gesture_sequence_update")
             point = sequence.point
             dx = self._gesture_begin_point[0] - point[0]
             dy = self._gesture_begin_point[1] - point[1]
@@ -876,6 +878,7 @@ class InputSequence:
     primary     = False # Only primary sequences may move/resize windows.
     delivered   = False # Sent to listeners (keyboard views)?
 
+    active_item        = None  # LayoutItem currently controlled by this sequence.
     active_key         = None  # Onboard key currently pressed by this sequence.
     initial_active_key = None  # First Onboard key pressed by this sequence.
     cancel_key_action  = False # Cancel key action, e.g. due to long press.
@@ -918,7 +921,7 @@ class InputSequence:
     def __str__(self):
         return "{}(id={} point=({:.2f}, {:.2f}) root_point=({:.2f}, {:.2f}) " \
                "button={} state={} event_type={} time={} primary={} delivered={} " \
-               "active_key={})" \
+               "active_item={} active_key={})" \
                 .format(type(self).__name__,
                         self.id,
                         self.point[0], self.point[1],
@@ -929,6 +932,7 @@ class InputSequence:
                         self.time,
                         self.primary,
                         self.delivered,
+                        self.active_item,
                         self.active_key,
                        )
 

@@ -33,7 +33,7 @@ from gi.repository          import GLib, Gdk, Gtk
 
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
-from Onboard.KeyboardPopups import LayoutPopup, \
+from Onboard.KeyboardPopups import LayoutPopup, KeyboardPopup, \
                                    LayoutBuilderAlternatives, \
                                    LayoutBuilder
 from Onboard.KeyGtk         import Key
@@ -95,7 +95,7 @@ class AutoReleaseTimer(Timer):
             config.word_suggestions.set_pause_learning(0)
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys(release_all_keys)
-        self._keyboard.active_layer_index = 0
+        self._keyboard.set_active_layer_id(None)
         self._keyboard.invalidate_ui_no_resize()
         self._keyboard.commit_ui_updates()
         return False
@@ -341,6 +341,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         self._language_menu = LanguageMenu(self)
         self._suggestion_menu = SuggestionMenu(self)
+        self._symbol_search_popup = None
 
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -480,7 +481,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         rect = self.get_canvas_content_rect()
 
-        layout.update_log_rect()  # update logical tree to base aspect ratio
+        layout.update_log_rects()  # update logical tree to base aspect ratio
         rect = self._get_aspect_corrected_layout_rect(
             rect, self.get_base_aspect_rect())
         layout.do_fit_inside_canvas(rect)  # update contexts to final aspect
@@ -1017,27 +1018,40 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
 
-        point = sequence.point
-        key = None
-
         # hit-test touch handles first
         hit_handle = None
         if self.touch_handles.active:
-            hit_handle = self.touch_handles.hit_test(point)
+            hit_handle = self.touch_handles.hit_test(sequence.point)
             self.touch_handles.set_pressed(hit_handle)
-            if not hit_handle is None:
+            if hit_handle is not None:
                 # handle clicked -> stop auto-hide until button release
                 self.stop_touch_handles_auto_hide()
             else:
                 # no handle clicked -> hide them now
                 self.show_touch_handles(False)
 
-        # hit-test keys
+        # ask layout tree
         if hit_handle is None:
+            layout = self.get_layout()
+            if layout:
+                layout.dispatch_input_sequence_begin(sequence)
+
+        if sequence.active_item is None:
+            self.on_input_sequence_begin_delayed(sequence, hit_handle)
+        else:
+            sequence.active_item.sequence_begin_retry_func = \
+                self.on_input_sequence_begin_delayed
+
+    def on_input_sequence_begin_delayed(self, sequence, hit_handle=None):
+        point = sequence.point
+        key = None
+
+        # hit-test keys
+        if sequence.active_item is None:
             key = self.get_key_at_location(point)
 
         # enable/disable the drag threshold
-        if not hit_handle is None:
+        if hit_handle is not None:
             self.enable_drag_protection(False)
         elif key and key.id == "move":
             # Move key needs to support long press;
@@ -1108,18 +1122,28 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             hit_handle = self.touch_handles.hit_test(point)
             self.touch_handles.set_prelight(hit_handle)
 
-        # hit-test keys
+        # ask layout tree
         if hit_handle is None:
-            hit_key = self.get_key_at_location(point)
+            layout = self.get_layout()
+            if layout:
+                layout.dispatch_input_sequence_update(sequence)
+
+            if sequence.active_item is None:
+                # hit-test keys
+                hit_key = self.get_key_at_location(point)
+            else:
+                # hack that hides popups when ScrolledLayoutPanel
+                # starts scrolling
+                self.keyboard.hide_touch_feedback()
 
         if sequence.state & BUTTON123_MASK:
 
             # move/resize
             # fallback=False for faster system resizing (LP: #959035)
-            fallback = True #self.is_moving() or config.is_force_to_top()
+            fallback = True  # self.is_moving() or config.is_force_to_top()
 
             # move/resize
-            WindowManipulator.handle_motion(self, sequence, fallback = fallback)
+            WindowManipulator.handle_motion(self, sequence, fallback=fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -1148,7 +1172,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
                hit_key.sensitive:
-                controller = self.keyboard.button_controllers.get(hit_key)
+                controller = self.keyboard.get_button_controller(hit_key)
                 if controller and controller.can_dwell() and \
                    not self.is_dwelling() and \
                    not self.already_dwelled(hit_key) and \
@@ -1172,6 +1196,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
            popup.got_motion():  # keep popup open if it wasn't entered
             popup.redirect_sequence_end(sequence,
                                         popup.on_input_sequence_end)
+
+        # layout tree
+        layout = self.get_layout()
+        if layout:
+            layout.dispatch_input_sequence_end(sequence)
 
         # key up
         active_key = sequence.active_key
@@ -1198,6 +1227,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
             self.inactivity_timer.begin_transition(False)
 
     def on_drag_gesture_begin(self, num_touches):
+        """ Called only for num_touches >= 2  """
         self.stop_long_press()
 
         if Handle.MOVE in self.get_drag_handles() and \
@@ -1675,14 +1705,63 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         # Delay this until the dialog is really gone.
         GLib.idle_add(self.keyboard.on_focusable_gui_closed)
 
-    def show_language_menu(self, key, button, closure = None):
+    def show_language_menu(self, key, button, closure=None):
         self._language_menu.popup(key, button, closure)
 
     def is_language_menu_showing(self):
         return self._language_menu.is_showing()
 
-    def show_prediction_menu(self, key, button, closure = None):
+    def show_prediction_menu(self, key, button, closure=None):
         self._suggestion_menu.popup(key, button, closure)
+
+    def show_symbol_search(self, content_type):
+        return
+
+        layout = self.get_layout()
+        if not layout:
+            return
+
+        wordlist = layout.find_id("wordlist")
+        if not wordlist:
+            return
+
+        popup = self._symbol_search_popup
+        if popup is None:
+            popup = SymbolSearchPopup()
+            popup.set_transient_for(self.get_toplevel())
+            popup.realize()
+
+            entry = Gtk.SearchEntry(hexpand=True, width_chars=35)
+            popup.add(entry)
+
+            self._symbol_search_popup = popup
+
+        r = wordlist.get_canvas_rect()
+        root_rect = canvas_to_root_window_rect(self, r)
+        x, y, w, h = root_rect
+        y -= h
+        print(x, y, w, h)
+
+        popup.show_all()
+
+        popup.set_default_size(w, h)
+        popup.resize(w, h)
+        popup.move(x, y)
+
+    def hide_symbol_search(self):
+        if not self._symbol_search_popup:
+            return
+        self._symbol_search_popup.hide()
+
+
+class SymbolSearchPopup(KeyboardPopup):
+
+    def __init__(self):
+        super(SymbolSearchPopup, self).__init__(accept_focus=False)
+
+    def on_draw(self, widget, cr):
+        cr.set_source_rgba(1, 0, 0, 0.5)
+        cr.paint()
 
 
 class KeyMenu:
@@ -1991,5 +2070,91 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
             if self._radio1.get_active():
                 return 1
         return 0
+
+
+    class AuxcharSelection:
+        """ Select emoji or other special characters """
+
+        def __init__(self, keyboard, parent):
+            self._keyboard = keyboard
+            self._parent = parent
+
+        def show(self):
+
+            # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
+            self._keyboard.on_focusable_gui_opening()
+
+            dialog = Gtk.Dialog(title=title,
+                            transient_for=self._parent.get_toplevel(),
+                            flags=0)
+            dialog.add_button(_("_Close"), Gtk.ResponseType.OK)
+
+            # Don't hide dialog behind the keyboard in force-to-top mode.
+            if config.is_force_to_top():
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+
+            dialog.set_default_response(Gtk.ResponseType.OK)
+
+            # outer vertical box
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                          spacing=12, border_width=5)
+
+            # search entry
+            search_entry = Gtk.SearchEntry()
+            box.add(search_entry)
+
+            # glyph tree
+            self._glyph_tree_view = Gtl.TreeView()
+            init_glyph_tree_view()
+            box.add(self._glyph_tree_view)
+
+            dialog.get_content_area().add(box)
+
+            dialog.connect("response", self._on_dialog_response)
+            dialog.show_all()
+
+        def _on_dialog_response(self, dialog, response, snippet_id, \
+                                        label_entry, text_entry):
+            dialog.destroy()
+
+            # Reenable AT-SPI keystroke listeners.
+            # Delay this until the dialog is really gone.
+            GLib.idle_add(self._keyboard.on_focusable_gui_closed)
+
+        def init_glyph_tree_view(self):
+            (
+                self.GLYPH_COL_GLYPH,
+                self.GLYPH_COL_DESCRIPTION
+            ) = range(2)
+
+            self._glyph_model = Gtk.TreeStore(str, int)
+            self._glyph_tree_view.set_model(self._glyph_model)
+            #model.clear()
+
+            self._add_layout_section(model, system, _("Core layouts"))
+            self._add_layout_section(model, contributed, _("Contributions"))
+            self._add_layout_section(model, user, _("My layouts"))
+
+            self.layout_view.expand_all()
+            self.update_layout_view_selection()
+
+        def update_layout_view_selection(self):
+            self.select_tree_view_row(self.layout_view, self.LAYOUT_COL_FILENAME,
+                                    config.layout_filename)
+
+        def _add_layout_section(self, model, lis, section_name):
+            if lis:
+                parent_iter = model.append(None)
+                model.set(parent_iter,
+                        self.LAYOUT_COL_NAME, "<b>{}</b>" \
+                        .format(escape_markup(section_name)))
+                for li in lis:
+                    child_iter = model.append(parent_iter)
+                    model.set(child_iter,
+                            self.LAYOUT_COL_NAME, li.id_string,
+                            self.LAYOUT_COL_SUMMARY, li.summary,
+                            self.LAYOUT_COL_FILENAME, li.filename,
+                            self.LAYOUT_COL_HAS_ABOUT_INFO, li.has_about_info,
+                            self.LAYOUT_COL_IS_ROW_SENSITIVE, bool(li.filename))
 
 

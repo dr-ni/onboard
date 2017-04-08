@@ -33,7 +33,7 @@ import re
 from Onboard.utils import Rect, LABEL_MODIFIERS, Modifiers, \
                           polygon_to_rounded_path
 
-from Onboard.Layout import LayoutItem
+from Onboard.Layout import DrawingItem
 
 ### Logging ###
 import logging
@@ -164,23 +164,23 @@ class LOD:
         FULL,       # full detail
     ) = tuple(range(3))
 
+
 class ImageSlot:
     NORMAL = 0
     ACTIVE = 1
 
-class KeyCommon(LayoutItem):
+
+class ImageStyle:
+    SINGLE_COLOR = 0
+    MULTI_COLOR = 1
+    DESATURATED = 2
+
+
+class KeyCommon(DrawingItem):
     """
     library-independent key class. Specific rendering options
     are stored elsewhere.
     """
-
-    # extended id for key specific theme tweaks
-    # e.g. theme_id=DELE.numpad (with id=DELE)
-    theme_id = None
-
-    # extended id for layout specific tweaks
-    # e.g. "hide.wordlist", for hide button in wordlist mode
-    svg_id = None
 
     # optional id of a sublayout used as long-press popup
     popup_id = None
@@ -239,6 +239,10 @@ class KeyCommon(LayoutItem):
     # Images displayed by this key (optional)
     image_filenames = None
 
+    # True for mask images to be drawn with the key's label color.
+    # False for multi-color images.
+    image_style = ImageStyle.SINGLE_COLOR
+
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
 
@@ -254,10 +258,13 @@ class KeyCommon(LayoutItem):
     # can show label popup
     label_popup = True
 
+    # name of the layer to control (for layer buttons)
+    target_layer_id = None
+
 ###################
 
     def __init__(self):
-        LayoutItem.__init__(self)
+        super(KeyCommon, self).__init__()
 
     def configure_label(self, mod_mask):
         SHIFT = Modifiers.SHIFT
@@ -339,58 +346,8 @@ class KeyCommon(LayoutItem):
     def is_active(self):
         return not self.type is None
 
-    def get_id(self):
-        return ""
-
-    def get_svg_id(self):
-        return ""
-
-    def set_id(self, id, theme_id = None, svg_id = None):
-        self.theme_id, self.id = self.parse_id(id)
-        if theme_id:
-            self.theme_id = theme_id
-        self.svg_id = self.id if not svg_id else svg_id
-
-    @staticmethod
-    def parse_id(value):
-        """
-        The theme id has the form <id>.<arbitrary identifier>, where
-        the identifier should be a description of the location of
-        the key relative to its surroundings, e.g. 'DELE.next-to-backspace'.
-        Don't use layout names or layer ids for the theme id, they lose
-        their meaning when layouts are copied or renamed by users.
-        """
-        theme_id = value
-        id = value.split(".")[0]
-        return theme_id, id
-
-    @staticmethod
-    def split_theme_id(theme_id):
-        """
-        Simple split in prefix (id) before the dot and suffix after the dot.
-        """
-        components = theme_id.split(".")
-        if len(components) == 1:
-            return components[0], ""
-        return components[0], components[1]
-
-    @staticmethod
-    def build_theme_id(prefix, postfix):
-        if postfix:
-            return prefix + "." + postfix
-        return prefix
-
-    def get_similar_theme_id(self, prefix = None):
-        if prefix is None:
-            prefix = self.id
-        theme_id = prefix
-        comps = self.theme_id.split(".")[1:]
-        if comps:
-            theme_id += "." + comps[0]
-        return theme_id
-
     def is_layer_button(self):
-        return self.id.startswith("layer")
+        return bool(self.target_layer_id) or self.id.startswith("layer")
 
     def is_prediction_key(self):
         return self.id.startswith("prediction")
@@ -416,13 +373,19 @@ class KeyCommon(LayoutItem):
                            "middleclick",
                            "doubleclick",
                            "dragclick"]
+
     def is_button(self):
         return self.type == BUTTON_TYPE
 
     def is_pressed_only(self):
-        return self.pressed and not (self.active or \
-                                     self.locked or \
+        return self.pressed and not (self.active or
+                                     self.locked or
                                      self.scanned)
+
+    def is_active_only(self):
+        return self.active and not (self.pressed or
+                                    self.locked or
+                                    self.scanned)
 
     def is_text_changing(self):
         if not self.is_modifier() and \
@@ -472,6 +435,21 @@ class KeyCommon(LayoutItem):
         assert(self.is_layer_button())
         return int(self.id[5:])
 
+    def get_target_layer_id(self):
+        return self.target_layer_id
+
+    def get_target_layer_parent_id(self):
+        """
+        Split off the parent path of the (dot-separated)
+        target_layer_id.
+        """
+        layer_id = self.target_layer_id
+        pos = layer_id.rfind(".")
+        if pos >= 0:
+            return layer_id[:pos]
+        else:
+            return None
+
     def get_popup_layout(self):
         if self.popup_id:
             return self.find_sublayout(self.popup_id)
@@ -511,12 +489,8 @@ class RectKeyCommon(KeyCommon):
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
         self.id = id
-        self.colors = {}
         self.context.log_rect = border_rect \
                                 if not border_rect is None else Rect()
-
-    def get_id(self):
-        return self.id
 
     def get_svg_id(self):
         return self.svg_id
@@ -565,7 +539,7 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_style(self):
-        if not self.style is None:
+        if self.style is not None:
             return self.style
         return config.theme_settings.key_style
 
@@ -578,43 +552,28 @@ class RectKeyCommon(KeyCommon):
     def get_light_direction(self):
         return config.theme_settings.key_gradient_direction * pi / 180.0
 
-    def get_fill_color(self):
-        return self._get_color("fill")
-
-    def get_stroke_color(self):
-        return self._get_color("stroke")
-
-    def get_label_color(self):
-        return self._get_color("label")
-
-    def get_secondary_label_color(self):
-        return self._get_color("secondary-label")
-
-    def get_dwell_progress_color(self):
-        return self._get_color("dwell-progress")
-
     def get_dwell_progress_canvas_rect(self):
         rect = self.get_label_rect().inflate(0.5)
         return self.context.log_to_canvas_rect(rect)
 
-    def _get_color(self, element):
-        color_key = (element, self.prelight, self.pressed,
-                              self.active, self.locked,
-                              self.sensitive, self.scanned)
-        rgba = self.colors.get(color_key)
-        if not rgba:
-            if self.color_scheme:
-                rgba = self.color_scheme.get_key_rgba(self, element)
-            elif element == "label":
-                rgba = [0.0, 0.0, 0.0, 1.0]
-            else:
-                rgba = [1.0, 1.0, 1.0, 1.0]
-            self.colors[color_key] = rgba
-        return rgba
+    def get_image_color(self):
+        if self.image_style == ImageStyle.SINGLE_COLOR:
+            return self.get_label_color()
+        return None
+
+    def get_color(self, element, state=None):
+        color_key = (element,
+                     self.prelight, self.pressed,
+                     self.active, self.locked,
+                     self.sensitive, self.scanned)
+        try:
+            return self.colors[color_key]
+        except KeyError:
+            return self.cache_color(element, color_key, state)
 
     def get_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in logical coordinates """
-        return LayoutItem.get_rect(self)
+        return DrawingItem.get_rect(self)
 
     def get_canvas_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in canvas coordinates """

@@ -385,6 +385,42 @@ class build_ext_custom(build_ext):
         super(build_ext_custom, self).build_extension(ext)
 
 
+class UninstallCommand(Command):
+    user_options = []  # required by Command
+
+    dirs_to_remove = [
+        "share/onboard",
+    ]
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+
+        record_file = "/tmp/onboard-uninstall.txt"
+        subprocess.call(["./setup.py", "install", "--record", record_file])
+
+        with open(record_file, 'r') as f:
+            lines = f.readlines()
+        for line in lines:
+            fn = line.strip()
+            print("removing file '" + fn + "'")
+            os.remove(fn)
+
+        for dir in self.dirs_to_remove:
+            print("removing directory '" + dir + "'")
+            try:
+                os.removedirs(dir)
+            except OSError as ex:
+                print("Failed to remove '" + dir + "':" +
+                      str(ex), file=sys.stderr)
+
+        sys.exit(0)
+
+
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -425,6 +461,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/scripts', glob.glob('scripts/*')),
                   ('share/onboard/models', glob.glob('models/*.lm')),
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
+                  ('share/onboard/emojione/svg', glob.glob('emojione/svg/*.svg')),
 
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
                       glob_files('gnome/Onboard_Indicator@onboard.org/*')),
@@ -441,7 +478,9 @@ DistUtilsExtra.auto.setup(
 
     cmdclass = {'test': TestCommand,
                 'build_i18n': build_i18n_custom,
-                'build_ext': build_ext_custom},
+                'build_ext': build_ext_custom,
+                'uninstall': UninstallCommand,
+                }
 )
 
 

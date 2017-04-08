@@ -53,8 +53,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
             Prnt, Pause, ESC, Scroll,
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
-            hide, showclick, move, layer,
-            quit, inputline,
+            hide, showclick, move, layer, sublayer,
+            quit, inputline 
 
             <!-- word suggestions -->
             <key_group>

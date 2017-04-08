@@ -31,24 +31,25 @@ from Onboard.Version import require_gi_versions
 require_gi_versions()
 from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
+from Onboard.KeyCommon   import (KeyCommon, RectKeyCommon,
+                                 LOD, InputlineKeyCommon, ImageStyle,
+                                 ImageSlot)
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
-from Onboard.utils       import brighten, unicode_str, \
-                                gradient_line, drop_shadow, \
-                                roundrect_curve, rounded_path, \
-                                rounded_polygon_path_to_cairo_path
+from Onboard.utils       import (brighten, unicode_str,
+                                 gradient_line, drop_shadow,
+                                 roundrect_curve, roundrect_curve_custom,
+                                 rounded_path,
+                                 rounded_polygon_path_to_cairo_path)
 
-### Logging ###
 import logging
 _logger = logging.getLogger("KeyGTK")
-###############
 
-### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
-########################
 
 PangoUnscale = 1.0 / Pango.SCALE
+
 
 class Key(KeyCommon):
     _pango_layouts = None
@@ -114,7 +115,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     _requested_image_size = None
     _shadow_surface = None
 
-    def __init__(self, id = "", border_rect = None):
+    can_draw_cached = True
+
+    def __init__(self, id="", border_rect=None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
 
@@ -182,12 +185,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.draw(cr)
         cr.restore()
 
-        Gdk.flush()   # else artefacts in labels and images
-                      # on Nexus 7, Raring
+        Gdk.flush()  # else artefacts in labels and images on Nexus 7, Raring
 
         return surface, clip_rect
 
-    def draw(self, cr, lod = LOD.FULL):
+    def draw_item(self, context):
+        if context.draw_cached and self.can_draw_cached:
+            self.draw_cached(context.cr)
+        else:
+            self.draw(context.cr, context.lod)
+
+    def draw(self, cr, lod=LOD.FULL):
         self.draw_geometry(cr, lod)
         self.draw_image(cr, lod)
         self.draw_label(cr, lod)
@@ -621,7 +629,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         src_size = (pixbuf.get_width(), pixbuf.get_height())
         xalign, yalign = self.align_label(src_size, (rect.w, rect.h))
 
-        label_rgba = self.get_label_color()
+        image_rgba = self.get_image_color()
         fill = self.get_fill_color()
 
         for dx, dy, lum, last in self._label_iterations(lod):
@@ -630,12 +638,18 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
-            if lum:
-                rgba = brighten(lum, *fill) # darker
-            else:
-                rgba = label_rgba
 
-            pixbuf.draw(context, rect.offset(xalign + dx, yalign + dy), rgba)
+            r = rect.offset(xalign + dx, yalign + dy)
+
+            if image_rgba is None:
+                pixbuf.draw(context, r, None, self.image_style)
+            else:
+                if lum:
+                    rgba = brighten(lum, *fill)  # darker
+                else:
+                    rgba = image_rgba
+
+                pixbuf.draw(context, r, rgba, self.image_style)
 
     def draw_shadow_cached(self, context):
         entry = self._shadow_surface
@@ -732,7 +746,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         else:
             if not rect:
                 rect = self.get_canvas_rect()
-            self._build_rect_path(cr, rect)
+            self.build_rect_path(cr, rect)
 
     def _build_complex_path(self, cr, path):
         roundness = config.theme_settings.roundrect_radius
@@ -740,10 +754,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         chamfer_size = self.context.scale_log_to_canvas_y(chamfer_size)
         rounded_path(cr, path, roundness, chamfer_size)
 
-    def _build_rect_path(self, context, rect):
+    def build_rect_path(self, context, rect):
         roundness = config.theme_settings.roundrect_radius
         if roundness:
             roundrect_curve(context, rect, roundness)
+        else:
+            context.rectangle(*rect)
+
+    def build_rect_path_custom(self, context, rect, corner_mask):
+        roundness = config.theme_settings.roundrect_radius
+        if roundness:
+            roundrect_curve_custom(context, rect, roundness, corner_mask)
         else:
             context.rectangle(*rect)
 
@@ -948,7 +969,6 @@ class WordlistKey(RectKey):
         pass
 
 
-
 class FullSizeKey(WordlistKey):
     def __init__(self, id = "", border_rect = None):
         super(FullSizeKey, self).__init__(id, border_rect)
@@ -959,19 +979,16 @@ class FullSizeKey(WordlistKey):
         return self.get_fullsize_rect()
 
 
-class BarKey(FullSizeKey):
-    def __init__(self, id = "", border_rect = None):
-        super(BarKey, self).__init__(id, border_rect)
+class FlatKey(FullSizeKey):
+    def __init__(self, id="", border_rect=None):
+        super(FlatKey, self).__init__(id, border_rect)
 
-    def draw(self, context, lod = LOD.FULL):
+    def draw(self, context, lod=LOD.FULL):
         # draw only when pressed, to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             self.draw_geometry(context, lod)
         self.draw_image(context, lod)
         self.draw_label(context, lod)
-
-    def can_show_label_popup(self):
-        return False
 
     def get_stroke_width(self):
         # Turn down stroke width -> no annoying banding at
@@ -979,8 +996,16 @@ class BarKey(FullSizeKey):
         return 0.0
 
 
+class BarKey(FlatKey):
+    def __init__(self, id="", border_rect=None):
+        super(BarKey, self).__init__(id, border_rect)
+
+    def can_show_label_popup(self):
+        return False
+
+
 class WordKey(FixedFontMixin, BarKey):
-    def __init__(self, id="", border_rect = None):
+    def __init__(self, id="", border_rect=None):
         super(WordKey, self).__init__(id, border_rect)
 
 
@@ -1018,7 +1043,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         context.move_to(*layout_pos)
         PangoCairo.show_layout(context, layout)
 
-        context.restore() # don't clip the caret
+        context.restore()  # don't clip the caret
 
         # draw caret
         context.move_to(cursor_rect.x, cursor_rect.y)
@@ -1199,6 +1224,8 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
         return cursor_index
 
+zf = None
+count = 0
 
 class PixBufScaled:
     """
@@ -1227,14 +1254,15 @@ class PixBufScaled:
         load_width = width * scale
         load_height = height * scale
 
-        self._pixbuf = GdkPixbuf.Pixbuf. \
-                    new_from_file_at_size(filename, load_width, load_height)
+        self._pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            filename, load_width, load_height)
+
         self._real_width = self._pixbuf.get_width()
         self._real_height = self._pixbuf.get_height()
         self._width = self._real_width / scale
         self._height = self._real_height / scale
 
-    def draw(self, context, rect, rgba):
+    def draw(self, context, rect, rgba, image_style):
         """
         Draw the image in the theme's label color.
         Only the alpha channel of the image is used.
@@ -1246,10 +1274,66 @@ class PixBufScaled:
         if scale and scale != 1.0:
             context.scale(1.0 / scale, 1.0 / scale)
 
-        Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
-        pattern = context.get_source()
-        context.set_source_rgba(*rgba)
-        context.mask(pattern)
+        # colored?
+        if image_style == ImageStyle.MULTI_COLOR:
+            Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+            context.paint()
+
+        # grayscale?
+        elif image_style == ImageStyle.DESATURATED:
+            # gdk_pixbuf_saturate_and_pixelate ()
+            if 0:
+                # must have non-black background
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+                k = 1 / 256.0
+                context.set_source_rgb(k, k, k)
+                context.mask(pattern)
+
+                # cairo.OPERATOR_HSL_LUMINOSITY doesn't exist in python bindings
+                # CAIRO_OPERATOR_HSL_LUMINOSITY = 28
+                context.set_operator(28)
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+            elif 0:
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+
+                import colorsys
+                rgb = colorsys.hls_to_rgb(0, 0.5, 0.2)
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+
+                context.set_source_rgb(*rgb)
+                context.set_operator(26)
+                context.paint()
+            else:
+
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                pattern = context.get_source()
+
+                context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
+
+                Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+                context.paint()
+
+                import colorsys
+                saturation = 0.3
+                rgb = colorsys.hls_to_rgb(0, 0.5, saturation)
+
+                context.set_source_rgb(*rgb)
+                context.set_operator(26)
+                context.paint()
+
+                context.pop_group_to_source()
+                context.mask(pattern)
+
+        # single color
+        else:
+            Gdk.cairo_set_source_pixbuf(context, self._pixbuf, 0, 0)
+            pattern = context.get_source()
+            context.set_source_rgba(*rgba)
+            context.mask(pattern)
 
         context.restore()
 
