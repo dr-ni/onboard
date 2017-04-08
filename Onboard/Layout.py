@@ -1152,6 +1152,9 @@ class LayoutBox(LayoutItem):
 
 
 class DrawingItem(LayoutItem):
+    """
+    Base class of drawable Items.
+    """
 
     # extended id for key specific theme tweaks
     # e.g. theme_id=DELE.numpad (with id=DELE)
@@ -1253,6 +1256,9 @@ class DrawingItem(LayoutItem):
 
 
 class RectangleItem(DrawingItem):
+    """
+    Item that draws a simple filled rectangle.
+    """
 
     def draw_item(self, context):
         cr = context.cr
@@ -1318,6 +1324,8 @@ class LayoutPanel(DrawingItem):
 
 class ScrolledLayoutPanel(LayoutPanel):
     """
+    LayoutPanel with inertial scrolling.
+
     get_border_rect(): size of the  panel
     _scroll_rect: extends of the area to be scrolled, logical coordinates
     """
@@ -1346,10 +1354,17 @@ class ScrolledLayoutPanel(LayoutPanel):
         pass
 
     def set_scroll_rect(self, rect):
+        """
+        Set size of the virtual area to be scrolled over.
+        Logical coordinates.
+        """
         self._scroll_rect = rect.copy()
         self.set_damage(self.get_visible_scrolled_rect())
 
     def set_scroll_offset(self, offset_x, offset_y):
+        """
+        Set scrolled position. Logical coordinates.
+        """
         self.stop_scrolling()
 
         r = self.get_visible_scrolled_rect()
