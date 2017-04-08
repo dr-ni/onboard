@@ -1439,7 +1439,7 @@ class ScrolledLayoutPanel(LayoutPanel):
         if self.is_background_at(log_point):
             self._drag_activate()
         else:
-            self._cancel_timer.start(0.25, self._drag_cancel, sequence)
+            self._cancel_timer.start(0.35, self._drag_cancel, sequence)
 
     def _drag_activate(self):
         self._drag_active = True
