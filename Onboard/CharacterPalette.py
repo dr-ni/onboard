@@ -393,7 +393,7 @@ class EmojiPalettePanel(CharacterPalettePanel):
     """ Emoji palette """
 
     content_type = "emoji"
-    extra_labels = ["⭐"]
+    extra_labels = []  # "⭐"
 
     def configure_header_key(self, key, label):
         fn = emoji_filename_from_sequence(label)
@@ -418,7 +418,7 @@ class EmojiPalettePanel(CharacterPalettePanel):
             self.keyboard.hide_symbol_search()
 
     def is_favorites_index(self, index, num_keys):
-        return index == num_keys - 1
+        return False  # index == num_keys - 1
 
 
 class SymbolPalettePanel(CharacterPalettePanel):
