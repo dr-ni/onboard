@@ -1047,7 +1047,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
         key = None
 
         # hit-test keys
-        if sequence.active_item is None:
+        if hit_handle is None and \
+           sequence.active_item is None:
             key = self.get_key_at_location(point)
 
         # enable/disable the drag threshold
@@ -1157,13 +1158,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
                 if self._overcome_initial_key_resistance(sequence) and \
                    (not active_key or not active_key.activated) and \
-                    not self._key_popup:
+                   not self._key_popup:
                     sequence.active_key = hit_key
                     self.key_down_update(sequence, active_key)
 
         else:
-            if not hit_handle is None:
-                # handle hovered over: extend the time touch handles are visible
+            if hit_handle is not None:
+                # handle hovered over: extend the time
+                # touch handles are visible
                 self.start_touch_handles_auto_hide()
 
             # Show/hide the input line
@@ -1487,8 +1489,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
            config.is_docking_enabled() and \
            self.get_kbd_window().get_dock_expand():
                return HandleFunction.ASPECT_RATIO
-               
-        return HandleFunction.NORMAL    
+
+        return HandleFunction.NORMAL
 
     def get_click_type_button_rects(self):
         """
