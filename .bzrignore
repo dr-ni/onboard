@@ -6,3 +6,4 @@ tags
 __pycache__
 build/
 unicode_data/
+po/onboard.pot
