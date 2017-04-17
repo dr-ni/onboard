@@ -759,6 +759,11 @@ class LayoutLoaderSVG:
                                 chained_exception=(ex))
 
                         svg_node.bounds = svg_node.path.get_bounds()
+                        if svg_node.bounds.is_empty():
+                            raise Exceptions.LayoutFileError(
+                                "empty bounding box of svg path "
+                                "while reading geometry with id '{}': '{}'"
+                                .format(id, data))
 
                     elif tag == "g":  # group
                         svg_node.children = self._parse_svg(child)

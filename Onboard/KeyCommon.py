@@ -916,6 +916,14 @@ class KeyPath:
         >>> p = KeyPath.from_svg_path("m100,200 10-10z")
         >>> print(p.segments)
         [[0, [100.0, 200.0]], [1, [110.0, 190.0]], [2, []]]
+
+        # Inkscape in Zesty uses horizontal and vertical lines in paths.
+        >>> p = KeyPath.from_svg_path(
+        ...     "m 257.5,59.5 h 25 v 37 h -20 v -19 h -5 z")
+        >>> print(p.segments[:3])
+        [[0, [257.5, 59.5]], [1, [282.5, 59.5]], [1, [282.5, 96.5]]]
+        >>> print(p.segments[3:])
+        [[1, [262.5, 96.5]], [1, [262.5, 77.5]], [1, [257.5, 77.5]], [2, []]]
         """
 
         cmd_str = ""
@@ -972,6 +980,46 @@ class KeyPath:
         >>> p.append_command("l", [1, -1, 1, -1])
         >>> print(p.segments)
         [[0, [100, 200]], [1, [110, 190, 120, 180]], [1, [121, 179, 122, 178]]]
+
+        # L is an absolute line
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200])
+        >>> p.append_command("L", [10, 20, 30, 40])
+        >>> p.append_command("L", [10, 20])
+        >>> print(p.segments)
+        [[0, [100, 200]], [1, [10, 20, 30, 40]], [1, [10, 20]]]
+
+        # h is a relative horizontal line
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200])
+        >>> p.append_command("h", [50])
+        >>> p.append_command("l", [10, 20])
+        >>> print(p.segments)
+        [[0, [100, 200]], [1, [150, 200]], [1, [160, 220]]]
+
+        # H is an absolute horizontal line
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200])
+        >>> p.append_command("H", [50])
+        >>> p.append_command("l", [10, 20])
+        >>> print(p.segments)
+        [[0, [100, 200]], [1, [50, 200]], [1, [60, 220]]]
+
+        # v is a relative vertical line
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200])
+        >>> p.append_command("v", [60])
+        >>> p.append_command("l", [20, 10])
+        >>> print(p.segments)
+        [[0, [100, 200]], [1, [100, 260]], [1, [120, 270]]]
+
+        # V is an absolute vertical line
+        >>> p = KeyPath()
+        >>> p.append_command("M", [100, 200])
+        >>> p.append_command("V", [60])
+        >>> p.append_command("l", [20, 10])
+        >>> print(p.segments)
+        [[0, [100, 200]], [1, [100, 60]], [1, [120, 70]]]
         """
 
         # Convert lowercase segments from relative to absolute coordinates.
@@ -991,21 +1039,44 @@ class KeyPath:
                 coords[i]   = x
                 coords[i+1] = y
 
-        cmd = cmd_str.lower()
-        if cmd == "m":
+        cmd = cmd_str
+        if cmd == "m" or cmd == "M":
             self.segments.append([self.MOVE_TO, coords[:2]])
             if len(coords) > 2:
                 self.segments.append([self.LINE_TO, coords[2:]])
+            self._last_abs_pos = coords[-2:]
 
-        elif cmd == "l":
+        elif cmd == "l" or cmd == "L":
             self.segments.append([self.LINE_TO, coords])
+            self._last_abs_pos = coords[-2:]
+
+        elif cmd == "h":
+            x, y = self._last_abs_pos
+            x += coords[0]
+            self.segments.append([self.LINE_TO, [x, y]])
+            self._last_abs_pos = [x, y]
+
+        elif cmd == "H":
+            x, y = self._last_abs_pos
+            x = coords[0]
+            self.segments.append([self.LINE_TO, [x, y]])
+            self._last_abs_pos = [x, y]
+
+        elif cmd == "v":
+            x, y = self._last_abs_pos
+            y += coords[0]
+            self.segments.append([self.LINE_TO, [x, y]])
+            self._last_abs_pos = [x, y]
+
+        elif cmd == "V":
+            x, y = self._last_abs_pos
+            y = coords[0]
+            self.segments.append([self.LINE_TO, [x, y]])
+            self._last_abs_pos = [x, y]
 
         elif cmd == "z":
             self.segments.append([self.CLOSE_PATH, []])
 
-        # remember last absolute position
-        if len(coords) >= 2:
-            self._last_abs_pos = coords[-2:]
 
     @staticmethod
     def _tokenize_svg_path(path_str):
