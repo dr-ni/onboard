@@ -39,8 +39,8 @@ class UnicodeData:
     """
 
     _symbol_data = [
-        [0, "Αβγ", "αβγδεζηθικλμνξοπρςστυφχψω"],        # Greek
-        [1, "Α", "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"],
+        [0, "Αβγ", "αβγδεζηθικλμνξοπρσςτυφχψω"],        # Greek
+        [1, "Α",   "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΣΤΥΦΧΨΩ"],
 
         [0, "ℝ", "ℝℂℕℙℚℤ"                             # math & physics
                  "∅∃∄∈∉∀∑∥∦∡⊾∞"
@@ -102,7 +102,7 @@ class UnicodeData:
 class SymbolData:
 
     def __init__(self, symbol_data):
-        self. _symbol_data = symbol_data
+        self._symbol_data = symbol_data
 
     def get_category_labels(self):
         return [label for level, label, data
