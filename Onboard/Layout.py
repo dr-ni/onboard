@@ -465,12 +465,13 @@ class LayoutItem(TreeItem):
         if "_level" not in globals():
             _level = -1
         _level += 1
-        s = "   " * _level + "{} id={} layer_id={} fn={} vis={}\n" \
+        s = "   " * _level + "{} id={} layer_id={} fn={} vis={} {}\n" \
             .format(object.__repr__(self),
                     repr(self.id),
                     repr(self.layer_id),
                     repr(self.filename),
                     repr(self.visible),
+                    repr(self.context.log_rect),
                     ) + \
             "".join(item.dumps() for item in self.items)
         _level -= 1
