@@ -2021,35 +2021,35 @@ class RemoveSuggestionConfirmationDialog(Gtk.MessageDialog):
         >>> builtins.__dict__['_format'] = _format
 
         >>> test("word", [])
-        "Remove 'word' only where it occures at text begin."
+        "Remove 'word' only where it occurs at text begin."
 
         >>> test("word", ["word2"])
-        "Remove 'word' only where it occures after 'word2'."
+        "Remove 'word' only where it occurs after 'word2'."
 
         >>> test("word", ["word2", "word3"])
-        "Remove 'word' only where it occures after 'word2 word3'."
+        "Remove 'word' only where it occurs after 'word2 word3'."
 
         >>> test("word", ["<unk>"])
-        "Remove 'word' only where it occures after '<unk>'."
+        "Remove 'word' only where it occurs after '<unk>'."
 
         >>> test("word", ["<s>"])
-        "Remove 'word' only where it occures at sentence begin."
+        "Remove 'word' only where it occurs at sentence begin."
 
         >>> test("word", ["<num>"])
-        "Remove 'word' only where it occures after numbers."
+        "Remove 'word' only where it occurs after numbers."
         """
         hist0 = history[-1] if history else None
         if not hist0 or hist0.startswith("<bot:"):
-            label = _format("Remove '{}' only where it occures at text begin.",
+            label = _format("Remove '{}' only where it occurs at text begin.",
                             suggestion)
         elif hist0 == "<s>":
-            label = _format("Remove '{}' only where it occures at sentence begin.",
+            label = _format("Remove '{}' only where it occurs at sentence begin.",
                             suggestion)
         elif hist0 == "<num>":
-            label = _format("Remove '{}' only where it occures after numbers.",
+            label = _format("Remove '{}' only where it occurs after numbers.",
                             suggestion)
         else:
-            label = _format("Remove '{}' only where it occures after '{}'.",
+            label = _format("Remove '{}' only where it occurs after '{}'.",
                             suggestion, " ".join(history))
         return label
 
