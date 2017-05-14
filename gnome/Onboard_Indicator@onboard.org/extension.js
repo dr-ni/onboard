@@ -57,7 +57,7 @@ const OnboardIndicator = new Lang.Class({
         this._last_event_time = 0;
 
         this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        this._hbox.add_child(new St.Icon({icon_name: 'onboard-panel',
+        this._hbox.add_child(new St.Icon({icon_name: 'onboard-symbolic',
                                           style_class: 'system-status-icon',
                                          }));
         this.actor.add_child(this._hbox);
