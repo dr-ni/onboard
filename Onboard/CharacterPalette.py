@@ -28,6 +28,7 @@ from Onboard.KeyCommon         import ImageSlot, ImageStyle
 from Onboard                   import KeyCommon
 from Onboard.UnicodeData       import (UnicodeData,
                                        emoji_filename_from_sequence)
+from Onboard.utils             import Rect
 
 from Onboard.Config import Config
 config = Config()
@@ -262,7 +263,10 @@ class CharacterGridPanel(ScrolledLayoutPanel):
         super(CharacterGridPanel, self).draw_tree(context)
 
         key_context = self.scrolled_context
+        clip_rect = self.get_canvas_rect()
+
         draw_separators(context.cr,
+                        clip_rect,
                         [key_context.log_to_canvas_rect(r)
                          for r in self._separator_rects])
 
@@ -428,7 +432,7 @@ class SymbolPalettePanel(CharacterPalettePanel):
     extra_labels = []
 
 
-def draw_separators(cr, rects):
+def draw_separators(cr, clip_rect, rects):
     import cairo
 
     if not rects:
@@ -447,9 +451,10 @@ def draw_separators(cr, rects):
     cr.set_line_width(2)
 
     for rect in rects:
-        xc = rect.get_center_x()
-        cr.move_to(xc, rect.top())
-        cr.line_to(xc, rect.bottom())
-        cr.stroke()
+        if clip_rect.intersects(rect):
+            xc = rect.get_center_x()
+            cr.move_to(xc, rect.top())
+            cr.line_to(xc, rect.bottom())
+            cr.stroke()
 
 
