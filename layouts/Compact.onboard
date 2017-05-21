@@ -194,7 +194,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
                         <key id="BKSP" group="bottomrow" unlatch_layer="false"/>
                         <key id="DELE" group="bottomrow" unlatch_layer="false"/>
-                        <key id='sublayer0' group='sublayer0' target_layer='utils.emoji' image='emoji.svg' button='true'/>
+                        <key id='sublayer0' group='bottomrow' target_layer='utils.emoji' image='emoji.svg' button='true'/>
                         <key id='sublayer1' group='bottomrow' target_layer='utils.symbols' label='Σ' button='true'/>
                         <key id='sublayer2' group='bottomrow' target_layer='utils.snippets' image='snippets.svg' button='true'/>
                     </panel>
