@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Copyright © 2009 Chris Jones <tortoise@tortuga>
 # Copyright © 2012-2013 marmuta <marmvta@gmail.com>
 #
