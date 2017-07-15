@@ -358,10 +358,10 @@ class UnicodeDataGenerator:
         return os.path.join(self.UNICODE_DATA_PATH, fn)
 
     def gen_emoji_output(self):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
         # Comments taken from
         # http://unicode.org/emoji/charts/emoji-ordering.html
         # categories: [level, label, starting codepoint, comment, found]
-        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
         categories = [
 
             # Smileys & People
@@ -373,10 +373,10 @@ class UnicodeDataGenerator:
             [1, "😈", "😈", "creature-face", False],
             [1, "😺", "😺", "cat-face", False],
             [1, "🙈", "🙈", "monkey-face", False],
-            [1, "👦", "👦", "person", False],
+            [1, "👦", "👶", "person", False],
             [1, "👮", "👨\U0000200d⚕️", "person-role", False],
             [1, "🙍", "🙍", "person-gesture", False],
-            [1, "💆", "💆", "person-activity", False],
+            [1, "💆", "🚶", "person-activity", False],
             [1, "🤺", "🤺", "person-sport", False],
             [1, "👫", "👫", "family", False],
             # [1, "🏻", "🏻", "skin-tone", False],
@@ -456,6 +456,20 @@ class UnicodeDataGenerator:
             [1, "🇦🇨", "🇦🇨", "country-flag", False],
         ]
 
+        #self.gen_emoji_output_python(categories)
+        self.gen_emoji_output_cpp(categories)
+
+        # plausibility check: have all categories been found?
+        if not all(category[FOUND] for category in categories):
+            print(file=sys.stderr)
+            print("Warning: emoji categories were not all used",
+                  file=sys.stderr)
+            for category in categories:
+                print(" " * 4 + str(category),
+                      file=sys.stderr)
+
+    def gen_emoji_output_python(self, categories):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
         print("#")
         print("# Generated for Onboard by " + os.path.basename(__file__))
         print("#")
@@ -524,14 +538,68 @@ class UnicodeDataGenerator:
         print(" " * 8 + "]],")
         print("]")
 
-        # plausibility check: have all categories been found?
-        if not all(category[FOUND] for category in categories):
-            print(file=sys.stderr)
-            print("Warning: emoji categories were not all used",
-                  file=sys.stderr)
-            for category in categories:
-                print(" " * 4 + str(category),
+    def gen_emoji_output_cpp(self, categories):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
+        print("//")
+        print("// Generated for Onboard by " + os.path.basename(__file__))
+        print("//")
+        print()
+        print("#include <vector>")
+        print()
+        print("static const std::vector<CharacterCategory> s_emoji_data = ")
+        print("{{")
+
+        emoji_data = self._read_emoji_data().items()
+        comment_row = 50
+
+        for codepoints, data in emoji_data:
+            alternatives, comment = data
+
+            # new category?
+            new_category_index = -1
+            for i, category in enumerate(categories):
+                cps = tuple(ord(c) for c in category[CODEPOINT])
+                if codepoints == cps:
+                    new_category_index = i
+
+                    # mark as found, for later check
+                    category[FOUND] = True
+                    break
+
+            # category header
+            if new_category_index > 0:
+                print(" " * 8 + "}},")
+
+            if new_category_index >= 0:
+                category = categories[new_category_index]
+                clevel = category[LEVEL]
+                clabel = category[LABEL]
+                ccomment = category[COMMENT]
+
+                line = " " * 4 + "{" + repr(clevel) + ", " + \
+                    '"' + clabel + '"' + ", "
+                line = line.ljust(comment_row) + \
+                    "// category: " + ccomment
+                print(line)
+                print(" " * 8 + "{")
+
+                new_category_index = -1
+
+            # Does image file exist?
+            path = self._emoji_image_path(codepoints)
+            if not os.path.isfile(path):
+                print("dropping emoji", repr(comment),
+                      "missing image", repr(path),
                       file=sys.stderr)
+            else:
+                # main emoji
+                line = " " * 12 + \
+                    '"' + "".join([chr(cp) for cp in codepoints]) + '",'
+                line = line.ljust(comment_row) + "// " + comment
+                print(line)
+
+        print(" " * 8 + "}},")
+        print("}};")
 
     def _read_emoji_data(self):
         lines = self._read_cached_http(
