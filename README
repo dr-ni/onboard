@@ -188,7 +188,7 @@ Building from Source:
         sudo apt install devscripts
         sudo apt purge onboard onboard-common
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config build-essential fakeroot
-        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev libhunspell-dev libudev-dev
+        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev libhunspell-dev
         mkdir onboard_build
         cd onboard_build
         git clone https://github.com/dr-ni/onboard.git
@@ -200,6 +200,7 @@ Building from Source:
         sudo dpkg -i onboard_1.4.1+rev-0local0_amd64.deb 
         sudo dpkg -i onboard-common_1.4.1+rev-0local0_all.deb 
         sudo dpkg -i onboard-data_1.4.1+rev-0local0_all.deb
+        sudo dpkg -i gnome-shell-extension-onboard_1.4.1+rev-0local0_all.deb
 
 Homepage:
 
