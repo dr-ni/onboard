@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2012 marmuta <marmvta@gmail.com>
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+import os
+import icu
+
+t = icu.Transliterator.createInstance("NFD; [:Nonspacing Mark:] Remove; NFC",
+                                      icu.UTransDirection.FORWARD)
+
+print("#")
+print("# Generated for Onboard by " + os.path.basename(__file__))
+print("#")
+print()
+print("canonical_equivalents = {")
+
+all_chars = 0xd7ff
+table = {}
+for i, c in enumerate(chr(i) for i in range(all_chars)): 
+    tc = t.transliterate(c)
+    if len(tc) == 1 and tc != c:
+        equivalents = table.get(tc)
+        if not equivalents:
+            equivalents = []
+            table[tc] = equivalents
+        equivalents.append(c)
+
+for key, value in sorted(list(table.items())):
+    print(" "*4 + repr(key), ":", repr(value) + ",")
+
+print("}")
+
+
+

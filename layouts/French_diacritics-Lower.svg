@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created for Onboard -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   height="115"
+   width="330"
+   version="1.0"
+   inkscape:version="0.92.0 r15299"
+   sodipodi:docname="French_diacritics-Lower.svg">
+  <defs
+     id="defs90" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1176"
+     id="namedview88"
+     showgrid="false"
+     inkscape:zoom="4.401356"
+     inkscape:cx="113.9186"
+     inkscape:cy="17.95933"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-global="true"
+     inkscape:object-paths="false"
+     inkscape:object-nodes="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="-8.8560886,101.84502"
+       id="guide3833"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata3346">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <cc:license
+           rdf:resource="https://www.gnu.org/licenses/gpl.txt" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team at https://launchpad.net/~onboard</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>GPL-3+ license</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Onboard Devel Team</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:source>https://launchpad.net/onboard</dc:source>
+        <dc:relation>This file is part of Onboard</dc:relation>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Copyright © 2013, 2016, Francesco Fumanti &lt;francesco.fumanti@gmx.net&gt;
+Copyright © 2011-2014, marmuta &lt;marmvta@gmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <rect
+     id="SPCE.wordlist"
+     style="fill:#e5b8b2;fill-opacity:1;stroke:#000000;stroke-width:1"
+     height="18"
+     width="93.999985"
+     y="96.5"
+     x="152.5"
+     inkscape:label="" />
+  <rect
+     id="BKSP.wordlist"
+     style="fill:#e5b8b2;stroke:#000000;fill-opacity:1"
+     height="18"
+     width="18"
+     y="96.5"
+     x="247.49997"
+     inkscape:label="" />
+  <rect
+     id="DELE.wordlist"
+     style="fill:#e5b8b2;stroke:#000000;fill-opacity:1"
+     height="18"
+     width="18"
+     y="96.5"
+     x="266.49997"
+     inkscape:label="" />
+  <rect
+     id="settings.wordlist"
+     style="fill:#e5b8b2;stroke:#000000;fill-opacity:1"
+     height="18"
+     width="18"
+     y="96.5"
+     x="285.49997"
+     inkscape:label="" />
+  <rect
+     id="move.wordlist"
+     style="fill:#e5b8b2;stroke:#000000;stroke-width:0.99999994;fill-opacity:1"
+     height="18"
+     width="18"
+     y="96.5"
+     x="304.49997"
+     inkscape:label="" />
+  <rect
+     id="AD09"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="152.5" />
+  <rect
+     id="AD03"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="38.5" />
+  <rect
+     id="AD02"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="19.5" />
+  <rect
+     id="AD01"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="0.5" />
+  <rect
+     id="AD07"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="114.5" />
+  <rect
+     id="AD06"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="95.5" />
+  <rect
+     id="AD05"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="76.5" />
+  <rect
+     id="AD04"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="57.5" />
+  <rect
+     id="settings"
+     style="fill:#e5d8b2;stroke:#000000;fill-opacity:0.47999999"
+     height="18"
+     width="18"
+     y="96.5"
+     x="266.5"
+     inkscape:label="" />
+  <rect
+     id="move"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994;fill-opacity:0.47999999"
+     height="18"
+     width="18"
+     y="96.5"
+     x="285.5"
+     inkscape:label="" />
+  <rect
+     id="AD10"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="171.5" />
+  <rect
+     id="AD11"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="190.5" />
+  <rect
+     id="AD12"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="209.5" />
+  <rect
+     id="AC04"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="95.5" />
+  <rect
+     id="AC01"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="38.5" />
+  <rect
+     id="AC02"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="57.5" />
+  <rect
+     id="AC03"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="76.5" />
+  <rect
+     id="AD08"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="133.5" />
+  <rect
+     id="AD13"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="228.5"
+     inkscape:label="" />
+  <rect
+     id="AD14"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="247.5"
+     inkscape:label="" />
+  <rect
+     id="AD15"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="266.5"
+     inkscape:label="" />
+  <rect
+     id="AD16"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="285.5"
+     inkscape:label="" />
+  <rect
+     id="AD17"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="77.5"
+     x="304.5"
+     inkscape:label="" />
+  <rect
+     id="AC05"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="114.5"
+     inkscape:label="" />
+  <rect
+     id="layer1"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     height="18"
+     width="37"
+     y="96.5"
+     x="0.5"
+     inkscape:label="#AC01-9" />
+  <rect
+     id="DELE"
+     style="fill:#e5d8b2;stroke:#000000;fill-opacity:0.47999999"
+     height="18"
+     width="18"
+     y="96.5"
+     x="247.5"
+     inkscape:label="" />
+  <rect
+     id="BKSP"
+     style="fill:#e5d8b2;fill-opacity:0.47999999;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="228.5"
+     inkscape:label="" />
+  <rect
+     id="SPCE"
+     style="fill:#e5d8b2;fill-opacity:0.47999998;stroke:#000000;stroke-width:1"
+     height="18"
+     width="75"
+     y="96.5"
+     x="152.5"
+     inkscape:label="" />
+  <rect
+     id="wordlist"
+     height="15.028312"
+     width="322.02832"
+     y="61.485844"
+     x="0.48584405"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.97168815;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="prediction"
+     height="15"
+     width="49"
+     y="61.5"
+     x="71.5"
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+  <rect
+     id="correction"
+     height="15"
+     width="49"
+     y="61.5"
+     x="1.4999965"
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+     inkscape:label="#correction" />
+  <rect
+     id="expand-corrections"
+     height="14.685742"
+     width="16.685743"
+     y="61.657131"
+     x="52.657124"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.3142575;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none"
+     x="285.5"
+     y="61.5"
+     width="17"
+     height="15"
+     id="hide.wordlist"
+     inkscape:label="" />
+  <rect
+     inkscape:label=""
+     id="language.wordlist"
+     height="15"
+     width="17"
+     y="61.5"
+     x="265.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none"
+     x="225.5"
+     y="61.5"
+     width="17"
+     height="15"
+     id="next-predictions.wordlist"
+     inkscape:label="" />
+  <rect
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none"
+     x="205.5"
+     y="61.5"
+     width="17"
+     height="15"
+     id="previous-predictions.wordlist"
+     inkscape:label="" />
+  <rect
+     inkscape:label=""
+     id="pause-learning.wordlist"
+     height="15"
+     width="17"
+     y="61.5"
+     x="245.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="hide"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994;fill-opacity:0.47999999"
+     height="18"
+     width="18"
+     y="96.5"
+     x="304.5"
+     inkscape:label="" />
+  <rect
+     id="AC06"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="18"
+     y="96.5"
+     x="133.5"
+     inkscape:label="" />
+</svg>

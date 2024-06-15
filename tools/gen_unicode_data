@@ -1,0 +1,696 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2017 marmuta <marmvta@gmail.com>
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
+import os
+import sys
+import locale
+from bisect import bisect_left
+from contextlib import contextmanager
+from xml.dom import minidom
+from urllib.request import urlopen
+import re
+from collections import OrderedDict
+
+
+def init_import_path():
+    import inspect
+    current_dir = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.insert(0, parent_dir)
+
+
+def get_image_filename(image_filename):
+    return os.path.join("emojione", "svg", image_filename)
+
+
+init_import_path()
+from Onboard.UnicodeData import emoji_filename_from_codepoints
+
+
+class UnicodeDataGenerator:
+
+    UNICODE_DATA_PATH = "unicode_data"
+
+    class CodePoint:
+        """
+        Class representing a single unicode code point.
+        """
+        code = 0
+
+        # General_category of UnicodeDataGenerator.txt,
+        # English/untranslated
+        category = ""
+
+        # iso_10646_comment_field of UnicodeDataGenerator.txt,
+        # English/untranslated
+        comment = ""
+
+        def __init__(self):
+            self.annotations = {}
+
+        def __str__(self):
+            return ('UnicodeDataGenerator({},{},{})'
+                    .format(repr(self.code),
+                            repr(self.category),
+                            repr(self.comment),
+                            ))
+
+    class Annotation:
+        """ Annotation of a single entry in CLDR/common/annotations/*.xml """
+        # The code sequence can consist of one or more code-points.
+        # If there are multiple glyphs, they are apparently always joined
+        # by \u200d, the "zero width joiner" character.
+        code_sequence = ""
+
+        annotations = ()        # tuple of keywords, translated
+        annotation_tts = ""     # text-to-speech description, translated
+
+        def __str__(self):
+            return ('Annotation({},{},{})'
+                    .format(repr(self.code_sequence),
+                            repr(self.annotations),
+                            repr(self.annotation_tts)))
+
+    def __init__(self):
+        self._lang_ids = []
+
+        # All code points, sorted by code point
+        self._code_points = []        # list of code point objects
+        self._code_points_index = []  # list of integers for faster bisect
+
+        self._annotations = {}
+
+        # Emoji
+        # emoji-default: those expected to have an emoji presentation by
+        #                default, but can also have a text presentation
+        # text-default:  those expected to have a text presentation by default,
+        #                but could also have an emoji presentation
+        # text-only:     those that should only have a text presentation
+        self._emoji_default = set()
+        self._text_default = set()
+
+        # emoji that can be modified with a preceding modifier character
+        self._emoji_with_modifier = set()
+
+        # self.gen_unicode_data()
+
+    def set_language_ids(self, lang_ids):
+        """
+        Set multiple lang_ids to be active at the same time.
+        """
+        self._lang_ids = lang_ids
+        self._load_annotations(self._lang_ids)
+
+    def get_code_point(self, code):
+        """
+        Doctests:
+        >>> ud = UnicodeDataGenerator()
+        >>> lang_id = "en_US"
+        >>> ud.set_language_ids([lang_id])
+        >>> ud.get_annotation_for_sequence("🤦", lang_id) #doctest: +ELLIPSIS
+        <...
+        """
+        a = self._code_points_index
+        i = bisect_left(a, code)
+        if i != len(a) and a[i] == code:
+            return self._code_points[i]
+        return None
+
+    def get_emojis_with_emoji_default(self):
+        return (self.get_code_point(code) for code in self._emoji_default)
+
+    def get_annotation_for_sequence(self, code_sequence, lang_id):
+        """
+        Doctests:
+        >>> ud = UnicodeDataGenerator()
+        >>> str(ud.get_code_point(ord('👩')))
+        "UnicodeDataGenerator(128105,'WOMAN','')"
+        """
+        annotations = self._annotations.get(lang_id)
+        if annotations:
+            return annotations.get(code_sequence)
+        return None
+
+    def _load_annotations(self, lang_ids):
+        self._annotations.clear()
+
+        for lang_id in lang_ids:
+            for base_name in self._get_cldr_locale_base_names(lang_id):
+                path = self._cldr_path('common/annotations',
+                                       base_name + ".xml")
+
+                if os.path.exists(path):
+                    # {code_sequence : Annotation()}
+                    annotations = self._annotations.setdefault(lang_id,
+                                                               OrderedDict())
+
+                    self._load_annotation_file(path, annotations)
+
+    def _load_annotation_file(self, path, annotations_out):
+        with self._parse_xml(path) as dom:
+            for node in dom.getElementsByTagName("annotation"):
+                text = "".join([n.data for n in node.childNodes
+                                if n.nodeType == n.TEXT_NODE])
+                cp = self._get_attribute(node, 'cp', "-1")
+
+                a = annotations_out.setdefault(cp, self.Annotation())
+                a.code_sequence = cp
+                if self._get_attribute(node, 'type', "") == 'tts':
+                    a.annotation_tts = text
+                else:
+                    a.annotations = tuple(s.strip()
+                                          for s in text.split("|"))
+
+    def _get_cldr_locale_base_names(self, lang_id):
+        """
+        Doctests:
+        >>> ud = UnicodeDataGenerator()
+        >>> ud._get_cldr_locale_base_names('en_DE')
+        ['en', 'en_001', 'en_150', 'en_DE']
+        >>> ud._get_cldr_locale_base_names('de_DE')
+        ['de', 'de_DE']
+        """
+        parent_locales = {}
+        path = self._cldr_path('common/supplemental', 'supplementalData.xml')
+        with self._parse_xml(path) as dom:
+            for node in dom.getElementsByTagName("parentLocale"):
+                parent = node.attributes["parent"].value
+                locales = node.attributes["locales"].value
+                locale_ids = locales.split()
+                for lid in locale_ids:
+                    parent_locales[lid] = parent
+
+        # Find all annotation files we have to load for this
+        # particular lang_id. There can be multiple parent locales,
+        # e.g. en_DE -> en_150 -> en_001, then en.
+        candidates = []   # annotations files to load, in root to child order
+        candidates.append(lang_id)
+        lid = lang_id
+        while True:
+            lid = parent_locales.get(lid)
+            if not lid:
+                break
+            candidates.insert(0, lid)
+
+        lang_code, country_code = self.split_lang_id(lang_id)
+        if lang_code not in candidates:
+            candidates.insert(0, lang_code)
+
+        return candidates
+
+    @contextmanager
+    def _parse_xml(self, path):
+        with open(path, "r", encoding="UTF-8") as f:
+            with minidom.parse(f).documentElement as dom:
+                yield dom
+
+    @staticmethod
+    def _get_attribute(node, attribute, default):
+        attr = node.attributes.get(attribute)
+        return attr.value if attr else default
+
+    @staticmethod
+    def split_lang_id(lang_id):
+        tokens = lang_id.split("_")
+        lang_code    = tokens[0] if len(tokens) >= 1 else ""
+        country_code = tokens[1] if len(tokens) >= 2 else ""
+        return lang_code, country_code
+
+    def gen_unicode_data(self):
+        """
+        Download UNICODE tables and generate data files to include in
+        the project.
+
+        Note: this is a build-time step, and even then, this has to
+        be repeated only when updated unicode tables are released.
+        """
+        # block names, English
+        lines = self._read_cached_http(
+            'http://www.unicode.org/Public/UNIDATA/Blocks.txt',
+            'UNIDATA', 'Blocks.txt')
+        for line in lines:
+            if line:
+                line = line.split("#")[0].strip()
+
+        # code points
+        lines = self._read_cached_http(
+            'http://www.unicode.org/Public/UNIDATA/UnicodeDataGenerator.txt',
+            'UNIDATA', 'UnicodeDataGenerator.txt')
+        for line in lines:
+            if line:
+                line = line.split("#")[0].strip()
+                if line:
+                    fields = line.split(";")
+                    (code_value,
+                     general_category,
+                     canonical_Combining_classes,
+                     bidirectional_category,
+                     character_decomposition_mapping,
+                     decimal_digit_value,
+                     digit_value,
+                     numeric_value,
+                     mirrored_bidi,
+                     unicode_1_0_name,
+                     iso_10646_comment_field,
+                     uppercase_mapping,
+                     lowercase_mapping,
+                     titlecase_mapping,
+                     unknown
+                     ) = fields
+
+                    cp = self.CodePoint()
+                    cp.code = code_value
+                    cp.category = general_category
+                    cp.comment = iso_10646_comment_field
+                    self._code_points.append(cp)
+                    self._code_points_index.append(code_value)
+
+        # emoji-data.txt knows which characters are:
+        # - emoji (Emoji),
+        # - presentation emoji (Emoji_Presentation)
+        # - emoji modifiers (Emoji_Modifier_Base).
+        lines = self._read_cached_http(
+            'http://unicode.org/Public/emoji/3.0/emoji-data.txt',
+            'emoji', 'emoji-data.txt')
+        for line in lines:
+            if line:
+                line = line.split("#")[0].strip()
+                if line:
+                    fields = [c.strip() for c in line.split(";")]
+                    if len(fields) >= 2:
+                        code_point_range = re.split('\.\.', fields[0])
+                        code_point_range = list(int(e, 16)
+                                                for e in code_point_range)
+                        flag = fields[1].lower()
+
+                        s = None
+                        if flag == "Emoji".lower():
+                            s = self._emoji_default
+                        elif flag == "Emoji_Presentation".lower():
+                            s = self._text_default
+                        elif flag == "Emoji_Modifier_Base".lower():
+                            s = self._emoji_with_modifier
+
+                        if s is not None:
+                            if len(code_point_range) == 2:
+                                for i in range(code_point_range[0],
+                                               code_point_range[1] + 1):
+                                    s.add(i)
+                            elif len(code_point_range) == 1:
+                                s.add(code_point_range[0])
+
+    def _read_cached_http(self, url, subdir, fn):
+        lines = []
+        path = self._get_http_file(url, subdir, fn)
+        with open(path, "r", encoding="UTF-8") as f:
+            lines = f.readlines()
+        return lines
+
+    def _get_http_file(self, url, subdir, fn):
+        dir_ = self._data_path(subdir)
+        path = os.path.join(dir_, fn)
+
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
+
+        if not os.path.exists(path):
+
+            print("Downloading '{}'... ".format(url))
+            sys.stdout.flush()
+
+            response = urlopen(url)
+            data = response.read()
+            text = data.decode('utf-8')
+            with open(path, "w", encoding="UTF-8") as f:
+                f.write(text)
+
+            print("   saved as '{}'".format(path))
+
+        return path
+
+    def _cldr_path(self, subdir, fn):
+        """ path of CLDR directory """
+        cldr_subdir = os.path.join('CLDR', subdir)
+        dir_ = self._data_path(cldr_subdir)
+        return os.path.join(dir_, fn)
+
+    def _data_path(self, fn):
+        """ path of unicode_data directory """
+        return os.path.join(self.UNICODE_DATA_PATH, fn)
+
+    def gen_emoji_output(self):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
+        # Comments taken from
+        # http://unicode.org/emoji/charts/emoji-ordering.html
+        # categories: [level, label, starting codepoint, comment, found]
+        categories = [
+
+            # Smileys & People
+            [0, "🙂", "😀", "face-positive", False],
+            [1, "😐", "🤔", "face-neutral", False],
+            [1, "☹", "☹", "face-negative", False],
+            [1, "😇", "😇", "face-role", False],
+            [1, "😷", "😷", "face-sick", False],
+            [1, "😈", "😈", "creature-face", False],
+            [1, "😺", "😺", "cat-face", False],
+            [1, "🙈", "🙈", "monkey-face", False],
+            [1, "👦", "👶", "person", False],
+            [1, "👮", "👨\U0000200d⚕️", "person-role", False],
+            [1, "🙍", "🙍", "person-gesture", False],
+            [1, "💆", "🚶", "person-activity", False],
+            [1, "🤺", "🤺", "person-sport", False],
+            [1, "👫", "👫", "family", False],
+            # [1, "🏻", "🏻", "skin-tone", False],
+            [1, "💪", "💪", "body", False],
+            [0, "❤", "💋", "emotion", False],
+            [1, "👓", "👓", "clothing", False],
+
+            # Animals & Nature
+            [0, "🐘", "🐵", "animal-mammal", False],
+            [1, "🦃", "🦃", "animal-bird", False],
+            [1, "🐸", "🐸", "animal-amphibian", False],
+            # [1, "🐊", "🐊", "animal-reptile", False],
+            [1, "🐳", "🐳", "animal-marine", False],
+            [1, "🦋", "🦋", "animal-bug", False],
+            [1, "💐", "💐", "plant-flower", False],
+            [1, "🌱", "🌱", "plant-other", False],
+
+            # Food & Drink
+            [0, "🍉", "🍇", "food-fruit", False],
+            [1, "🥑", "🥑", "food-vegetable", False],
+            [1, "🍞", "🍞", "food-prepared", False],
+            [1, "🍱", "🍱", "food-asian", False],
+            [1, "🍦", "🍦", "food-sweet", False],
+            [1, "🍼", "🍼", "drink", False],
+            [1, "🍽", "🍽", "dishware", False],
+
+            # Travel & Places "🏛"
+            [0, "🌍", "🌍", "place-map", False],
+            [1, "🏔", "🏔", "place-geographic", False],
+            [1, "🏟", "🏟", "place-building", False],
+            [1, "⛪", "⛪", "place-religious", False],
+            [1, "⛲", "⛲", "place-other", False],
+            [1, "🚂", "🚂", "transport-ground", False],
+            [1, "⚓", "⚓", "transport-water", False],
+            [1, "✈", "✈", "transport-air", False],
+            [1, "🛎", "🛎", "hotel", False],
+            [1, "⌛", "⌛", "time", False],
+            [1, "🌑", "🌑", "sky & weather", False],
+
+            # Activities "⚽"
+            [0, "✨", "🎃", "event", False],
+            [1, "🎖", "🎖", "award-medal", False],
+            [1, "⚽", "⚽", "sport", False],
+            [1, "🎮", "🎮", "game", False],
+
+            # Objects
+            [0, "💡", "🔇", "sound", False],
+            [1, "🎼", "🎼", "music", False],
+            [1, "🎷", "🎷", "musical-instrument", False],
+            [1, "📱", "📱", "phone", False],
+            [1, "🔋", "🔋", "computer", False],
+            [1, "🎥", "🎥", "light & video", False],
+            [1, "📔", "📔", "book-paper", False],
+            [1, "💰", "💰", "money", False],
+            [1, "✉", "✉", "mail", False],
+            [1, "✏", "✏", "writing", False],
+            [1, "💼", "💼", "office", False],
+            [1, "🔒", "🔒", "lock", False],
+            [1, "🔨", "🔨", "tool", False],
+            [1, "💉", "💉", "medical", False],
+            [1, "🚬", "🚬", "other-object", False],
+
+            # Symbols
+            [0, "🔷", "🏧", "transport-sign", False],
+            [1, "⚠", "⚠", "warning", False],
+            [1, "⬆", "⬆", "arrow", False],
+            [1, "🛐", "🛐", "religion", False],
+            [1, "♈", "♈", "zodiac", False],
+            [1, "🔀", "🔀", "av-symbol", False],
+            [1, "♻", "♻", "other-symbol", False],
+            [1, "#️⃣", "#️⃣", "keycap", False],
+            [1, "💯", "💯", "alphanum", False],
+            [1, "▪", "▪", "geometric", False],
+
+            # Flags
+            [0, "🚩", "🏁", "flag", False],
+            [1, "🇦🇨", "🇦🇨", "country-flag", False],
+        ]
+
+        #self.gen_emoji_output_python(categories)
+        self.gen_emoji_output_cpp(categories)
+
+        # plausibility check: have all categories been found?
+        if not all(category[FOUND] for category in categories):
+            print(file=sys.stderr)
+            print("Warning: emoji categories were not all used",
+                  file=sys.stderr)
+            for category in categories:
+                print(" " * 4 + str(category),
+                      file=sys.stderr)
+
+    def gen_emoji_output_python(self, categories):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
+        print("#")
+        print("# Generated for Onboard by " + os.path.basename(__file__))
+        print("#")
+        print()
+        print("emoji_data = [")
+
+        emoji_data = self._read_emoji_data().items()
+        comment_row = 50
+
+        for codepoints, data in emoji_data:
+            alternatives, comment = data
+
+            # new category?
+            new_category_index = -1
+            for i, category in enumerate(categories):
+                cps = tuple(ord(c) for c in category[CODEPOINT])
+                if codepoints == cps:
+                    new_category_index = i
+
+                    # mark as found, for later check
+                    category[FOUND] = True
+                    break
+
+            # category header
+            if new_category_index > 0:
+                print(" " * 8 + "]],")
+
+            if new_category_index >= 0:
+                category = categories[new_category_index]
+                clevel = category[LEVEL]
+                clabel = category[LABEL]
+                ccomment = category[COMMENT]
+
+                line = " " * 4 + "[" + repr(clevel) + ", " + \
+                    repr(clabel) + ", "
+                line = line.ljust(comment_row) + \
+                    "# category: " + ccomment
+                print(line)
+                print(" " * 8 + "[")
+
+                new_category_index = -1
+
+            # Does image file exist?
+            path = self._emoji_image_path(codepoints)
+            if not os.path.isfile(path):
+                print("dropping emoji", repr(comment),
+                      "missing image", repr(path),
+                      file=sys.stderr)
+            else:
+                # main emoji
+                line = " " * 12 + "(" + \
+                    repr("".join([chr(cp) for cp in codepoints])) + ", " + \
+                    ("None), " if not alternatives else "")
+                line = line.ljust(comment_row) + "# " + comment
+                print(line)
+
+                # skin tones for the long-press popup
+                for i, (acodepoints, acomment) in enumerate(alternatives):
+                    line = " " * 16 + \
+                        ("(" if i == 0 else " ") +\
+                        repr("".join([chr(cp) for cp in acodepoints])) + \
+                        (")), " if i == len(alternatives) - 1 else ", ")
+                    line = line.ljust(comment_row) + "# " + acomment
+                    print(line)
+
+        print(" " * 8 + "]],")
+        print("]")
+
+    def gen_emoji_output_cpp(self, categories):
+        (LEVEL, LABEL, CODEPOINT, COMMENT, FOUND) = range(5)
+        print("//")
+        print("// Generated for Onboard by " + os.path.basename(__file__))
+        print("//")
+        print()
+        print("#include <vector>")
+        print()
+        print("static const std::vector<CharacterCategory> s_emoji_data = ")
+        print("{{")
+
+        emoji_data = self._read_emoji_data().items()
+        comment_row = 50
+
+        for codepoints, data in emoji_data:
+            alternatives, comment = data
+
+            # new category?
+            new_category_index = -1
+            for i, category in enumerate(categories):
+                cps = tuple(ord(c) for c in category[CODEPOINT])
+                if codepoints == cps:
+                    new_category_index = i
+
+                    # mark as found, for later check
+                    category[FOUND] = True
+                    break
+
+            # category header
+            if new_category_index > 0:
+                print(" " * 8 + "}},")
+
+            if new_category_index >= 0:
+                category = categories[new_category_index]
+                clevel = category[LEVEL]
+                clabel = category[LABEL]
+                ccomment = category[COMMENT]
+
+                line = " " * 4 + "{" + repr(clevel) + ", " + \
+                    '"' + clabel + '"' + ", "
+                line = line.ljust(comment_row) + \
+                    "// category: " + ccomment
+                print(line)
+                print(" " * 8 + "{")
+
+                new_category_index = -1
+
+            # Does image file exist?
+            path = self._emoji_image_path(codepoints)
+            if not os.path.isfile(path):
+                print("dropping emoji", repr(comment),
+                      "missing image", repr(path),
+                      file=sys.stderr)
+            else:
+                # main emoji
+                line = " " * 12 + \
+                    '"' + "".join([chr(cp) for cp in codepoints]) + '",'
+                line = line.ljust(comment_row) + "// " + comment
+                print(line)
+
+        print(" " * 8 + "}},")
+        print("}};")
+
+    def _read_emoji_data(self):
+        lines = self._read_cached_http(
+            'http://unicode.org/emoji/charts/emoji-ordering.txt',
+            'emoji', 'emoji-ordering.txt')
+
+        skincolors = [0x1F3FB,
+                      0x1F3FC,
+                      0x1F3FD,
+                      0x1F3FE,
+                      0x1F3FF,
+                      ]
+
+        last_noskin_cps = ()
+        emoji_data = OrderedDict()
+
+        for line in lines:
+            if line:
+                k = line.find("#")
+                data = line[:k].strip()
+                comment = line[k + 1:].strip()
+                if data:
+                    fields = [c.strip() for c in data.split(";")]
+                    codepoints = tuple(int(c.strip().replace("U+", "0x"), 16)
+                                       for c in fields[0].split())
+
+                    # Emoji modified with skin color get hidden in
+                    # long-press popups.
+                    # The base emoji of the popup is the immediate predecessor
+                    # of the skin color modifier sequence in collation order.
+                    noskincps = tuple(cp for cp in codepoints
+                                      if cp not in skincolors)
+
+                    # without skin modifier?
+                    if codepoints == noskincps:
+                        last_noskin_cps = codepoints
+                        emoji_data[codepoints] = [[], comment]
+
+                    # just a skin modifier alone?
+                    elif not noskincps:
+                        print("dropping emoji: skin modifier",
+                                repr(comment), file=sys.stderr)
+
+                    # with skin modifier
+                    else:
+                        # print(codepoints, comment, last_noskin_comment)
+                        parent = emoji_data.get(last_noskin_cps)
+                        if parent:
+                            parent[0].append([codepoints, comment])
+                        else:
+                            print("dropping emoji: no parent for",
+                                    repr(comment), file=sys.stderr)
+
+        return emoji_data
+
+    def _emoji_image_path(self, codepoints):
+        """
+        Drop emoji sequences that have no corresponding EmojiOne image file.
+        """
+        image_filename = emoji_filename_from_codepoints(codepoints)
+        return get_image_filename(image_filename)
+
+
+def get_system_default_lang_id(self):
+    lang_id = locale.getdefaultlocale()[0]
+    if not lang_id:  # None e.g. with LANG=C
+        lang_id = "en_US"
+    return lang_id
+
+
+if __name__ == "__main__":
+    ud = UnicodeDataGenerator()
+    ud.gen_emoji_output()
+
+    exit()
+
+    # Download stuff now (first time), so the output doesn't
+    # interfere with doctests.
+    UnicodeDataGenerator()
+
+    import doctest
+    doctest.testmod()
+    if 1:
+        ud = UnicodeDataGenerator()
+        ud.set_language_ids(["en_US"])
+
+        if 0:
+            cps = ud.get_emoji_sequences()
+            cps = ud.get_emojis_with_emoji_default()
+            for cp in cps:
+                print(cp.code, cp.category, cp.comment,
+                      cp.annotations, cp.annotation_tts)
+
+

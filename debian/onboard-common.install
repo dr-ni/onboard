@@ -1,0 +1,10 @@
+usr/share/dbus-1
+usr/share/help
+usr/share/locale
+usr/share/onboard/*.ui
+usr/share/onboard/layouts
+usr/share/onboard/scripts
+usr/share/onboard/themes
+usr/share/onboard/layoutstrings.py
+usr/share/onboard/tools/checkmodels
+usr/share/sounds

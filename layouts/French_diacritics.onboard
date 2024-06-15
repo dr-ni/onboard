@@ -1,0 +1,119 @@
+<?xml version="1.0" ?>
+<!--
+Copyright © 2011-2014 marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
+Onboard is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+Onboard is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<keyboard
+    id="French diacritics"
+    format="3.2"
+    section="contributions"
+    summary="French letters with diacritics (accents)."
+    description="Partial keyboard with only French special characters."
+    author="marmuta"
+    >
+
+    <include file="key_defs.xml"/>
+
+    <box orientation="vertical">
+        <!--- word suggestions -->
+        <panel filename='French_diacritics-Lower.svg' scan_priority='1'>
+        <include file='word_suggestions.xml'/>
+        </panel>
+
+        <panel>
+            <!--- Diacritics row -->
+            <panel>
+                <panel filename="French_diacritics-Lower.svg" layer="Lower">
+                    <key group="alphanumeric" id="AD01" char="à" label="à"/>
+                    <key group="alphanumeric" id="AD02" char="â" label="â"/>
+                    <key group="alphanumeric" id="AD03" char="ä" label="ä"/>
+                    <key group="alphanumeric" id="AD04" char="æ" label="æ"/>
+                    <key group="alphanumeric" id="AD05" char="ç" label="ç"/>
+                    <key group="alphanumeric" id="AD06" char="è" label="è"/>
+                    <key group="alphanumeric" id="AD07" char="é" label="é"/>
+                    <key group="alphanumeric" id="AD08" char="ê" label="ê"/>
+                    <key group="alphanumeric" id="AD09" char="ë" label="ë"/>
+                    <key group="alphanumeric" id="AD10" char="î" label="î"/>
+                    <key group="alphanumeric" id="AD11" char="ï" label="ï"/>
+                    <key group="alphanumeric" id="AD12" char="ô" label="ô"/>
+                    <key group="alphanumeric" id="AD13" char="œ" label="œ"/>
+                    <key group="alphanumeric" id="AD14" char="ù" label="ù"/>
+                    <key group="alphanumeric" id="AD15" char="û" label="û"/>
+                    <key group="alphanumeric" id="AD16" char="ü" label="ü"/>
+                    <key group="alphanumeric" id="AD17" char="ÿ" label="ÿ"/>
+                </panel>
+
+                <panel filename="French_diacritics-Upper.svg" layer="Upper">
+                    <key group="alphanumeric" id="AD01" char="À" label="À"/>
+                    <key group="alphanumeric" id="AD02" char="Â" label="Â"/>
+                    <key group="alphanumeric" id="AD03" char="Ä" label="Ä"/>
+                    <key group="alphanumeric" id="AD04" char="Æ" label="Æ"/>
+                    <key group="alphanumeric" id="AD05" char="Ç" label="Ç"/>
+                    <key group="alphanumeric" id="AD06" char="È" label="È"/>
+                    <key group="alphanumeric" id="AD07" char="É" label="É"/>
+                    <key group="alphanumeric" id="AD08" char="Ê" label="Ê"/>
+                    <key group="alphanumeric" id="AD09" char="Ë" label="Ë"/>
+                    <key group="alphanumeric" id="AD10" char="Î" label="Î"/>
+                    <key group="alphanumeric" id="AD11" char="Ï" label="Ï"/>
+                    <key group="alphanumeric" id="AD12" char="Ô" label="Ô"/>
+                    <key group="alphanumeric" id="AD13" char="Œ" label="Œ"/>
+                    <key group="alphanumeric" id="AD14" char="Ù" label="Ù"/>
+                    <key group="alphanumeric" id="AD15" char="Û" label="Û"/>
+                    <key group="alphanumeric" id="AD16" char="Ü" label="Ü"/>
+                    <key group="alphanumeric" id="AD17" char="Ÿ" label="Ÿ"/>
+
+                    <key group="bottomrow" id="quit" scan_priority="1"/>
+                    <key group="bottomrow" id="settings" scan_priority="1"/>
+                    <key group="bottomrow" id="move" tooltip="Move keyboard"/>
+                </panel>
+            </panel>
+
+            <!--- Bottom row -->
+            <panel filename="French_diacritics-Lower.svg">
+                <key group="alphanumeric" id="layer1" label="⇧"/>
+
+                <key group="alphanumeric" id="AC01" char="€" label="€"/>
+                <key group="alphanumeric" id="AC02" char="°" label="°"/>
+                <key group="alphanumeric" id="AC03" char="«" label="«"/>
+                <key group="alphanumeric" id="AC04" char="»" label="»"/>
+                <key group="alphanumeric" id="AC05" char="–" label="–" tooltip="en dash"/>
+                <key group="alphanumeric" id="AC06" char="—" label="—" tooltip="em dash"/>
+
+                <panel group='nowordlist'>
+                    <key group="bottomrow" id="SPCE"/>
+                    <box> 
+                        <key group="bottomrow" id="BKSP"/>
+                        <key group="bottomrow" id="DELE"/>
+                        <key group="bottomrow" id="settings"/>
+                        <key group="bottomrow" id="move"/>
+                        <key group='bottomrow' id='hide'/>
+                    </box>
+                </panel>
+                <panel group='wordlist'>
+                    <key group="bottomrow" id="SPCE" svg_id="SPCE.wordlist"/>
+                    <box> 
+                        <key group="bottomrow" id="BKSP" svg_id="BKSP.wordlist"/>
+                        <key group="bottomrow" id="DELE" svg_id="DELE.wordlist"/>
+                        <key group="bottomrow" id="settings" svg_id="settings.wordlist"/>
+                        <key group="bottomrow" id="move" svg_id="move.wordlist"/>
+                    </box>
+                </panel>
+            </panel>
+        </panel>
+    </box>
+</keyboard>

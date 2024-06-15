@@ -1,0 +1,160 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2014 marmuta <marmvta@gmail.com>
+#
+# This file is part of Onboard.
+#
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+# shut up python-mode's python2 code-checking
+from __future__ import print_function
+
+import os
+import sys
+import glob
+import optparse
+import collections
+from xml.parsers.expat import ExpatError
+from xml.dom import minidom
+
+
+class ErrorExit(Exception): pass
+
+class Main:
+    def __init__(self):
+        pass
+
+    def run(self):
+        exit_code = 0
+
+        try:
+            parser = optparse.OptionParser(usage=
+                    "Usage: %prog [options] [model1 model2 ...]")
+            parser.add_option("-o", "--output", type="str",
+                    dest="output_filename",
+                    help="output filename")
+            options, args = parser.parse_args()
+            output_filename = options.output_filename
+
+            paths = args
+            if not paths:
+                paths.append("./layouts")
+
+            messages = collections.OrderedDict()
+            for path in paths:
+                filenames  = glob.glob(os.path.join(path, "*.onboard"))
+                filenames += glob.glob(os.path.join(path, "*.xml"))
+                for filename in filenames:
+                    messages.update(self._process_layout(filename))
+
+            if output_filename:
+                with open(output_filename, mode="w", encoding="UTF-8") as f:
+                    self._gen_output(messages, f)
+            else:
+                self._gen_output(messages)
+
+        except ErrorExit as ex:
+            print(ex, file=sys.stdout)
+            exit_code = 1
+
+        return exit_code
+
+    def _gen_output(self, messages, file=sys.stdout):
+        intro = """
+#!/usr/bin/python3
+#
+# This file was auto-generated, don't modify it manually.
+#
+# It contains copies of the strings of the layout files (.onboard files)
+# that need translation.
+
+from gettext import gettext as _
+
+TRANSLATABLE_LAYOUT_STRINGS = [
+"""
+        outro = """]
+
+raise Exception("This module should not be executed.  It should only be"
+        " parsed by i18n tools such as intltool.")
+"""
+
+        print(intro, file=file)
+
+        for msgid, mi in sorted(messages.items()):
+            msgid = msgid.replace("\n", "\\n")
+            if mi.comment:
+                print("    # translators: " + mi.comment, file=file)
+            print('    _("{}"),\n'.format(msgid), file=file)
+
+        print(outro, file=file)
+
+    def _process_layout(self, filename):
+        messages = collections.OrderedDict()
+        base_name = os.path.basename(filename)
+
+        try:
+            with open(filename, encoding="UTF-8") as f:
+                dom_node = minidom.parse(f).documentElement
+
+                # keyboard tags (should be only one)
+                for node in [dom_node] + \
+                            dom_node.getElementsByTagName("keyboard"):
+                    self._process_attributes(messages, node,
+                            ["summary", "description"],
+                            "this is a '{}' of the keyboard layout " + \
+                            "'{}'" \
+                            .format(base_name))
+
+                # key tags
+                for node in dom_node.getElementsByTagName("key"):
+                    id = node.attributes["id"].value
+                    self._process_attributes(messages, node,
+                            ["tooltip"],
+                            "this is a '{}' of the key " + \
+                            "'{}' in keyboard layout '{}'" \
+                            .format(id, base_name))
+
+                # key_template tags
+                for node in dom_node.getElementsByTagName("key_template"):
+                    id = node.attributes["id"].value
+                    self._process_attributes(messages, node,
+                            ["tooltip"],
+                            "this is a '{}' of the key_template " + \
+                            "'{}' in keyboard layout '{}'" \
+                            .format(id, base_name))
+        except IOError as ex:
+            print(str(ex), file=sys.stdout)
+            raise ErrorExit()
+        except ExpatError as ex:
+            print("XML in {} {}".format(filename, ex), file=sys.stdout)
+            raise ErrorExit()
+
+
+        return messages
+
+    @staticmethod
+    def _process_attributes(messages, dom_node, attributes, comment_format):
+        class MessageInfo: pass
+        for a in attributes:
+            if a in dom_node.attributes:
+                value = dom_node.attributes[a].value
+                mi = MessageInfo()
+                mi.comment = comment_format.format(a)
+                messages[value] = mi
+
+if __name__ == '__main__':
+    exit_code = Main().run()
+    sys.exit(exit_code)
+
