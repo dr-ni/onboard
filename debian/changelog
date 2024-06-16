@@ -1,3 +1,9 @@
+onboard (1.4.2) dr-ni; urgency=medium
+
+  * new fork on github because the launchpad project is dead
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Fri, 15 Jun 2024 04:21:37 +0200
+ 
 onboard (1.4.1+rev-0local0) zesty; urgency=medium
 
   * debian/onboard.docs: remove
