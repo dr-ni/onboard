@@ -95,16 +95,15 @@ D-Bus Service:
 
 Getting Onboard:
 
-    A PPA with downloads for various old Ubuntu-releases
-    can be found here:
+    Actual sources can be found at https://github.com/dr-ni/onboard
+
+    The parent project at https://launchpad.net/onboard seems to be not maintained anymore.
+
+    An old PPA with downloads for old Ubuntu-releases can be found here:
 
     https://launchpad.net/~onboard/+archive/ubuntu/stable
 
-    Tar-balls of the latest releases are available on our Launchpad homepage.
-
-    https://launchpad.net/onboard
-
-    Source code is maintained in a bazaar repository at the same site.
+    The old source code is maintained in a bazaar repository at the same site.
 
     bzr branch lp:onboard
 
