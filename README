@@ -177,6 +177,7 @@ Building from Source:
         # install packages
         sudo dpkg -i ../onboard*.deb
 
+
     Ubuntu 24.04:
 
         sudo apt install git build-essential fakeroot
