@@ -89,11 +89,12 @@ Example, writing:
 
 ## Getting Onboard:
 Actual sources can be found at https://github.com/dr-ni/onboard
-The parent project at
+
+The parent project seems to be not maintained anymore: 
 
     https://launchpad.net/onboard
 
-seems to be not maintained anymore. An old PPA with downloads for old Ubuntu-releases can be found here:
+An old PPA with downloads for old Ubuntu-releases can also be found here:
 
     https://launchpad.net/~onboard/+archive/ubuntu/stable
 
