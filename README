@@ -185,12 +185,15 @@ Building from Source:
         mkdir onboard_build
         cd onboard_build
         git clone https://github.com/dr-ni/onboard.git
+
+        # build
         cd onboard
         fakeroot debian/rules clean
         fakeroot debian/rules build
         export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
-        cd ..
+
         # install packages
+        cd ..
         sudo dpkg -i onboard_1.4.2*.deb 
         sudo dpkg -i onboard-common_1.4.2_all.deb 
         sudo dpkg -i onboard-data_1.4.2_all.deb
