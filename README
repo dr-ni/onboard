@@ -195,7 +195,7 @@ Building from Source:
         cd onboard
         fakeroot debian/rules clean
         fakeroot debian/rules build
-        export DEB_HOST_ARCH=$(uname -m); fakeroot debian/rules binary
+        export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
         cd ..
         sudo dpkg -i onboard_1.4.1+rev-0local0_amd64.deb 
         sudo dpkg -i onboard-common_1.4.1+rev-0local0_all.deb 
