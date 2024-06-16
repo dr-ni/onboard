@@ -2,107 +2,110 @@
 
 ![onb](https://github.com/dr-ni/onboard/blob/main/onboard.png)
 
-## Description:
-    Onboard is an onscreen keyboard useful for everybody that cannot use a
-    hardware keyboard; for example TabletPC users, mobility impaired users,...
-    It has been designed with simplicity in mind and can be used right away
-    without the need of any configuration, as it can read the keyboard layout
-    from the X server.
+## Description
 
-    Among its features are:
-    - Support of custom layouts through the use of xml and svg files.
-    - Support of custom themes for the appearance through the use of xml files.
-    - Support of macros to automatically type custom defined texts.
-    - Support of <modifier>+<mouseclick> combination.
-    - Toggling mouse buttons to perform right clicks with the left mouse button.
-    - Control of the hover click feature provided by the system.
-    - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
-    - Docking
-    - XEmbedding
-    - Support for scanning.
+Onboard is an onscreen keyboard useful for everybody that cannot use a
+hardware keyboard; for example TabletPC users, mobility impaired users.
+It has been designed with simplicity in mind and can be used right away
+without the need of any configuration, as it can read the keyboard layout
+from the X server.
+
+Features are:
+- Support of custom layouts through the use of xml and svg files.
+- Support of custom themes for the appearance through the use of xml files.
+- Support of macros to automatically type custom defined texts.
+- Support of <modifier>+<mouseclick> combination.
+- Toggling mouse buttons to perform right clicks with the left mouse button.
+- Control of the hover click feature provided by the system.
+- Minimizing the keyboard to the panel, a trayicon, or a floating icon.
+- Docking
+- XEmbedding
+- Support for scanning.
 
 ## D-Bus Service:
-    Once running, Onboard provides a D-Bus service at the bus name
-    'org.onboard.Onboard', that allows other processes to control 
-    the keyboard window.
-    
-    Interface 'org.onboard.Onboard.Keyboard':
+Once running, Onboard provides a D-Bus service at the bus name
+'org.onboard.Onboard', that allows other processes to control 
+the keyboard window.
 
-    Show(), method
-        Show the keyboard window.
-        Return value: None
+## Interface 'org.onboard.Onboard.Keyboard':
 
-        If auto-show is enabled, the window is locked visible, i.e.
-        auto-hiding is suspended until Onboard is hidden either manually
-        or by calling the D-Bus method "Hide". This is the same bahavior as if
-        Onboard was shown by user action, e.g. by status menu, floating icon
-        or by starting a second instance.
+### Show(), method:
+- Show the keyboard window
+- Return value: None
 
-        Example:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
+If auto-show is enabled, the window is locked visible, i.e.
+auto-hiding is suspended until Onboard is hidden either manually
+or by calling the D-Bus method "Hide". This is the same bahavior as if
+Onboard was shown by user action, e.g. by status menu, floating icon
+or by starting a second instance.
 
-    Hide(), method
-        Hide the keyboard window.
-        Return value: None
+Example:
 
-        Example:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
 
-    ToggleVisible(), method
-        Show the keyboard window if it was hidden, else hide it.
-        Return value: None
+### Hide(), method
+- Hide the keyboard window
+- Return value: None
 
-        Example:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard 
-        org.onboard.Onboard.Keyboard.ToggleVisible
+Example:
 
-    Visible, Boolean property, read-only
-        True if the window is currently visible, False otherwise.
-        Signal: org.freedesktop.DBus.Properties.PropertiesChanged
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
 
-        Example:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get 
-        string:"org.onboard.Onboard.Keyboard" string:"Visible"
+### ToggleVisible(), method
+- Show the keyboard window if it was hidden, else hide it.
+- Return value: None
 
-    AutoShowPaused, Boolean property, read-write
-        True pauses auto-show and hides the keyboard.
-        False resumes auto-show.
-        You are free to write to this property, e.g. when entering/leaving 
-        tablet mode of a convertible device (and Onboard's built-in detection
-        isn't sufficient).
-        This property is not persistent. It will be reset to 'false' each time
-        Onboard is restarted.
+Example:
 
-        Signal: org.freedesktop.DBus.Properties.PropertiesChanged
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.ToggleVisible
 
-        Example, reading:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get 
-        string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused"
+### Visible, Boolean property, read-only
+- True if the window is currently visible, False otherwise.
+- Signal: org.freedesktop.DBus.Properties.PropertiesChanged
 
-        Example, writing:
-        dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard 
-        /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Set 
-        string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused" 
-        variant:boolean:"true"
+Example:
+
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get string:"org.onboard.Onboard.Keyboard" string:"Visible"
+
+### AutoShowPaused, Boolean property, read-write
+- True pauses auto-show and hides the keyboard.
+- False resumes auto-show.
+
+You are free to write to this property, e.g. when entering/leaving 
+tablet mode of a convertible device (and Onboard's built-in detection
+isn't sufficient).
+This property is not persistent. It will be reset to 'false' each time
+Onboard is restarted.
+
+### Signal: org.freedesktop.DBus.Properties.PropertiesChanged
+
+Example, reading:
+
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused"
+
+Example, writing:
+
+    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Set string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused" variant:boolean:"true"
 
 ## Getting Onboard:
-    Actual sources can be found at https://github.com/dr-ni/onboard
-    The parent project at https://launchpad.net/onboard seems to be not maintained anymore.
-    An old PPA with downloads for old Ubuntu-releases can be found here:
+Actual sources can be found at https://github.com/dr-ni/onboard
+The parent project at
+
+    https://launchpad.net/onboard
+
+seems to be not maintained anymore. An old PPA with downloads for old Ubuntu-releases can be found here:
+
     https://launchpad.net/~onboard/+archive/ubuntu/stable
-    The old source code is in a bazaar repository at the same site. It can be checked out with:
+
+The old source code is in a bazaar repository at the same site. It can be checked out with:
+
     bzr branch lp:onboard
 
 ## Building from Source:
-    Find below short instructions on how to build Onboard straight from this
-    github repository. If you have improvements to share, get errors or run
-    into other problems, please let us know. Build instructions for
-    new distributions are always welcome too.
+Find below short instructions on how to build Onboard straight from this
+github repository. If you have improvements to share, get errors or run
+into other problems, please let us know. Build instructions for
+new distributions are always welcome too.
 
 ## Arch Linux:
         pacman -S base-devel git python-distutils-extra dconf gtk3 \
