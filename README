@@ -95,7 +95,7 @@ D-Bus Service:
 
 Getting Onboard:
 
-    A PPA with downloads for various old and new Ubuntu-releases
+    A PPA with downloads for various old Ubuntu-releases
     can be found here:
 
     https://launchpad.net/~onboard/+archive/ubuntu/stable
@@ -184,6 +184,7 @@ Building from Source:
         sudo dpkg -i ../onboard*.deb
 
     Ubuntu 24.04:
+
         sudo apt install build-essential
         sudo apt install devscripts
         sudo apt purge onboard onboard-common
