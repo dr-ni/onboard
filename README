@@ -112,7 +112,7 @@ Building from Source:
 
     Arch Linux:
 
-        pacman -S base-devel bzr python-distutils-extra dconf gtk3 \
+        pacman -S base-devel git python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
         iso-codes python-cairo librsvg python-dbus dbus-glib
 
@@ -136,7 +136,7 @@ Building from Source:
 
     Mageia 4:
 
-        urpmi bzr gcc-c++ lib64zlib-devel python3-distutils-extra \
+        urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra \
         libgtk+3.0-devel libxtst-devel libxkbfile-devel libdconf-devel \
         libhunspell-devel libcanberra-devel libpython3-devel intltool
 
@@ -166,7 +166,7 @@ Building from Source:
 
     Ubuntu 14.04:
 
-        sudo apt-get build-dep onboard
+        sudo apt-get git build-dep onboard
         sudo apt-get install devscripts
         git clone https://github.com/dr-ni/onboard
         cd onboard
@@ -179,7 +179,7 @@ Building from Source:
 
     Ubuntu 24.04:
 
-        sudo apt install build-essential fakeroot
+        sudo apt install git build-essential fakeroot
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         mkdir onboard_build
