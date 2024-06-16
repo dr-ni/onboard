@@ -90,7 +90,7 @@ Example, writing:
 ## Getting Onboard:
 Actual sources can be found at https://github.com/dr-ni/onboard
 
-The parent project seems to be not maintained anymore: 
+The parent project seems not  to be maintained anymore: 
 
     https://launchpad.net/onboard
 
