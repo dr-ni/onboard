@@ -109,7 +109,9 @@ into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
 
 ## Requirements:
-https://github.com/GNOME/mousetweaks
+https://github.com/dr-ni/mousetweaks
+or
+https://gitlab.gnome.org/Archive/mousetweaks
 
 ## Ubuntu 24.04:
         sudo apt install git build-essential fakeroot
