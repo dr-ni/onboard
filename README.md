@@ -191,15 +191,10 @@ new distributions are always welcome too.
         sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
 
 ## Homepage:
-
-    https://github.com/dr-ni/onboard
+https://github.com/dr-ni/onboard
 
 ## Reporting Bugs:
-
-    https://github.com/dr-ni/onboard/issues
-
+https://github.com/dr-ni/onboard/issues
 
 ## License:
-
-    This program is released under the terms of the GNU General
-    Public License. Please see the file COPYING for details.
+This program is released under the terms of the GNU General Public License. Please see the file COPYING for details.
