@@ -1,4 +1,4 @@
-Onboard 1.4.1
+Onboard 1.4.2
 -------------
 
 Description:
@@ -204,12 +204,11 @@ Building from Source:
 
 Homepage:
 
-    https://launchpad.net/onboard
-
+    https://github.com/dr-ni/onboard
 
 Reporting Bugs:
 
-    https://bugs.launchpad.net/onboard
+    https://github.com/dr-ni/onboard/issues
 
 
 License:
