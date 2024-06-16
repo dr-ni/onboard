@@ -108,6 +108,9 @@ github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
 
+## Requirements:
+https://github.com/GNOME/mousetweaks
+
 ## Ubuntu 24.04:
         sudo apt install git build-essential fakeroot
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
