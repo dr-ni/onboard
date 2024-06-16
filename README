@@ -197,7 +197,7 @@ Building from Source:
         fakeroot debian/rules build
         export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
         cd ..
-        sudo dpkg -i onboard_1.4.1+rev-0local0_amd64.deb 
+        sudo dpkg -i onboard_1.4.1+rev-0local0_*.deb 
         sudo dpkg -i onboard-common_1.4.1+rev-0local0_all.deb 
         sudo dpkg -i onboard-data_1.4.1+rev-0local0_all.deb
         sudo dpkg -i gnome-shell-extension-onboard_1.4.1+rev-0local0_all.deb
