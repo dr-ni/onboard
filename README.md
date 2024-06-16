@@ -94,19 +94,52 @@ The parent project seems to be not maintained anymore:
 
     https://launchpad.net/onboard
 
-An old PPA with downloads for old Ubuntu-releases can also be found here:
-
-    https://launchpad.net/~onboard/+archive/ubuntu/stable
-
 The old source code is in a bazaar repository at the same site. It can be checked out with:
 
     bzr branch lp:onboard
+
+An old PPA with downloads for old Ubuntu-releases can also be found here:
+
+    https://launchpad.net/~onboard/+archive/ubuntu/stable
 
 ## Building from Source:
 Find below short instructions on how to build Onboard straight from this
 github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
+
+## Ubuntu 24.04:
+        sudo apt install git build-essential fakeroot
+        sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
+        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
+        mkdir onboard_build
+        cd onboard_build
+        git clone https://github.com/dr-ni/onboard.git
+
+        # build
+        cd onboard
+        fakeroot debian/rules clean
+        fakeroot debian/rules build
+        export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
+
+        # install packages
+        cd ..
+        sudo dpkg -i onboard_1.4.2*.deb 
+        sudo dpkg -i onboard-common_1.4.2_all.deb 
+        sudo dpkg -i onboard-data_1.4.2_all.deb
+        sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
+
+## Ubuntu 14.04:
+        sudo apt-get git build-dep onboard
+        sudo apt-get install devscripts
+        git clone https://github.com/dr-ni/onboard
+        cd onboard
+
+        # build packages
+        debuild binary
+
+        # install packages
+        sudo dpkg -i ../onboard*.deb
 
 ## Arch Linux:
         pacman -S base-devel git python-distutils-extra dconf gtk3 \
@@ -157,39 +190,6 @@ new distributions are always welcome too.
         ./setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
-
-## Ubuntu 14.04:
-        sudo apt-get git build-dep onboard
-        sudo apt-get install devscripts
-        git clone https://github.com/dr-ni/onboard
-        cd onboard
-
-        # build packages
-        debuild binary
-
-        # install packages
-        sudo dpkg -i ../onboard*.deb
-
-## Ubuntu 24.04:
-        sudo apt install git build-essential fakeroot
-        sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
-        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
-        mkdir onboard_build
-        cd onboard_build
-        git clone https://github.com/dr-ni/onboard.git
-
-        # build
-        cd onboard
-        fakeroot debian/rules clean
-        fakeroot debian/rules build
-        export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
-
-        # install packages
-        cd ..
-        sudo dpkg -i onboard_1.4.2*.deb 
-        sudo dpkg -i onboard-common_1.4.2_all.deb 
-        sudo dpkg -i onboard-data_1.4.2_all.deb
-        sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
 
 ## Homepage:
 https://github.com/dr-ni/onboard
