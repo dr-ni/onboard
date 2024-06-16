@@ -179,9 +179,9 @@ Building from Source:
 
     Ubuntu 24.04:
 
-        sudo apt install build-essential       
-        sudo apt install dh-python python3-distutils-extra devscripts pkg-config build-essential fakeroot
-        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev libhunspell-dev
+        sudo apt install build-essential fakeroot
+        sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
+        sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         mkdir onboard_build
         cd onboard_build
         git clone https://github.com/dr-ni/onboard.git
@@ -190,9 +190,7 @@ Building from Source:
         fakeroot debian/rules build
         export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
         cd ..
-
-    Install:
-
+        # install packages
         sudo dpkg -i onboard_1.4.2*.deb 
         sudo dpkg -i onboard-common_1.4.2_all.deb 
         sudo dpkg -i onboard-data_1.4.2_all.deb
