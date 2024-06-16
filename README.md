@@ -1,13 +1,11 @@
-Onboard 1.4.2
+# Onboard 1.4.2
 -------------
 
 ![onb](https://github.com/dr-ni/onboard/blob/main/onboard.png)
 
-Description:
-
+## Description:
     Onboard is an onscreen keyboard useful for everybody that cannot use a
     hardware keyboard; for example TabletPC users, mobility impaired users,...
-
     It has been designed with simplicity in mind and can be used right away
     without the need of any configuration, as it can read the keyboard layout
     from the X server.
@@ -24,13 +22,11 @@ Description:
     - XEmbedding
     - Support for scanning.
 
-
-D-Bus Service:
-
+## D-Bus Service:
     Once running, Onboard provides a D-Bus service at the bus name
     'org.onboard.Onboard', that allows other processes to control 
     the keyboard window.
-
+    
     Interface 'org.onboard.Onboard.Keyboard':
 
     Show(), method
@@ -95,25 +91,21 @@ D-Bus Service:
         string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused" 
         variant:boolean:"true"
 
-Getting Onboard:
-
+## Getting Onboard:
     Actual sources can be found at https://github.com/dr-ni/onboard
-
     The parent project at https://launchpad.net/onboard seems to be not maintained anymore.
     An old PPA with downloads for old Ubuntu-releases can be found here:
     https://launchpad.net/~onboard/+archive/ubuntu/stable
     The old source code is in a bazaar repository at the same site. It can be checked out with:
     bzr branch lp:onboard
 
-Building from Source:
-
+## Building from Source:
     Find below short instructions on how to build Onboard straight from this
     github repository. If you have improvements to share, get errors or run
     into other problems, please let us know. Build instructions for
     new distributions are always welcome too.
 
-    Arch Linux:
-
+## Arch Linux:
         pacman -S base-devel git python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
         iso-codes python-cairo librsvg python-dbus dbus-glib
@@ -135,9 +127,7 @@ Building from Source:
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
 
-
-    Mageia 4:
-
+## Mageia 4:
         urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra \
         libgtk+3.0-devel libxtst-devel libxkbfile-devel libdconf-devel \
         libhunspell-devel libcanberra-devel libpython3-devel intltool
@@ -165,9 +155,7 @@ Building from Source:
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
 
-
-    Ubuntu 14.04:
-
+## Ubuntu 14.04:
         sudo apt-get git build-dep onboard
         sudo apt-get install devscripts
         git clone https://github.com/dr-ni/onboard
@@ -179,9 +167,7 @@ Building from Source:
         # install packages
         sudo dpkg -i ../onboard*.deb
 
-
-    Ubuntu 24.04:
-
+## Ubuntu 24.04:
         sudo apt install git build-essential fakeroot
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
@@ -202,16 +188,16 @@ Building from Source:
         sudo dpkg -i onboard-data_1.4.2_all.deb
         sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
 
-Homepage:
+## Homepage:
 
     https://github.com/dr-ni/onboard
 
-Reporting Bugs:
+## Reporting Bugs:
 
     https://github.com/dr-ni/onboard/issues
 
 
-License:
+## License:
 
     This program is released under the terms of the GNU General
     Public License. Please see the file COPYING for details.
