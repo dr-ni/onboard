@@ -19,3 +19,5 @@ debian/onboard.substvars
 debian/onboard/
 debian/tmp/
 po/onboard.pot
+debian/debhelper-build-stamp
+onboard.egg-info/
