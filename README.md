@@ -161,7 +161,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         ./onboard
 
         # If everything works as expected, install with
-        python3 setup.py install
+        sudo python3 setup.py install
 
         # And if necessary, uninstall with
         sudo ./setup.py install --record files.txt
@@ -187,8 +187,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         ./onboard
 
         # If everything works as expected, install with
-        su
-        python3 setup.py install
+        sudo python3 setup.py install
 
         # And if necessary, uninstall with
         su
