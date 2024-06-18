@@ -115,7 +115,7 @@ def get_pkg_version(package):
               .format(repr(package), status), file=sys.stderr)
         sys.exit(2)
 
-    version = re.search('(?:(?:\d+)\.)+\d+', output).group()
+    version = re.search(r'(?:(?:\d+)\.)+\d+', output).group()
     components = version.split(".")
     major, minor = int(components[0]), int(components[1])
     revision = int(components[2]) if len(components) >= 3 else 0
