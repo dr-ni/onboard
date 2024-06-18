@@ -113,7 +113,7 @@ https://github.com/dr-ni/mousetweaks
 or
 https://gitlab.gnome.org/Archive/mousetweaks
 
-## Ubuntu 24.04:
+## Ubuntu:
         sudo apt install git build-essential fakeroot
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
@@ -134,18 +134,6 @@ https://gitlab.gnome.org/Archive/mousetweaks
         sudo dpkg -i onboard-data_1.4.2_all.deb
         sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
 
-## Ubuntu 14.04:
-        sudo apt-get git build-dep onboard
-        sudo apt-get install devscripts
-        git clone https://github.com/dr-ni/onboard
-        cd onboard
-
-        # build packages
-        debuild binary
-
-        # install packages
-        sudo dpkg -i ../onboard*.deb
-
 ## Arch Linux:
         pacman -S base-devel git python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
@@ -164,7 +152,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         sudo python3 setup.py install
 
         # And if necessary, uninstall with
-        sudo ./setup.py install --record files.txt
+        sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
 
@@ -190,8 +178,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         sudo python3 setup.py install
 
         # And if necessary, uninstall with
-        su
-        ./setup.py install --record files.txt
+        sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
 
