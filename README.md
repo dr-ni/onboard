@@ -153,7 +153,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
 
         git clone https://github.com/dr-ni/onboard
         cd onboard
-        sudo python3 setup.py build
+        python3 setup.py build
         tools/install_gsettings_schema
 
         # At this point you should be able to start Onboard
@@ -161,7 +161,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         ./onboard
 
         # If everything works as expected, install with
-        sudo python3 setup.py install
+        python3 setup.py install
 
         # And if necessary, uninstall with
         sudo ./setup.py install --record files.txt
