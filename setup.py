@@ -30,7 +30,7 @@ import re
 import glob
 import subprocess
 from os.path import dirname, abspath, join, split
-from distutils.core import Extension, Command
+from setuptools import Extension, Command
 from distutils      import version
 from distutils.command.build_ext import build_ext
 from distutils.sysconfig import customize_compiler
