@@ -168,7 +168,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
 
-## Mageia 4:
+## Mageia:
         urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra \
         libgtk+3.0-devel libxtst-devel libxkbfile-devel libdconf-devel \
         libhunspell-devel libcanberra-devel libpython3-devel intltool
@@ -179,8 +179,8 @@ https://gitlab.gnome.org/Archive/mousetweaks
 
         git clone https://github.com/dr-ni/onboard
         cd onboard
-        ./setup.py build
-        tools/install_gsettings_schema
+        python3 setup.py build
+        sudo tools/install_gsettings_schema
 
         # At this point you should be able to start Onboard
         # from the project directory with
@@ -188,7 +188,7 @@ https://gitlab.gnome.org/Archive/mousetweaks
 
         # If everything works as expected, install with
         su
-        ./setup.py install
+        python3 setup.py install
 
         # And if necessary, uninstall with
         su
