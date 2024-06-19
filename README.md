@@ -21,7 +21,7 @@ into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
 
 ## Ubuntu:
-        sudo apt install git build-essential fakeroot
+        sudo apt install git build-essential fakeroot python3-packaging
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         mkdir onboard_build
@@ -42,7 +42,7 @@ new distributions are always welcome too.
         sudo dpkg -i gnome-shell-extension-onboard_1.4.2_all.deb
 
 ## Arch Linux:
-        pacman -S base-devel git python-distutils-extra dconf gtk3 \
+        pacman -S base-devel git python-packaging python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
         iso-codes python-cairo librsvg python-dbus dbus-glib
 
