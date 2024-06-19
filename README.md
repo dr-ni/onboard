@@ -19,99 +19,17 @@ Features are:
 - Control of the hover click feature provided by the system.
 - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
 - Docking
-- XEmbedding
-- Support for scanning.
 
-## D-Bus Service:
-Once running, Onboard provides a D-Bus service at the bus name
-'org.onboard.Onboard', that allows other processes to control 
-the keyboard window.
-
-## Interface 'org.onboard.Onboard.Keyboard':
-
-### Show(), method:
-- Show the keyboard window
-- Return value: None
-
-If auto-show is enabled, the window is locked visible, i.e.
-auto-hiding is suspended until Onboard is hidden either manually
-or by calling the D-Bus method "Hide". This is the same bahavior as if
-Onboard was shown by user action, e.g. by status menu, floating icon
-or by starting a second instance.
-
-Example:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
-
-### Hide(), method
-- Hide the keyboard window
-- Return value: None
-
-Example:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
-
-### ToggleVisible(), method
-- Show the keyboard window if it was hidden, else hide it.
-- Return value: None
-
-Example:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.ToggleVisible
-
-### Visible, Boolean property, read-only
-- True if the window is currently visible, False otherwise.
-- Signal: org.freedesktop.DBus.Properties.PropertiesChanged
-
-Example:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get string:"org.onboard.Onboard.Keyboard" string:"Visible"
-
-### AutoShowPaused, Boolean property, read-write
-- True pauses auto-show and hides the keyboard.
-- False resumes auto-show.
-
-You are free to write to this property, e.g. when entering/leaving 
-tablet mode of a convertible device (and Onboard's built-in detection
-isn't sufficient).
-This property is not persistent. It will be reset to 'false' each time
-Onboard is restarted.
-
-### Signal: org.freedesktop.DBus.Properties.PropertiesChanged
-
-Example, reading:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused"
-
-Example, writing:
-
-    dbus-send --type=method_call --print-reply --dest=org.onboard.Onboard /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Set string:"org.onboard.Onboard.Keyboard" string:"AutoShowPaused" variant:boolean:"true"
-
-## Getting Onboard:
-Actual sources can be found at https://github.com/dr-ni/onboard
-
-The parent project seems not  to be maintained anymore: 
-
-    https://launchpad.net/onboard
-
-The old source code is in a bazaar repository at the same site. It can be checked out with:
-
-    bzr branch lp:onboard
-
-An old PPA with downloads for old Ubuntu-releases can also be found here:
-
-    https://launchpad.net/~onboard/+archive/ubuntu/stable
+The parent project sadly seems not to be maintained anymore
+(https://launchpad.net/onboard). Old PPA downloads for
+Ubuntu-releases can still be found at 
+https://launchpad.net/~onboard/+archive/ubuntu/stable
 
 ## Building from Source:
 Find below short instructions on how to build Onboard straight from this
 github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
-
-## Requirements:
-https://github.com/dr-ni/mousetweaks
-or
-https://gitlab.gnome.org/Archive/mousetweaks
 
 ## Ubuntu:
         sudo apt install git build-essential fakeroot
@@ -181,6 +99,16 @@ https://gitlab.gnome.org/Archive/mousetweaks
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        
+## Mousetweaks (optional):
+https://github.com/dr-ni/mousetweaks
+
+The mousetweaks package provides mouse accessibility enhancements for the
+GNOME desktop. It offers a way to perform clicks without using any physical
+mouse buttons (Hover Click).
+The package is also available in various package managers. However it is often
+not working anymore with onboard. In this case a manual installation from the
+source package should help.
 
 ## Homepage:
 https://github.com/dr-ni/onboard
