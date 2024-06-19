@@ -100,21 +100,21 @@ new distributions are always welcome too.
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
         
-## Mousetweaks (optional):
+## Mousetweaks Package (optional)
 https://github.com/dr-ni/mousetweaks
 
 The mousetweaks package provides mouse accessibility enhancements for the
 GNOME desktop. It offers a way to perform clicks without using any physical
 mouse buttons (Hover Click).
-The package is also available in various package managers. However it is often
+The package is also available in various package managers. However, it is often
 not working anymore with onboard. In this case a manual installation from the
 source package should help.
 
-## Homepage:
+## Homepage
 https://github.com/dr-ni/onboard
 
-## Reporting Bugs:
+## Reporting Bugs
 https://github.com/dr-ni/onboard/issues
 
-## License:
+## License
 This program is released under the terms of the GNU General Public License. Please see the file COPYING for details.
