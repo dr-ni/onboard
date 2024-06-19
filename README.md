@@ -10,16 +10,6 @@ It has been designed with simplicity in mind and can be used right away
 without the need of any configuration, as it can read the keyboard layout
 from the X server.
 
-Features are:
-- Support of custom layouts through the use of xml and svg files.
-- Support of custom themes for the appearance through the use of xml files.
-- Support of macros to automatically type custom defined texts.
-- Support of <modifier>+<mouseclick> combination.
-- Toggling mouse buttons to perform right clicks with the left mouse button.
-- Control of the hover click feature provided by the system.
-- Minimizing the keyboard to the panel, a trayicon, or a floating icon.
-- Docking
-
 The parent project sadly seems not to be maintained anymore
 (https://launchpad.net/onboard). Old PPA downloads for
 Ubuntu-releases can still be found at 
