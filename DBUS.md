@@ -1,8 +1,5 @@
 
-- XEmbedding
-- Support for scanning.
-
-## D-Bus Service:
+# D-Bus Service:
 Once running, Onboard provides a D-Bus service at the bus name
 'org.onboard.Onboard', that allows other processes to control 
 the keyboard window.
