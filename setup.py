@@ -31,9 +31,10 @@ import glob
 import subprocess
 from os.path import dirname, abspath, join, split
 from setuptools import Extension, Command
-from distutils      import version
-from distutils.command.build_ext import build_ext
+from packaging import version
+from setuptools.command.build_ext import build_ext
 from distutils.sysconfig import customize_compiler
+#import sysconfig
 from contextlib import contextmanager
 from subprocess import getstatusoutput
 
@@ -52,8 +53,8 @@ except ImportError:
     print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
     sys.exit(1)
 
-current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
-required_ver = version.StrictVersion('2.12')
+current_ver = version.Version(DistUtilsExtra.auto.__version__)
+required_ver = version.Version('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 project_root = dirname(abspath(__file__))
