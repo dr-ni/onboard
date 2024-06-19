@@ -25,7 +25,7 @@ The parent project sadly seems not to be maintained anymore
 Ubuntu-releases can still be found at 
 https://launchpad.net/~onboard/+archive/ubuntu/stable
 
-## Building from Source:
+## Building from Source
 Find below short instructions on how to build Onboard straight from this
 github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
@@ -100,7 +100,7 @@ new distributions are always welcome too.
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
         
-## Mousetweaks Package (optional)
+## Mousetweaks (optional package)
 https://github.com/dr-ni/mousetweaks
 
 The mousetweaks package provides mouse accessibility enhancements for the
