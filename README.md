@@ -10,10 +10,9 @@ It has been designed with simplicity in mind and can be used right away
 without the need of any configuration, as it can read the keyboard layout
 from the X server.
 
-The parent project sadly seems not to be maintained anymore
-(https://launchpad.net/onboard). Old PPA downloads for
-Ubuntu-releases can still be found at 
-https://launchpad.net/~onboard/+archive/ubuntu/stable
+The parent project at https://launchpad.net/onboard sadly seems not to be
+maintained anymore. Old PPA downloads for Ubuntu-releases can still be
+found at https://launchpad.net/~onboard/+archive/ubuntu/stable .
 
 ## Building from Source
 Find below short instructions on how to build Onboard straight from this
