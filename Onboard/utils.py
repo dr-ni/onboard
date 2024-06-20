@@ -218,7 +218,7 @@ def toprettyxml(domdoc):
     ugly_xml = domdoc.toprettyxml(indent='  ')
     # Join lines with text elements with their tag lines
     pattern = re.compile(r'>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
-    pretty_xml = pattern.sub('>\g<1></', ugly_xml)
+    pretty_xml = pattern.sub(r'>\g<1></', ugly_xml)
 
     # Work around http://bugs.python.org/issue5752
     pretty_xml = re.sub(
@@ -353,7 +353,7 @@ class dictproperty(object):
         return self._proxy(obj, self._fget, self._fset, self._fdel)
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):
-    """
+    r"""
     Converts a list of strings into a dict of tuples.
     Sample list: ['LWIN:label:super', ...]
     ":" in a value must be escaped as "\:"
@@ -1680,7 +1680,7 @@ class XDGDirs:
 
 
 _tag_pattern = re.compile(
-    """(?:
+    r"""(?:
             <[\w\-_]+                         # tag
             (?:\s+[\w\-_]+=["'][^"']*["'])*  # attributes
             /?>
