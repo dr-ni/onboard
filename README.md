@@ -30,10 +30,12 @@ new distributions are always welcome too.
         cd onboard
         python3 setup.py clean
         python3 setup.py build
+        
+        # Install with python
         sudo tools/install_gsettings_schema
-        # If everything worked without errors, install with
         sudo python3 setup.py install
-        # And if necessary, uninstall with
+        
+        # Uninstall with python
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
@@ -46,9 +48,9 @@ new distributions are always welcome too.
         fakeroot debian/rules clean
         fakeroot debian/rules build
         export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
+        cd ..
 
         # install deb packages
-        cd ..
         sudo dpkg -i onboard_1.4.2*.deb 
         sudo dpkg -i onboard-common_1.4.2_all.deb 
         sudo dpkg -i onboard-data_1.4.2_all.deb
