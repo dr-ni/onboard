@@ -148,7 +148,7 @@ def get_keysym_from_name(name):
     return keysyms[name]
 
 def parse_key_combination(combo, avaliable_key_ids = None):
-    """
+    r"""
     Parses a key combination into a list of modifier masks and key_ids.
     The key-id part of the combo may contain a regex pattern.
 
@@ -217,7 +217,7 @@ def run_script(script):
 def toprettyxml(domdoc):
     ugly_xml = domdoc.toprettyxml(indent='  ')
     # Join lines with text elements with their tag lines
-    pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    pattern = re.compile(r'>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
     pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
     # Work around http://bugs.python.org/issue5752
