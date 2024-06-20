@@ -24,17 +24,30 @@ new distributions are always welcome too.
         sudo apt install git build-essential fakeroot python3-packaging
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
+        
+        # Build with python
+        git clone https://github.com/dr-ni/onboard
+        cd onboard
+        python3 setup.py clean
+        python3 setup.py build
+        sudo tools/install_gsettings_schema
+        # If everything worked without errors, install with
+        sudo python3 setup.py install
+        # And if necessary, uninstall with
+        sudo python3 setup.py install --record files.txt
+        sudo xargs -a files.txt --delimiter='\n' rm -v
+        sudo rm -rf /usr/local/share/onboard
+        
+        # Build deb packages
         mkdir onboard_build
         cd onboard_build
         git clone https://github.com/dr-ni/onboard.git
-
-        # build
         cd onboard
         fakeroot debian/rules clean
         fakeroot debian/rules build
         export DEB_HOST_ARCH=$(sed -i 's/oldString/new String/g'); fakeroot debian/rules binary
 
-        # install packages
+        # install deb packages
         cd ..
         sudo dpkg -i onboard_1.4.2*.deb 
         sudo dpkg -i onboard-common_1.4.2_all.deb 
