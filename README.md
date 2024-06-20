@@ -50,12 +50,7 @@ new distributions are always welcome too.
         cd onboard
         python3 setup.py build
         sudo tools/install_gsettings_schema
-
-        # At this point you should be able to start Onboard
-        # from the project directory with
-        ./onboard
-
-        # If everything works as expected, install with
+        # If everything worked without errors, install with
         sudo python3 setup.py install
 
         # And if necessary, uninstall with
@@ -76,12 +71,7 @@ new distributions are always welcome too.
         cd onboard
         python3 setup.py build
         sudo tools/install_gsettings_schema
-
-        # At this point you should be able to start Onboard
-        # from the project directory with
-        ./onboard
-
-        # If everything works as expected, install with
+        # If everything worked without errors, install with
         sudo python3 setup.py install
 
         # And if necessary, uninstall with
