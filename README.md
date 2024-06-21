@@ -47,6 +47,7 @@ new distributions are always welcome too.
 
         git clone https://github.com/dr-ni/onboard
         cd onboard
+        python3 setup.py clean
         python3 setup.py build
         sudo tools/install_gsettings_schema
         # If everything worked without errors, install with
@@ -68,6 +69,7 @@ new distributions are always welcome too.
 
         git clone https://github.com/dr-ni/onboard
         cd onboard
+        python3 setup.py clean
         python3 setup.py build
         sudo tools/install_gsettings_schema
         # If everything worked without errors, install with
@@ -79,14 +81,12 @@ new distributions are always welcome too.
         sudo rm -rf /usr/local/share/onboard
         
 ## Mousetweaks (optional package)
-https://github.com/dr-ni/mousetweaks
 
 The mousetweaks package provides mouse accessibility enhancements for the
 GNOME desktop. It offers a way to perform clicks without using any physical
 mouse buttons (Hover Click).
 The package is also available in various package managers. However, it is often
-not working anymore with onboard. In this case a manual installation from the
-source package should help.
+not working anymore with onboard. In this case a manual installation from https://github.com/dr-ni/mousetweaks should help.
 
 ## Homepage
 https://github.com/dr-ni/onboard
