@@ -22,8 +22,10 @@ new distributions are always welcome too.
 
 ## Ubuntu:
         sudo apt install git build-essential python3-packaging
-        sudo apt install dh-python python3-distutils-extra devscripts pkg-config libhunspell-dev
+        sudo apt install dh-python python3-distutils-extra devscripts pkg-config
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
+        sudo apt install libhunspell-dev libudev-dev
+
         
         # Build
         git clone https://github.com/dr-ni/onboard
