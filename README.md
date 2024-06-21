@@ -9,7 +9,7 @@ hardware keyboard; for example Tablet-PC users or mobility impaired users.
 It has been designed with simplicity in mind and can be used right away
 without the need of any configuration, as it can read the keyboard layout
 from the X server. Onboard is currently not working with wayland - a correct
-x11/xorg setup is required.
+X11/Xorg setup is required.
 
 The parent project at https://launchpad.net/onboard sadly seems not to be
 maintained anymore. Old PPA downloads for Ubuntu-releases can still be
