@@ -24,11 +24,15 @@ new distributions are always welcome too.
 ### !!! First uninstall ALL onboard and mousetweaks packages !!!
 
 ## Ubuntu:
+        # Uninstall previous
+        sudo apt purge onboard onboard-common onboard-data
+        sudo apt purge mousetweaks
+
+        # Install dependencies
         sudo apt install git build-essential python3-packaging
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         sudo apt install libhunspell-dev libudev-dev
-
         
         # Build
         git clone https://github.com/dr-ni/onboard
@@ -39,11 +43,17 @@ new distributions are always welcome too.
         # Install
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
+
+        # Fix settings
+        $ onboard-settings
+        Keyboard → Advanced → Input Options
+        here change Input event source from Xinput to GTK
         
-        # Uninstall with python
+        # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm files.txt
 
 ## Arch Linux:
         pacman -S base-devel git python-packaging python-distutils-extra dconf gtk3 \
@@ -54,14 +64,21 @@ new distributions are always welcome too.
         cd onboard
         python3 setup.py clean
         python3 setup.py build
+        
+        # Install
         sudo tools/install_gsettings_schema
-        # If everything worked without errors, install with
         sudo python3 setup.py install
-
-        # And if necessary, uninstall with
+        
+        # Fix settings
+        $ onboard-settings
+        Keyboard → Advanced → Input Options
+        here change Input event source from Xinput to GTK
+        
+        # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm files.txt
 
 ## Mageia:
         urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra \
@@ -76,14 +93,16 @@ new distributions are always welcome too.
         cd onboard
         python3 setup.py clean
         python3 setup.py build
+        
+        # Install
         sudo tools/install_gsettings_schema
-        # If everything worked without errors, install with
         sudo python3 setup.py install
 
-        # And if necessary, uninstall with
+        # Uuninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm files.txt
         
 ## Mousetweaks (optional package)
 
