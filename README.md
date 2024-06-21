@@ -5,10 +5,11 @@
 ## Description
 
 Onboard is an onscreen keyboard useful for everybody that cannot use a
-hardware keyboard; for example TabletPC users or mobility impaired users.
+hardware keyboard; for example Tablet-PC users or mobility impaired users.
 It has been designed with simplicity in mind and can be used right away
 without the need of any configuration, as it can read the keyboard layout
-from the X server.
+from the X server. Onboard is currently not working with wayland - a correct
+x11/xorg setup is required.
 
 The parent project at https://launchpad.net/onboard sadly seems not to be
 maintained anymore. Old PPA downloads for Ubuntu-releases can still be
@@ -20,7 +21,7 @@ github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
 
-### First uninstall ALL onboard and mousetweaks packages !!!
+### !!! First uninstall ALL onboard and mousetweaks packages !!!
 
 ## Ubuntu:
         sudo apt install git build-essential python3-packaging
