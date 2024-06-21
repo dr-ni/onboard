@@ -45,9 +45,9 @@ new distributions are always welcome too.
         sudo python3 setup.py install
 
         # Fix settings
-        $ onboard-settings
-        Keyboard → Advanced → Input Options
-        here change Input event source from Xinput to GTK
+        onboard-settings
+        # select Keyboard → Advanced → Input Options
+        # change Input event source from Xinput to GTK
         
         # Uninstall
         sudo python3 setup.py install --record files.txt
@@ -56,10 +56,12 @@ new distributions are always welcome too.
         sudo rm files.txt
 
 ## Arch Linux:
+        # Install dependencies
         pacman -S base-devel git python-packaging python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
         iso-codes python-cairo librsvg python-dbus dbus-glib
 
+        # Build
         git clone https://github.com/dr-ni/onboard
         cd onboard
         python3 setup.py clean
@@ -70,9 +72,9 @@ new distributions are always welcome too.
         sudo python3 setup.py install
         
         # Fix settings
-        $ onboard-settings
-        Keyboard → Advanced → Input Options
-        here change Input event source from Xinput to GTK
+        onboard-settings
+        # select Keyboard → Advanced → Input Options
+        # change Input event source from Xinput to GTK
         
         # Uninstall
         sudo python3 setup.py install --record files.txt
@@ -81,14 +83,14 @@ new distributions are always welcome too.
         sudo rm files.txt
 
 ## Mageia:
-        urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra \
-        libgtk+3.0-devel libxtst-devel libxkbfile-devel libdconf-devel \
-        libhunspell-devel libcanberra-devel libpython3-devel intltool
-
+        # Install dependencies
+        urpmi git gcc-c++ lib64zlib-devel python3-distutils-extra
+        urpmi libgtk+3.0-devel libxtst-devel libxkbfile-devel libdconf-devel
+        urpmi libhunspell-devel libcanberra-devel libpython3-devel intltool
         # more or less optional, but recommended for full functionality
-        urpmi mousetweaks lib64atspi-gir2.0 at-spi2-core-qt \
-        python3-dbus qtatspi-plugin
+        urpmi lib64atspi-gir2.0 at-spi2-core-qt python3-dbus qtatspi-plugin
 
+        # Build
         git clone https://github.com/dr-ni/onboard
         cd onboard
         python3 setup.py clean
@@ -98,7 +100,12 @@ new distributions are always welcome too.
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
 
-        # Uuninstall
+        # Fix settings
+        onboard-settings
+        # select Keyboard → Advanced → Input Options
+        # change Input event source from Xinput to GTK
+        
+        # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
