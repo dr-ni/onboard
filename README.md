@@ -20,6 +20,8 @@ github repository. If you have improvements to share, get errors or run
 into other problems, please let us know. Build instructions for
 new distributions are always welcome too.
 
+### First uninstall ALL onboard and mousetweaks packages !!!
+
 ## Ubuntu:
         sudo apt install git build-essential python3-packaging
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config
