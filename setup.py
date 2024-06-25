@@ -426,10 +426,10 @@ class UninstallCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '1.4.1+2252',
-    author = 'Onboard Devel Team',
-    author_email = 'https://launchpad.net/~onboard/+contactuser',
-    url = 'http://launchpad.net/onboard/',
+    version = '1.4.2',
+    author = 'U. Niethammer',
+    author_email = 'uwe@dr-niethammer.de',
+    url = 'https://github.com/dr-ni/onboard',
     license = 'GPL-3+',
     description = 'Simple On-screen Keyboard',
 
