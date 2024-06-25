@@ -390,25 +390,32 @@ can_convert_click(OskBMGrabInfo* info, int x_root, int y_root)
 static Bool
 start_grab(OskBMGrabInfo* info)
 {
-    gdk_error_trap_push ();
+//    gdk_error_trap_push ();
+GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (info->xdisplay);
+gdk_x11_display_error_trap_push (gdk_display);
     XGrabButton (info->xdisplay, Button1, info->modifier,
                  DefaultRootWindow (info->xdisplay),
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
                  GrabModeSync, GrabModeAsync, None, None);
-    gdk_flush ();
-    return !gdk_error_trap_pop();
+//    gdk_flush ();
+gdk_display_flush (gdk_display);
+//    return !gdk_error_trap_pop();
+return !gdk_x11_display_error_trap_pop (gdk_display);
 }
 
 static void
 stop_grab(OskBMGrabInfo* info)
 {
-    gdk_error_trap_push();
+GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (info->xdisplay);
+//    gdk_error_trap_push();
+gdk_x11_display_error_trap_push(gdk_display);
     XUngrabButton(info->xdisplay,
                   Button1,
                   info->modifier,
                   DefaultRootWindow(info->xdisplay));
-    gdk_error_trap_pop_ignored();
+//    gdk_error_trap_pop_ignored();
+gdk_x11_display_error_trap_pop_ignored(gdk_display);
 }
 
 typedef struct {
