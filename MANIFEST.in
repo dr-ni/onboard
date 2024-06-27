@@ -1,0 +1,17 @@
+include AUTHORS CHANGELOG COPYING* HACKING NEWS README
+include *.ui
+include onboard-defaults.conf.example
+recursive-include data *
+recursive-include gnome *
+recursive-include help *
+recursive-include icons *
+recursive-include sounds *
+recursive-include emojione/svg *
+recursive-include layouts *
+recursive-include man *
+recursive-include scripts *
+recursive-include themes *
+recursive-include po *.po
+recursive-include Onboard/osk *
+recursive-include Onboard/pypredict *
+recursive-include Onboard/test *
