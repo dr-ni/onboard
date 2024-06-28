@@ -491,9 +491,9 @@ get_window_name(Display* display, Window window)
     Status stat;
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
-//    Display *xdisplay = gdk_x11_display_get_xdisplay (display);
-//OskUtil *util = (OskUtil*) self;
-//    Display* xdisplay = get_x_display(util);
+//  Display *xdisplay = gdk_x11_display_get_xdisplay (display);
+//  OskUtil *util = (OskUtil*) self;
+//  Display* xdisplay = get_x_display(util);
     GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (display);
     gdk_x11_display_error_trap_push (gdk_display);
     stat = XGetTextProperty(display, window, &prop, _NET_WM_NAME)

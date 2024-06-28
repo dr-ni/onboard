@@ -264,11 +264,9 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     // the client's very first call. Someone, probably GTK is
     // successfully calling it before us, so just ignore the
     // error and move on.
-//    gdk_error_trap_push ();
-//gdk_x11_display_error_trap_push (gdk_display);
+    // gdk_x11_display_error_trap_push (gdk_display);
     status = XIQueryVersion (dev->dpy, &major, &minor);
-//    gdk_error_trap_pop_ignored ();
-//gdk_x11_display_error_trap_pop_ignored (gdk_display);
+    // gdk_x11_display_error_trap_pop_ignored (gdk_display);
     if (status == BadRequest)
     {
         PyErr_SetString (OSK_EXCEPTION, "XInput2 not available");
@@ -521,13 +519,10 @@ osk_devices_select (OskDevices    *dev,
     if (win == 0)
         win = DefaultRootWindow (dev->dpy);
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
-   XISelectEvents (dev->dpy, win, &events, 1);
-//    gdk_flush ();
-gdk_display_flush (gdk_display);
-//    return gdk_error_trap_pop () ? -1 : 0;
-return gdk_x11_display_error_trap_pop (gdk_display) ? -1 : 0;
+    gdk_x11_display_error_trap_push (gdk_display);
+    XISelectEvents (dev->dpy, win, &events, 1);
+    gdk_display_flush (gdk_display);
+    return gdk_x11_display_error_trap_pop (gdk_display) ? -1 : 0;
 }
 
 /*
@@ -657,8 +652,7 @@ gdk_x11_display_error_trap_push (gdk_display);
                    &buttons,
                    &mods,
                    &group);
-//    if (!gdk_error_trap_pop ())
-if (!gdk_x11_display_error_trap_pop (gdk_display))
+    if (!gdk_x11_display_error_trap_pop (gdk_display))
     {
         state = translate_state (&mods, &buttons, &group);
     }
@@ -956,13 +950,11 @@ osk_devices_get_product_id (OskDevices   *dev,
     *vendor_id  = 0;
     *product_id = 0;
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
     rc = XIGetProperty (dev->dpy, id, dev->atom_product_id,
                         0, 2, False, XA_INTEGER,
                         &act_type, &act_format, &nitems, &bytes, &data);
-//    gdk_error_trap_pop_ignored ();
-gdk_x11_display_error_trap_pop_ignored (gdk_display);
+    gdk_x11_display_error_trap_pop_ignored (gdk_display);
 
     if (rc == Success && nitems == 2 && act_format == 32)
     {
@@ -1094,14 +1086,11 @@ osk_devices_get_info (PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "i", &id))
         return NULL;
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
     devices = XIQueryDevice (dev->dpy, id, &n_devices);
-//    gdk_flush ();
-gdk_display_flush (gdk_display);
+    gdk_display_flush (gdk_display);
 
-//    if (gdk_error_trap_pop ())
-if (gdk_x11_display_error_trap_pop (gdk_display))
+    if (gdk_x11_display_error_trap_pop (gdk_display))
     {
         PyErr_SetString (OSK_EXCEPTION, "invalid device id");
         return NULL;
@@ -1144,15 +1133,12 @@ osk_devices_attach (PyObject *self, PyObject *args)
     info.deviceid = id;
     info.new_master = master;
 
-///    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
 
     XIChangeHierarchy (dev->dpy, (XIAnyHierarchyChangeInfo *) &info, 1);
-//    gdk_flush ();
-gdk_display_flush (gdk_display);
+    gdk_display_flush (gdk_display);
 
-//    if (gdk_error_trap_pop ())
-gdk_x11_display_error_trap_pop_ignored (gdk_display);
+    if (gdk_x11_display_error_trap_pop_ignored (gdk_display))
     {
         PyErr_SetString (OSK_EXCEPTION, "failed to attach device");
         return NULL;
@@ -1181,15 +1167,12 @@ osk_devices_detach (PyObject *self, PyObject *args)
     info.type = XIDetachSlave;
     info.deviceid = id;
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
 
     XIChangeHierarchy (dev->dpy, (XIAnyHierarchyChangeInfo *) &info, 1);
-//    gdk_flush ();
-gdk_display_flush (gdk_display);
+    gdk_display_flush (gdk_display);
 
-//    if (gdk_error_trap_pop ())
-if (gdk_x11_display_error_trap_pop (gdk_display))
+    if (gdk_x11_display_error_trap_pop (gdk_display))
     {
         PyErr_SetString (OSK_EXCEPTION, "failed to detach device");
         return NULL;
@@ -1229,13 +1212,11 @@ osk_devices_grab_device (PyObject *self, PyObject *args)
     events.mask = mask;
     events.mask_len = sizeof(mask);
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
     status = XIGrabDevice(dev->dpy, id, win, CurrentTime, None,
                                  XIGrabModeSync, XIGrabModeAsync,
                                  True, &events);
-//    error = gdk_error_trap_pop ();
-error = gdk_x11_display_error_trap_pop (gdk_display);
+    error = gdk_x11_display_error_trap_pop (gdk_display);
 
     if (status != Success || error)
     {
@@ -1260,16 +1241,13 @@ osk_devices_ungrab_device (PyObject *self, PyObject *args)
     int         id;
     Status      status;
     gint        error;
-//    GdkDisplay* gdk_display = gdk_display_get_default ();
-GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (dev->dpy);
+    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (dev->dpy);
     if (!PyArg_ParseTuple (args, "i", &id))
         return NULL;
 
-//    gdk_error_trap_push ();
-gdk_x11_display_error_trap_push (gdk_display);
+    gdk_x11_display_error_trap_push (gdk_display);
     status = XIUngrabDevice(dev->dpy, id, CurrentTime);
-//    error = gdk_error_trap_pop ();
-error = gdk_x11_display_error_trap_pop (gdk_display);
+    error = gdk_x11_display_error_trap_pop (gdk_display);
     if (status != Success || error)
     {
         PyErr_Format (OSK_EXCEPTION, "failed to ungrab device (0x%x, 0x%x)",
