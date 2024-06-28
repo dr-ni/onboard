@@ -1138,7 +1138,7 @@ osk_devices_attach (PyObject *self, PyObject *args)
     XIChangeHierarchy (dev->dpy, (XIAnyHierarchyChangeInfo *) &info, 1);
     gdk_display_flush (gdk_display);
 
-    if (gdk_x11_display_error_trap_pop_ignored (gdk_display))
+    if (gdk_x11_display_error_trap_pop (gdk_display))
     {
         PyErr_SetString (OSK_EXCEPTION, "failed to attach device");
         return NULL;
