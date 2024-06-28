@@ -29,7 +29,7 @@ new distributions are always welcome too.
         sudo apt purge mousetweaks
 
         # Install dependencies
-        sudo apt install git build-essential python3-packaging
+        sudo apt install git build-essential python3-packaging python3-dev
         sudo apt install dh-python python3-distutils-extra devscripts pkg-config
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         sudo apt install libhunspell-dev libudev-dev
