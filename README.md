@@ -48,6 +48,7 @@ new distributions are always welcome too.
         onboard-settings
         # select Keyboard → Advanced → Input Options
         # change Input event source from Xinput to GTK
+        # change Key-stroke-generator to AT-SPI
         
         # Uninstall
         sudo python3 setup.py install --record files.txt
