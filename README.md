@@ -49,6 +49,10 @@ new distributions are always welcome too.
         # select Keyboard → Advanced → Input Options
         # change Input event source from Xinput to GTK
         # change Key-stroke-generator to AT-SPI
+
+        # Change keyboard language layout
+        # setxkbmap -layout de
+        # or [us|in|ru|...]
         
         # Uninstall
         sudo python3 setup.py install --record files.txt
