@@ -58,6 +58,7 @@ new distributions are always welcome too.
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm -rf /usr/local/lib/python3.10/dist-packages/onboard-1.4.*.egg-info/
         sudo rm files.txt
 
 ## Arch Linux:
