@@ -119,6 +119,18 @@ new distributions are always welcome too.
         sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
         sudo rm files.txt
         
+## Manuals
+
+        # Terminal
+        man onboard
+        
+        # Interactive
+        yelp "help:onboard"
+        xdg-open "help:onboard"
+
+        # DBUS commands
+        https://github.com/dr-ni/onboard/blob/main/DBUS.md
+
 ## Mousetweaks (optional package)
 
 The mousetweaks package provides mouse accessibility enhancements for the
