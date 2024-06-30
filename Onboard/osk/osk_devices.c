@@ -242,7 +242,6 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
 
     /* set display before anything else! */
     GdkDisplay* display = gdk_display_get_default ();
-    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (dev->dpy);
 
     if (!GDK_IS_X11_DISPLAY (display)) // Wayland, MIR?
     {
