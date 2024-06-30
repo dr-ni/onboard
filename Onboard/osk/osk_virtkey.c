@@ -1092,7 +1092,9 @@ virtkey_get_label_from_keysym (int keysym)
                 else
                 {
                     size_t l = MIN(strlen(name), sizeof(buf)-1);
-                    strncpy(buf, name, l);
+                    //strncpy(buf, name, l);
+                    //hopefully replaced to suppress "output truncated before terminating nul"
+                    memcpy(buf, name, l);
                     buf[l] = '\0';
                     if (l > 2 && name[0] == '0' && name[1] == 'x') // hex number?
                     {
