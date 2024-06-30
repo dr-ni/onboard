@@ -127,9 +127,10 @@ new distributions are always welcome too.
         # Interactive
         yelp "help:onboard"
         xdg-open "help:onboard"
+        
+## DBUS interface
 
-        # DBUS commands
-        https://github.com/dr-ni/onboard/blob/main/DBUS.md
+Interface description: [DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
 
 ## Mousetweaks (optional package)
 
