@@ -127,6 +127,9 @@ new distributions are always welcome too.
         # Interactive
         yelp "help:onboard"
         xdg-open "help:onboard"
+
+        # Onboard
+        # Right click on icon in systray -> Help
         
 ## DBUS interface
 
