@@ -1,6 +1,10 @@
 onboard (1.4.2) dr-ni; urgency=medium
 
-  * new fork on github because the launchpad project is dead
+  * forked dead launchpad project to github
+  * fixed setup.py
+  * new README.md
+  * fixed all deprecated warnings
+  * fixed warning "output truncated before terminating nul
 
  -- Uwe Niethammer <uwe@dr-niethammer.de>  Fri, 15 Jun 2024 04:21:37 +0200
  
