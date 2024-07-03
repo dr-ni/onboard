@@ -24,7 +24,7 @@ new distributions are always welcome too.
 ### !!! First uninstall ALL onboard and mousetweaks packages !!!
 
 ## Ubuntu:
-        # Uninstall previous
+        # Uninstall
         sudo apt purge onboard onboard-common onboard-data
         sudo apt purge mousetweaks
 
@@ -62,6 +62,10 @@ new distributions are always welcome too.
         sudo rm files.txt
 
 ## Arch Linux:
+        # Uninstall
+        sudo pacman -S mousetweaks
+        sudo pacman -S onboard
+        
         # Install dependencies
         pacman -S base-devel git python-packaging python-distutils-extra dconf gtk3 \
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
