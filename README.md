@@ -44,12 +44,6 @@ new distributions are always welcome too.
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
 
-        # Fix settings
-        onboard-settings
-        # select Keyboard → Advanced → Input Options
-        # change Input event source from Xinput to GTK
-        # change Key-stroke-generator to AT-SPI
-
         # Change keyboard language layout
         # setxkbmap -layout de
         # or [us|in|ru|...]
@@ -81,11 +75,6 @@ new distributions are always welcome too.
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
         
-        # Fix settings
-        onboard-settings
-        # select Keyboard → Advanced → Input Options
-        # change Input event source from Xinput to GTK
-        
         # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
@@ -110,11 +99,6 @@ new distributions are always welcome too.
         # Install
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
-
-        # Fix settings
-        onboard-settings
-        # select Keyboard → Advanced → Input Options
-        # change Input event source from Xinput to GTK
         
         # Uninstall
         sudo python3 setup.py install --record files.txt
