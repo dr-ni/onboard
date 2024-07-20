@@ -169,7 +169,7 @@ def parse_key_combination(combo, avaliable_key_ids = None):
     [('TAB', 5)]
 
     # regex
-    >>> parse_key_combination(["F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
+    >>> parse_key_combination([r"F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
     [('F1', 0), ('F2', 0), ('F3', 0), ('F9', 0)]
     """
     modifiers = combo[:-1]
