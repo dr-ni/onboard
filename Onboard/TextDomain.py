@@ -141,7 +141,7 @@ class TextDomain:
 
         # Split at whitespace to catch whole URLs/file names and
         # keep separators.
-        strings = re.split('(\s+)', context)
+        strings = re.split(r'(\s+)', context)
         if strings:
             string = strings[-1]
             if self._url_parser.is_maybe_url(string):
@@ -158,7 +158,7 @@ class TextDomain:
 
 
     def _search_valid_file_name(self, strings):
-        """
+        r"""
         Search for a valid filename backwards across separators.
 
         Doctests:
@@ -174,17 +174,17 @@ class TextDomain:
         >>> with open(fn2, mode="w") as f: n = f.write("")
 
         # simple file in dir with spaces must return as filename
-        >>> strings = re.split('(\s+)', fn1)
+        >>> strings = re.split(r'(\s+)', fn1)
         >>> "/test onboard" in d._search_valid_file_name(strings)
         True
 
         # file with spaces in dir with spaces must return as filename
-        >>> strings = re.split('(\s+)', fn2)
+        >>> strings = re.split(r'(\s+)', fn2)
         >>> "/test onboard" in d._search_valid_file_name(strings)
         True
 
         # random string after a valid file must not be confused with a filename
-        >>> strings = re.split('(\s+)', fn2 + " no-file")
+        >>> strings = re.split(r'(\s+)', fn2 + " no-file")
         >>> d._search_valid_file_name(strings) is None
         True
         """
@@ -288,7 +288,7 @@ class TextDomain:
     def handle_key_press(self, keycode, mod_mask):
         return True, None  # entering_text, end_of_editing
 
-    _growth_sections_pattern = re.compile("[^\s?#@]+", re.DOTALL)
+    _growth_sections_pattern = re.compile(r"[^\s?#@]+", re.DOTALL)
 
     def _split_growth_sections(self, text):
         """
@@ -444,11 +444,11 @@ class DomainTerminal(TextDomain):
                                 (
                                     "^gdb$ ",
                                     "^>>> ",              # python
-                                    "^In \[[0-9]*\]: ",   # ipython
+                                    r"^In \[[0-9]*\]: ",  # ipython
                                     "^:",                 # vi command mode
                                     "^/",                 # vi search
-                                    "^\?",                # vi reverse search
-                                    "\$ ",                # generic prompt
+                                    r"^\?",               # vi reverse search
+                                    r"\$ ",               # generic prompt
                                     "# ",                 # root prompt
                                     "^.*?@.*?/.*?> "      # fish
                                 )
@@ -456,7 +456,7 @@ class DomainTerminal(TextDomain):
 
     _prompt_blacklist_patterns = tuple(re.compile(p, re.UNICODE) for p in
                                 (
-                                    "^\(.*\)`.*': ",  # bash incremental search
+                                    r"^\(.*\)`.*': ",  # bash incremental search
                                 )
                             )
 
@@ -741,7 +741,7 @@ class PartialURLParser:
     _protocols = ["mailto", "apt"]
     _all_schemes = _schemes + _protocols
 
-    _url_pattern = re.compile("([\w-]+)|(\W+)", re.UNICODE)
+    _url_pattern = re.compile(r"([\w-]+)|(\W+)", re.UNICODE)
 
     def iter_url(self, url):
         return self._url_pattern.finditer(url)
