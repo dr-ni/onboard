@@ -94,7 +94,7 @@ class LayoutLoaderSVG:
         self._layout_filename = ""
         self._color_scheme = None
         self._root_layout_dir = ""  # path to svg files
-        self._layout_regex = re.compile("([^\(]+) (?: \( ([^\)]*) \) )?",
+        self._layout_regex = re.compile(r"([^\(]+) (?: \( ([^\)]*) \) )?",
                                         re.VERBOSE)
 
     def load(self, vk, layout_filename, color_scheme):
