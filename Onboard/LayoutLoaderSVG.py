@@ -464,8 +464,8 @@ class LayoutLoaderSVG:
             except KeyError as ex:
                 (strerror) = ex
                 raise Exceptions.LayoutFileError(
-                    "Unrecognized modifier %s in"
-                    "definition of %s" (strerror, full_id))
+                    "Unrecognized modifier {} in"
+                    "definition of {}" (strerror, full_id))
 
         value = attributes.get("action")
         if value:
