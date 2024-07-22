@@ -465,7 +465,7 @@ class LayoutLoaderSVG:
                 (strerror) = ex
                 raise Exceptions.LayoutFileError(
                     "Unrecognized modifier {} in"
-                    "definition of {}" (strerror, full_id))
+                    "definition of {}".format(strerror, full_id))
 
         value = attributes.get("action")
         if value:
