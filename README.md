@@ -121,6 +121,8 @@ new distributions are always welcome too.
         
 ## DBUS interface
 
+The D-Bus is a message-oriented middleware mechanism that allows communication between multiple processes running concurrently on the Linux desktop.
+
 Interface description: [DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
 
 ## Mousetweaks (optional package)
