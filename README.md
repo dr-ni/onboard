@@ -119,11 +119,12 @@ new distributions are always welcome too.
         # Onboard
         # Right click on icon in systray -> Help
         
-## DBUS interface
+## D-Bus interface
 
-The D-Bus is a message-oriented middleware mechanism that allows communication between multiple processes running concurrently on the Linux desktop.
+The Onboard D-Bus interface allows communication between Onboard and other processes running concurrently on the Linux desktop.
 
-Interface description: [DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
+Here the Interface description:
+[DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
 
 ## Mousetweaks (optional package)
 
