@@ -126,11 +126,10 @@ The Onboard D-Bus interface allows communication between Onboard and other proce
 Here the Interface description:
 [DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
 
-## Mousetweaks (optional package)
+## Mousetweaks
 
-The mousetweaks package provides mouse accessibility enhancements for the
-GNOME desktop. It offers a way to perform clicks without using any physical
-mouse buttons (Hover Click).
+This optional package provides mouse accessibility enhancements for the GNOME desktop.
+It offers a way to perform clicks without using any physical mouse buttons (Hover Click).
 The package is also available in various package managers. However, it is often
 not working anymore with onboard. In this case a manual installation from https://github.com/dr-ni/mousetweaks should help.
 
