@@ -19,23 +19,13 @@ cd "$SCRIPT_PATH" || exit 1
 # Install necessary dependencies
 echo "Installing required dependencies..."
 
-if ! sudo apt-get install -y $REQUIRED_DEPENDENCIES; then
-    echo "Error: Failed to install required dependencies."
-    exit 1
-fi
-
-
-
-# Extract the Onboard version
-ONBOARD_VERSION="$(python3 setup.py --version | grep -v "dconf version" | grep -v "^[^0-9\.vV]+$" | head -n 1)"
-if [[ -z "$ONBOARD_VERSION" ]]; then
-    echo "Error: Could not determine Onboard version."
-    exit 1
-fi
-echo "Building Onboard debs for version: $ONBOARD_VERSION"
-
 if ! sudo apt-get update; then
     echo "Error: Failed to update apt repossitory."
+    exit 1
+fi
+
+if ! sudo apt-get install -y $REQUIRED_DEPENDENCIES; then
+    echo "Error: Failed to install required dependencies."
     exit 1
 fi
 
@@ -45,6 +35,15 @@ if ! sudo apt-get build-dep -y .; then
     echo "Error: Failed to install build dependencies."
     exit 1
 fi
+
+# Extract the Onboard version
+ONBOARD_VERSION="$(python3 setup.py --version | grep -v "dconf version" | grep -v "^[^0-9\.vV]+$" | head -n 1)"
+if [[ -z "$ONBOARD_VERSION" ]]; then
+    echo "Error: Could not determine Onboard version."
+    exit 1
+fi
+echo "Building Onboard debs for version: $ONBOARD_VERSION"
+
 
 # Build the Debian package
 echo "Clean dpkg-buildpackage..."
