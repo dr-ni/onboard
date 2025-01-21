@@ -13,7 +13,7 @@
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 # Check if the script is run as root
-if [ "$(id -u)" != "0" ]; then
+if [ "$(id -u)" = "0" ]; then
     # Configure a local APT repository
     echo "deb [trusted=yes] file:$SCRIPT_PATH/ ./" > /etc/apt/sources.list.d/onboardlocalrepo.list
 
