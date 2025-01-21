@@ -117,7 +117,65 @@ new distributions are always welcome too.
         xdg-open "help:onboard"
 
         # Onboard
-        # Right click on icon in systray -> Help
+        # Right click on icon in systray -> Help 
+        
+## Build and Install Debian Packages
+
+To build Debian packages from the source, two scripts are available:
+- `build_debs.sh`: Creates the `.deb` packages and related metadata.
+- `install_debs_with_local_repo.sh`: Sets up a local repository and installs the packages on a target system.
+
+---
+
+### Notes
+- Both scripts automatically use `sudo` to install dependencies or packages.
+- Ensure you have `sudo` privileges and be ready to enter your password when prompted during execution.
+
+---
+
+### Build Debian Packages
+
+The `build_debs.sh` script automates building `.deb` packages and associated metadata in the **parent directory**.
+
+#### Steps:
+
+1. **For Current Releases**:
+   - Ensure you are in the Onboard source directory and execute the following commands:
+     ```bash
+     chmod +x build_debs.sh
+     ./build_debs.sh
+     ```
+
+2. **For Older Releases**:
+   - If the `build_debs.sh` script is missing, copy it into the source directory and run:
+     ```bash
+     cp /path/to/build_debs.sh /path/to/onboard_sources/
+     cd /path/to/onboard_sources/
+     chmod +x build_debs.sh
+     ./build_debs.sh
+     ```
+
+The Debian packages will be saved in the directory: `/path/to/onboard_sources/build/debs` 
+
+---
+
+### Install the Debian Packages
+
+The `install_debs_with_local_repo.sh` script simplifies installing the generated `.deb` packages using a local repository.
+
+#### Steps:
+1. **Prepare Files**:
+   - Copy the following to a directory on the target system:
+     - All `.deb` files.
+     - The `Packages.gz` file.
+     - The `install_debs_with_local_repo.sh` script.
+
+2. **Run the Script**:
+   - Navigate to the directory and execute:
+     ```bash
+     chmod +x install_debs_with_local_repo.sh
+     ./install_debs_with_local_repo.sh
+     ```
         
 ## D-Bus interface
 

@@ -1,0 +1,109 @@
+#!/bin/bash
+while ! sudo -n true 2>/dev/null; do
+    echo "This script requires sudo privileges."
+    if ! sudo -v; then
+        echo "Please provide your password to continue."
+    fi
+done
+
+# Get the absolute path of the script's directory
+SCRIPT_PATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)"
+
+# Move to the script's directory
+cd "$SCRIPT_PATH" || exit 1
+
+OUTPUT_DIR="$SCRIPT_PATH/build/debs"
+
+# Extract the Onboard version
+ONBOARD_VERSION="$(python3 setup.py --version | grep -v "dconf version" | grep -v "^[^0-9\.vV]+$" | head -n 1)"
+if [[ -z "$ONBOARD_VERSION" ]]; then
+    echo "Error: Could not determine Onboard version."
+    exit 1
+fi
+echo "Building Onboard debs for version: $ONBOARD_VERSION"
+
+# Return to the script directory
+cd "$SCRIPT_PATH" || exit 1
+
+if ! sudo apt-get update; then
+    echo "Error: Failed to update apt repossitory."
+    exit 1
+fi
+
+# Define base dependencies
+REQUIRED_DEPENDENCIES="dpkg-dev tar wget build-essential debhelper"
+
+# Install necessary dependencies
+echo "Installing required dependencies..."
+
+if ! sudo apt-get install -y $REQUIRED_DEPENDENCIES; then
+    echo "Error: Failed to install required dependencies."
+    exit 1
+fi
+# Install build dependencies
+echo "Installing build dependencies..."
+if ! sudo apt-get build-dep -y .; then
+    echo "Error: Failed to install build dependencies."
+    exit 1
+fi
+
+# Build the Debian package
+echo "Clean dpkg-buildpackage..."
+if ! dpkg-buildpackage -T clean; then
+    echo "Error: Failed to build the Debian package."
+    exit 1
+fi
+
+# Prepare build directory
+BUILD_PATH=$(mktemp -d /tmp/onboard_deb_build_XXXXX)
+echo "Create temporary build directory: $BUILD_PATH"
+mkdir -p "$BUILD_PATH"
+cd "$BUILD_PATH"
+
+echo "Copy sources to $BUILD_PATH/onboard-${ONBOARD_VERSION}"
+cp -Rp "$SCRIPT_PATH" "$BUILD_PATH/onboard-${ONBOARD_VERSION}"
+
+# Create the tarball
+TARBALL_NAME="onboard_${ONBOARD_VERSION}.orig.tar.gz"
+echo "Creating tarball $BUILD_PATH/$TARBALL_NAME"
+tar --exclude='.git' --exclude='.gitignore' --exclude='build' -cvzf "$BUILD_PATH/$TARBALL_NAME" "onboard-${ONBOARD_VERSION}"
+
+cd "$BUILD_PATH/onboard-${ONBOARD_VERSION}"
+
+# Build the Debian package
+echo "Building Debian package..."
+if ! dpkg-buildpackage -us -uc; then
+    echo "Error: Failed to build the Debian package."
+    echo "Delete $BUILD_PATH"
+    rm -Rf "$BUILD_PATH"
+    exit 1
+fi
+
+
+mkdir -p "$OUTPUT_DIR"
+echo "Copy files to $OUTPUT_DIR"
+cd "$BUILD_PATH"
+for FILE in *; do
+    if [ "$(basename "$FILE")" != "onboard-${ONBOARD_VERSION}" ]; then
+        mv "$FILE" "$OUTPUT_DIR"
+    fi
+done
+echo "Delete $BUILD_PATH"
+rm -Rf "$BUILD_PATH"
+
+
+# Move to the parent directory
+cd "$OUTPUT_DIR" || exit 1
+
+
+
+# Generate the metadata file Packages.gz for the repository
+echo "Generating metadata file Packages.gz..."
+if ! dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz; then
+    echo "Error: Failed to generate Packages.gz."
+    exit 1
+fi
+
+
+# Final message
+echo "Onboard $ONBOARD_VERSION Debian packages successfully built and saved in: $OUTPUT_DIR"
