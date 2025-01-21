@@ -135,7 +135,7 @@ To build Debian packages from the source, two scripts are available:
 
 ### Build Debian Packages
 
-The `build_debs.sh` script automates building `.deb` packages and associated metadata in the **parent directory**.
+The `build_debs.sh` script automates building `.deb` packages and associated metadata in **./build/debs**
 
 #### Steps:
 
