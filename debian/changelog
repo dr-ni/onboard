@@ -1,8 +1,10 @@
 onboard (1.4.2-1) dr-ni; urgency=medium
 
-  * new build_debs.sh
+  * new build_debs.sh and install_debs_with_local_repo.sh
   * new README.md
   * new check for GNOME Accessibility Toolkit
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Mon, 27 Jan 2025 20:21:37 +0200
 
 onboard (1.4.2) dr-ni; urgency=medium
 
