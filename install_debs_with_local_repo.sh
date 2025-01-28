@@ -54,7 +54,13 @@ if [ "$(id -u)" = "0" ]; then
     apt-get update -o Dir::Etc::sourcelist="/etc/apt/sources.list.d/onboardlocalrepo.list"
 
     # Install the Onboard packages
-    apt-get -y install onboard onboard-data gnome-shell-extension-onboard
+		if which gnome-shell >/dev/null 2>&1; then
+				echo "GNOME Shell is installed."
+		    apt-get -y install onboard onboard-data gnome-shell-extension-onboard
+		else
+				echo "GNOME Shell is not installed."
+		    apt-get -y install onboard onboard-data
+		fi
 
     # Remove the temporary local repository configuration
     rm /etc/apt/sources.list.d/onboardlocalrepo.list
