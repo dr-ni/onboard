@@ -28,7 +28,8 @@ new distributions are always welcome too.
         sudo apt purge onboard onboard-common onboard-data
         sudo apt purge mousetweaks
 
-        # If you do not want to test or develop it is better to use the build- and install-scripts for deb-packages below.
+        # If you do not want to test or develop it is better to use the build- and install-scripts
+        for deb-packages below.
 
         # Install dependencies
         sudo apt install git build-essential python3-packaging python3-dev
