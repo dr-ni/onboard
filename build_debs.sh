@@ -48,7 +48,7 @@ echo "Building Onboard debs for version: $ONBOARD_VERSION"
 # Build the Debian package
 echo "Clean dpkg-buildpackage..."
 if ! dpkg-buildpackage -T clean; then
-    echo "Error: Failed to build the Debian package."
+    echo "Error: Failed to clean the Debian package."
     exit 1
 fi
 
