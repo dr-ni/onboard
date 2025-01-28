@@ -10,7 +10,10 @@
 # Note: This script must be executed as root.
 
 # Get the absolute path of the script's directory
-SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SCRIPT_PATH="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1
+    pwd -P
+)"
 
 # Function to provide a list of directories to check
 check_directories() {
@@ -23,29 +26,29 @@ check_directories() {
 
 # Check if the script is run as root
 if [ "$(id -u)" = "0" ]; then
-		# Set the default directory
-		DEB_DIR="${1:-$SCRIPT_PATH}"
+    # Set the default directory
+    DEB_DIR="${1:-$SCRIPT_PATH}"
 
-		# Search for the file
-		DEB_FOUND=false
-		for dir in $(check_directories); do
-				if find "$dir" -maxdepth 1 -name "onboard-common_*_all.deb" | grep -q .; then
-				    DEB_DIR="$dir"
-				    DEB_FOUND=true
-				    break
-				fi
-		done
+    # Search for the file
+    DEB_FOUND=false
+    for dir in $(check_directories); do
+        if find "$dir" -maxdepth 1 -name "onboard-common_*_all.deb" | grep -q .; then
+            DEB_DIR="$dir"
+            DEB_FOUND=true
+            break
+        fi
+    done
 
-		# Check if the file was found
-		if [ "$DEB_FOUND" = false ]; then
-				echo "Error: Unable to find onboard debs. Please run $0 /path/to/onboard/debs"
-				exit 1
-		fi
+    # Check if the file was found
+    if [ "$DEB_FOUND" = false ]; then
+        echo "Error: Unable to find onboard debs. Please run $0 /path/to/onboard/debs"
+        exit 1
+    fi
 
-		echo "Onboard debs found in: $DEB_DIR"
-		
+    echo "Onboard debs found in: $DEB_DIR"
+
     # Configure a local APT repository
-    echo "deb [trusted=yes] file:$DEB_DIR/ ./" > /etc/apt/sources.list.d/onboardlocalrepo.list
+    echo "deb [trusted=yes] file:$DEB_DIR/ ./" >/etc/apt/sources.list.d/onboardlocalrepo.list
 
     # Update package index for the temporary local repository
     apt-get update -o Dir::Etc::sourcelist="/etc/apt/sources.list.d/onboardlocalrepo.list"
