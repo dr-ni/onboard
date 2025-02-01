@@ -1,4 +1,19 @@
 #!/bin/bash
+# Description:
+# This script automatically builds Debian (.deb) packages for Onboard.
+#
+# It performs the following steps:
+#   1. Installs the required system and build dependencies.
+#   2. Determines the Onboard version from setup.py.
+#   3. Cleans previous build files.
+#   4. Copies the source code to a temporary directory and creates a tarball.
+#   5. Builds the Debian packages.
+#   6. Moves the generated files to the "./build/debs" directory.
+#
+# Note: Run this script from the Onboard source directory and it requires sudo privileges.
+#
+# Author: Lukas Gottschall
+
 # Get the absolute path of the script's directory
 SCRIPT_PATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)"
 OUTPUT_DIR="$SCRIPT_PATH/build/debs"

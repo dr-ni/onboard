@@ -126,7 +126,7 @@ new distributions are always welcome too.
 
 To build Debian packages from the source, two scripts are available:
 - `build_debs.sh`: Creates the `.deb` packages and related metadata.
-- `install_debs_with_local_repo.sh`: Sets up a local repository and installs the packages on a target system.
+- `apt_install_debs.sh`: Sets up a local repository and installs the packages on a target system.
 
 ---
 
@@ -164,20 +164,20 @@ The Debian packages will be saved in the directory: `/path/to/onboard_sources/bu
 
 ### Install the Debian Packages
 
-The `install_debs_with_local_repo.sh` script simplifies installing the generated `.deb` packages using a local repository.
+The `apt_install_debs.sh` script simplifies installing the generated `.deb` packages using a local repository.
 
 #### Steps:
 1. **Prepare Files**:
    - Copy the following to a directory on the target system:
      - All `.deb` files.
      - The `Packages.gz` file.
-     - The `install_debs_with_local_repo.sh` script.
+     - The `apt_install_debs.sh` script.
 
 2. **Run the Script**:
    - Navigate to the directory and execute:
      ```bash
-     chmod +x install_debs_with_local_repo.sh
-     ./install_debs_with_local_repo.sh
+     chmod +x apt_install_debs.sh
+     ./apt_install_debs.sh
      ```
         
 ## D-Bus interface

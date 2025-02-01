@@ -1,12 +1,17 @@
 #!/bin/sh
-
 # Description:
-# This script sets up a temporary local APT repository for the Onboard packages
-# located in the "onboard" subdirectory of the script's location.
-# It configures the local repository, updates the package index, and installs the
-# necessary Onboard packages (onboard, onboard-data, gnome-shell-extension-onboard).
-# After installation, the temporary repository configuration is removed.
-
+# This script sets up a temporary local APT repository for the Onboard packages.
+# The script searches for the required deb packages in one of the following locations:
+#   - The directory provided as the first parameter ($1)
+#   - The current working directory
+#   - The directory where the script is located
+#   - A ".build/debs" subdirectory (relative to either the script's location or the current working directory)
+# After locating the packages, it configures the local repository, updates the package index,
+# and installs the necessary Onboard packages (onboard, onboard-data, and if GNOME Shell is present,
+# gnome-shell-extension-onboard). Once installation is complete, the temporary repository configuration is removed.
+#
+# Author: Lukas Gottschall
+#
 # Note: This script must be executed as root.
 
 # Get the absolute path of the script's directory
