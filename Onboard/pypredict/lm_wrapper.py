@@ -299,7 +299,7 @@ def split_tokens_at(tokens, split_indices):
 
 
 SENTENCE_PATTERN = re.compile( \
-    """ .*?
+    r""" .*?
            (?:
                  (?:[.;:!?](?:(?=[\s]) | \")) # punctuation
                | (?:\\s*\\n\\s*)+(?=[\\n])    # multiples newlines
@@ -365,7 +365,7 @@ def split_sentences(text, disambiguate=False):
     return sentences, spans
 
 
-tokenize_pattern = """
+tokenize_pattern = r"""
     (                                     # <unk>
       (?:^|(?<=\s))
         \S*(\S)\\2{{3,}}\S*               # char repeated more than 3 times
@@ -464,7 +464,7 @@ def tokenize_context(text):
         The result is ready for use in predict().
     """
     tokens, spans = tokenize_text(text, is_context = True)
-    if not re.match("""
+    if not re.match(r"""
                   ^$                             # empty string?
                 | .*[-'´΄\w]$                    # word at the end?
                 | (?:^|.*\s)[|]=?$               # recognized operator?
@@ -501,7 +501,7 @@ def read_order(filename, encoding=None):
             continue
 
         if data:  # data section?
-            result = re.search("ngram (\d+)=\d+", line)
+            result = re.search(r"ngram (\d+)=\d+", line)
             if result:
                 if order is None:
                     order = 0
@@ -621,7 +621,7 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
             context, spans = tokenize_context(". " + inputline) # simulate sentence begin
             prefix = context[len(context)-1] if context else ""
             prefix_to_end = sentence[len(inputline)-len(prefix):]
-            target_word = re.search("^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
+            target_word = re.search(r"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
             choices = query_model.predict(context, limit)
 
             if target_word in choices:

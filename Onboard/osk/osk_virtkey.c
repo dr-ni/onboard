@@ -1092,7 +1092,10 @@ virtkey_get_label_from_keysym (int keysym)
                 else
                 {
                     size_t l = MIN(strlen(name), sizeof(buf)-1);
-                    strncpy(buf, name, l);
+                    //strncpy(buf, name, l);
+                    //hopefully correct replaced to suppress "output truncated before terminating nul"
+                    memcpy(buf, name, l);
+
                     buf[l] = '\0';
                     if (l > 2 && name[0] == '0' && name[1] == 'x') // hex number?
                     {
@@ -1461,14 +1464,23 @@ osk_virtkey_keycode_from_keysym (PyObject *self, PyObject *args)
 static PyObject *
 osk_virtkey_keysym_from_unicode (PyObject *self, PyObject *args)
 {
-    long keysym;
-    Py_UNICODE* ucs;
+    PyObject *utf_obj;
+    wchar_t *str = NULL;
 
-    if (!PyArg_ParseTuple (args, "u", &ucs))
+    if (!PyArg_ParseTuple (args, "O", &utf_obj))
         return NULL;
 
-    keysym = ucs2keysym(*ucs);
-    return PyLong_FromLong (keysym);
+    str = PyUnicode_AsWideCharString(utf_obj, NULL);
+    if (str != NULL)
+    {
+        long keysym;
+        keysym = ucs2keysym(str[0]);
+        PyMem_Free (str);
+
+        return PyLong_FromLong (keysym);
+    }
+
+    return NULL;
 }
 
 static PyObject *

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+ 
 # Copyright © 2007 Martin Böhme <martin.bohm@kubuntu.org>
 # Copyright © 2012-2013 Gerd Kohlberger <lowfi@chello.at>
 # Copyright © 2009-2017 Francesco Fumanti <francesco.fumanti@gmx.net>
@@ -30,10 +30,11 @@ import re
 import glob
 import subprocess
 from os.path import dirname, abspath, join, split
-from distutils.core import Extension, Command
-from distutils      import version
-from distutils.command.build_ext import build_ext
+from setuptools import Extension, Command
+from packaging import version
+from setuptools.command.build_ext import build_ext
 from distutils.sysconfig import customize_compiler
+#import sysconfig
 from contextlib import contextmanager
 from subprocess import getstatusoutput
 
@@ -52,8 +53,8 @@ except ImportError:
     print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
     sys.exit(1)
 
-current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
-required_ver = version.StrictVersion('2.12')
+current_ver = version.Version(DistUtilsExtra.auto.__version__)
+required_ver = version.Version('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 project_root = dirname(abspath(__file__))
@@ -115,7 +116,7 @@ def get_pkg_version(package):
               .format(repr(package), status), file=sys.stderr)
         sys.exit(2)
 
-    version = re.search('(?:(?:\d+)\.)+\d+', output).group()
+    version = re.search(r'(?:(?:\d+)\.)+\d+', output).group()
     components = version.split(".")
     major, minor = int(components[0]), int(components[1])
     revision = int(components[2]) if len(components) >= 3 else 0
@@ -425,10 +426,10 @@ class UninstallCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '1.4.1+2252',
-    author = 'Onboard Devel Team',
-    author_email = 'https://launchpad.net/~onboard/+contactuser',
-    url = 'http://launchpad.net/onboard/',
+    version = '1.4.2', # here the package version is set
+    author = 'U. Niethammer',
+    author_email = 'uwe@dr-niethammer.de',
+    url = 'https://github.com/dr-ni/onboard',
     license = 'GPL-3+',
     description = 'Simple On-screen Keyboard',
 
@@ -440,8 +441,8 @@ DistUtilsExtra.auto.setup(
                   ('share/doc/onboard', glob.glob('CHANGELOG')),
                   ('share/doc/onboard', glob.glob('COPYING*')),
                   ('share/doc/onboard', glob.glob('HACKING')),
-                  ('share/doc/onboard', glob.glob('NEWS')),
-                  ('share/doc/onboard', glob.glob('README')),
+                  ('share/doc/onboard', glob.glob('DBUS.md')),
+                  ('share/doc/onboard', glob.glob('README.md')),
                   ('share/doc/onboard', glob.glob('onboard-defaults.conf.example')),
                   ('share/doc/onboard', glob.glob('onboard-default-settings.gschema.override.example')),
                   ('share/icons/hicolor/16x16/apps', glob.glob('icons/hicolor/16/*')),

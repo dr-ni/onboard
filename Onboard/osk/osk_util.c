@@ -224,8 +224,8 @@ osk_util_get_active_window (OskUtil* util)
     guchar *data = NULL;
 
     Window root = DefaultRootWindow (xdisplay);
-
-    gdk_error_trap_push ();
+    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (xdisplay);
+    gdk_x11_display_error_trap_push (gdk_display);
     if (XGetWindowProperty (xdisplay, root,
                 util->atom_net_active_window,
                 0, 1, False, XA_WINDOW,
@@ -241,7 +241,7 @@ osk_util_get_active_window (OskUtil* util)
         }
     }
 
-    if (gdk_error_trap_pop ())
+    if (gdk_x11_display_error_trap_pop (gdk_display))
         result = None;
 
     if (data)
@@ -267,9 +267,10 @@ raise_windows_to_top (OskUtil *util)
         int ret;
 
         // Is the active window unity dash or unity-2d dash?
-        gdk_error_trap_push ();
+        GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (xdisplay);
+        gdk_x11_display_error_trap_push (gdk_display);
         ret = XGetWMName(xdisplay, active_xid, &text_prop);
-        if (!gdk_error_trap_pop () && ret)
+        if (!gdk_x11_display_error_trap_pop (gdk_display) && ret)
         {
             if (// Precise
                 strcmp((char*)text_prop.value, "launcher") == 0 ||
@@ -490,12 +491,16 @@ get_window_name(Display* display, Window window)
     Status stat;
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
-    gdk_error_trap_push ();
+//  Display *xdisplay = gdk_x11_display_get_xdisplay (display);
+//  OskUtil *util = (OskUtil*) self;
+//  Display* xdisplay = get_x_display(util);
+    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (display);
+    gdk_x11_display_error_trap_push (gdk_display);
     stat = XGetTextProperty(display, window, &prop, _NET_WM_NAME)
            ? Success : BadRequest;
     if (stat != Success || prop.nitems == 0)
         stat = XGetWMName(display, window, &prop);
-    gdk_error_trap_pop_ignored ();
+    gdk_x11_display_error_trap_pop_ignored (gdk_display);
     if (stat != Success || prop.nitems == 0)
         Py_RETURN_NONE;
 

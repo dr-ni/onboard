@@ -66,12 +66,18 @@ virtkey_x_get_current_group_name (VirtkeyBase* base)
     char* result = NULL;
     int group;
 
-    if (!this->kbd->names || !this->kbd->names->groups)
+    if (!this->kbd->names)
     {
         PyErr_SetString (OSK_EXCEPTION, "no group names available");
         return NULL;
     }
-
+/* fixed warning comparison will always evaluate as true
+    if (!this->kbd->names->groups)
+    {
+        PyErr_SetString (OSK_EXCEPTION, "no groups available");
+        return NULL;
+    }
+*/
     group = virtkey_x_get_current_group(base);
     if (group < 0)
         return NULL;

@@ -44,11 +44,12 @@ osk_struts_dealloc (OskStruts *struts)
 static PyObject *
 osk_struts_set (PyObject *self, PyObject *args)
 {
-    Display       *dpy;
+    Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
     unsigned long  xid;
     unsigned long  struts[12] = { 0, };
     PyObject      *obj, *seq, **items;
     int            i;
+    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (dpy);
 
     if (!PyArg_ParseTuple (args, "kO", &xid, &obj))
         return NULL;
@@ -86,9 +87,7 @@ osk_struts_set (PyObject *self, PyObject *args)
 
     Py_DECREF (seq);
 
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-
-    gdk_error_trap_push ();
+    gdk_x11_display_error_trap_push (gdk_display);
 
     XChangeProperty (dpy, xid,
                      XInternAtom (dpy, "_NET_WM_STRUT", False),
@@ -100,8 +99,7 @@ osk_struts_set (PyObject *self, PyObject *args)
                      XA_CARDINAL, 32, PropModeReplace,
                      (unsigned char *) &struts, 12);
 
-
-    gdk_error_trap_pop_ignored ();
+    gdk_x11_display_error_trap_pop_ignored (gdk_display);
 
     Py_RETURN_NONE;
 }
@@ -109,21 +107,20 @@ osk_struts_set (PyObject *self, PyObject *args)
 static PyObject *
 osk_struts_clear (PyObject *self, PyObject *args)
 {
-    Display      *dpy;
+    Display *dpy =GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    GdkDisplay *gdk_display = gdk_x11_lookup_xdisplay (dpy);
     unsigned long xid;
+
 
     if (!PyArg_ParseTuple (args, "k", &xid))
         return NULL;
 
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-
-    gdk_error_trap_push ();
+    gdk_x11_display_error_trap_push (gdk_display);
 
     XDeleteProperty (dpy, xid, XInternAtom (dpy, "_NET_WM_STRUT", False));
     XDeleteProperty (dpy, xid, XInternAtom (dpy, "_NET_WM_STRUT_PARTIAL", False));
 
-    gdk_error_trap_pop_ignored ();
-
+    gdk_x11_display_error_trap_pop_ignored (gdk_display);
     Py_RETURN_NONE;
 }
 

@@ -65,7 +65,9 @@ struct _GdkWaylandKeymap
 static GdkKeymap*
 get_gdk_keymap (VirtkeyBase *base)
 {
-    return gdk_keymap_get_default();
+//    return gdk_keymap_get_default();
+GdkDisplay *display = gdk_display_get_default ();
+return gdk_keymap_get_for_display(display);
 }
 
 static struct xkb_keymap*

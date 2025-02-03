@@ -148,7 +148,7 @@ def get_keysym_from_name(name):
     return keysyms[name]
 
 def parse_key_combination(combo, avaliable_key_ids = None):
-    """
+    r"""
     Parses a key combination into a list of modifier masks and key_ids.
     The key-id part of the combo may contain a regex pattern.
 
@@ -169,7 +169,7 @@ def parse_key_combination(combo, avaliable_key_ids = None):
     [('TAB', 5)]
 
     # regex
-    >>> parse_key_combination(["F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
+    >>> parse_key_combination([r"F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
     [('F1', 0), ('F2', 0), ('F3', 0), ('F9', 0)]
     """
     modifiers = combo[:-1]
@@ -217,8 +217,8 @@ def run_script(script):
 def toprettyxml(domdoc):
     ugly_xml = domdoc.toprettyxml(indent='  ')
     # Join lines with text elements with their tag lines
-    pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
-    pretty_xml = pattern.sub('>\g<1></', ugly_xml)
+    pattern = re.compile(r'>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    pretty_xml = pattern.sub(r'>\g<1></', ugly_xml)
 
     # Work around http://bugs.python.org/issue5752
     pretty_xml = re.sub(
@@ -353,7 +353,7 @@ class dictproperty(object):
         return self._proxy(obj, self._fget, self._fset, self._fdel)
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):
-    """
+    r"""
     Converts a list of strings into a dict of tuples.
     Sample list: ['LWIN:label:super', ...]
     ":" in a value must be escaped as "\:"
@@ -1680,7 +1680,7 @@ class XDGDirs:
 
 
 _tag_pattern = re.compile(
-    """(?:
+    r"""(?:
             <[\w\-_]+                         # tag
             (?:\s+[\w\-_]+=["'][^"']*["'])*  # attributes
             /?>

@@ -22,6 +22,8 @@
 #ifndef __OSK_MODULE__
 #define __OSK_MODULE__
 
+#define PY_SSIZE_T_CLEAN
+
 #include <Python.h>
 #include <structmember.h>
 
