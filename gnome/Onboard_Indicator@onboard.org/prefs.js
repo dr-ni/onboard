@@ -1,6 +1,6 @@
-/*
- * Copyright © 2016 marmuta <marmvta@gmail.com>
- *
+ /*
+ * Copyright © 2016 marmuta <marmvta@gmail.com> 
+ * Copyright © 2025 Lukas Gottschall - new gnome shell
  * DBus proxy and default keyboard hiding based on ideas by Simon Schumann.
  * https://github.com/schuhumi/gnome-shell-extension-onboard-integration
  *
@@ -9,8 +9,8 @@
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
-
+ * any later version.
+ *
  * Onboard is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -19,50 +19,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+// prefs.js – modernes ES-Modul für GNOME Shell Preferences
 
-const Gio = imports.gi.Gio;
-const Gtk = imports.gi.Gtk;
-const GObject = imports.gi.GObject;
-const Lang = imports.lang;
+import Gio from 'gi://Gio';
+import Adw from 'gi://Adw';
 
-const Gettext = imports.gettext.domain('onboard');
-const _ = Gettext.gettext;
+import {
+    ExtensionPreferences,
+    gettext as _
+} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-const this_extension = imports.misc.extensionUtils.getCurrentExtension();
-const Convenience = this_extension.imports.convenience;
+export default class OnboardIndicatorPrefs extends ExtensionPreferences {
 
-let Schema;
+    fillPreferencesWindow(window) {
+        const page = new Adw.PreferencesPage({
+            title: _('Onboard Indicator Settings'),
+            icon_name: 'dialog-information-symbolic',
+        });
+        window.add(page);
 
+        const group = new Adw.PreferencesGroup({
+            title: _('Behavior'),
+        });
+        page.add(group);
 
-const OnboardIndicatorWidget = new GObject.Class({
-    Name: 'AlternateTab.Prefs.OnboardIndicatorWidget',
-    GTypeName: 'OnboardIndicatorWidget',
-    Extends: Gtk.Grid,
-
-    _init: function(params) {
-        this.parent(params);
-        this.margin = 24;
-        this.row_spacing = 6;
-        this.orientation = Gtk.Orientation.VERTICAL;
-
-        let check = new Gtk.CheckButton({
-            label: _('Drag from bottom edge of the screen ' +
-                     'to show the keyboard'),
-            margin_top: 1 });
-        Schema.bind('enable-show-gesture', check, 'active',
-                Gio.SettingsBindFlags.DEFAULT);
-        this.add(check);
-    },
-});
-
-function init() {
-    Convenience.initTranslations();
-    Schema = Convenience.getSettings();
+        const gestureRow = new Adw.SwitchRow({
+            title: _('Drag from bottom edge to show keyboard'),
+            subtitle: _('Enable show gesture for Onboard'),
+        });
+        group.add(gestureRow);
+        const settings = this.getSettings('org.gnome.shell.extensions.onboard-indicator');
+        settings.bind('enable-show-gesture', gestureRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+    }
 }
-
-function buildPrefsWidget() {
-    let widget = new OnboardIndicatorWidget();
-    widget.show_all();
-    return widget;
-}
-

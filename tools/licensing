@@ -151,8 +151,6 @@ class Command:
          "mike.gabriel@das-netzwerkteam.de", ['20160731', '20170708']],
         ["data/onboard-settings.desktop.in",
          "mike.gabriel@das-netzwerkteam.de", ['20160731', '20170708']],
-        ["gnome/Onboard_Indicator@onboard.org/convenience.js",
-         "scampa.giovanni@gmail.com", ['20110101', '20120101']],
         ["gnome/Onboard_Indicator@onboard.org/extension.js",
          "simon.schumann@web.de", ['20160101']],
         ["gnome/Onboard_Indicator@onboard.org/metadata.json",
@@ -1166,8 +1164,7 @@ class FileTypeNoHeader(FileType):
             ["COPYING", "README", "TODO",
                 "AUTHORS", "HACKING",
                 "NEWS", "CHANGELOG", "MANIFEST.in",
-                ".bzrignore", "attic/Makefile",
-                "gnome/Onboard_Indicator@onboard.org/convenience.js"],
+                ".bzrignore", "attic/Makefile"],
             [".lm", ".svg", ".ui"])
 
     def needs_license_header(self):
