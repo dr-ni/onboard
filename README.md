@@ -50,12 +50,19 @@ new distributions are always welcome too.
         # Change keyboard language layout
         # setxkbmap -layout de
         # or [us|in|ru|...]
-        
+
         # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
+        sudo rm -rf /usr/local/share/doc/onboard/
+        sudo rm -rf /usr/local/share/help/C/onboard/
+        sudo rm -rf /usr/local/include/onboard/
         sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
+        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
+        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
+        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
         sudo rm files.txt
 
 ## Arch Linux:
@@ -77,12 +84,19 @@ new distributions are always welcome too.
         # Install
         sudo tools/install_gsettings_schema
         sudo python3 setup.py install
-        
+
         # Uninstall
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
+        sudo rm -rf /usr/local/share/doc/onboard/
+        sudo rm -rf /usr/local/share/help/C/onboard/
+        sudo rm -rf /usr/local/include/onboard/
         sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
+        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
+        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
+        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
         sudo rm files.txt
 
 ## Mageia:
@@ -107,7 +121,14 @@ new distributions are always welcome too.
         sudo python3 setup.py install --record files.txt
         sudo xargs -a files.txt --delimiter='\n' rm -v
         sudo rm -rf /usr/local/share/onboard
+        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
+        sudo rm -rf /usr/local/share/doc/onboard/
+        sudo rm -rf /usr/local/share/help/C/onboard/
+        sudo rm -rf /usr/local/include/onboard/
         sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
+        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
+        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
+        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
         sudo rm files.txt
         
 ## Manuals
