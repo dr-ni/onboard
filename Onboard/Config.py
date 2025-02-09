@@ -50,6 +50,8 @@ from Onboard.definitions    import DesktopEnvironmentEnum, \
 from Onboard.ConfigUtils    import ConfigObject
 from Onboard.ClickSimulator import CSMousetweaks0, CSMousetweaks1
 from Onboard.Exceptions     import SchemaError
+from importlib.metadata import PackageNotFoundError, version
+
 
 ### Logging ###
 import logging
@@ -225,9 +227,14 @@ class Config(ConfigObject):
         First intialization stage that runs before the
         single instance check. Only do the bare minimum here.
         """
+        try:
+            ver = version("onboard")
+        except PackageNotFoundError:
+            ver = "unknown"
         # parse command line
-        parser = OptionParser()
+        parser = OptionParser(version=ver)
         group = OptionGroup(parser, "General Options")
+
         group.add_option("-l", "--layout", dest="layout",
                 help=_format("Layout file ({}) or name",
                              self.LAYOUT_FILE_EXTENSION))
