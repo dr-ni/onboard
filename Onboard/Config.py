@@ -29,6 +29,8 @@ from __future__ import division, print_function, unicode_literals
 import os
 import sys
 import locale
+import ctypes.util
+
 from shutil import copytree
 from optparse import OptionParser, OptionGroup
 
@@ -1159,7 +1161,9 @@ class Config(ConfigObject):
         if not (self.isdesktop("GNOME") or \
                 self.isdesktop("GNOME-Classic:GNOME") or \
                 self.isdesktop("Unity") or \
-                self.isdesktop("X-Cinnamon") or self.isdesktop("cinnamon") \
+                self.isdesktop("X-Cinnamon") or \
+                self.isdesktop("cinnamon") or \
+                ctypes.util.find_library("atspi") \
                ):
             return False
         if not self.xid_mode and \
