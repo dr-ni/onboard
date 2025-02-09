@@ -59,7 +59,7 @@ if [ "$(id -u)" = "0" ]; then
     apt-get update -o Dir::Etc::sourcelist="/etc/apt/sources.list.d/onboardlocalrepo.list"
 
     # Remove installed Onboard packages
-    apt -y remove onboard onboard-data gnome-shell-extension-onboard
+    apt-get -y remove onboard onboard-data gnome-shell-extension-onboard
     
     # Install the Onboard packages
     if which gnome-shell >/dev/null 2>&1; then
