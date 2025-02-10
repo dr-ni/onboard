@@ -1,3 +1,22 @@
+onboard (1.4.2-1) dr-ni; urgency=medium
+
+  * now the onboard version can be checked '--version'
+  * updated README.md
+  * new build_debs.sh and install_debs_with_local_repo.sh
+  * new check for GNOME Accessibility Toolkit
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Mon, 27 Jan 2025 20:21:37 +0200
+
+onboard (1.4.2) dr-ni; urgency=medium
+
+  * forked dead launchpad project to github
+  * fixed setup.py
+  * new README.md
+  * fixed all deprecated warnings
+  * fixed warning "output truncated before terminating nul
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Fri, 15 Jun 2024 04:21:37 +0200
+ 
 onboard (1.4.1+rev-0local0) zesty; urgency=medium
 
   * debian/onboard.docs: remove

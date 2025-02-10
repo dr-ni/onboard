@@ -393,31 +393,13 @@ class CachedAccessible:
 
     def is_editable(self):
         """ Is this an accessible onboard should be shown for? """
-        role      = self.get_role()
         state_set = self.get_state_set()
-        if state_set is not None:
-
-            if role in [Atspi.Role.TEXT,
-                        Atspi.Role.TERMINAL,
-                        Atspi.Role.DATE_EDITOR,
-                        Atspi.Role.PASSWORD_TEXT,
-                        Atspi.Role.EDITBAR,
-                        Atspi.Role.ENTRY,
-                        Atspi.Role.DOCUMENT_TEXT,
-                        Atspi.Role.DOCUMENT_FRAME,
-                        Atspi.Role.DOCUMENT_EMAIL,
-                        Atspi.Role.SPIN_BUTTON,
-                        Atspi.Role.COMBO_BOX,
-                        Atspi.Role.DATE_EDITOR,
-                        Atspi.Role.PARAGRAPH,      # LibreOffice Writer
-                        Atspi.Role.HEADER,
-                        Atspi.Role.FOOTER,
-                        ]:
-                if role in [Atspi.Role.TERMINAL] or \
-                   (state_set is not None and
-                    state_set.contains(Atspi.StateType.EDITABLE)):
-                    return True
-        return False
+        if state_set and state_set.contains(Atspi.StateType.EDITABLE):
+            return True
+        role      = self.get_role()
+        return role in [
+                    Atspi.Role.TERMINAL,
+                    ]
 
     def is_not_focus_stealing(self):
         """
