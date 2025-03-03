@@ -52,9 +52,9 @@ const OnboardIndicatorWidget = new GObject.Class({
         Schema.bind('enable-show-gesture', check, 'active',
                 Gio.SettingsBindFlags.DEFAULT);
         if (this.append) {
-            this.append(someWidget);  // GTK 4 (GNOME 40+)
+            this.append(check);  // GTK 4 (GNOME 40+)
         } else {
-            this.add(someWidget);  // GTK 3 (GNOME ≤ 3.38)
+            this.add(check);  // GTK 3 (GNOME ≤ 3.38)
         }    
     },
 });

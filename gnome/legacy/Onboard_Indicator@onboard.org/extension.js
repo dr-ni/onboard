@@ -25,7 +25,7 @@
  */
 
 const Clutter = imports.gi.Clutter;
-const St = imports.gi.St;
+const { GObject, St } = imports.gi;
 const Main = imports.ui.main;
 const Keyboard = imports.ui.keyboard.Keyboard;
 const Gio = imports.gi.Gio;
@@ -39,179 +39,276 @@ const PopupMenu = imports.ui.popupMenu;
 
 const this_extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = this_extension.imports.convenience;
+const USE_GOBJECT = typeof GObject.registerClass !== 'undefined';
+
 
 let _onboard;
 let _indicator;
 let _gesture = null;
 let Schema;
 
+let OnboardIndicator;
+let Onboard;
 
-const OnboardIndicator = new Lang.Class({
-    Name: 'OnboardIndicator',
-    Extends: PanelMenu.Button,
+if (USE_GOBJECT) {
+    OnboardIndicator = GObject.registerClass(
+        class OnboardIndicator extends PanelMenu.Button {
+            _init() {
+                super._init(0.0, _('Onboard'));
 
-    _init: function() {
-        this.parent(0.0, _('Onboard'));
+                this._last_event_time = 0;
+                this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-        this._last_event_time = 0;
+                this._hbox.append(new St.Icon({
+                    icon_name: 'onboard-symbolic',
+                    style_class: 'system-status-icon',
+                }));
 
-        this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        this._hbox.add_child(new St.Icon({icon_name: 'onboard-symbolic',
-                                          style_class: 'system-status-icon',
-                                         }));
-        this.actor.add_child(this._hbox);
+                this.add_child(this._hbox);
 
-        this.menu.addAction(_('Preferences'), function(event) {
-            GLib.spawn_command_line_async('onboard-settings', null);
-        });
+                this.menu.addAction(_('Preferences'), () => {
+                    GLib.spawn_command_line_async('onboard-settings');
+                });
 
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        this.menu.addAction(_('Help'), function(event) {
-            GLib.spawn_command_line_async('/usr/bin/yelp help:onboard', null);
-        });
-    },
-
-    _onEvent: function(actor, event) {
-        if (event.type() == Clutter.EventType.TOUCH_BEGIN ||
-            event.type() == Clutter.EventType.BUTTON_PRESS &&
-            event.get_button() == 1)
-        {
-            // TOUCH_BEGIN and BUTTON_PRESS may come together.
-            // Act only on the first one.
-            if (event.get_time() - this._last_event_time > 500) {
-                _onboard.launch(); // make sure it's running
-                _onboard.ToggleVisible();
-                this._last_event_time = event.get_time();
+                this.menu.addAction(_('Help'), () => {
+                    GLib.spawn_command_line_async('/usr/bin/yelp help:onboard');
+                });
             }
-            return Clutter.EVENT_PROPAGATE;
+
+            destroy() {
+                super.destroy();
+            }
         }
-        else
-            return this.parent(actor, event);
-    },
+    );
 
-    _onPreferencesActivate: function(item) {
-    },
+    Onboard = GObject.registerClass(
+        class Onboard extends GObject.Object {
+            _init() {
+                super._init();
 
-    destroy: function() {
-        this.parent();
-    },
-});
+                const IOnboardKeyboard = '<node> \
+                    <interface name="org.onboard.Onboard.Keyboard"> \
+                        <method name="ToggleVisible"/> \
+                        <method name="Show"/> \
+                        <method name="Hide"/> \
+                    </interface> \
+                </node>';
+
+                const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
+                this.proxy = new OnboardProxy(Gio.DBus.session,
+                                              'org.onboard.Onboard',
+                                              '/org/onboard/Onboard/Keyboard');
+            }
+
+            enable() {
+                this.launch();
+
+                if (Main.keyboard) {
+                    this._oldKeyboardShow = Main.keyboard.show;
+                    this._oldKeyboardHide = Main.keyboard.hide;
+
+                    Main.keyboard.show = () => this.Show();
+                    Main.keyboard.hide = () => this.Hide();
+                }
+            }
+
+            disable() {
+                if (Main.keyboard) {
+                    Main.keyboard.show = this._oldKeyboardShow;
+                    Main.keyboard.hide = this._oldKeyboardHide;
+                }
+
+                GLib.spawn_command_line_async('killall onboard');
+            }
+
+            Show() {
+                this.proxy.ShowSync();
+            }
+
+            Hide() {
+                this.proxy.HideSync();
+            }
+
+            ToggleVisible() {
+                this.proxy.ToggleVisibleRemote();
+            }
+
+            launch() {
+                if (!this.proxy.g_name_owner) {
+                    GLib.spawn_command_line_async('onboard');
+                }
+            }
+        }
+    );
+} else {
+    OnboardIndicator = new Lang.Class({
+        Name: 'OnboardIndicator',
+        Extends: PanelMenu.Button,
+
+        _init: function() {
+            this.parent(0.0, _('Onboard'));
+
+            this._last_event_time = 0;
+
+            this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+            this._hbox.add_child(new St.Icon({icon_name: 'onboard-symbolic',
+                                            style_class: 'system-status-icon',
+                                            }));
+            this.actor.add_child(this._hbox);
+
+            this.menu.addAction(_('Preferences'), function(event) {
+                GLib.spawn_command_line_async('onboard-settings', null);
+            });
+
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            this.menu.addAction(_('Help'), function(event) {
+                GLib.spawn_command_line_async('/usr/bin/yelp help:onboard', null);
+            });
+        },
+
+        _onEvent: function(actor, event) {
+            if (event.type() == Clutter.EventType.TOUCH_BEGIN ||
+                event.type() == Clutter.EventType.BUTTON_PRESS &&
+                event.get_button() == 1)
+            {
+                // TOUCH_BEGIN and BUTTON_PRESS may come together.
+                // Act only on the first one.
+                if (event.get_time() - this._last_event_time > 500) {
+                    _onboard.launch(); // make sure it's running
+                    _onboard.ToggleVisible();
+                    this._last_event_time = event.get_time();
+                }
+                return Clutter.EVENT_PROPAGATE;
+            }
+            else
+                return this.parent(actor, event);
+        },
+
+        _onPreferencesActivate: function(item) {
+        },
+
+        destroy: function() {
+            this.parent();
+        },
+    });
 
 
-const Onboard = new Lang.Class({
-    Name: 'Onboard',
+    Onboard = new Lang.Class({
+        Name: 'Onboard',
 
-    _init: function() {
-        const IOnboardKeyboard = '<node> \
-          <interface name="org.onboard.Onboard.Keyboard"> \
-            <method name="ToggleVisible"> \
-            </method> \
-            <method name="Show"> \
-            </method> \
-            <method name="Hide"> \
-            </method> \
-          </interface> \
-        </node>';
+        _init: function() {
+            const IOnboardKeyboard = '<node> \
+            <interface name="org.onboard.Onboard.Keyboard"> \
+                <method name="ToggleVisible"> \
+                </method> \
+                <method name="Show"> \
+                </method> \
+                <method name="Hide"> \
+                </method> \
+            </interface> \
+            </node>';
 
-        const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
-        this.proxy = new OnboardProxy(Gio.DBus.session,
-                                      'org.onboard.Onboard',
-                                      '/org/onboard/Onboard/Keyboard');
-        this._oldKeyboardShow = null;
-        this._oldKeyboardHide = null;
-    },
+            const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
+            this.proxy = new OnboardProxy(Gio.DBus.session,
+                                        'org.onboard.Onboard',
+                                        '/org/onboard/Onboard/Keyboard');
+            this._oldKeyboardShow = null;
+            this._oldKeyboardHide = null;
+        },
 
-    enable: function() {
-        // Start Onboard to overcome --not-show-in=GNOME
-        // in onboard-autostart.desktop.
-        this.launch();
+        enable: function() {
+            // Start Onboard to overcome --not-show-in=GNOME
+            // in onboard-autostart.desktop.
+            this.launch();
 
-        function KeyboardShow(outer_this) {
-            return (function(monitor) {
-                if (!this._keyboardRequested)
-                    return;
+            function KeyboardShow(outer_this) {
+                return (function(monitor) {
+                    if (!this._keyboardRequested)
+                        return;
 
-                Main.layoutManager.keyboardIndex = monitor;
+                    Main.layoutManager.keyboardIndex = monitor;
 
-                // In the normal desktop?
-                if (Main.actionMode == Shell.ActionMode.NORMAL)
-                {
-                    // Keep built-in keyboard hidden
+                    // In the normal desktop?
+                    if (Main.actionMode == Shell.ActionMode.NORMAL)
+                    {
+                        // Keep built-in keyboard hidden
+                        this._hideSubkeys();
+                        Main.layoutManager.hideKeyboard();
+                        this._keyboardVisible = true;
+                    }
+                    // In overview or modal (password) dialog
+                    else
+                    {
+                        // hide Onboard
+                        outer_this.Hide();
+
+                        // Show built-in keyboard
+                        this._redraw();
+                        Main.layoutManager.showKeyboard();
+                    }
+                    this._destroySource();
+                });
+            };
+
+            function KeyboardHide(outer_this) {
+                return (function() {
+                    if (this._keyboardRequested)
+                        return;
+
+                    // still keep default keyboard hidden
                     this._hideSubkeys();
                     Main.layoutManager.hideKeyboard();
-                    this._keyboardVisible = true;
-                }
-                // In overview or modal (password) dialog
-                else
-                {
-                    // hide Onboard
-                    outer_this.Hide();
+                    this._createSource();
+                });
+            };
 
-                    // Show built-in keyboard
-                    this._redraw();
-                    Main.layoutManager.showKeyboard();
-                }
-                this._destroySource();
-            });
-        };
+            this._oldKeyboardShow = Keyboard.prototype['_show'];
+            this._oldKeyboardHide = Keyboard.prototype['_hide'];
+            Keyboard.prototype['_show'] = KeyboardShow(this);
+            Keyboard.prototype['_hide'] = KeyboardHide(this);
+        },
 
-        function KeyboardHide(outer_this) {
-            return (function() {
-                if (this._keyboardRequested)
-                    return;
+        disable: function() {
+            Keyboard.prototype['_show'] = this._oldKeyboardShow;
+            Keyboard.prototype['_hide'] = this._oldKeyboardHide;
 
-                // still keep default keyboard hidden
-                this._hideSubkeys();
-                Main.layoutManager.hideKeyboard();
-                this._createSource();
-            });
-        };
+            // Kill Onboard
+            GLib.spawn_command_line_async('killall onboard', null);
+        },
 
-        this._oldKeyboardShow = Keyboard.prototype['_show'];
-        this._oldKeyboardHide = Keyboard.prototype['_hide'];
-        Keyboard.prototype['_show'] = KeyboardShow(this);
-        Keyboard.prototype['_hide'] = KeyboardHide(this);
-    },
+        // Show on user request - either Onboard or the built-in keyboard.
+        ShowAnyKeyboard: function() {
+            // Show built-in keyboard where appropriate. Won't show Onboard
+            // because it uses its own auto-show.
+            Main.keyboard._keyboardRequested = true;
+            Main.keyboard._keyboardVisible = false;
+            Main.keyboard.Show(global.get_current_time());
 
-    disable: function() {
-        Keyboard.prototype['_show'] = this._oldKeyboardShow;
-        Keyboard.prototype['_hide'] = this._oldKeyboardHide;
+            // Show Onboard
+            if (Main.actionMode == Shell.ActionMode.NORMAL)
+            {
+                this.Show();
+            }
+        },
 
-        // Kill Onboard
-        GLib.spawn_command_line_async('killall onboard', null);
-    },
-
-    // Show on user request - either Onboard or the built-in keyboard.
-    ShowAnyKeyboard: function() {
-        // Show built-in keyboard where appropriate. Won't show Onboard
-        // because it uses its own auto-show.
-        Main.keyboard._keyboardRequested = true;
-        Main.keyboard._keyboardVisible = false;
-        Main.keyboard.Show(global.get_current_time());
-
-        // Show Onboard
-        if (Main.actionMode == Shell.ActionMode.NORMAL)
-        {
-            this.Show();
-        }
-    },
-
-    launch: function() {
-        if (!this.proxy.g_name_owner)  // not yet running?
-            GLib.spawn_command_line_async('onboard', null);
-    },
-    Show: function() {
-        this.proxy.ShowSync();
-    },
-    Hide: function() {
-        this.proxy.HideSync();
-    },
-    ToggleVisible: function() {
-        this.proxy.ToggleVisibleRemote();
-    },
-});
-
+        launch: function() {
+            if (!this.proxy.g_name_owner)  // not yet running?
+                GLib.spawn_command_line_async('onboard', null);
+        },
+        Show: function() {
+            this.proxy.ShowSync();
+        },
+        Hide: function() {
+            this.proxy.HideSync();
+        },
+        ToggleVisible: function() {
+            this.proxy.ToggleVisibleRemote();
+        },
+    });
+}
 function enable_show_gesture(enable) {
     if (enable)
     {
