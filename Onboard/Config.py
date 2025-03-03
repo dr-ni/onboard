@@ -1470,13 +1470,13 @@ class Config(ConfigObject):
             icon_theme.append_search_path(src_icon_path)
             result = src_path
         # when installed to ~/.local/share
-        elif os.path.isdir(USER_INSTALL_DIR):
+        elif os.path.exists(os.path.join(USER_INSTALL_DIR, "themes", "Classic Onboard.theme")):
             result = USER_INSTALL_DIR
         # when installed to /usr/local
-        elif os.path.isdir(LOCAL_INSTALL_DIR):
+        elif os.path.exists(os.path.join(LOCAL_INSTALL_DIR, "themes", "Classic Onboard.theme")):
             result = LOCAL_INSTALL_DIR
         # when installed to /usr
-        elif os.path.isdir(INSTALL_DIR):
+        elif os.path.exists(os.path.join(INSTALL_DIR, "themes", "Classic Onboard.theme")):
             result = INSTALL_DIR
 
         assert(result)  # warn early when the installation dir wasn't found
