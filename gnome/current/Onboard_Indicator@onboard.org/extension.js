@@ -58,20 +58,41 @@ class Onboard {
   </interface>
 </node>
 `;
-        const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
-
         // Create the DBus proxy
-        this.proxy = new OnboardProxy(
-            Gio.DBus.session,
-            'org.onboard.Onboard',
-            '/org/onboard/Onboard/Keyboard'
-        );
+        this.initProxy();
 
         // Store the original GNOME keyboard methods
         this._oldKeyboardShow = null;
         this._oldKeyboardHide = null;
     }
-
+    initProxy(retries = 0) {
+        let maxRetries = 5;
+        const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
+    
+        try {
+            this.proxy = new OnboardProxy(Gio.DBus.session,
+                'org.onboard.Onboard',
+                '/org/onboard/Onboard/Keyboard');
+            print("Connected to Onboard DBus successfully.");
+        } catch (e) {
+            if (retries < maxRetries) {
+                print(`DBus connection failed, retrying in 1 second... (${retries + 1}/${maxRetries})`);
+    
+                // Start Onboard only on the first attempt
+                if (retries === 0) {
+                    GLib.spawn_command_line_async('onboard');
+                }
+    
+                // Wait 1 second, then retry
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                    this.initProxy(retries + 1);
+                    return false;  // Ensures the timeout only runs once
+                });
+            } else {
+                print("Failed to connect to Onboard DBus after multiple attempts.");
+            }
+        }
+    }
     enable() {
         // Launch Onboard if not already active
         this.launch();
