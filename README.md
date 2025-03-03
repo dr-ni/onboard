@@ -68,9 +68,6 @@ new distributions are always welcome too.
         
         # System-wide installation (requires root access):
         sudo python3 setup.py install
-        # User-specific installation (experimental):
-        python3 setup.py install
-
 
         # Change keyboard language layout
         # setxkbmap -layout de
@@ -79,9 +76,6 @@ new distributions are always welcome too.
 ## Uninstall if installed from Source
         # System-wide uninstall (requires root access):
         sudo python3 setup.py uninstall
-        # User-specific uninstall (experimental):
-        python3 setup.py uninstall
-
         
 ## Build and Install Debian Packages
 
