@@ -1,30 +1,4 @@
-/*
- * Copyright © 2016 marmuta <marmvta@gmail.com>
- *
- * DBus proxy and default keyboard hiding based on ideas by Simon Schumann.
- * https://github.com/schuhumi/gnome-shell-extension-onboard-integration
- *
- * This file is part of Onboard.
- *
- * Onboard is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
-
- * Onboard is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
-const Gio = imports.gi.Gio;
-const Gtk = imports.gi.Gtk;
-const GObject = imports.gi.GObject;
-const Lang = imports.lang;
-
+const { GObject, Gtk, Gio } = imports.gi;
 const Gettext = imports.gettext.domain('onboard');
 const _ = Gettext.gettext;
 
@@ -33,31 +7,59 @@ const Convenience = this_extension.imports.convenience;
 
 let Schema;
 
+// Check if `GObject.registerClass` exists (GNOME 3.32+)
+const USE_GOBJECT = typeof GObject.registerClass !== 'undefined';
 
-const OnboardIndicatorWidget = new GObject.Class({
-    Name: 'AlternateTab.Prefs.OnboardIndicatorWidget',
-    GTypeName: 'OnboardIndicatorWidget',
-    Extends: Gtk.Grid,
+var OnboardIndicatorWidget;
 
-    _init: function(params) {
-        this.parent(params);
-        this.margin = 24;
-        this.row_spacing = 6;
-        this.orientation = Gtk.Orientation.VERTICAL;
+if (USE_GOBJECT) {
+    // GNOME 3.32+ (GTK 4)
+    OnboardIndicatorWidget = GObject.registerClass(
+        class OnboardIndicatorWidget extends Gtk.Grid {
+            _init(params) {
+                super._init(params);
+                this.margin = 24;
+                this.row_spacing = 6;
+                this.orientation = Gtk.Orientation.VERTICAL;
 
-        let check = new Gtk.CheckButton({
-            label: _('Drag from bottom edge of the screen ' +
-                     'to show the keyboard'),
-            margin_top: 1 });
-        Schema.bind('enable-show-gesture', check, 'active',
+                let check = new Gtk.CheckButton({
+                    label: _('Drag from bottom edge of the screen to show the keyboard'),
+                    margin_top: 1
+                });
+
+                Schema.bind('enable-show-gesture', check, 'active',
+                    Gio.SettingsBindFlags.DEFAULT);
+
+                this.attach(check, 0, 0, 1, 1); // Use `attach()` instead of `add()`
+            }
+        }
+    );
+
+} else {
+    // GNOME 3.16 - 3.30 (GTK 3)
+    OnboardIndicatorWidget = new GObject.Class({
+        Name: 'OnboardIndicatorWidget',
+        GTypeName: 'OnboardIndicatorWidget',
+        Extends: Gtk.Grid,
+
+        _init: function(params) {
+            this.parent(params);
+            this.margin = 24;
+            this.row_spacing = 6;
+            this.orientation = Gtk.Orientation.VERTICAL;
+
+            let check = new Gtk.CheckButton({
+                label: _('Drag from bottom edge of the screen to show the keyboard'),
+                margin_top: 1
+            });
+
+            Schema.bind('enable-show-gesture', check, 'active',
                 Gio.SettingsBindFlags.DEFAULT);
-        if (this.append) {
-            this.append(check);  // GTK 4 (GNOME 40+)
-        } else {
-            this.add(check);  // GTK 3 (GNOME ≤ 3.38)
-        }    
-    },
-});
+
+            this.attach(check, 0, 0, 1, 1); // `attach()` is better for GTK3+GTK4
+        }
+    });
+}
 
 function init() {
     Convenience.initTranslations();
@@ -66,7 +68,6 @@ function init() {
 
 function buildPrefsWidget() {
     let widget = new OnboardIndicatorWidget();
-    widget.show_all();
+    widget.set_visible(true); // `show_all()` is removed in GTK4
     return widget;
 }
-
