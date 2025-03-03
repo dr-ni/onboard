@@ -87,7 +87,10 @@ if (USE_GOBJECT) {
         class Onboard extends GObject.Object {
             _init() {
                 super._init();
-
+                this.initProxy();
+            }
+            initProxy(retries = 0) {
+                let maxRetries = 5;
                 const IOnboardKeyboard = '<node> \
                     <interface name="org.onboard.Onboard.Keyboard"> \
                         <method name="ToggleVisible"/> \
@@ -96,10 +99,6 @@ if (USE_GOBJECT) {
                     </interface> \
                 </node>';
 
-                this.initProxy();
-            }
-            initProxy(retries = 0) {
-                let maxRetries = 5;
                 const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
             
                 try {
@@ -224,6 +223,14 @@ if (USE_GOBJECT) {
         Name: 'Onboard',
 
         _init: function() {
+
+            this.initProxy();
+            this._oldKeyboardShow = null;
+            this._oldKeyboardHide = null;
+        },
+
+        initProxy(retries = 0) {
+            let maxRetries = 5;
             const IOnboardKeyboard = '<node> \
             <interface name="org.onboard.Onboard.Keyboard"> \
                 <method name="ToggleVisible"> \
@@ -234,14 +241,6 @@ if (USE_GOBJECT) {
                 </method> \
             </interface> \
             </node>';
-
-            this.initProxy();
-            this._oldKeyboardShow = null;
-            this._oldKeyboardHide = null;
-        },
-
-        initProxy(retries = 0) {
-            let maxRetries = 5;
             const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
         
             try {

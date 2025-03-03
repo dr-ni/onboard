@@ -49,15 +49,6 @@ import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/
  */
 class Onboard {
     constructor() {
-        const IOnboardKeyboard = `
-<node>
-  <interface name="org.onboard.Onboard.Keyboard">
-    <method name="ToggleVisible"/>
-    <method name="Show"/>
-    <method name="Hide"/>
-  </interface>
-</node>
-`;
         // Create the DBus proxy
         this.initProxy();
 
@@ -67,6 +58,15 @@ class Onboard {
     }
     initProxy(retries = 0) {
         let maxRetries = 5;
+        const IOnboardKeyboard = `
+<node>
+  <interface name="org.onboard.Onboard.Keyboard">
+    <method name="ToggleVisible"/>
+    <method name="Show"/>
+    <method name="Hide"/>
+  </interface>
+</node>
+`;
         const OnboardProxy = Gio.DBusProxy.makeProxyWrapper(IOnboardKeyboard);
     
         try {
