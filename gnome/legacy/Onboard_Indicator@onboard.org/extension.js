@@ -257,10 +257,15 @@ if (USE_GOBJECT) {
             this._lastToggleTime = now;
     
             if (_onboard) {
-                // Toggle visibility
-                _onboard.toggleVisible();
-                // Make sure Onboard is running
-                _onboard.launch();
+                if (_onboard.isNotRunning()) {
+                    // Make sure Onboard is running
+                    _onboard.show();
+                    this.exitAction.label.text = _('Exit Onboard');
+                    _onboard.launch();
+                } else {
+                    // Toggle visibility
+                    _onboard.toggleVisible();
+                }
             }
         }
     }
