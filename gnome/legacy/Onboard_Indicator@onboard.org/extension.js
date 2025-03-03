@@ -135,43 +135,92 @@ if (USE_GOBJECT) {
                     }
                 }
             }
+
             enable() {
+                // Launch Onboard if not already active
                 this.launch();
 
-                if (Main.keyboard) {
-                    this._oldKeyboardShow = Main.keyboard.show;
-                    this._oldKeyboardHide = Main.keyboard.hide;
+                // Backup the original GNOME keyboard show/hide methods
+                this._oldKeyboardShow = Keyboard.prototype['_show'];
+                this._oldKeyboardHide = Keyboard.prototype['_hide'];
 
-                    Main.keyboard.show = () => this.Show();
-                    Main.keyboard.hide = () => this.Hide();
-                }
+                // Replace them with our overrides
+                Keyboard.prototype['_show'] = this._overrideShow(this);
+                Keyboard.prototype['_hide'] = this._overrideHide(this);
             }
 
             disable() {
-                if (Main.keyboard) {
-                    Main.keyboard.show = this._oldKeyboardShow;
-                    Main.keyboard.hide = this._oldKeyboardHide;
-                }
+                // Restore original keyboard methods
+                if (this._oldKeyboardShow)
+                    Keyboard.prototype['_show'] = this._oldKeyboardShow;
+                if (this._oldKeyboardHide)
+                    Keyboard.prototype['_hide'] = this._oldKeyboardHide;
 
+                // Kill Onboard
                 GLib.spawn_command_line_async('killall onboard');
             }
 
-            Show() {
+            // Launch Onboard if it is not running
+            launch() {
+                if (!this.proxy.g_name_owner)
+                    GLib.spawn_command_line_async('onboard');
+            }
+
+            show() {
                 this.proxy.ShowSync();
             }
 
-            Hide() {
+            hide() {
                 this.proxy.HideSync();
             }
 
-            ToggleVisible() {
+            toggleVisible() {
                 this.proxy.ToggleVisibleRemote();
             }
 
-            launch() {
-                if (!this.proxy.g_name_owner) {
-                    GLib.spawn_command_line_async('onboard');
-                }
+            // Show "either Onboard or GNOME's internal keyboard" depending on context
+            showAnyKeyboard() {
+                Main.keyboard._keyboardRequested = true;
+                Main.keyboard._keyboardVisible = false;
+                Main.keyboard.Show(global.get_current_time());
+
+                if (Main.actionMode === Shell.ActionMode.NORMAL)
+                    this.show();
+            }
+
+            // Override for the _show() method in GNOME's Keyboard class
+            _overrideShow(outerThis) {
+                return function (monitor) {
+                    if (!this._keyboardRequested)
+                        return;
+
+                    Main.layoutManager.keyboardIndex = monitor;
+
+                    if (Main.actionMode === Shell.ActionMode.NORMAL) {
+                        // Hide the built-in keyboard
+                        this._hideSubkeys();
+                        Main.layoutManager.hideKeyboard();
+                        this._keyboardVisible = true;
+                    } else {
+                        // In overview or password dialogs -> hide Onboard, show GNOME keyboard
+                        outerThis.hide();
+                        this._redraw();
+                        Main.layoutManager.showKeyboard();
+                    }
+                    this._destroySource();
+                };
+            }
+
+            // Override for the _hide() method in GNOME's Keyboard class
+            _overrideHide(_outerThis) {
+                return function () {
+                    if (this._keyboardRequested)
+                        return;
+
+                    this._hideSubkeys();
+                    Main.layoutManager.hideKeyboard();
+                    this._createSource();
+                };
             }
         }
     );
