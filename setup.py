@@ -29,8 +29,8 @@ import sys
 
 # Automatically add --user if not running as root and install is called without --user
 if "install" in sys.argv and "--user" not in sys.argv and os.geteuid() != 0:
-    print("Running as a normal user, automatically adding --user...")
-    sys.argv.append("--user")  # Add --user before setuptools parses arguments
+    print("Installing as user with --user is experimental, please run sudo python3 setup.py install")
+    sys.exit(0)
     
 import re
 import glob
