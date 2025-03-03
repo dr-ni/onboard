@@ -105,6 +105,7 @@ if (USE_GOBJECT) {
                     this.proxy = new OnboardProxy(Gio.DBus.session,
                         'org.onboard.Onboard',
                         '/org/onboard/Onboard/Keyboard');
+                    this.enable();
                     print("Connected to Onboard DBus successfully.");
                 } catch (e) {
                     if (retries < maxRetries) {
@@ -247,6 +248,7 @@ if (USE_GOBJECT) {
                 this.proxy = new OnboardProxy(Gio.DBus.session,
                     'org.onboard.Onboard',
                     '/org/onboard/Onboard/Keyboard');
+                this.enable();
                 print("Connected to Onboard DBus successfully.");
             } catch (e) {
                 if (retries < maxRetries) {
@@ -404,7 +406,6 @@ function enable() {
     }
 
     _onboard = new Onboard();
-    _onboard.enable();
 
     Main.onboard = _onboard;   // debug
     _onboard.Schema = Schema;

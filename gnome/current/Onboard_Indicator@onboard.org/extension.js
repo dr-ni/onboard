@@ -73,6 +73,7 @@ class Onboard {
             this.proxy = new OnboardProxy(Gio.DBus.session,
                 'org.onboard.Onboard',
                 '/org/onboard/Onboard/Keyboard');
+            this.enable();
             print("Connected to Onboard DBus successfully.");
         } catch (e) {
             if (retries < maxRetries) {
@@ -404,7 +405,6 @@ export default class OnboardExtension extends Extension {
 
         // Create and enable the Onboard instance
         this._onboard = new Onboard();
-        this._onboard.enable();
 
         // Create the indicator and add it to the panel
         this._indicator = new OnboardIndicatorObj();
