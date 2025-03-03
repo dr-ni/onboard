@@ -49,8 +49,11 @@ import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/
  */
 class Onboard {
     constructor() {
-        // Create the DBus proxy
-        this.initProxy();
+        // Call initProxy once with a slight delay to avoid startup conflicts
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            initProxy(0);
+            return false; // Ensures timeout only runs once
+        });
 
         // Store the original GNOME keyboard methods
         this._oldKeyboardShow = null;

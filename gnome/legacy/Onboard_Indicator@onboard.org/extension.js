@@ -87,7 +87,11 @@ if (USE_GOBJECT) {
         class Onboard extends GObject.Object {
             _init() {
                 super._init();
-                this.initProxy();
+                // Call initProxy once with a slight delay to avoid startup conflicts
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                    initProxy(0);  // First attempt with retry mechanism
+                    return false;   // Ensures timeout only runs once
+                });
             }
             initProxy(retries = 0) {
                 let maxRetries = 5;
@@ -224,8 +228,11 @@ if (USE_GOBJECT) {
         Name: 'Onboard',
 
         _init: function() {
-
-            this.initProxy();
+            // Call initProxy once with a slight delay to avoid startup conflicts
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                initProxy(0);
+                return false; // Ensures timeout only runs once
+            });
             this._oldKeyboardShow = null;
             this._oldKeyboardHide = null;
         },
