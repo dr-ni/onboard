@@ -107,7 +107,6 @@ DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
 INSTALL_DIR                = "/usr/share/onboard"
-USER_INSTALL_DIR           = os.path.join(site.getuserbase(), "share/onboard")
 LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = "onboard"
 
@@ -1469,9 +1468,6 @@ class Config(ConfigObject):
             src_icon_path = os.path.join(src_path, "icons")
             icon_theme.append_search_path(src_icon_path)
             result = src_path
-        # when installed to ~/.local/share
-        elif os.path.exists(os.path.join(USER_INSTALL_DIR, "themes", "Classic Onboard.theme")):
-            result = USER_INSTALL_DIR
         # when installed to /usr/local
         elif os.path.exists(os.path.join(LOCAL_INSTALL_DIR, "themes", "Classic Onboard.theme")):
             result = LOCAL_INSTALL_DIR
