@@ -58,11 +58,16 @@ if (USE_GOBJECT) {
 
                 this._last_event_time = 0;
                 this._hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-
-                this._hbox.append(new St.Icon({
+                const icon=new St.Icon({
                     icon_name: 'onboard-symbolic',
                     style_class: 'system-status-icon',
-                }));
+                });
+                // Ensure compatibility with both GTK 3 and GTK 4
+                if (this._hbox.append) {
+                    this._hbox.append(icon);  // ✅ GTK 4 (GNOME 40+)
+                } else {
+                    this._hbox.add_child(icon);  // ✅ GTK 3 (GNOME ≤ 3.38)
+                }
 
                 this.add_child(this._hbox);
 
