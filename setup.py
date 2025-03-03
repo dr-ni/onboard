@@ -627,7 +627,6 @@ DistUtilsExtra.auto.setup(
 
     packages = ['Onboard', 'Onboard.pypredict'],
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
-                  ('share/glib-2.0/schemas', glob.glob('build/share/glib-2.0/schemas/*.gschema.override')),
                   ('share/dbus-1/services', glob.glob('data/org.onboard.Onboard.service')),
                   ('share/doc/onboard', glob.glob('AUTHORS')),
                   ('share/doc/onboard', glob.glob('CHANGELOG')),
