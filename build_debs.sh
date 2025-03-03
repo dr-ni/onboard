@@ -57,6 +57,11 @@ if [[ -z "$ONBOARD_VERSION" ]]; then
     echo "Error: Could not determine Onboard version."
     exit 1
 fi
+
+echo "Clean as root via setup.py"
+
+sudo python3 setup.py clean
+
 echo "Building Onboard debs for version: $ONBOARD_VERSION"
 
 

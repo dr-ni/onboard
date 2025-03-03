@@ -27,7 +27,6 @@
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
 const Main = imports.ui.main;
-const Tweener = imports.ui.tweener;
 const Keyboard = imports.ui.keyboard.Keyboard;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
