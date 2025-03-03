@@ -131,11 +131,10 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
      ```
         
 ### Uninstall the Debian Packages
-   Execute:
+   - Execute:
      ```bash
      /bin/sh ./apt_install_debs.sh "remove"
      ```
-
 ## Manuals
 
         # Terminal
