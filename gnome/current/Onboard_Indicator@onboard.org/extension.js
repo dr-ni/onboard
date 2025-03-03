@@ -87,33 +87,51 @@ class Onboard {
         }
     }
 
-    connectProxy(retries = 0) {
-
-        let maxRetries = 5;
+    async connectProxy(retries = 0) {
+        const maxRetries = 5; // Set the maximum number of retries
     
         try {
-            this.proxy = new this.OnboardProxy(Gio.DBus.session,
-                'org.onboard.Onboard',
-                '/org/onboard/Onboard/Keyboard');
-
+            // Try to connect asynchronously to DBus
+            this.proxy = await new Promise((resolve, reject) => {
+                this.OnboardProxy(
+                    Gio.DBus.session,
+                    'org.onboard.Onboard',
+                    '/org/onboard/Onboard/Keyboard',
+                    (proxy, error) => {
+                        if (error === null) {
+                            resolve(proxy);  // Resolve with proxy if no error
+                        } else {
+                            reject(error);    // Reject if there is an error
+                        }
+                    },
+                    null, // Cancellable
+                    Gio.DBusProxyFlags.NONE
+                );
+            });
+    
             this._isRunning = true;   // Onboard is running
             this.enable();
             print("Connected to Onboard DBus successfully.");
+    
         } catch (e) {
+            // Error handling and retry logic
             if (retries < maxRetries) {
                 print(`DBus connection failed, retrying in 1 second... (${retries + 1}/${maxRetries})`);
+                
+                // Wait for 1 second before retrying
+                await new Promise(resolve => 
+                    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => resolve())
+                );
     
-                // Wait 1 second, then retry
-                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
-                    this.connectProxy(retries + 1);
-                    return false;  // Ensures the timeout only runs once
-                });
+                // Retry the connection
+                await this.connectProxy(retries + 1);
             } else {
                 print("Failed to connect to Onboard DBus after multiple attempts.");
+                logError(e);  // Additional error logging
             }
         }
     }
-
+    
     // Disconnect the DBus proxy when Onboard exits
     disconnectProxy() {
         this._isRunning = false;
@@ -148,10 +166,6 @@ class Onboard {
         // Replace them with our overrides
         Keyboard.prototype['_show'] = this._overrideShow(this);
         Keyboard.prototype['_hide'] = this._overrideHide(this);
-        // Listen for Onboard process changes to update the menu dynamically
-        this.proxy.connect('g-name-owner-changed', () => {
-            _indicator._updateExitActionLabel();
-        });
     }
 
     disable() {
