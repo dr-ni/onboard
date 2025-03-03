@@ -26,11 +26,19 @@ __copyright__ = "Copyright © 2009 Chris Jones"
 __author__    = "Chris Jones <chrisejones@gmail.com>"
 
 import sys
+import os
 
 # Replace the default exception handler with one which handles chained
 # exceptions.
 from Onboard.Exceptions import chain_handler
 sys.excepthook = chain_handler
 
+if "WAYLAND_DISPLAY" in os.environ:
+    # Set the environment variable to force X11 for Onboard
+    os.environ["GDK_BACKEND"] = "x11"
+    print("Running on Wayland, forcing X11 for Onboard.")
+else:
+    print("Not running on Wayland, proceeding normally.")
+    
 from Onboard.OnboardGtk import OnboardGtk as Onboard
 ob = Onboard()
