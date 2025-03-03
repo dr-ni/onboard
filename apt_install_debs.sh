@@ -33,45 +33,54 @@ check_directories() {
 if [ "$(id -u)" = "0" ]; then
     # Set the default directory
     DEB_DIR="${1:-$SCRIPT_PATH}"
-
-    # Search for the file
-    DEB_FOUND=false
-    for dir in $(check_directories); do
-        if find "$dir" -maxdepth 1 -name "onboard-common_*_all.deb" | grep -q .; then
-            DEB_DIR="$dir"
-            DEB_FOUND=true
-            break
-        fi
-    done
-
-    # Check if the file was found
-    if [ "$DEB_FOUND" = false ]; then
-        echo "Error: Unable to find onboard debs. Please run $0 /path/to/onboard/debs"
-        exit 1
-    fi
-
-    echo "Onboard debs found in: $DEB_DIR"
-
-    # Configure a local APT repository
-    echo "deb [trusted=yes] file:$DEB_DIR/ ./" >/etc/apt/sources.list.d/onboardlocalrepo.list
-
-    # Update package index for the temporary local repository
-    apt-get update -o Dir::Etc::sourcelist="/etc/apt/sources.list.d/onboardlocalrepo.list"
-
-    # Remove installed Onboard packages
-    apt-get -y remove onboard onboard-data gnome-shell-extension-onboard
-    
+    echo "Remove Onboard packages."
     # Install the Onboard packages
     if which gnome-shell >/dev/null 2>&1; then
-    	echo "GNOME Shell is installed."
-        apt-get -y install onboard onboard-data gnome-shell-extension-onboard
+        # Remove installed Onboard packages
+        apt-get -y remove onboard onboard-data onboard-common gnome-shell-extension-onboard
     else
-	echo "GNOME Shell is not installed."
-        apt-get -y install onboard onboard-data
+        # Remove installed Onboard packages
+        apt-get -y remove onboard onboard-data onboard-common
     fi
+    if [ "$DEB_DIR" != "remove" ]; then
+        # Search for the file
+        DEB_FOUND=false
+        for dir in $(check_directories); do
+            if find "$dir" -maxdepth 1 -name "onboard-common_*_all.deb" | grep -q .; then
+                DEB_DIR="$dir"
+                DEB_FOUND=true
+                break
+            fi
+        done
 
-    # Remove the temporary local repository configuration
-    rm /etc/apt/sources.list.d/onboardlocalrepo.list
+        # Check if the file was found
+        if [ "$DEB_FOUND" = false ]; then
+            echo "Error: Unable to find onboard debs. Please run $0 /path/to/onboard/debs"
+            exit 1
+        fi
+
+        echo "Onboard debs found in: $DEB_DIR"
+
+        # Configure a local APT repository
+        echo "deb [trusted=yes] file:$DEB_DIR/ ./" >/etc/apt/sources.list.d/onboardlocalrepo.list
+
+        # Update package index for the temporary local repository
+        apt-get update -o Dir::Etc::sourcelist="/etc/apt/sources.list.d/onboardlocalrepo.list"
+        
+        # Install the Onboard packages
+        if which gnome-shell >/dev/null 2>&1; then
+            echo "GNOME Shell is installed."
+            # Remove installed Onboard packages
+            apt-get -y install onboard onboard-data onboard-common gnome-shell-extension-onboard
+        else
+            echo "GNOME Shell is not installed."
+            # Remove installed Onboard packages
+            apt-get -y install onboard onboard-data onboard-common
+        fi
+
+        # Remove the temporary local repository configuration
+        rm /etc/apt/sources.list.d/onboardlocalrepo.list
+    fi
 else
     while ! sudo -n true 2>/dev/null; do
         echo "This script requires sudo privileges."

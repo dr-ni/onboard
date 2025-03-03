@@ -1531,15 +1531,17 @@ class XDGDirs:
     >>> os.environ["XDG_DATA_DIRS"] = ""
     >>> XDGDirs.get_all_data_dirs("onboard/test.dat")
     ['/home/test_user/.local/share/onboard/test.dat', \
+'~/.local/share//share/onboard/test.dat', \
 '/usr/local/share/onboard/test.dat', \
 '/usr/share/onboard/test.dat']
 
     # XDG_DATA_DIRS available
     >>> os.environ["XDG_DATA_HOME"] = ""
-    >>> os.environ["XDG_DATA_DIRS"] = "/usr/share/gnome:/usr/local/share/:/usr/share/"
+    >>> os.environ["XDG_DATA_DIRS"] = "/usr/share/gnome:~/.local/share/:/usr/local/share/:/usr/local/share/:/usr/share/"
     >>> XDGDirs.get_all_data_dirs("onboard/test.dat")
     ['/home/test_user/.local/share/onboard/test.dat', \
 '/usr/share/gnome/onboard/test.dat', \
+'~/.local/share/onboard/test.dat', \
 '/usr/local/share/onboard/test.dat', \
 '/usr/share/onboard/test.dat']
 
@@ -1631,7 +1633,7 @@ class XDGDirs:
 
         value = os.environ.get("XDG_DATA_DIRS")
         if not value:
-            value = "/usr/local/share/:/usr/share/"
+            value = "~/.local/share/:/usr/local/share/:/usr/share/"
 
         paths = value.split(":")
         paths = [p for p in paths if os.path.isabs(p)]

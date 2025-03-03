@@ -28,8 +28,7 @@ new distributions are always welcome too.
         sudo apt purge onboard onboard-common onboard-data
         sudo apt purge mousetweaks
 
-        # If you do not want to test or develop it is better to use the build- and install-scripts
-        for deb-packages below.
+        # Note: It is recommended to build and install Debian packages see below.
 
         # Install dependencies
         sudo apt install git build-essential python3-packaging python3-dev
@@ -37,33 +36,7 @@ new distributions are always welcome too.
         sudo apt install libgtk-3-dev libxtst-dev libxkbfile-dev libdconf-dev libcanberra-dev
         sudo apt install libhunspell-dev libudev-dev
         
-        # Build
-        git clone https://github.com/dr-ni/onboard
-        cd onboard
-        python3 setup.py clean
-        python3 setup.py build
-        
-        # Install
-        sudo tools/install_gsettings_schema
-        sudo python3 setup.py install
-
-        # Change keyboard language layout
-        # setxkbmap -layout de
-        # or [us|in|ru|...]
-
-        # Uninstall
-        sudo python3 setup.py install --record files.txt
-        sudo xargs -a files.txt --delimiter='\n' rm -v
-        sudo rm -rf /usr/local/share/onboard
-        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
-        sudo rm -rf /usr/local/share/doc/onboard/
-        sudo rm -rf /usr/local/share/help/C/onboard/
-        sudo rm -rf /usr/local/include/onboard/
-        sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
-        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
-        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
-        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
-        sudo rm files.txt
+        Next step is "Build and Install from Source"
 
 ## Arch Linux:
         # Uninstall
@@ -75,29 +48,7 @@ new distributions are always welcome too.
         libcanberra hunspell python-gobject gsettings-desktop-schemas \
         iso-codes python-cairo librsvg python-dbus dbus-glib
 
-        # Build
-        git clone https://github.com/dr-ni/onboard
-        cd onboard
-        python3 setup.py clean
-        python3 setup.py build
-        
-        # Install
-        sudo tools/install_gsettings_schema
-        sudo python3 setup.py install
-
-        # Uninstall
-        sudo python3 setup.py install --record files.txt
-        sudo xargs -a files.txt --delimiter='\n' rm -v
-        sudo rm -rf /usr/local/share/onboard
-        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
-        sudo rm -rf /usr/local/share/doc/onboard/
-        sudo rm -rf /usr/local/share/help/C/onboard/
-        sudo rm -rf /usr/local/include/onboard/
-        sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
-        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
-        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
-        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
-        sudo rm files.txt
+        Next step is "Build and Install from Source"
 
 ## Mageia:
         # Install dependencies
@@ -107,41 +58,30 @@ new distributions are always welcome too.
         # more or less optional, but recommended for full functionality
         urpmi lib64atspi-gir2.0 at-spi2-core-qt python3-dbus qtatspi-plugin
 
-        # Build
+        Next step is "Build and Install from Source"
+
+## Build and Install from Source
         git clone https://github.com/dr-ni/onboard
         cd onboard
         python3 setup.py clean
         python3 setup.py build
         
-        # Install
-        sudo tools/install_gsettings_schema
+        # System-wide installation (requires root access):
         sudo python3 setup.py install
-        
-        # Uninstall
-        sudo python3 setup.py install --record files.txt
-        sudo xargs -a files.txt --delimiter='\n' rm -v
-        sudo rm -rf /usr/local/share/onboard
-        sudo rm -rf /usr/local/gnome-shell/extensions/Onboard_Indicator@onboard.org/
-        sudo rm -rf /usr/local/share/doc/onboard/
-        sudo rm -rf /usr/local/share/help/C/onboard/
-        sudo rm -rf /usr/local/include/onboard/
-        sudo rm -rf /usr/local/lib/python3.*/dist-packages/onboard-1.4.*.egg-info/
-        sudo rm -rf /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
-        sudo rm -rf /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
-        sudo glib-compile-schemas /usr/share/glib-2.0/schemas
-        sudo rm files.txt
-        
-## Manuals
+        # User-specific installation (experimental):
+        python3 setup.py install
 
-        # Terminal
-        man onboard
-        
-        # Interactive
-        yelp "help:onboard"
-        xdg-open "help:onboard"
 
-        # Onboard
-        # Right click on icon in systray -> Help 
+        # Change keyboard language layout
+        # setxkbmap -layout de
+        # or [us|in|ru|...]
+
+## Uninstall if installed from Source
+        # System-wide uninstall (requires root access):
+        sudo python3 setup.py uninstall
+        # User-specific uninstall (experimental):
+        python3 setup.py uninstall
+
         
 ## Build and Install Debian Packages
 
@@ -162,21 +102,9 @@ To build Debian packages from the source, two scripts are available:
 The `build_debs.sh` script automates building `.deb` packages and associated metadata in **./build/debs**
 
 #### Steps:
-
-1. **For Current Releases**:
-   - Ensure you are in the Onboard source directory and execute the following commands:
+   - Execute:
      ```bash
-     chmod +x build_debs.sh
-     ./build_debs.sh
-     ```
-
-2. **For Older Releases**:
-   - If the `build_debs.sh` script is missing, copy it into the source directory and run:
-     ```bash
-     cp /path/to/build_debs.sh /path/to/onboard_sources/
-     cd /path/to/onboard_sources/
-     chmod +x build_debs.sh
-     ./build_debs.sh
+     /bin/sh ./build_debs.sh
      ```
 
 The Debian packages will be saved in the directory: `/path/to/onboard_sources/build/debs` 
@@ -189,18 +117,35 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
 
 #### Steps:
 1. **Prepare Files**:
-   - Copy the following to a directory on the target system:
+   - If the target system is the build system copy the following to a directory on the target system:
      - All `.deb` files.
      - The `Packages.gz` file.
      - The `apt_install_debs.sh` script.
 
 2. **Run the Script**:
-   - Navigate to the directory and execute:
+   - Execute:
      ```bash
-     chmod +x apt_install_debs.sh
-     ./apt_install_debs.sh
+     /bin/sh ./apt_install_debs.sh
      ```
         
+### Uninstall the Debian Packages
+   Execute:
+     ```bash
+     /bin/sh ./apt_install_debs.sh "remove"
+     ```
+
+## Manuals
+
+        # Terminal
+        man onboard
+        
+        # Interactive
+        yelp "help:onboard"
+        xdg-open "help:onboard"
+
+        # Onboard
+        # Right click on icon in systray -> Help 
+
 ## D-Bus interface
 
 The Onboard D-Bus interface allows communication between Onboard and other processes running concurrently on the Linux desktop.

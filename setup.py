@@ -26,13 +26,24 @@ from __future__ import print_function
 
 import os
 import sys
+
+# Automatically add --user if not running as root and install is called without --user
+if "install" in sys.argv and "--user" not in sys.argv and os.geteuid() != 0:
+    print("Running as a normal user, automatically adding --user...")
+    sys.argv.append("--user")  # Add --user before setuptools parses arguments
+    
 import re
 import glob
 import subprocess
+import shutil
+from pathlib import Path
+import site
 from os.path import dirname, abspath, join, split
 from setuptools import Extension, Command
 from packaging import version
+import sysconfig
 from setuptools.command.build_ext import build_ext
+from setuptools.command.install import install
 from distutils.sysconfig import customize_compiler
 #import sysconfig
 from contextlib import contextmanager
@@ -359,11 +370,47 @@ class build_i18n_custom(DistUtilsExtra.auto.build_i18n_auto):
     def run(self):
         super(build_i18n_custom, self).run()
 
+
+        # Determine the autostart destination
+        if "--user" in sys.argv:
+            # Get the user's config directory
+            config_path = os.path.expanduser("~/.config")
+
+            # Get the autostart directory
+            autostart_destination = os.path.join(config_path, "autostart") 
+        else:
+            autostart_destination = '/etc/xdg/autostart'
+  
+
         for i, file_set in enumerate(self.distribution.data_files):
             target, files = file_set
             if target == 'share/autostart':
-                file_set = ('/etc/xdg/autostart', files)
+                file_set = (autostart_destination, files)
                 self.distribution.data_files[i] = file_set
+                
+        # Create the schema build directory
+        schema_build_dir = Path("build/share/glib-2.0/schemas")
+        schema_build_dir.mkdir(parents=True, exist_ok=True)
+
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools", "gen_gschema.py")
+        output_schema_file = schema_build_dir / "99_onboard-default-settings.gschema.override"
+
+        if os.path.exists(script_path):
+            print(f"Generating GSettings schema: {output_schema_file}")
+            try:
+                subprocess.check_call(["python3", script_path, str(output_schema_file)])
+                
+                for i, file_set in enumerate(self.distribution.data_files):
+                    target, files = file_set
+                    if target == 'share/glib-2.0/schemas':
+                        print(files)
+                        
+            except subprocess.CalledProcessError as e:
+                print(f"Error running tools/gen_gschema.py: {e}")
+                sys.exit(1)
+        else:
+            print(f"Warning: Schema generation script not found: {script_path}")
+
 
 
 # Custom build_ext command that removes the invalid "-Wstrict-prototypes"
@@ -386,12 +433,47 @@ class build_ext_custom(build_ext):
         super(build_ext_custom, self).build_extension(ext)
 
 
-class UninstallCommand(Command):
-    user_options = []  # required by Command
+class CustomInstallCommand(install):
+    """Custom installation to run tools/gen_gschema.py with schema_dir and compile GSettings schemas (only for direct installs)"""
 
-    dirs_to_remove = [
-        "share/onboard",
-    ]
+    def run(self):
+        # Run the default installation
+        install.run(self)
+
+        # Only run this if NOT inside a fakeroot environment
+        if not os.getenv("FAKEROOTKEY"):
+            print("Running tools/gen_gschema.py...")
+            
+
+            # Determine install base
+            if "--user" in sys.argv:
+                install_base = Path(site.getuserbase())
+            else:
+                install_base = Path(sysconfig.get_paths()["data"])
+                
+            # Schema directory
+            schema_dir = install_base / "share" / "glib-2.0" / "schemas"
+
+            # Ensure the schema directory exists
+            schema_dir.mkdir(parents=True, exist_ok=True)
+            
+            print("Running glib-compile-schemas...")
+
+            try:
+                if os.path.exists(schema_dir):
+                    subprocess.check_call(["glib-compile-schemas", schema_dir])
+                else:
+                    print(f"Warning: Schema directory not found: {schema_dir}")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running glib-compile-schemas: {e}")
+                sys.exit(1)
+        else:
+            print("Skipping tools/gen_gschema.py and glib-compile-schemas since this is a fakeroot environment.")
+
+class UninstallCommand(Command):
+    """Custom uninstall command to remove all installed files"""
+
+    user_options = []  # Required by setuptools
 
     def initialize_options(self):
         pass
@@ -400,28 +482,137 @@ class UninstallCommand(Command):
         pass
 
     def run(self):
+        print("Uninstalling Onboard...")
 
-        record_file = "/tmp/onboard-uninstall.txt"
-        subprocess.call(["./setup.py", "install", "--record", record_file])
+        # Determine install base
+        if os.geteuid() != 0:
+            install_base = Path(site.getuserbase())
+            site_packages = Path(site.getuserbase()) / "lib" / "python{}.{}".format(sys.version_info.major, sys.version_info.minor) / "site-packages"
+            
+            # Get the user's config directory
+            config_path = os.path.expanduser("~/.config")
 
-        with open(record_file, 'r') as f:
-            lines = f.readlines()
-        for line in lines:
-            fn = line.strip()
-            print("removing file '" + fn + "'")
-            os.remove(fn)
-
-        for dir in self.dirs_to_remove:
-            print("removing directory '" + dir + "'")
-            try:
-                os.removedirs(dir)
-            except OSError as ex:
-                print("Failed to remove '" + dir + "':" +
-                      str(ex), file=sys.stderr)
-
-        sys.exit(0)
+            # Get the autostart directory
+            autostart_destination = Path(config_path) / "autostart"
+        else:
+            install_base = Path(sysconfig.get_paths()["data"])
+            site_packages = Path(sysconfig.get_paths()["purelib"])
+            
+            config_path = os.path.expanduser("/etc")
+            autostart_destination = Path(config_path) / "xdg" / "autostart"
 
 
+            
+        onboard_share_path = os.path.join(install_base, "share/onboard")
+        if not os.path.exists(onboard_share_path):
+            print("Unable to find the onboard installation in: {}".format(install_base))
+            sys.exit(1)
+        else:
+            print("Detected installation path: {}".format(install_base))
+            
+        # List all files to be removed
+        dirs_to_remove = set()
+
+        # Remove files from data_files
+        for target, files in self.distribution.data_files:
+            full_dir_path = Path(os.path.join(install_base, target))
+            if "onboard" in str(full_dir_path).lower() and full_dir_path.exists() and full_dir_path not in dirs_to_remove:
+                dirs_to_remove.add(full_dir_path)
+                print("Removing files in: {}".format(full_dir_path))
+            for file in files:
+                file_path = os.path.join(full_dir_path, os.path.basename(file))
+                if os.path.exists(file_path):
+                    if "onboard" in str(file_path).lower():
+                        os.remove(file_path)
+                    else:
+                        print("Warning: Skip removing installed file due to missing onboard in filepath: {}".format(file_path))
+                        
+        onboard_locale_files = glob.glob(os.path.join(install_base, "share/locale", "*", "LC_MESSAGES", "onboard.mo"))
+        print("Removing locale files: {}/LC_MESSAGES/onboard.mo".format(os.path.join(install_base, "share/locale", "*")))
+        for onboard_locale_file in onboard_locale_files:
+            os.remove(onboard_locale_file)
+            
+        
+        # Schema directory
+        schema_dir = install_base / "share" / "glib-2.0" / "schemas"
+        
+        extra_files = [
+            "{}99_onboard-default-settings.gschema.override".format(schema_dir),
+            "{}org.onboard.gschema.xml".format(schema_dir),
+            "{}/onboard-autostart.desktop".format(autostart_destination),
+            os.path.join(install_base, "bin/onboard"),
+            os.path.join(install_base, "bin/onboard-settings"),
+            os.path.join(install_base, "share/applications/onboard.desktop"),
+            os.path.join(install_base, "share/applications/onboard-settings.desktop"),
+            
+        ]
+
+        if os.geteuid() == 0:
+            schema_dir = "/usr/share/glib-2.0/schemas/"
+            extra_files.extend([
+                "{}99_onboard-default-settings.gschema.override".format(schema_dir),
+                "{}org.onboard.gschema.xml".format(schema_dir),
+            ])
+            
+            
+        for extra_file in extra_files:
+            if os.path.exists(extra_file):
+                print("Removing file: {}".format(extra_file))
+                os.remove(extra_file)
+
+        # Add parent folders as long as they include onboard
+        all_dirs = set()
+        for dir_path in dirs_to_remove:
+            while dir_path != dir_path.parent and "onboard" in str(dir_path).lower():
+                all_dirs.add(dir_path)
+                dir_path = dir_path.parent
+
+        # Sort folders
+        all_dirs = sorted(all_dirs, key=lambda x: len(x.parts), reverse=True)
+
+        # Remove folders
+        for full_dir_path in all_dirs:
+            if full_dir_path.exists():
+                if not any(full_dir_path.iterdir()):
+                    print("Removing empty Onboard directory: {}".format(full_dir_path))
+                    full_dir_path.rmdir()
+                else:
+                    print("Warning: Onboard directory is not empty, removing recursively: {}".format(full_dir_path))
+                    shutil.rmtree(full_dir_path)
+                    
+        help_dir = Path(os.path.join(install_base, "share/help/C/onboard"))
+        if help_dir.exists():
+            print("Removing help directory recursively: {}".format(help_dir))
+            shutil.rmtree(help_dir)
+                    
+        include_dir = Path(os.path.join(install_base, "include/onboard"))
+        if include_dir.exists():
+            print("Removing include directory recursively: {}".format(include_dir))
+            shutil.rmtree(include_dir)
+
+        # Tell GNOME to update the schema files
+        if os.path.exists(schema_dir):
+            print("Updating GLib schemas in {}...".format(schema_dir))
+            subprocess.run(["glib-compile-schemas", schema_dir], check=True)
+            
+        # Remove `Onboard` directory from Python dist-packages
+        onboard_path = site_packages / "Onboard"
+
+        if onboard_path.exists():
+            print("Removing installed Python package directory: {}".format(onboard_path))
+            shutil.rmtree(onboard_path)
+        else:
+            print("Warning: Onboard package not found in {}".format(site_packages))
+
+        # Remove `onboard-*.egg-info` directory from Python dist-packages
+        egg_info_pattern = str(site_packages / "onboard-*.egg-info")
+        egg_info_dirs = glob.glob(egg_info_pattern)
+
+        for egg_info in egg_info_dirs:
+            print("Removing egg-info directory: {}".format(egg_info))
+            shutil.rmtree(egg_info)
+
+            
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -436,6 +627,7 @@ DistUtilsExtra.auto.setup(
     packages = ['Onboard', 'Onboard.pypredict'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
+                  ('share/glib-2.0/schemas', glob.glob('build/share/glib-2.0/schemas/*.gschema.override')),
                   ('share/dbus-1/services', glob.glob('data/org.onboard.Onboard.service')),
                   ('share/doc/onboard', glob.glob('AUTHORS')),
                   ('share/doc/onboard', glob.glob('CHANGELOG')),
@@ -464,7 +656,6 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/models', glob.glob('models/*.lm')),
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
                   ('share/onboard/emojione/svg', glob.glob('emojione/svg/*.svg')),
-
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
                       glob_files('gnome/Onboard_Indicator@onboard.org/*')),
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org/schemas',
@@ -478,7 +669,9 @@ DistUtilsExtra.auto.setup(
 
     ext_modules = [extension_osk, extension_lm],
 
-    cmdclass = {'test': TestCommand,
+    cmdclass = {
+                'install': CustomInstallCommand,
+                'test': TestCommand,
                 'build_i18n': build_i18n_custom,
                 'build_ext': build_ext_custom,
                 'uninstall': UninstallCommand,

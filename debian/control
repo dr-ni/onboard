@@ -13,6 +13,7 @@ Build-Depends: debhelper (>=9),
                python3-cairo,
                python3-distutils-extra (>= 2.10),
                python3-gi,
+               python3-packaging,
                libudev-dev,
 Maintainer: Francesco Fumanti <francesco.fumanti@gmail.com>
 Standards-Version: 3.9.8

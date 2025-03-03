@@ -30,6 +30,7 @@ import os
 import sys
 import locale
 import ctypes.util
+import site
 
 from shutil import copytree
 from optparse import OptionParser, OptionGroup
@@ -106,6 +107,7 @@ DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
 INSTALL_DIR                = "/usr/share/onboard"
+USER_INSTALL_DIR           = os.path.join(site.getuserbase(), "share/onboard")
 LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = "onboard"
 
@@ -1467,6 +1469,9 @@ class Config(ConfigObject):
             src_icon_path = os.path.join(src_path, "icons")
             icon_theme.append_search_path(src_icon_path)
             result = src_path
+        # when installed to ~/.local/share
+        elif os.path.isdir(USER_INSTALL_DIR):
+            result = USER_INSTALL_DIR
         # when installed to /usr/local
         elif os.path.isdir(LOCAL_INSTALL_DIR):
             result = LOCAL_INSTALL_DIR
