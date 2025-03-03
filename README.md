@@ -116,14 +116,16 @@ The Debian packages will be saved in the directory: `/path/to/onboard_sources/bu
 The `apt_install_debs.sh` script simplifies installing the generated `.deb` packages using a local repository.
 
 #### Steps:
-1. **Prepare Files**:
-   - If the target system is the build system copy the following to a directory on the target system:
-     - All `.deb` files.
-     - The `Packages.gz` file.
+   - If the target system is the build system:
+      - Execute:
+     ```bash
+     /bin/sh ./apt_install_debs.sh
+     ```
+   - If the target system is not the build system copy this files to a directory on the target:
+     - All `build/debs/*.deb` files.
+     - The `build/debs/Packages.gz` file.
      - The `apt_install_debs.sh` script.
-
-2. **Run the Script**:
-   - Execute:
+     - Execute in the directory on the target system:
      ```bash
      /bin/sh ./apt_install_debs.sh
      ```
