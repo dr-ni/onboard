@@ -64,6 +64,28 @@ except ImportError:
     print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
     sys.exit(1)
 
+
+def get_gnome_shell_version():
+    """Returns 'legacy' or 'current' based on GNOME Shell version"""
+    try:
+        result = subprocess.run(["gnome-shell", "--version"], stdout=subprocess.PIPE, text=True)
+        match = re.search(r"(\d+)\.(\d+)", result.stdout)  # Extract major.minor version
+        if match:
+            major_version = int(match.group(1))
+            minor_version = int(match.group(2))
+
+            # Define threshold for legacy vs. current
+            if major_version < 45:  # Adjust if needed
+                return "legacy"
+            else:
+                return "current"
+        else:
+            return "current" # gnome-shell not found fall back to current
+    except FileNotFoundError:
+        return "current"  # gnome-shell not found fall back to current
+    
+gnome_shell_version = get_gnome_shell_version()
+
 current_ver = version.Version(DistUtilsExtra.auto.__version__)
 required_ver = version.Version('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
@@ -175,6 +197,8 @@ def symlink_extension_libraries(setup_command):
                 try: os.unlink(dstfile)
                 except OSError: pass
                 os.symlink(file, dstfile)
+                
+                
 
 # Make xgettext extract translatable strings from _format() calls too.
 var = "XGETTEXT_ARGS"
@@ -387,29 +411,6 @@ class build_i18n_custom(DistUtilsExtra.auto.build_i18n_auto):
             if target == 'share/autostart':
                 file_set = (autostart_destination, files)
                 self.distribution.data_files[i] = file_set
-                
-        # Create the schema build directory
-        schema_build_dir = Path("build/share/glib-2.0/schemas")
-        schema_build_dir.mkdir(parents=True, exist_ok=True)
-
-        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools", "gen_gschema.py")
-        output_schema_file = schema_build_dir / "99_onboard-default-settings.gschema.override"
-
-        if os.path.exists(script_path):
-            print(f"Generating GSettings schema: {output_schema_file}")
-            try:
-                subprocess.check_call(["python3", script_path, str(output_schema_file)])
-                
-                for i, file_set in enumerate(self.distribution.data_files):
-                    target, files = file_set
-                    if target == 'share/glib-2.0/schemas':
-                        print(files)
-                        
-            except subprocess.CalledProcessError as e:
-                print(f"Error running tools/gen_gschema.py: {e}")
-                sys.exit(1)
-        else:
-            print(f"Warning: Schema generation script not found: {script_path}")
 
 
 
@@ -625,7 +626,6 @@ DistUtilsExtra.auto.setup(
     description = 'Simple On-screen Keyboard',
 
     packages = ['Onboard', 'Onboard.pypredict'],
-
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/glib-2.0/schemas', glob.glob('build/share/glib-2.0/schemas/*.gschema.override')),
                   ('share/dbus-1/services', glob.glob('data/org.onboard.Onboard.service')),
@@ -657,9 +657,9 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/tools', glob.glob('Onboard/pypredict/tools/checkmodels')),
                   ('share/onboard/emojione/svg', glob.glob('emojione/svg/*.svg')),
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org',
-                      glob_files('gnome/Onboard_Indicator@onboard.org/*')),
+                      glob_files('gnome/{}/Onboard_Indicator@onboard.org/*'.format(gnome_shell_version))),
                   ('share/gnome-shell/extensions/Onboard_Indicator@onboard.org/schemas',
-                      glob_files('gnome/Onboard_Indicator@onboard.org/schemas/*')),
+                      glob_files('gnome/{}/Onboard_Indicator@onboard.org/schemas/*'.format(gnome_shell_version))),
                  ],
 
     scripts = ['onboard', 'onboard-settings'],

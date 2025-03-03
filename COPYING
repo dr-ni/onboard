@@ -238,12 +238,12 @@ Copyright: 2011-2017, marmuta <marmvta@gmail.com>
   2012, Gerd Kohlberger <lowfi@chello.at>
 License: GPL-3+
 
-Files: gnome/Onboard_Indicator@onboard.org/extension.js
+Files: gnome/legacy/Onboard_Indicator@onboard.org/extension.js
 Copyright: 2016, marmuta <marmvta@gmail.com>
   2016, Simon Schumann <simon.schumann@web.de>
 License: GPL-3+
 
-Files: gnome/Onboard_Indicator@onboard.org/metadata.json
+Files: gnome/legacy/Onboard_Indicator@onboard.org/metadata.json
 Copyright: 2016, marmuta <marmvta@gmail.com>
   2016, Jeremy Bicha <jbicha@ubuntu.com>
 License: GPL-3+
