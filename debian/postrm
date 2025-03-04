@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ "$1" = "purge" ]; then
+if [ "$1" = "purge" ] || [ "$1" = "remove" ]; then
     echo "Removing Onboard GSettings schema..."
     rm -f /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
     rm -f /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
