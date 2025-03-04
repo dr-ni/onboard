@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "purge" ]; then
+    echo "Removing Onboard GSettings schema..."
+    rm -f /usr/share/glib-2.0/schemas/org.onboard.gschema.xml
+    rm -f /usr/share/glib-2.0/schemas/99_onboard-default-settings.gschema.override
+
+    echo "Updating GLib schemas..."
+    glib-compile-schemas "/usr/share/glib-2.0/schemas" || true  # Run it, but don't fail if missing
+    for theme in hicolor HighContrast ubuntu-mono-dark ubuntu-mono-light; do
+        gtk-update-icon-cache -f "/usr/share/icons/$theme" || true
+    done
+    echo "Update mime database..."
+    update-mime-database /usr/share/mime || true  # Run it, but don't fail if missing
+fi
+
+exit 0
