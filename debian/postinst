@@ -8,8 +8,8 @@ if [ "$1" = "configure" ]; then
     for theme in hicolor HighContrast ubuntu-mono-dark ubuntu-mono-light; do
         gtk-update-icon-cache -f "/usr/share/icons/$theme" || true
     done
-    echo "Update mime database..."
-    update-mime-database /usr/share/mime || true  # Run it, but don't fail if missing
+    # echo "Update mime database..."
+    # update-mime-database /usr/share/mime || true  # Run it, but don't fail if missing
 fi
 
 exit 0
