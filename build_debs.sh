@@ -111,10 +111,10 @@ rm -Rf "$BUILD_PATH"
 # Move to the parent directory
 cd "$OUTPUT_DIR" || exit 1
 
-# Generate the metadata file Packages.gz for the repository
-echo "Generating metadata file Packages.gz..."
-if ! dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz; then
-    echo "Error: Failed to generate Packages.gz."
+# Generate the metadata file Packages for the repository
+echo "Generating metadata file Packages..."
+if ! dpkg-scanpackages . /dev/null > Packages; then
+    echo "Error: Failed to generate Packages."
     exit 1
 fi
 

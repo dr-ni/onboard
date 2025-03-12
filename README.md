@@ -117,7 +117,7 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
      ```
    - If the target system is not the build system copy this files to a directory on the target:
      - All `build/debs/*.deb` files.
-     - The `build/debs/Packages.gz` file.
+     - The `build/debs/Packages` file.
      - The `apt_install_debs.sh` script.
      - Execute in the directory on the target system:
      ```bash
