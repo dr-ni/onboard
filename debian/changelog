@@ -1,3 +1,9 @@
+onboard (1.4.2-3) dr-ni; urgency=medium
+
+  * fixed wrong shebang in /usr/local/bin/onboard after install from source
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Wed, 26 Mar 2025 01:50:17 +0200
+
 onboard (1.4.2-2) dr-ni; urgency=medium
 
   * updated README.md
