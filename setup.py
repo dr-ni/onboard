@@ -663,6 +663,12 @@ DistUtilsExtra.auto.setup(
 
     scripts = ['onboard', 'onboard-settings'],
 
+    options={
+        'build_scripts': {
+            'executable': '/usr/bin/python3'
+        }
+    },
+    
     # don't let distutils-extra import our files
     requires = [MODULE_NAME_OSK, MODULE_NAME_LM],
 
