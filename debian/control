@@ -1,7 +1,7 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: debhelper (>=9),
+Build-Depends: debhelper-compat (= 10),
                dh-python,
                libcanberra-dev,
                libdconf-dev (>= 0.12.0),
@@ -9,17 +9,21 @@ Build-Depends: debhelper (>=9),
                libhunspell-dev,
                libxkbfile-dev,
                libxtst-dev,
-               python3-all-dev (>= 3.2),
+               libudev-dev,
+               libwayland-dev,
+# pycairo only built for the default
+#              python3-all-dev (>= 3.2),
+               python3-dev,
                python3-cairo,
                python3-distutils-extra (>= 2.10),
                python3-gi,
                python3-packaging,
-               libudev-dev,
-Maintainer: Francesco Fumanti <francesco.fumanti@gmail.com>
-Standards-Version: 3.9.8
-Homepage: https://launchpad.net/onboard
-Vcs-Browser: https://anonscm.debian.org/git/pkg-mate/onboard.git
-Vcs-Git: https://anonscm.debian.org/git/pkg-mate/onboard.git
+Maintainer: Uwe Niethammer <uwe@dr-niethammer.de>
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/dr-ni/onboard
+Vcs-Browser: https://github.com/dr-ni/onboard
+Vcs-Git: https://github.com/dr-ni/onboard
 
 Package: onboard
 Architecture: any
@@ -38,7 +42,7 @@ Depends: gir1.2-gdkpixbuf-2.0,
          ${python3:Depends},
          ${shlibs:Depends},
 Recommends: 
-            gir1.2-appindicator3-0.1,
+            gir1.2-ayatanaappindicator3-0.1,
             gir1.2-atspi-2.0,
             acpid,
             onboard-data (>= ${source:Version}),
