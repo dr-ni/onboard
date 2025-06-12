@@ -69,10 +69,6 @@ new distributions are always welcome too.
         # System-wide installation (requires root access):
         sudo python3 setup.py install
 
-        # Change keyboard language layout
-        # setxkbmap -layout de
-        # or [us|in|ru|...]
-
 ## Uninstall if installed from Source
         # System-wide uninstall (requires root access):
         sudo python3 setup.py uninstall
@@ -140,6 +136,10 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
 
         # Onboard
         # Right click on icon in systray -> Help 
+
+        # Change keyboard language layout
+        # setxkbmap -layout de
+        # or [us|in|ru|...]
 
 ## D-Bus interface
 
