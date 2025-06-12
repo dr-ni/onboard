@@ -26,3 +26,4 @@ Onboard/osk.cpython-310-x86_64-linux-gnu.so
 Onboard/pypredict/lm.cpython-310-x86_64-linux-gnu.so
 Onboard/__pycache__/
 Onboard/pypredict/__pycache__/
+.env.debian.maintainer
