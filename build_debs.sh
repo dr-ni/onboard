@@ -51,8 +51,12 @@ if ! sudo apt-get build-dep -y .; then
     exit 1
 fi
 
-# Extract the Onboard version
-ONBOARD_VERSION="$(python3 setup.py --version | grep -v "dconf version" | grep -v "^[^0-9\.vV]+$" | head -n 1)"
+# --- Get the current version from changelog ---
+ONBOARD_VERSION=$(dpkg-parsechangelog -S Version)
+
+# Extract upstream part (without the -revision) for the tarball
+UPSTREAM_VERSION="${ONBOARD_VERSION%-*}"
+
 if [[ -z "$ONBOARD_VERSION" ]]; then
     echo "Error: Could not determine Onboard version."
     exit 1
@@ -82,7 +86,7 @@ echo "Copy sources to $BUILD_PATH/onboard-${ONBOARD_VERSION}"
 cp -Rp "$SCRIPT_PATH" "$BUILD_PATH/onboard-${ONBOARD_VERSION}"
 
 # Create the tarball
-TARBALL_NAME="onboard_${ONBOARD_VERSION}.orig.tar.gz"
+TARBALL_NAME="onboard_${UPSTREAM_VERSION}.orig.tar.gz"
 echo "Creating tarball $BUILD_PATH/$TARBALL_NAME"
 tar --exclude='.git' --exclude='.gitignore' --exclude='build' -cvzf "$BUILD_PATH/$TARBALL_NAME" "onboard-${ONBOARD_VERSION}"
 
