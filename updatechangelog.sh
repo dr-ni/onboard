@@ -219,7 +219,7 @@ fi
 echo "Update README.md version ${NEW_VERSION}"
 sed -i "1s/^# Onboard [0-9]\+\.[0-9]\+\.[0-9]\+.*$/# Onboard ${NEW_VERSION}/" README.md
 echo "Update setup.py version: ${NEW_BASE}${SETUP_SUFFIX}"
-sed -i "s/^version = '[0-9a-zA-Z_.-]\+'/version = '${NEW_BASE}${SETUP_SUFFIX}'/" setup.py
+sed -i "s/version = '[0-9a-zA-Z_.-]\+'/version = '${NEW_BASE}${SETUP_SUFFIX}'/" setup.py
 
 echo
 read -p "Press [Enter] to add & commit the changelog, README.md & setup.py or Ctrl+C to cancel..."
