@@ -57,8 +57,25 @@ LAST_CHANGELOG_COMMIT=$(git log -n1 --pretty=format:%H -- debian/changelog)
 NEW_COMMITS=$(git rev-list --count "${LAST_CHANGELOG_COMMIT}..HEAD")
 
 if [ "$NEW_COMMITS" -eq 0 ]; then
-  echo "✅ No new commits since last changelog update — skipping changelog."
-  exit 0
+  echo "⚠️  Warning: No new commits since last changelog update."
+  echo "This is usually fine for a patch or higher-level update."
+
+  while true; do
+    read -p "Do you still want to proceed with the changelog update? [y/N] " response
+    case "$response" in
+      [yY]) 
+        echo "Proceeding despite no new commits."
+        break
+        ;;
+      [nN]|"") 
+        echo "Skipping changelog update."
+        exit 0
+        ;;
+      *) 
+        echo "Please answer yes [y] or no [n]."
+        ;;
+    esac
+  done
 fi
 
 
@@ -69,6 +86,7 @@ REV=$(echo "$LAST_VERSION" | sed 's/^.*-\([0-9]\+\)$/\1/')
 
 echo "Current version: $LAST_VERSION"
 echo "Base: $BASE, Revision: $REV"
+
 
 # --- Ask user what to increment ---
 echo "Which part of the version would you like to increment?"
@@ -114,10 +132,39 @@ if [[ "$confirm" =~ ^[Nn]$ ]]; then
     echo "Aborted by user."
     exit 1
 fi
-
 # Continue with NEW_VERSION
 echo "Proceeding with version: $NEW_VERSION"
+echo
+echo "📦 Please select the debian/changelog target distribution for this release:"
+echo "  [u] unstable           (for patch/revision releases)"
+echo "  [n] next               (for minor updates)"
+echo "  [e] experimental       (for major changes or breakage)"
+echo "  [c] rc                 (release candidate)"
+echo "  [r] release            (final, production-ready release)"
+echo "  [x] UNRELEASED         (default – for in-development state)"
+read -p "Choice [x]: " dist_choice
+
+case "$dist_choice" in
+    [uU]) DIST="unstable" ;;
+    [nN]) DIST="next" ;;
+    [eE]) DIST="experimental" ;;
+    [cC]) DIST="rc" ;;
+    [rR]) DIST="release" ;;
+    ""|[xX]) DIST="UNRELEASED" ;;
+    *)
+        echo "❌ Invalid choice. Aborting."
+        exit 1
+        ;;
+esac
+
+echo "✅ Selected distribution target: $DIST"
+
+
 # e.g. gbp dch --new-version="$NEW_VERSION" ...
+
+gbp dch --auto --debian-branch=main --new-version="$NEW_VERSION"  --distribution="$DIST"
+read -p "📝 Press e to open the changelog in editor... " confirm
+
 
 if [ "${BASE}" != "$NEW_BASE" ]; then
   echo "Update README.md and setup.py for version ${NEW_BASE}"
@@ -126,9 +173,7 @@ if [ "${BASE}" != "$NEW_BASE" ]; then
 fi
 
 
-gbp dch --auto --debian-branch=main --new-version="$NEW_VERSION"
 
-read -p "📝 Press e to open the changelog in editor... " confirm
 
 if [[ "$confirm" =~ ^[eE]$ ]]; then
   $EDITOR "$CHANGELOG"
