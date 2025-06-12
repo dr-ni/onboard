@@ -61,28 +61,100 @@ if [ "$NEW_COMMITS" -eq 0 ]; then
   exit 0
 fi
 
-# --- Run gbp dch with all passed arguments ---
+
+# --- Get the current version from changelog ---
 LAST_VERSION=$(dpkg-parsechangelog -S Version)
 BASE=$(echo "$LAST_VERSION" | sed 's/-[0-9]\+$//')
 REV=$(echo "$LAST_VERSION" | sed 's/^.*-\([0-9]\+\)$/\1/')
-NEW_REV=$((REV + 1))
-NEW_VERSION="${BASE}-${NEW_REV}"
 
-echo "New version: $NEW_VERSION"
+echo "Current version: $LAST_VERSION"
+echo "Base: $BASE, Revision: $REV"
+
+# --- Ask user what to increment ---
+echo "Which part of the version would you like to increment?"
+echo "  [b] base (major)"
+echo "  [m] minor"
+echo "  [p] patch"
+echo "  [r] revision (default)"
+read -p "Choice [r]: " choice
+
+# Split BASE into major.minor.patch
+IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE"
+
+case "$choice" in
+    [bB])
+        MAJOR=$((MAJOR + 1))
+        MINOR=0
+        PATCH=0
+        NEW_BASE="${MAJOR}.${MINOR}.${PATCH}"
+        NEW_VERSION="${NEW_BASE}-1"
+        ;;
+    [mM])
+        MINOR=$((MINOR + 1))
+        PATCH=0
+        NEW_BASE="${MAJOR}.${MINOR}.${PATCH}"
+        NEW_VERSION="${NEW_BASE}-1"
+        ;;
+    [pP])
+        PATCH=$((PATCH + 1))
+        NEW_BASE="${MAJOR}.${MINOR}.${PATCH}"
+        NEW_VERSION="${NEW_BASE}-1"
+        ;;
+    *)
+        # Default: increment revision only
+        NEW_REV=$((REV + 1))
+        NEW_BASE="${BASE}"
+        NEW_VERSION="${BASE}-${NEW_REV}"
+        ;;
+esac
+
+echo "Proposed new version: $NEW_VERSION"
+read -p "Is this OK? [Y/n] " confirm
+if [[ "$confirm" =~ ^[Nn]$ ]]; then
+    echo "Aborted by user."
+    exit 1
+fi
+
+# Continue with NEW_VERSION
+echo "Proceeding with version: $NEW_VERSION"
+# e.g. gbp dch --new-version="$NEW_VERSION" ...
+
+if [ "${BASE}" != "$NEW_BASE" ]; then
+  echo "Update README.md and setup.py for version ${NEW_BASE}"
+  sed -i "1s/^# Onboard [0-9]\+\.[0-9]\+\.[0-9]\+/# Onboard ${NEW_BASE}/" README.md
+  sed -i "s/version = '[0-9]\+\.[0-9]\+\.[0-9]\+'/version = '${NEW_BASE}'/" setup.py
+fi
+
+
 gbp dch --auto --debian-branch=main --new-version="$NEW_VERSION"
 
-# 6. Open changelog in editor
-echo "📝 Opening changelog in editor..."
-$EDITOR "$CHANGELOG"
+read -p "📝 Press e to open the changelog in editor... " confirm
 
-# 7. Confirm before commit & push
-echo
-read -p "Press [Enter] to commit and push the changelog, or Ctrl+C to cancel..."
+if [[ "$confirm" =~ ^[eE]$ ]]; then
+  $EDITOR "$CHANGELOG"
+fi
 
-# 8. Commit and push
-echo "📤 Committing changelog..."
-git add "$CHANGELOG"
-git commit -m "Update changelog for version $NEW_VERSION"
+if [ "${BASE}" != "$NEW_BASE" ]; then
+  # 7. Confirm before commit
+  echo
+  read -p "Press [Enter] to add & commit the changelog, README.md & setup.py or Ctrl+C to cancel..."
+  # 8. Commit
+  echo "📤 Committing changelog..."
+  git add "$CHANGELOG"
+  git add "README.md"
+  git add "setup.py"
+  git commit -m "Update changelog, README.md & setup.py version: $NEW_VERSION"
+else
+  # 7. Confirm before commit
+  echo
+  read -p "Press [Enter] to add & commit the changelog or Ctrl+C to cancel..."
+  # 8. Commit
+  echo "📤 Committing changelog..."
+  git add "$CHANGELOG"
+  git commit -m "Update changelog revision: $NEW_VERSION"
+fi
+read -p "Press [Enter] to push or Ctrl+C to cancel..."
+
 git push
 
 echo "✅ Done: changelog updated and pushed."
