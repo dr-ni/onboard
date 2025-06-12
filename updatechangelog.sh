@@ -11,6 +11,7 @@ DEFAULT_EMAIL="uwe@dr-niethammer.de"
 
 # --- Check if gbp (git-buildpackage) is installed ---
 if ! command -v gbp &> /dev/null; then
+  sudo apt update
   sudo apt install git-buildpackage
 fi
 
