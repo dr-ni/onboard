@@ -1,3 +1,9 @@
+onboard (1.4.3-2) UNRELEASED; urgency=medium
+
+  * Remove env GDK_BACKEND=x11 in case of wayland
+
+ -- Lukas Gottschall <dwd@jdownloader.org>  Thu, 12 Jun 2025 19:46:04 +0200
+
 onboard (1.4.3-1) unstable; urgency=medium
 
   * Merge useful changes from theofficialgman: commit 89971d5: "import debian buildfile changes from latest ubuntu source"
