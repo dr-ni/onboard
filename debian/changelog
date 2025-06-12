@@ -1,10 +1,11 @@
-onboard (1.4.2-5) UNRELEASED; urgency=medium
+onboard (1.4.2-6) UNRELEASED; urgency=medium
 
   * Merge useful changes from theofficialgman: commit 89971d5: "import debian buildfile changes from latest ubuntu source"
   * Add updatechangelog.sh: automate changelog bump, edit, commit and push
   * Ensure .deb packages can be built without root privileges
+  * Add version update logic to updatechangelog.sh
 
- -- Lukas Gottschall <dwd@jdownloader.org>  Thu, 12 Jun 2025 15:48:48 +0200
+ -- Lukas Gottschall <dwd@jdownloader.org>  Thu, 12 Jun 2025 19:03:31 +0200
 
 onboard (1.4.2-3) dr-ni; urgency=medium
 
