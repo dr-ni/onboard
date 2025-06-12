@@ -1,3 +1,10 @@
+onboard (1.4.2-4) UNRELEASED; urgency=medium
+
+  * Merge useful changes from theofficialgman: commit 89971d5: "import debian buildfile changes from latest ubuntu source"
+  * Add updatechangelog.sh: automate changelog bump, edit, commit and push
+
+ -- Lukas Gottschall <dwd@jdownloader.org>  Thu, 12 Jun 2025 15:26:41 +0200
+
 onboard (1.4.2-3) dr-ni; urgency=medium
 
   * fixed wrong shebang in /usr/local/bin/onboard after install from source
