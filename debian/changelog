@@ -1,10 +1,15 @@
-onboard (1.4.3-4) UNRELEASED; urgency=medium
+onboard (1.4.3-5) UNRELEASED; urgency=medium
 
+  [ Lukas Gottschall ]
   * Remove env GDK_BACKEND=x11 in case of wayland
   * Add dist_choice/revision to setup.py/Readme.md and use current version from changelog to build debs
   * Fix setup.py version update
 
- -- Lukas Gottschall <dwd@jdownloader.org>  Thu, 12 Jun 2025 22:17:21 +0200
+  [ dr-ni ]
+  * Force consistant versioning pip -> dpkg
+  * prevent package not found error
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Fri, 13 Jun 2025 01:00:06 +0200
 
 onboard (1.4.3-1) unstable; urgency=medium
 
