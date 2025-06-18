@@ -26,7 +26,6 @@
 
 #include <Python.h>
 #include <structmember.h>
-
 #include <stdbool.h>
 
 /**
