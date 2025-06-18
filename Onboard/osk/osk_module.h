@@ -27,7 +27,8 @@
 #include <Python.h>
 #include <structmember.h>
 
-typedef enum { false, true } bool;
+//typedef enum { false, true } bool;
+#include <stdbool.h>
 
 /**
  * Python2 to Python3 conversion
