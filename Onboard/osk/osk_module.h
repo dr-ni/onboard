@@ -26,8 +26,6 @@
 
 #include <Python.h>
 #include <structmember.h>
-
-//typedef enum { false, true } bool;
 #include <stdbool.h>
 
 /**
