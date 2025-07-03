@@ -17,7 +17,8 @@ Supply us the version from terminal: `onboard --version`
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots or a movie to help explain your problem.
+https://github.com/Enselic/recordmydesktop/
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iubuntu 24.04]
