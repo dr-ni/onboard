@@ -10,9 +10,8 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Supply us the version from terminal: `onboard --version`
+**Here we are only supporting onboard versions >= v1.4.2**
+Supply us the version from terminal: `onboard --version`
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
