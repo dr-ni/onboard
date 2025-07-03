@@ -2,6 +2,8 @@
 
 ![onb](https://github.com/dr-ni/onboard/blob/main/onboard.png)
 
+![onb](https://github.com/dr-ni/onboard/blob/main/onboard-de.png)
+
 ## Description
 
 Onboard is an onscreen keyboard useful for everybody that cannot use a
