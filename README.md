@@ -11,10 +11,6 @@ without the need of any configuration, as it can read the keyboard layout
 from the X server. Onboard is currently not working with wayland - a correct
 X11/Xorg setup is required.
 
-The parent project at https://launchpad.net/onboard sadly seems not to be
-maintained anymore. Old PPA downloads for Ubuntu-releases can still be
-found at https://launchpad.net/~onboard/+archive/ubuntu/stable .
-
 ## Building from Source
 Find below short instructions on how to build Onboard straight from this
 github repository. If you have improvements to share, get errors or run
