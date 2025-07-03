@@ -20,8 +20,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iubuntu 20.04]
- - Windowmanager [e.g. x11, wayland]
+ - OS: [e.g. iubuntu 24.04]
+ - displaymanager [e.g. lightdm, gdm]
+ - windowing system [e.g. x11, wayland]
 
 **Additional context**
 Add any other context about the problem here.
