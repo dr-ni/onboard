@@ -127,6 +127,7 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
 
         # Terminal
         man onboard
+        onboard -h
         
         # Interactive
         yelp "help:onboard"
