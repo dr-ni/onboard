@@ -1,4 +1,4 @@
-onboard (1.4.3-6) UNRELEASED; urgency=medium
+onboard (1.4.3-7) release; urgency=medium
 
   [ Lukas Gottschall ]
   * Remove env GDK_BACKEND=x11 in case of wayland
@@ -9,8 +9,23 @@ onboard (1.4.3-6) UNRELEASED; urgency=medium
   * Force consistant versioning pip -> dpkg
   * prevent package not found error
   * CleanUp
+  * code cleanup as requested in #17
 
- -- Uwe Niethammer <uwe@dr-niethammer.de>  Fri, 13 Jun 2025 01:24:31 +0200
+  [ Vladimír Čunát ]
+  * osk: don't redefine bool and use the standard one instead
+
+  [ Uwe Niethammer ]
+  * Update issue templates
+  * Update issue templates
+  * Update issue templates
+  * Update issue templates
+  * Update README.md
+  * Update README.md
+
+  [ dr-ni ]
+  * added screenshot
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Thu, 03 Jul 2025 18:12:50 +0200
 
 onboard (1.4.3-1) unstable; urgency=medium
 
