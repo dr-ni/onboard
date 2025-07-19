@@ -1,0 +1,10 @@
+#!/bin/bash
+STATUS=$(gsettings get org.gnome.desktop.a11y.mouse dwell-click-enabled)
+case $STATUS in
+    true )
+        gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled false
+    ;;
+    false )
+        gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true
+    ;;
+esac
