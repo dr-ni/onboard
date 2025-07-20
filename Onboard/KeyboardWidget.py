@@ -357,7 +357,28 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         self._update_double_click_time()
 
+        self._hovered_key = False
+        self.connect("motion-notify-event", self.on_motion)
+        self.set_events(Gdk.EventMask.POINTER_MOTION_MASK |
+                        Gdk.EventMask.LEAVE_NOTIFY_MASK |
+                        self.get_events())
+        
         self.show()
+
+    def on_motion(self, widget, event):
+        top_key = self.get_key_at_location((int(event.x), int(event.y)))
+
+        if self._hovered_key:
+            self._hovered_key.hover = False
+            self._hovered_key.invalidate_key()
+        if top_key:
+            top_key.hover = True
+            top_key.invalidate_key()
+        else:
+            self._hovered_key = False
+
+        self._hovered_key = top_key
+        self.queue_draw()
 
     def cleanup(self):
 

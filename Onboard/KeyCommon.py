@@ -208,6 +208,9 @@ class KeyCommon(DrawingItem):
 
     # True when key is being pressed.
     pressed = False
+    
+    # True when key is being hovered.
+    hover = False
 
     # True when key stays 'on'
     active = False
@@ -497,6 +500,7 @@ class RectKeyCommon(KeyCommon):
 
     def get_state(self):
         state = {}
+        state["hover"]  = self.hover
         state["prelight"]  = self.prelight
         state["pressed"]   = self.pressed
         state["active"]    = self.active
@@ -563,7 +567,7 @@ class RectKeyCommon(KeyCommon):
 
     def get_color(self, element, state=None):
         color_key = (element,
-                     self.prelight, self.pressed,
+                     self.prelight, self.hover, self.pressed,
                      self.active, self.locked,
                      self.sensitive, self.scanned)
         try:

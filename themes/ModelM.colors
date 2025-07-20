@@ -33,9 +33,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
     <key_group>
         <!-- light grey default -->
-        <color element="fill"   rgb="#c2c2ba"/>
+        <color element="fill"  rgb="#c2c2ba"/>
+        <color element="fill"  rgb="#a0a0a0" hover="true"/>
+        <color element="fill" rgb="#505050" hover="true" active="true"/>
         <color element="stroke" rgb="#62625a"/>
+        <color element="stroke" rgb="#444444" hover="true"/>
         <color element="label"  rgb="#000000"/>
+        <color element="label"  rgb="#222222" hover="true"/>
         <color element="dwell-progress"  rgb="#f19671"/>
         F5.rows_of_six, F6.rows_of_six, F7.rows_of_six, F8.rows_of_six,
         icon1, icon2,
@@ -44,7 +48,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <!-- word suggestions -->
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
+            <color element="fill"  rgb="#d8aa99" hover="true"/>
             <color element="label" rgb="#C00000"/>
+            <color element="label" rgb="#800000" hover="true"/>
             correctionsbg,
             correction
         </key_group>
@@ -52,6 +58,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <!-- dark keys -->
         <key_group>
             <color element="fill" rgb="#a09c92"/>
+            <color element="fill" rgb="#b0a8a0" hover="true"/>
             <color element="fill" rgb="#606060" active="true"/>
             icon0, icon3,
             ESC, F5, F6, F7, F8,
@@ -71,10 +78,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <!-- very light gray, sidebar -->
         <key_group>
             <color element="fill" rgb="#d8d8d1"/>
+            <color element="fill" rgb="#cccccc" hover="true"/>
             <color element="fill" rgb="#b0b0a8" active="true"/>
             hide, move, showclick, layer
         </key_group>
 
     </key_group>
 </color_scheme>
-

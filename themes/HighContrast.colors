@@ -27,19 +27,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <layer> <color element="background" rgb="#404040" opacity="1.0"/> </layer>
 
     <key_group>
-        <color element="fill"   rgb="#000000" pressed="true"/>
-        <color element="fill"   rgb="#000000" active="true" locked="false"/>
-        <color element="fill"   rgb="#ffffff"/>
+        <color element="fill" rgb="#000000" pressed="true"/>
+        <color element="fill" rgb="#000000" active="true" locked="false"/>
+        <color element="fill" rgb="#ffffff"/>
+        <color element="fill" rgb="#000000" hover="true" pressed="true"/>
+        <color element="fill" rgb="#1a1a1a" hover="true" active="true" locked="false"/>
+        <color element="fill" rgb="#dddddd" hover="true"/>
 
         <color element="stroke" rgb="#ffffff" pressed="true"/>
         <color element="stroke" rgb="#ffffff" active="true"/>
         <color element="stroke" rgb="#000000"/>
+        <color element="stroke" rgb="#444444" hover="true"/>
 
         <color element="label"  rgb="#ffffff" pressed="true"/>
         <color element="label"  rgb="#ffffff" active="true"/>
         <color element="label"  rgb="#000000"/>
+        <color element="label"  rgb="#111111" hover="true"/>
+
         layer, correction,
         icon0, icon1, icon2, icon3
     </key_group>
 </color_scheme>
-
