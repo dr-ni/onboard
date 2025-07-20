@@ -548,6 +548,7 @@ class ColorScheme(object):
     def get_key_default_rgba(self, key, element, state):
         colors = {
                     "fill":                     [0.9,  0.85, 0.7, 1.0],
+                    "hover":                     [0.9,  0.85, 0.7, 1.0],
                     "prelight":                 [0.0,  0.0,  0.0, 1.0],
                     "pressed":                  [0.6,  0.6,  0.6, 1.0],
                     "active":                   [0.5,  0.5,  0.5, 1.0],
@@ -609,6 +610,8 @@ class ColorScheme(object):
                     for i in range(4):
                         rgba[i] = (scanned[i] + fill[i]) / 2.0
 
+            elif state.get("hover"):
+                rgba = colors["hover"]
             elif state.get("prelight"):
                 rgba = colors["prelight"]
             elif state.get("locked"):
@@ -620,7 +623,8 @@ class ColorScheme(object):
 
         elif element == "stroke":
             rgba == colors["stroke"]
-
+            if state.get("hover"):
+                rgba = colors["hover"]
         elif element == "label":
 
             if key.is_correction_key():
@@ -628,6 +632,9 @@ class ColorScheme(object):
             else:
                 rgba = colors["label"]
 
+            if state.get("hover"):
+                rgba = colors["hover"]
+                
             # dim label color for insensitive keys
             if state.get("insensitive"):
                 rgba = self._get_insensitive_color(key, state, element)
@@ -968,6 +975,7 @@ class ColorScheme(object):
 
         state = {}
         ColorScheme._parse_state_attibute(node, "prelight", state)
+        ColorScheme._parse_state_attibute(node, "hover", state)
         ColorScheme._parse_state_attibute(node, "pressed", state)
         ColorScheme._parse_state_attibute(node, "active", state)
         ColorScheme._parse_state_attibute(node, "locked", state)
@@ -1297,7 +1305,7 @@ class KeyColor(Color):
         for attr, value in list(state.items()):
             # Special case for fill color
             # By default the fill color is only applied to the single
-            # state where nothing is pressed, active, locked, etc.
+            # state where nothing is pressed, active, hover, locked, etc.
             # All other elements apply to all state permutations if
             # not asked to do otherwise.
             # Allows for hard coded default fill colors to take over without
@@ -1305,12 +1313,17 @@ class KeyColor(Color):
             default = value  # "don't care", always match unspecified states
 
             if element == "fill" and \
-               attr in ["active", "locked", "pressed", "scanned"] and \
+               attr in ["active", "hover", "locked", "pressed", "scanned"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
             if (element == "label" or element == "secondary-label") and \
-               attr in ["insensitive"] and \
+               attr in [ "hover", "insensitive"] and \
+               not attr in self.state:
+                default = False   # consider unspecified states to be False
+                
+            if (element == "stroke") and \
+               attr in [ "hover" ] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 

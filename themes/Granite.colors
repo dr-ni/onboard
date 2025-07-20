@@ -30,19 +30,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
     <key_group>
         <color element="fill"   rgb="#3a424f"/>
+        <color element="fill"   rgb="#4a5260" hover="true"/>
         <color element="stroke" rgb="#000000"/>
+        <color element="stroke" rgb="#888888" hover="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
         icon0
         
         <key_group>
             <color element="fill" rgb="#ffffff"/>
+            <color element="fill" rgb="#dddddd" hover="true"/>
             icon1, icon2
         </key_group>
         
         <!-- dark keys -->
         <key_group>
             <color element="fill" rgb="#212936"/>
+            <color element="fill" rgb="#2a3240" hover="true"/>
             <color element="label" rgb="#d2d6d9"/>
+            <color element="label" rgb="#ffffff" hover="true"/>
             icon3,
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
             LFSH, RTSH, NMLK,
@@ -58,6 +64,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
+                <color element="fill" rgb="#1a222a" hover="true"/>
                 wordlist, prediction, pause-learning.wordlist, language.wordlist, hide.wordlist
             </key_group>
         </key_group>
@@ -65,14 +72,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <!-- snippets -->
         <key_group>
             <color element="fill" rgb="#2b2b63"/>
+            <color element="fill" rgb="#3a3a80" hover="true"/>
             m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
         </key_group>
         
         <!-- red preferences -->
         <key_group>
             <color element="fill" rgb="#7f0000"/>
+            <color element="fill" rgb="#aa3030" hover="true"/>
             settings
         </key_group>
     </key_group>
 </color_scheme>
-

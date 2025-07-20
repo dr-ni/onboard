@@ -26,13 +26,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
     <key_group>
         <color element="fill"   rgb="#000000"/>
+        <color element="fill"   rgb="#404040" hover="true"/>
         <color element="stroke" rgb="#888888"/>
+        <color element="stroke" rgb="#bbbbbb" hover="true"/>
         <color element="label"  rgb="#ffffff"/>
         layer,
         icon0, icon3
         
         <key_group>
             <color element="label"  rgb="#d2d6d9"/>
+            <color element="label"  rgb="#ffffff" hover="true"/>
+            <color element="fill"   rgb="#404040" hover="true"/>
             icon1, icon2,
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
             LFSH, RTSH, NMLK, secondaryclick, middleclick

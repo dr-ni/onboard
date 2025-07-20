@@ -36,6 +36,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="fill"   rgb="#ff0000" opacity="1.0" locked="true"/>
         <color element="fill"   rgb="#e5d8b2" opacity="1.0"/>
 
+        <color element="fill" rgb="#c0b48f" hover="true" prelight="true"/>
+        <color element="fill" rgb="#50509a" hover="true" scanned="true"/>
+        <color element="fill" rgb="#505050" hover="true" active="true"/>
+        <color element="fill" rgb="#aa0000" hover="true" locked="true"/>
+        <color element="fill" rgb="#c0b48f" hover="true"/>
+
         <color element="stroke" rgb="#000000" opacity="1.0" active="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" locked="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" scanned="true"/>
@@ -43,23 +49,28 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="stroke" rgb="#000000" opacity="1.0" prelight="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0"/>
 
+        <color element="stroke" rgb="#303030" hover="true"/>
+
         <color element="label"  rgb="#000000" opacity="1.0" active="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" locked="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" scanned="true"/>
-        <color element="label"  rgb="#000000" opacity="1.0" pressed="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" prelight="true"/>
         <color element="label"  rgb="#000000" opacity="1.0"/>
+        
+        <color element="label" rgb="#303030" hover="true"/>
 
         <color element="dwell-progress" rgb="#a38caa" opacity="1.0"/>
 
         <key_group>
             <color element="fill"  rgb="#f2e5d8"/>
+            <color element="fill" rgb="#bbbbbb" hover="true"/>
             RCTL, LCTL, RALT, LALT, LWIN, CAPS,
             LFSH, RTSH, NMLK,
             inputline
         </key_group>key_group
         <key_group>
             <color element="fill"  rgb="#d8cca5"/>
+            <color element="fill" rgb="#888888" hover="true"/>
             MENU, RWIN, BKSP, TAB, RTRN,
             KPDL, KPEN, KP0, KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9,
             LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,
@@ -68,15 +79,19 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         </key_group>
         <key_group>
             <color element="fill"  rgb="#7f7fcc"/>
+            <color element="fill" rgb="#5f9fdd" hover="true"/>
             m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
         </key_group>
         <key_group>
             <color element="fill"  rgb="#f27f7f"/>
+            <color element="fill" rgb="#ffaaaa" hover="true"/>
             settings,
         </key_group>
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
             <color element="label" rgb="#C00000"/>
+            <color element="fill" rgb="#ff9980" hover="true"/>
+            <color element="label" rgb="#800000" hover="true"/>            
             correctionsbg,
             correction
         </key_group>
