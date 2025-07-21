@@ -1159,7 +1159,7 @@ class Keyboard(WordSuggestions):
 
             # stop timed redrawing for this key
             self._unpress_timers.stop(key)
-
+            
             # announce temporary modifiers
             temp_mod_mask = 0
             if config.keyboard.can_upper_case_on_button(button):
@@ -1235,7 +1235,11 @@ class Keyboard(WordSuggestions):
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
-                self._unpress_timers.start(key)
+                if sequence and sequence.is_touch():
+                    self._unpress_timers.start(key)
+                else:
+                    key.pressed = False
+                    self.on_key_unpressed(key)
             else:
                 # Unpress now to avoid flickering of the
                 # pressed color after key release.

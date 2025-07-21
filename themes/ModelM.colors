@@ -35,7 +35,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <!-- light grey default -->
         <color element="fill"  rgb="#c2c2ba"/>
         <color element="fill"  rgb="#a0a0a0" hover="true"/>
-        <color element="fill" rgb="#505050" hover="true" active="true"/>
         <color element="stroke" rgb="#62625a"/>
         <color element="stroke" rgb="#444444" hover="true"/>
         <color element="label"  rgb="#000000"/>

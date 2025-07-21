@@ -548,7 +548,6 @@ class ColorScheme(object):
     def get_key_default_rgba(self, key, element, state):
         colors = {
                     "fill":                     [0.9,  0.85, 0.7, 1.0],
-                    "hover":                     [0.9,  0.85, 0.7, 1.0],
                     "prelight":                 [0.0,  0.0,  0.0, 1.0],
                     "pressed":                  [0.6,  0.6,  0.6, 1.0],
                     "active":                   [0.5,  0.5,  0.5, 1.0],
@@ -559,6 +558,7 @@ class ColorScheme(object):
                     "secondary-label":          [0.5,  0.5,  0.5, 1.0],
                     "dwell-progress":           [0.82, 0.19, 0.25, 1.0],
                     "correction-label":         [1.0,  0.5,  0.5, 1.0],
+                    "hover":                     [0.9,  0.85, 0.7, 1.0],
                     }
 
         rgba = [0.0, 0.0, 0.0, 1.0]
@@ -610,14 +610,14 @@ class ColorScheme(object):
                     for i in range(4):
                         rgba[i] = (scanned[i] + fill[i]) / 2.0
 
-            elif state.get("hover"):
-                rgba = colors["hover"]
             elif state.get("prelight"):
                 rgba = colors["prelight"]
             elif state.get("locked"):
                 rgba = colors["locked"]
             elif state.get("active"):
                 rgba = colors["active"]
+            elif state.get("hover"):
+                rgba = colors["hover"]
             else:
                 rgba = colors["fill"]
 
@@ -975,12 +975,12 @@ class ColorScheme(object):
 
         state = {}
         ColorScheme._parse_state_attibute(node, "prelight", state)
-        ColorScheme._parse_state_attibute(node, "hover", state)
         ColorScheme._parse_state_attibute(node, "pressed", state)
         ColorScheme._parse_state_attibute(node, "active", state)
         ColorScheme._parse_state_attibute(node, "locked", state)
         ColorScheme._parse_state_attibute(node, "insensitive", state)
         ColorScheme._parse_state_attibute(node, "scanned", state)
+        ColorScheme._parse_state_attibute(node, "hover", state)
         item.state = state
 
         return item
@@ -1313,17 +1313,17 @@ class KeyColor(Color):
             default = value  # "don't care", always match unspecified states
 
             if element == "fill" and \
-               attr in ["active", "hover", "locked", "pressed", "scanned"] and \
+               attr in ["active", "locked", "pressed", "scanned", "hover"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
             if (element == "label" or element == "secondary-label") and \
-               attr in [ "hover", "insensitive"] and \
+               attr in [ "insensitive", "pressed", "hover"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
                 
             if (element == "stroke") and \
-               attr in [ "hover" ] and \
+               attr in [ "hover", "pressed" ] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
