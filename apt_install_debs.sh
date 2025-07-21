@@ -77,6 +77,13 @@ if [ "$(id -u)" = "0" ]; then
             # Remove installed Onboard packages
             apt-get -y install onboard onboard-data onboard-common
         fi
+        
+        echo "Updating GLib schemas..."
+        glib-compile-schemas "/usr/share/glib-2.0/schemas" || true  # Run it, but don't fail if missing
+        echo "Update the icon cache..."
+        for theme in hicolor HighContrast ubuntu-mono-dark ubuntu-mono-light; do
+            gtk-update-icon-cache -f "/usr/share/icons/$theme" || true
+        done
 
         # Remove the temporary local repository configuration
         rm /etc/apt/sources.list.d/onboardlocalrepo.list
