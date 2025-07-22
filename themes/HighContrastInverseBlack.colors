@@ -40,6 +40,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="label"  rgb="#000000" pressed="true"/>
         <color element="label"  rgb="#000000" active="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
 
         layer,
         icon0, icon1, icon2, icon3,

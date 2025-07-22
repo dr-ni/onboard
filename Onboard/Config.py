@@ -177,6 +177,10 @@ class Config(ConfigObject):
 
     # minimum time keys are drawn in pressed state
     UNPRESS_DELAY = 0.15
+    
+    # Minimum duration the label popup is shown after releasing the key
+    MIN_LABEL_POPUP_DURATION_MS = 500
+    
 
     # Margin to leave around wordlist labels; smaller margins leave
     # more room for prediction choices
