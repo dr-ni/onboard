@@ -176,7 +176,7 @@ class Config(ConfigObject):
     DISH_KEY_BORDER = (2.5, 2.5)
 
     # Minimum duration the label popup is shown after releasing the key
-    MIN_LABEL_POPUP_DURATION_MS = 500
+    MIN_LABEL_POPUP_DURATION_MS = 200
     
     # Margin to leave around wordlist labels; smaller margins leave
     # more room for prediction choices

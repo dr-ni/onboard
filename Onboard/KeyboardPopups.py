@@ -266,6 +266,8 @@ class LabelPopup(KeyboardPopupDrawable):
     def __init__(self):
         KeyboardPopupDrawable.__init__(self)
         self._key = None
+        self._fill_color = None
+        self._label_color = None
         self.connect("realize", self._on_realize_event)
 
     def _on_realize_event(self, user_data):
@@ -288,9 +290,7 @@ class LabelPopup(KeyboardPopupDrawable):
                        .deflate((rect.w - rect.w * self.ARROW_WIDTH) / 2.0, 0)
 
         label_rect = content_rect.deflate(rect.w * self.LABEL_MARGIN)
-
-        # background
-        fill = self._key.get_fill_color()
+            
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
@@ -298,7 +298,7 @@ class LabelPopup(KeyboardPopupDrawable):
 
         context.push_group()
 
-        context.set_source_rgba(*fill)
+        context.set_source_rgba(*self._fill_color)
         roundrect_arc(context, content_rect, config.CORNER_RADIUS)
         context.fill()
 
@@ -320,8 +320,7 @@ class LabelPopup(KeyboardPopupDrawable):
             if label:
                 if label == " ":
                     label = "␣"
-                color = self._key.get_label_color()
-                self._draw_text(context, label, label_rect, color)
+                self._draw_text(context, label, label_rect, self._label_color)
 
         context.pop_group_to_source()
         context.paint_with_alpha(self._opacity)
@@ -378,6 +377,16 @@ class LabelPopup(KeyboardPopupDrawable):
         return self._key
 
     def set_key(self, key):
+                # background 
+        if key:
+            if not self._key or self._key.theme_id != key.theme_id:
+                key_state = key.get_state()
+                if "hover" in key_state:
+                    del key_state["hover"]
+                if "pressed" in key_state:
+                    del key_state["pressed"]
+                self._fill_color = key.color_scheme.get_key_rgba(key, "fill", key_state)
+                self._label_color = key.color_scheme.get_key_rgba(key, "label", key_state)
         self._key = key
 
 
