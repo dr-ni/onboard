@@ -30,8 +30,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="fill" rgb="#000000" pressed="true"/>
         <color element="fill" rgb="#000000" active="true" locked="false"/>
         <color element="fill" rgb="#ffffff"/>
-        <color element="fill" rgb="#000000" hover="true" pressed="true"/>
-        <color element="fill" rgb="#1a1a1a" hover="true" active="true" locked="false"/>
         <color element="fill" rgb="#dddddd" hover="true"/>
 
         <color element="stroke" rgb="#ffffff" pressed="true"/>

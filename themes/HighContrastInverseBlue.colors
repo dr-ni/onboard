@@ -32,12 +32,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="fill"   rgb="#ff0000" locked="true"/>
         <color element="fill"   rgb="#ffffff" active="true"/>
         <color element="fill"   rgb="#000030"/>
+        <color element="fill"   rgb="#333366" hover="true"/>
 
         <color element="stroke" rgb="#dddddd"/>
+        <color element="stroke" rgb="#eeeeee" hover="true"/>
 
         <color element="label"  rgb="#000020" pressed="true"/>
         <color element="label"  rgb="#000020" active="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
         layer,
         icon0, icon1, icon2, icon3,
         correction

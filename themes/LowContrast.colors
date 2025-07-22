@@ -33,7 +33,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <key_group>
         <color element="fill"  rgb="#9a9a9a"/>
         <color element="fill"  rgb="#bb4444" locked="true"/>
-        <color element="fill"  rgb="#bb4444" locked="true" hover="true"/>
         <color element="fill"  rgb="#bbbbbb" hover="true"/>
         <color element="stroke" rgb="#666666"/>
         <color element="stroke" rgb="#888888" hover="true"/>

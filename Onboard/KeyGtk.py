@@ -276,12 +276,18 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             if stroke_gradient:
                 if lod:
                     stroke = fill
-                    pat = cairo.LinearGradient (*gline)
-                    rgba = brighten(+stroke_gradient*.5, *stroke)
-                    pat.add_color_stop_rgba(0, *rgba)
-                    rgba = brighten(-stroke_gradient*.5, *stroke)
-                    pat.add_color_stop_rgba(1, *rgba)
-                    cr.set_source (pat)
+                    pat = cairo.LinearGradient(*gline)
+
+                    if self.pressed:
+                        stops = [-stroke_gradient * 0.5, +stroke_gradient * 0.5]
+                    else:
+                        stops = [+stroke_gradient * 0.5, -stroke_gradient * 0.5]
+
+                    for i, stop in enumerate(stops):
+                        rgba = brighten(stop, *stroke)
+                        pat.add_color_stop_rgba(i, *rgba)
+
+                    cr.set_source(pat)
                 else:
                     cr.set_source_rgba(*fill)
             else:

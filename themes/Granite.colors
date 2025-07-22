@@ -31,10 +31,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <key_group>
         <color element="fill"   rgb="#3a424f"/>
         <color element="fill"   rgb="#4a5260" hover="true"/>
-        <color element="stroke" rgb="#000000"/>
+        <color element="stroke" rgb="#3a424f"/>
         <color element="stroke" rgb="#888888" hover="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" pressed="true"/>
         <color element="label"  rgb="#ffffff" hover="true"/>
+
         icon0
         
         <key_group>

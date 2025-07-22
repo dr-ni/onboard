@@ -36,10 +36,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="fill"   rgb="#ff0000" opacity="1.0" locked="true"/>
         <color element="fill"   rgb="#e5d8b2" opacity="1.0"/>
 
-        <color element="fill" rgb="#c0b48f" hover="true" prelight="true"/>
-        <color element="fill" rgb="#50509a" hover="true" scanned="true"/>
-        <color element="fill" rgb="#505050" hover="true" active="true"/>
-        <color element="fill" rgb="#aa0000" hover="true" locked="true"/>
         <color element="fill" rgb="#c0b48f" hover="true"/>
 
         <color element="stroke" rgb="#000000" opacity="1.0" active="true"/>

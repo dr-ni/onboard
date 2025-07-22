@@ -34,6 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="stroke" rgb="#616977"/>
         <color element="stroke" rgb="#a0a7b5" hover="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
         icon0
 
         <key_group>

@@ -499,13 +499,10 @@ class RectKeyCommon(KeyCommon):
         return self.svg_id
 
     def get_state(self):
-        state = {}
-        state["hover"]  = self.hover
-        state["prelight"]  = self.prelight
-        state["pressed"]   = self.pressed
-        state["active"]    = self.active
-        state["locked"]    = self.locked
-        state["scanned"]   = self.scanned
+        keys = ["prelight", "pressed", "active", "locked", "scanned"]
+        state = {key: getattr(self, key) for key in keys}
+        if not any(state.values()):
+            state["hover"] = self.hover
         state["sensitive"] = self.sensitive
         return state
 
@@ -567,9 +564,9 @@ class RectKeyCommon(KeyCommon):
 
     def get_color(self, element, state=None):
         color_key = (element,
-                     self.prelight, self.hover, self.pressed,
+                     self.prelight, self.pressed,
                      self.active, self.locked,
-                     self.sensitive, self.scanned)
+                     self.sensitive, self.scanned, self.hover)
         try:
             return self.colors[color_key]
         except KeyError:
