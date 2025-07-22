@@ -500,6 +500,16 @@ class Settings(DialogBuilder):
                        config.keyboard, "inter_key_stroke_delay",
                        get_inter_key_stroke_delay, set_inter_key_stroke_delay)
 
+        def get_unpress_delay(config_object, key):
+            return getattr(config_object, key)
+
+        def set_unpress_delay(config_object, key, value):
+            setattr(config_object, key, value)
+
+        self.bind_spin("unpress_delay_spinbutton",
+                       config.keyboard, "unpress_delay",
+                       get_unpress_delay, set_unpress_delay)
+
         # Auto-show
         self._page_auto_show = PageAutoShow(self, builder)
 

@@ -110,7 +110,7 @@ class UnpressTimers:
         if not timer:
             timer = Timer()
             self._timers[key] = timer
-        timer.start(config.UNPRESS_DELAY, self.on_timer, key)
+        timer.start(config.keyboard.unpress_delay, self.on_timer, key)
 
     def stop(self, key):
         timer = self._timers.get(key)
