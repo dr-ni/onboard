@@ -483,7 +483,7 @@ class LayoutPopup(KeyboardPopupDrawable, LayoutView, TouchInput):
 
         if key and \
            not self._drag_selected:
-            Timer(config.keyboard.unpress_delay, self.close_window)
+            Timer(config.UNPRESS_DELAY, self.close_window)
         else:
             self.close_window()
 

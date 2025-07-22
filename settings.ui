@@ -87,7 +87,7 @@
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkAdjustment" id="_unpress_delay_adjustment">
+  <object class="GtkAdjustment" id="_popup_duration_adjustment">
     <property name="lower">0.0</property>
     <property name="upper">1.25</property>
     <property name="step_increment">0.01</property>
@@ -2901,17 +2901,17 @@ Requires restart.</property>
                                             <property name="orientation">vertical</property>
                                             <property name="spacing">2</property>
                                             <child>
-                                              <object class="GtkBox" id="unpress_delay_box">
+                                              <object class="GtkBox" id="popup_duration_box">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
                                                 <property name="spacing">12</property>
                                                 <child>
-                                                  <object class="GtkLabel" id="unpress_delay_label">
+                                                  <object class="GtkLabel" id="popup_duration_label">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
                                                     <property name="label" translatable="yes">Key unpress delay:</property>
                                                     <property name="use_underline">True</property>
-                                                    <property name="mnemonic_widget">unpress_delay_spinbutton</property>
+                                                    <property name="mnemonic_widget">popup_duration_spinbutton</property>
                                                     <property name="single_line_mode">True</property>
                                                     <property name="xalign">0</property>
                                                   </object>
@@ -2922,7 +2922,7 @@ Requires restart.</property>
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkSpinButton" id="unpress_delay_spinbutton">
+                                                  <object class="GtkSpinButton" id="popup_duration_spinbutton">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="tooltip_text" translatable="yes">Affects how long a key stays highlighed after pressing, also affects the key popups (if activated). Default=0.15, high values may feel "laggy".</property>
@@ -2930,7 +2930,7 @@ Requires restart.</property>
                                                     <property name="xalign">1</property>
                                                     <property name="shadow_type">out</property>
                                                     <property name="input_purpose">number</property>
-                                                    <property name="adjustment">_unpress_delay_adjustment</property>
+                                                    <property name="adjustment">_popup_duration_adjustment</property>
                                                     <property name="numeric">True</property>
                                                     <property name="digits">2</property>
                                                     <property name="text" translatable="yes">0.15</property>
@@ -4551,7 +4551,7 @@ Requires restart.</property>
       <widget name="label36"/>
       <widget name="label57"/>
       <widget name="label50"/>
-      <widget name="unpress_delay_label"/>
+      <widget name="popup_duration_label"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="keyboard_options_sizegroup">

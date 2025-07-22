@@ -315,10 +315,10 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Delay between key-strokes</summary>
             <description>Delay in seconds between generated key-strokes when inserting word suggestions or snippets. Mainly meant to work around key-stroke losses in Firefox and other Gtk-2 applications. Has no effect on Gtk-3 applications.</description>
         </key>
-        <key name="unpress-delay" type="d">
+        <key name="popup-duration" type="d">
             <default>0.06</default>
-            <summary>Unpress delay</summary>
-            <description>Affects how long a key stays highlighed after pressing. High values may feel "laggy". The default value in the older versions was 0.15.</description>
+            <summary>Popup duration</summary>
+            <description>Affects how long a key popup stays open</description>
         </key>
         <key name="modifier-update-delay" type="d">
             <default>1.0</default>

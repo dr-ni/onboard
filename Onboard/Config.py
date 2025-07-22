@@ -175,6 +175,9 @@ class Config(ConfigObject):
     # raised border size of dish keys
     DISH_KEY_BORDER = (2.5, 2.5)
 
+    # minimum time keys are drawn in pressed state
+    UNPRESS_DELAY = 0.15
+
     # Minimum duration the label popup is shown after releasing the key
     MIN_LABEL_POPUP_DURATION_MS = 200
     
@@ -1612,7 +1615,7 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("inter-key-stroke-delay", 0.0)
         self.add_key("modifier-update-delay", 1.0)
 
-        self.add_key("unpress-delay", 0.15)
+        self.add_key("popup-duration", 0.15)
 
         self.add_key("key-press-modifiers", {"button3" : "SHIFT"}, 'a{ss}')
 
