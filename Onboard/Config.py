@@ -1609,7 +1609,7 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("inter-key-stroke-delay", 0.0)
         self.add_key("modifier-update-delay", 1.0)
 
-        self.add_key("unpress-delay", 0.06)
+        self.add_key("unpress-delay", 0.15)
 
         self.add_key("key-press-modifiers", {"button3" : "SHIFT"}, 'a{ss}')
 

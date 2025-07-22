@@ -2925,7 +2925,7 @@ Requires restart.</property>
                                                   <object class="GtkSpinButton" id="unpress_delay_spinbutton">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
-                                                    <property name="tooltip_text" translatable="yes">Affects how long a key stays highlighed after pressing. High values may feel "laggy". The default value in the older versions was 0.15.</property>
+                                                    <property name="tooltip_text" translatable="yes">Affects how long a key stays highlighed after pressing, also affects the key popups (if activated). Default=0.15, high values may feel "laggy".</property>
                                                     <property name="invisible_char">•</property>
                                                     <property name="xalign">1</property>
                                                     <property name="shadow_type">out</property>
@@ -2933,8 +2933,8 @@ Requires restart.</property>
                                                     <property name="adjustment">_unpress_delay_adjustment</property>
                                                     <property name="numeric">True</property>
                                                     <property name="digits">2</property>
-                                                    <property name="text" translatable="yes">0.06</property>
-                                                    <property name="value">0.06</property>
+                                                    <property name="text" translatable="yes">0.15</property>
+                                                    <property name="value">0.15</property>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
