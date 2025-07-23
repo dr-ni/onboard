@@ -176,7 +176,7 @@ class Config(ConfigObject):
     DISH_KEY_BORDER = (2.5, 2.5)
 
     # minimum time keys are drawn in pressed state
-    UNPRESS_DELAY = 0.15
+    UNPRESS_DELAY = 0.06
     
     # Margin to leave around wordlist labels; smaller margins leave
     # more room for prediction choices

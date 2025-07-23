@@ -2909,7 +2909,7 @@ Requires restart.</property>
                                                   <object class="GtkLabel" id="popup_duration_label">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Popup  time [s]:</property>
+                                                    <property name="label" translatable="yes">Popup time [s]:</property>
                                                     <property name="use_underline">True</property>
                                                     <property name="mnemonic_widget">popup_duration_spinbutton</property>
                                                     <property name="single_line_mode">True</property>
