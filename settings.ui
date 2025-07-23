@@ -2909,7 +2909,7 @@ Requires restart.</property>
                                                   <object class="GtkLabel" id="popup_duration_label">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Key unpress delay:</property>
+                                                    <property name="label" translatable="yes">Key popup duration:</property>
                                                     <property name="use_underline">True</property>
                                                     <property name="mnemonic_widget">popup_duration_spinbutton</property>
                                                     <property name="single_line_mode">True</property>
@@ -2925,7 +2925,7 @@ Requires restart.</property>
                                                   <object class="GtkSpinButton" id="popup_duration_spinbutton">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
-                                                    <property name="tooltip_text" translatable="yes">Affects how long a key stays highlighed after pressing, also affects the key popups (if activated). Default=0.15, high values may feel "laggy".</property>
+                                                    <property name="tooltip_text" translatable="yes">Affects how long a key popup stays open</property>
                                                     <property name="invisible_char">•</property>
                                                     <property name="xalign">1</property>
                                                     <property name="shadow_type">out</property>
