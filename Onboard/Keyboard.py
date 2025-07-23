@@ -2359,7 +2359,7 @@ class Keyboard(WordSuggestions):
         self._set_temporary_modifiers(0)
         self._update_temporary_key_label(key, 0)
         self.redraw([key])
-        GLib.timeout_add(config.MIN_LABEL_POPUP_DURATION_MS, lambda: self._touch_feedback.hide(key) or False)
+        GLib.timeout_add(int(config.keyboard.popup_duration*1000), lambda: self._touch_feedback.hide(key) or False)
 
     def on_outside_click(self, button):
         """
