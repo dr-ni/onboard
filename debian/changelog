@@ -1,3 +1,38 @@
+onboard (1.4.3-8) UNRELEASED; urgency=medium
+
+  [ Uwe Niethammer ]
+  * Update README.md
+  * Update setup.py
+
+  [ Alex P. ]
+  * allow to specify unpress_delay via settings
+  * remove unused
+
+  [ dr-ni ]
+  * added script for toggle-onboard-hoverclick
+
+  [ Lukas Gottschall ]
+  * Implement key animation hover & set the UNPRESS_DELAY to 0.06
+  * apt_install_debs.sh: Update GLib schemas & icon cache also the version was not changed.
+  * set the UNPRESS_DELAY back to 0.15
+  * Preserve 'pressed' colors for fill, stroke, and label on hover Refactor themes/*.colors. Improve key stroke shading based on press state to simulate visual depth to gradient key  style. Avoid using unpress timers for non-touch input events.
+  * Add minimum display duration for label popup after key release Add missing label hover colors in themes/*.colors
+
+  [ Alex P. ]
+  * revert default unpress_delay to 0.15
+  * increase max unpress_delay
+
+  [ Lukas Gottschall ]
+  * Set LabelPopup color to match the unpressed and unhovered fill/label color of its key Change pressed color in Charcoal.colors to red Update MIN_LABEL_POPUP_DURATION_MS to 200 ms
+
+  [ dr-ni ]
+  * Rename unpress-delay to popup-duration
+  * cleanup
+  * added popup duration settings to keyboard->advanced settings
+  * revert UNPRESS_DELAY to 0.06 and code cleanup
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Thu, 24 Jul 2025 02:00:38 +0200
+
 onboard (1.4.3-7) release; urgency=medium
 
   [ Lukas Gottschall ]
