@@ -30,10 +30,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <key_group>
         <color element="fill"   rgb="#f1f1f1"/>
         <color element="fill"   rgb="#888888" hover="true"/>
+        <color element="fill"   rgb="#f44336" pressed="true"/>
         <color element="stroke" rgb="#DD4814"/>
         <color element="stroke" rgb="#BB3700" hover="true"/>
+        <color element="stroke" rgb="#f46f65" pressed="true"/>
         <color element="label"  rgb="#000000"/>
         <color element="label"  rgb="#202020" hover="true"/>
+        <color element="label"  rgb="#ffffff" pressed="true"/>
         <color element="dwell-progress" rgb="#f19671"/>
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, Scroll,
@@ -47,8 +50,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
             <color element="fill"  rgb="#ff9980" hover="true"/>
+            <color element="fill"  rgb="#f44336" pressed="true"/>
             <color element="label" rgb="#C00000"/>
             <color element="label" rgb="#800000" hover="true"/>
+            <color element="label" rgb="#ffffff" pressed="true"/>
             correctionsbg,
             correction
         </key_group>
@@ -57,6 +62,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="stroke" rgb="#404040"/>
             <color element="stroke" rgb="#606060" hover="true"/>
+            <color element="stroke" rgb="#f46f65" pressed="true"/>
             icon1, icon2
         </key_group>
 
@@ -64,6 +70,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill" rgb="#f2d8e6"/>
             <color element="fill" rgb="#f2c0db" hover="true"/>
+            <color element="fill" rgb="#f44336" pressed="true"/>
             ESC,
             AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
             KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9,
@@ -73,6 +80,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill" rgb="#e1e1e1"/>
             <color element="fill" rgb="#aaaaaa" hover="true"/>
+            <color element="fill" rgb="#f44336" pressed="true"/>
             RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
             LEFT, RGHT, UP, DOWN,
             KP0, KPDL,
@@ -83,6 +91,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <key_group>
                 <color element="fill" active="true" locked="false" rgb="#c1c1c1"/>
                 <color element="fill" rgb="#dddddd" hover="true" active="true"/>
+                <color element="fill" rgb="#f44336" pressed="true"/>
                 hide, showclick, move, layer
             </key_group>
         </key_group>
@@ -91,11 +100,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill" rgb="#f19671"/>
             <color element="fill" rgb="#f17441" hover="true"/>
+            <color element="fill" rgb="#f44336" pressed="true"/>
             SPCE, LFSH, RTSH,
             settings
             <key_group>
                 <color element="stroke" rgb="#404040"/>
                 <color element="stroke" rgb="#606060" hover="true"/>
+                <color element="stroke" rgb="#f46f65" pressed="true"/>
                 icon0
             </key_group>
         </key_group>
@@ -104,21 +115,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill" rgb="#d98fb7"/>
             <color element="fill" rgb="#d964a3" hover="true"/>
+            <color element="fill" rgb="#f44336" pressed="true"/>
             BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK,
             layer.like_rtrn, LFSH.like_rtrn
             <key_group>
                 <color element="stroke" rgb="#404040"/>
                 <color element="stroke" rgb="#606060" hover="true"/>
+                <color element="stroke" rgb="#f46f65" pressed="true"/>
                 icon3
             </key_group>
         </key_group>
 
         <!-- snippets -->
         <key_group>
-            <color element="fill" rgb="#d6c8ff"/>
-            <color element="fill" rgb="#aa8dff" hover="true"/>
+            <color element="fill"   rgb="#d6c8ff"/>
+            <color element="fill"   rgb="#aa8dff" hover="true"/>
+            <color element="fill"   rgb="#f44336" pressed="true"/>
             <color element="stroke" rgb="#DD4814"/>
             <color element="stroke" rgb="#BB3700" hover="true"/>
+            <color element="stroke" rgb="#f46f65" pressed="true"/>
             m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
         </key_group>
 
@@ -126,6 +141,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill" rgb="#f27f7f"/>
             <color element="fill" rgb="#ffaaaa" hover="true"/>
+            <color element="fill" rgb="#f44336" pressed="true"/>
         </key_group>
     </key_group>
 </color_scheme>
