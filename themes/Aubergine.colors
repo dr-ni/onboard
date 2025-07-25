@@ -50,7 +50,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <key_group>
             <color element="fill"  rgb="#e5c6b2"/>
             <color element="fill"  rgb="#ff9980" hover="true"/>
-            <color element="fill"  rgb="#f44336" pressed="true"/>
+            <color element="fill"  rgb="#000000" pressed="true"/>
             <color element="label" rgb="#C00000"/>
             <color element="label" rgb="#800000" hover="true"/>
             <color element="label" rgb="#ffffff" pressed="true"/>

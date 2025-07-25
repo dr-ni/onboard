@@ -73,7 +73,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
-                <color element="fill" rgb="#2a3a44" hover="true"/>
+                <color element="fill" rgb="#ffffff" hover="true"/>
                 <color element="fill" rgb="#f44336" pressed="true"/>
                 prediction
                 <key_group>
