@@ -26,10 +26,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
     <key_group>
         <color element="fill"   rgb="#000000"/>
+        <color element="fill"   rgb="#f44336" pressed="true"/>
         <color element="fill"   rgb="#404040" hover="true"/>
         <color element="stroke" rgb="#888888"/>
+        <color element="stroke" rgb="#f46f65" pressed="true"/>
         <color element="stroke" rgb="#bbbbbb" hover="true"/>
         <color element="label"  rgb="#ffffff"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
+        <color element="label"  rgb="#ffffff" pressed="true"/>
         layer,
         icon0, icon3
         

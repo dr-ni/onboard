@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright © 2011 Alan Bell <alanbell@ubuntu.com>
+Copyright © 2011-2013 marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
+Onboard is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+Onboard is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<color_scheme name="Aubergine (Dark)" format="2.0">
+    <layer> <color element="background" rgb="#1c1c1c" opacity="1.0"/> </layer>
+    <layer> <color element="background" rgb="#301c38" opacity="0.9"/> </layer>
+    <layer> <color element="background" rgb="#301c38" opacity="0.8"/> </layer>
+    <layer> <color element="background" rgb="#5a1f0f" opacity="0.8"/> </layer>
+
+    <!-- dark base -->
+    <key_group>
+        <color element="fill"   rgb="#2a2a2a"/>
+        <color element="fill"   rgb="#444444" hover="true"/>
+        <color element="fill"   rgb="#c72f2f" pressed="true"/>
+        <color element="stroke" rgb="#aa370f"/>
+        <color element="stroke" rgb="#883000" hover="true"/>
+        <color element="stroke" rgb="#c75a4a" pressed="true"/>
+        <color element="label"  rgb="#eeeeee"/>
+        <color element="label"  rgb="#ffffff" hover="true"/>
+        <color element="label"  rgb="#ffffff" pressed="true"/>
+        <color element="dwell-progress" rgb="#f19671"/>
+        F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+        Prnt, Pause, Scroll,
+        INS, DELE, HOME, END, PGUP, PGDN,
+        KPSU, KPDV KPAD, KPMU,
+        middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick,
+        LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid,
+        hide.wordlist
+
+        <!-- spelling suggestions -->
+        <key_group>
+            <color element="fill"  rgb="#604444"/>
+            <color element="fill"  rgb="#804040" hover="true"/>
+            <color element="fill"  rgb="#000000" pressed="true"/>
+            <color element="label" rgb="#ffaaaa"/>
+            <color element="label" rgb="#ffbbbb" hover="true"/>
+            <color element="label" rgb="#ffffff" pressed="true"/>
+            correctionsbg,
+            correction
+        </key_group>
+
+        <!-- stroke dark -->
+        <key_group>
+            <color element="stroke" rgb="#202020"/>
+            <color element="stroke" rgb="#404040" hover="true"/>
+            <color element="stroke" rgb="#c75a4a" pressed="true"/>
+            icon1, icon2
+        </key_group>
+
+        <!-- pink numbers -->
+        <key_group>
+            <color element="fill" rgb="#8c4c70"/>
+            <color element="fill" rgb="#a05085" hover="true"/>
+            <color element="fill" rgb="#c72f2f" pressed="true"/>
+            ESC,
+            AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
+            KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9,
+        </key_group>
+
+        <!-- gray bottom -->
+        <key_group>
+            <color element="fill" rgb="#3a3a3a"/>
+            <color element="fill" rgb="#555555" hover="true"/>
+            <color element="fill" rgb="#c72f2f" pressed="true"/>
+            RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
+            LEFT, RGHT, UP, DOWN,
+            KP0, KPDL,
+            hoverclick.bottom-row,
+            quit
+
+            <key_group>
+                <color element="fill" active="true" locked="false" rgb="#4c4c4c"/>
+                <color element="fill" rgb="#5c5c5c" hover="true" active="true"/>
+                <color element="fill" rgb="#c72f2f" pressed="true"/>
+                hide, showclick, move, layer
+            </key_group>
+        </key_group>
+
+        <!-- orange -->
+        <key_group>
+            <color element="fill" rgb="#a0502a"/>
+            <color element="fill" rgb="#b06030" hover="true"/>
+            <color element="fill" rgb="#c72f2f" pressed="true"/>
+            SPCE, LFSH, RTSH,
+            settings
+            <key_group>
+                <color element="stroke" rgb="#404040"/>
+                <color element="stroke" rgb="#606060" hover="true"/>
+                <color element="stroke" rgb="#c75a4a" pressed="true"/>
+                icon0
+            </key_group>
+        </key_group>
+
+        <!-- aubergine -->
+        <key_group>
+            <color element="fill" rgb="#704860"/>
+            <color element="fill" rgb="#804070" hover="true"/>
+            <color element="fill" rgb="#c72f2f" pressed="true"/>
+            BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK,
+            layer.like_rtrn, LFSH.like_rtrn
+            <key_group>
+                <color element="stroke" rgb="#404040"/>
+                <color element="stroke" rgb="#606060" hover="true"/>
+                <color element="stroke" rgb="#c75a4a" pressed="true"/>
+                icon3
+            </key_group>
+        </key_group>
+
+        <!-- snippets -->
+        <key_group>
+            <color element="fill"   rgb="#3f3f5f"/>
+            <color element="fill"   rgb="#5a5a8a" hover="true"/>
+            <color element="fill"   rgb="#c72f2f" pressed="true"/>
+            <color element="stroke" rgb="#aa370f"/>
+            <color element="stroke" rgb="#883000" hover="true"/>
+            <color element="stroke" rgb="#c75a4a" pressed="true"/>
+            m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
+        </key_group>
+
+        <!-- preferences -->
+        <key_group>
+            <color element="fill" rgb="#884040"/>
+            <color element="fill" rgb="#a05050" hover="true"/>
+            <color element="fill" rgb="#c72f2f" pressed="true"/>
+        </key_group>
+    </key_group>
+</color_scheme>
