@@ -110,7 +110,7 @@ class UnpressTimers:
         if not timer:
             timer = Timer()
             self._timers[key] = timer
-        timer.start(config.keyboard.popup-duration, self.on_timer, key)
+        timer.start(config.keyboard.popup_duration, self.on_timer, key)
 
     def stop(self, key):
         timer = self._timers.get(key)
