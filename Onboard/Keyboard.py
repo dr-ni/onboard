@@ -2383,7 +2383,7 @@ class Keyboard(WordSuggestions):
             self._touch_feedback.hide(self._popup_key)
 
         self._popup_hide_timer_id = GLib.timeout_add(
-            config.UNPRESS_DELAY*1000,
+            int(config.keyboard.popup_duration*1000),
             lambda: self._hide_touch_feedback(key)
         )
         
