@@ -40,24 +40,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="stroke" rgb="#444444" hover="true"/>
         <color element="stroke" rgb="#f46f65" pressed="true"/>
         <color element="label"  rgb="#000000"/>
-        <color element="label"  rgb="#222222" hover="true"/>
+        <color element="label"  rgb="#444444" hover="true"/>
         <color element="label"  rgb="#ffffff" pressed="true"/>
         <color element="dwell-progress"  rgb="#f19671"/>
         F5.rows_of_six, F6.rows_of_six, F7.rows_of_six, F8.rows_of_six,
         icon1, icon2,
-        pause-learning.wordlist, language.wordlist, hide.wordlist
-
-        <!-- word suggestions -->
-        <key_group>
-            <color element="fill"  rgb="#e5c6b2"/>
-            <color element="fill"  rgb="#d8aa99" hover="true"/>
-            <color element="fill"  rgb="#f44336" pressed="true"/>
-            <color element="label" rgb="#C00000"/>
-            <color element="label" rgb="#800000" hover="true"/>
-            <color element="label"  rgb="#ffffff" pressed="true"/>
-            correctionsbg,
-            correction
-        </key_group>
+        wordlist, pause-learning.wordlist, language.wordlist, hide.wordlist, prediction, correction
 
         <!-- dark keys -->
         <key_group>
