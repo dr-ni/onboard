@@ -25,7 +25,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </window>
 
     <icon> <color element="background" rgb="#9a9a9a" opacity="1.0"/> </icon>
-    
     <layer> <color element="background" rgb="#9a9a9a" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#9a9a9a" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#9a9a9a" opacity="0.9"/> </layer>

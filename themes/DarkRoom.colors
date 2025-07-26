@@ -85,8 +85,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             settings
         </key_group>
 
-	<!-- word suggestions -->
-	<key_group>
+	    <!-- word suggestions -->
+    	<key_group>
             <color element="fill" rgb="#242010"/>
             <color element="fill" rgb="#ffffff" hover="true"/>
             <color element="fill" rgb="#f44336" pressed="true"/>
@@ -97,6 +97,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
                     <color element="fill" rgb="#f44336" pressed="true"/>
                     wordlist, pause-learning.wordlist, language.wordlist, hide.wordlist
                 </key_group>
+        </key_group>
 	</key_group>
-    </key_group>
 </color_scheme>

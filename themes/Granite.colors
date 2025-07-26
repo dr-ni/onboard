@@ -38,14 +38,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <color element="label"  rgb="#ffffff"/>
         <color element="label"  rgb="#ffffff" pressed="true"/>
         <color element="label"  rgb="#ffffff" hover="true"/>
-
         icon0
         
         <key_group>
             <color element="fill" rgb="#ffffff"/>
             <color element="fill" rgb="#dddddd" hover="true"/>
             <color element="fill"   rgb="#f44336" pressed="true"/>
-            
             icon1, icon2
         </key_group>
         
@@ -68,7 +66,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
             hide, showclick, move, layer,
             quit
-
             <!-- word suggestions -->
             <key_group>
                 <color element="fill" rgb="#111920"/>
