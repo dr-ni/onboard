@@ -671,6 +671,8 @@ class Keyboard(WordSuggestions):
         self._visibility_requested = None
 
         self._character_palettes = []
+        self._popup_key = None
+        self._popup_hide_timer_id = None
 
         self.reset()
 
@@ -2352,15 +2354,39 @@ class Keyboard(WordSuggestions):
                sequence.event_type != EventType.DWELL and \
                key.can_show_label_popup() and \
                feedback:
+                if self._popup_key and self._popup_key != key:
+                    self._touch_feedback.hide(self._popup_key)
+
+                    if self._popup_hide_timer_id:
+                        GLib.source_remove(self._popup_hide_timer_id)
+                        self._popup_hide_timer_id = None
+
+                self._popup_key = key
                 self._touch_feedback.show(key, view)
+                
+    def _hide_touch_feedback(self, key):
+        self._touch_feedback.hide(key)
+        self._popup_hide_timer_id = None
+        return False
 
     def on_key_unpressed(self, key):
         """ pressed state of a key instance was cleard """
         self._set_temporary_modifiers(0)
         self._update_temporary_key_label(key, 0)
         self.redraw([key])
-        GLib.timeout_add(int(config.keyboard.popup_duration*1000), lambda: self._touch_feedback.hide(key) or False)
 
+        if self._popup_hide_timer_id:
+            GLib.source_remove(self._popup_hide_timer_id)
+            self._popup_hide_timer_id = None
+            
+        if self._popup_key and self._popup_key != key:
+            self._touch_feedback.hide(self._popup_key)
+
+        self._popup_hide_timer_id = GLib.timeout_add(
+            config.MIN_LABEL_POPUP_DURATION_MS,
+            lambda: self._hide_touch_feedback(key)
+        )
+        
     def on_outside_click(self, button):
         """
         Called by outside click polling.

@@ -359,11 +359,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulatorAspectRatio,
 
         self._hovered_key = False
         self.connect("motion-notify-event", self.on_motion)
+        self.connect("leave-notify-event", self.on_mouse_leave)
         self.set_events(Gdk.EventMask.POINTER_MOTION_MASK |
                         Gdk.EventMask.LEAVE_NOTIFY_MASK |
                         self.get_events())
         
         self.show()
+        
+    def on_mouse_leave(self, widget, event):
+        if self._hovered_key:
+            self._hovered_key.hover = False
+            self._hovered_key.invalidate_key()
+            self._hovered_key = None
+        self.queue_draw()
 
     def on_motion(self, widget, event):
         top_key = self.get_key_at_location((int(event.x), int(event.y)))
