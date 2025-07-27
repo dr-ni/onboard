@@ -1237,7 +1237,8 @@ class Keyboard(WordSuggestions):
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
-                if sequence and sequence.is_touch():
+
+                if ((sequence and sequence.is_touch()) or (config.mousetweaks and config.mousetweaks.is_active())):
                     self._unpress_timers.start(key)
                 else:
                     key.pressed = False
