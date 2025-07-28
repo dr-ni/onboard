@@ -2,7 +2,7 @@
 
 ![onb](https://github.com/dr-ni/onboard/blob/main/onboard.png)
 
-![onb](https://github.com/dr-ni/onboard/blob/main/onboard-de.png)
+![onb](https://github.com/dr-ni/onboard/blob/main/Onboard.gif)
 
 ## Description
 
