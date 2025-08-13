@@ -1,4 +1,4 @@
-onboard (1.4.3-8) UNRELEASED; urgency=medium
+onboard (1.4.3-9) UNRELEASED; urgency=medium
 
   [ Uwe Niethammer ]
   * Update README.md
@@ -30,8 +30,43 @@ onboard (1.4.3-8) UNRELEASED; urgency=medium
   * cleanup
   * added popup duration settings to keyboard->advanced settings
   * revert UNPRESS_DELAY to 0.06 and code cleanup
+  * Update color schemes
+  * cleanup
+  * fix suggestions colors
+  * added HighContrastInverseBlue theme
+  * update of color schemes
+  * fixed color theme
 
- -- Uwe Niethammer <uwe@dr-niethammer.de>  Thu, 24 Jul 2025 02:00:38 +0200
+  [ Lukas Gottschall ]
+  * Fix: Hover effect remains when cursor leaves keyboard Hide active key popup immediately when another key is pressed
+  * Fix config.MIN_LABEL_POPUP_DURATION_MS was removed
+  * Add hover and pressed state colors to themes/Black.colors Introduce new "Ambiance Dark" color scheme
+  * Resolve merge conflict: popup duration chage
+
+  [ dr-ni ]
+  * fix typo
+  * fix wrong usage
+
+  [ Lukas Gottschall ]
+  * Add a script to refresh translations
+  * Start unpress_timers if simulated clicks are active Fix popup random color behaviour
+
+  [ dr-ni ]
+  * updated de translations
+  * cleanup
+  * updated all po files
+
+  [ Uwe Niethammer ]
+  * Add files via upload
+  * Update README.md
+
+  [ dr-ni ]
+  * code cleanup
+  * cleanup
+  * Added new theme 'Ronboard'
+  * fixed color_scheme
+
+ -- Uwe Niethammer <uwe@dr-niethammer.de>  Wed, 13 Aug 2025 18:35:57 +0200
 
 onboard (1.4.3-7) release; urgency=medium
 
