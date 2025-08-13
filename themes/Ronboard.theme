@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <theme name="Ronboard" format="1.3">
-  <color_scheme>Charcoal</color_scheme>
+  <color_scheme>Aubergine</color_scheme>
   <background_gradient>52.0</background_gradient>
   <key_style>gradient</key_style>
   <roundrect_radius>100.0</roundrect_radius>
