@@ -1,8 +1,8 @@
 # Onboard 1.4.3-9
 
-![onb](https://github.com/dr-ni/onboard/blob/main/onboard.png)
+![onb](https://github.com/onboard-osk/onboard/blob/main/onboard.png)
 
-![onb](https://github.com/dr-ni/onboard/blob/main/Onboard.gif)
+![onb](https://github.com/onboard-osk/onboard/blob/main/Onboard.gif)
 
 ## Description
 
@@ -59,7 +59,7 @@ new distributions are always welcome too.
         Next step is "Build and Install from Source"
 
 ## Build and Install from Source
-        git clone https://github.com/dr-ni/onboard
+        git clone https://github.com/onboard-osk/onboard
         cd onboard
         python3 setup.py clean
         python3 setup.py build
@@ -145,20 +145,20 @@ The `apt_install_debs.sh` script simplifies installing the generated `.deb` pack
 The Onboard D-Bus interface allows communication between Onboard and other processes running concurrently on the Linux desktop.
 
 Here the Interface description:
-[DBUS.md](https://github.com/dr-ni/onboard/blob/main/DBUS.md)
+[DBUS.md](https://github.com/onboard-osk/onboard/blob/main/DBUS.md)
 
 ## Mousetweaks
 
 This optional package provides mouse accessibility enhancements for the GNOME desktop.
 It offers a way to perform clicks without using any physical mouse buttons (Hover Click).
 The package is also available in various package managers. However, it is often
-not working anymore with onboard. In this case a manual installation from https://github.com/dr-ni/mousetweaks should help.
+not working anymore with onboard. In this case a manual installation from https://github.com/onboard-osk/mousetweaks should help.
 
 ## Homepage
-https://github.com/dr-ni/onboard
+https://github.com/onboard-osk/onboard
 
 ## Reporting Bugs
-https://github.com/dr-ni/onboard/issues
+https://github.com/onboard-osk/onboard/issues
 
 ## License
 This program is released under the terms of the GNU General Public License. Please see the file COPYING for details.
