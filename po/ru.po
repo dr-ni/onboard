@@ -247,11 +247,11 @@ msgstr "Невозможно получить значение gsettings. "
 
 #: ../Onboard/Indicator.py:56
 msgid "_Show Onboard"
-msgstr "_Показать Onboard"
+msgstr "_Показать экранную клавиатуру"
 
 #: ../Onboard/Indicator.py:57
 msgid "_Hide Onboard"
-msgstr "_Скрыть Onboard"
+msgstr "_Скрыть экранную клавиатуру"
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_PREFERENCES until Gtk 3.10 deprecated those.
@@ -261,7 +261,7 @@ msgstr "_Параметры"
 
 #: ../Onboard/Indicator.py:91
 msgid "_Help"
-msgstr ""
+msgstr "_Справка"
 
 #. Translators: label of a menu item. It used to be stock item
 #. STOCK_QUIT until Gtk 3.10 deprecated those.
@@ -342,17 +342,17 @@ msgstr "Это действует только на запомненные пр�
 #: ../Onboard/KeyboardWidget.py:2072
 #, fuzzy
 msgid "Remove '{}' only where it occurs at text begin."
-msgstr "Убрать '{}' только там, где оно в начале текста."
+msgstr "Убрать '{}' только там, где оно встречается в начале текста."
 
 #: ../Onboard/KeyboardWidget.py:2075
 #, fuzzy
 msgid "Remove '{}' only where it occurs at sentence begin."
-msgstr "Убрать '{}' только там, где оно в начале предложения."
+msgstr "Убрать '{}' только там, где оно встречается в начале предложения."
 
 #: ../Onboard/KeyboardWidget.py:2078
 #, fuzzy
 msgid "Remove '{}' only where it occurs after numbers."
-msgstr "Убрать '{}' только там, где оно после чисел."
+msgstr "Убрать '{}' только там, где оно встречается после чисел."
 
 #: ../Onboard/KeyboardWidget.py:2081
 #, fuzzy
@@ -361,7 +361,7 @@ msgstr "Убать '{}' только там, где оно идёт после '
 
 #: ../Onboard/KeyboardWidget.py:2121
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #. model.clear()
 #: ../Onboard/KeyboardWidget.py:2165 ../Onboard/settings.py:845
@@ -374,7 +374,7 @@ msgstr "Созданные пользователями"
 
 #: ../Onboard/KeyboardWidget.py:2167 ../Onboard/settings.py:847
 msgid "My layouts"
-msgstr ""
+msgstr "Мои раскладки"
 
 #: ../Onboard/LanguageSupport.py:173 ../Onboard/SpellChecker.py:634
 #: ../Onboard/SpellChecker.py:670 ../Onboard/SpellChecker.py:709
@@ -548,7 +548,7 @@ msgstr "Настройки Onboard"
 #. the size of the label popup.
 #: ../Onboard/settings.py:685
 msgid "auto"
-msgstr ""
+msgstr "автоматически"
 
 #: ../Onboard/settings.py:761
 msgid "Copy layout '{}' to this new name:"
@@ -610,13 +610,13 @@ msgstr "_Удалить"
 #. keyboard devices (Preferences->Auto-show->External Keyboards).
 #: ../Onboard/settings.py:1288
 msgid "Ignore"
-msgstr ""
+msgstr "Игнорировать"
 
 #. Translators: header of a tree view column with device names
 #. (Preferences->Auto-show->External Keyboards).
 #: ../Onboard/settings.py:1292
 msgid "Device"
-msgstr ""
+msgstr "Устройство"
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1629
@@ -675,7 +675,7 @@ msgstr "Вверх"
 
 #: ../Onboard/settings.py:1878
 msgid "Down"
-msgstr "Down"
+msgstr "Вниз"
 
 #: ../Onboard/settings.py:1879
 msgid "Activate"
@@ -1234,7 +1234,7 @@ msgstr "Переместить клавиатуру"
 #. translators: this is a 'tooltip' of the key 'previous-predictions.wordlist' in keyboard layout 'word_suggestions.xml'
 #: ../data/layoutstrings.py:301
 msgid "Previous suggestions"
-msgstr ""
+msgstr "Предыдущие предложения"
 
 #. translators: this is a 'tooltip' of the key 'quit' in keyboard layout 'Whiteboard.onboard'
 #: ../data/layoutstrings.py:304
@@ -1292,7 +1292,7 @@ msgstr "Экранная клавиатура Onboard"
 
 #: ../data/onboard-autostart.desktop.in.h:3 ../data/onboard.desktop.in.h:3
 msgid "Flexible onscreen keyboard"
-msgstr ""
+msgstr "Удобная экранная клавиатура"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -1308,11 +1308,11 @@ msgstr "Изменить настройки Onboard"
 
 #: ../data/onboard-settings.desktop.in.h:4
 msgid "onscreen;keyboard;accessibility;utility;settings;configuration;"
-msgstr ""
+msgstr "экранная;клавиатура;специальные возможности;утилита;настройки;конфигурация;"
 
 #: ../data/onboard.desktop.in.h:4
 msgid "onscreen;keyboard;accessibility;utility;"
-msgstr ""
+msgstr "экранная;клавиатура;специальные возможности;утилита;"
 
 #: ../settings.ui.h:1
 msgid "Key-repeat"
@@ -1364,7 +1364,7 @@ msgstr "XInput"
 
 #: ../settings.ui.h:13
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: ../settings.ui.h:14
 msgid "XTest"
@@ -1424,7 +1424,7 @@ msgstr "Клавиатура"
 
 #: ../settings.ui.h:29
 msgid "Auto-show"
-msgstr ""
+msgstr "Авто-отображение"
 
 #: ../settings.ui.h:30
 msgid "Typing Assistance"
@@ -1436,11 +1436,11 @@ msgstr "Специальные возможности"
 
 #: ../settings.ui.h:32
 msgid "Only move when necessary"
-msgstr ""
+msgstr "Перемещать только при необходимости"
 
 #: ../settings.ui.h:33
 msgid "Follow the active window"
-msgstr ""
+msgstr "Следовать за активным окном"
 
 #: ../settings.ui.h:34
 msgid "Latch, then lock"
@@ -1477,7 +1477,7 @@ msgstr "мультитач"
 #: ../settings.ui.h:42
 msgctxt "Label of the main close button of the preferences dialog."
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #: ../settings.ui.h:43
 msgid "_Auto-show when editing text"
@@ -1544,7 +1544,7 @@ msgstr "Показывать подсказки для кнопок клавиа
 
 #: ../settings.ui.h:55
 msgid "_Show status icon"
-msgstr "_Показать значок состояния"
+msgstr "_Показывать значок состояния"
 
 #: ../settings.ui.h:56
 msgid "Show the status item. A click on that icon hides or shows Onboard."
@@ -1553,7 +1553,7 @@ msgstr ""
 
 #: ../settings.ui.h:57
 msgid "Status icon _provider:"
-msgstr ""
+msgstr "_Источник значка состояния:"
 
 #: ../settings.ui.h:58
 msgid ""
@@ -1591,7 +1591,7 @@ msgstr "Прикрепить клавиатуру к краю экрана."
 #: ../settings.ui.h:66
 msgctxt "Label of settings button on preferences page Window."
 msgid "_Settings"
-msgstr ""
+msgstr "_Параметры"
 
 #: ../settings.ui.h:67
 msgid "Docking"
@@ -1708,11 +1708,11 @@ msgstr "Когда неактивно"
 
 #: ../settings.ui.h:94
 msgid "_Window handles of the keyboard window:"
-msgstr ""
+msgstr "_Оконные ручки окна клавиатуры:"
 
 #: ../settings.ui.h:95
 msgid "_Window handles of the floating icon:"
-msgstr ""
+msgstr "_Оконные ручки плавающего значка:"
 
 #: ../settings.ui.h:96
 msgid "Resize Protection"
@@ -1729,37 +1729,37 @@ msgstr "Описание"
 #: ../settings.ui.h:99
 msgctxt "Label of new layout button on preferences page Layout."
 msgid "_New"
-msgstr ""
+msgstr "_Создать"
 
 #: ../settings.ui.h:100
 msgctxt "Label of delete layout button on preferences page Layout."
 msgid "_Delete"
-msgstr ""
+msgstr "_Удалить"
 
 #: ../settings.ui.h:101
 msgctxt "Label of open folder button on preferences page Layout."
 msgid "_Open layouts folder"
-msgstr ""
+msgstr "_Открыть папку раскладок"
 
 #: ../settings.ui.h:102
 msgctxt "Label of about layout button on preferences page Layout."
 msgid "_About"
-msgstr ""
+msgstr "_О программе"
 
 #: ../settings.ui.h:103
 msgctxt "Label of new theme button on preferences page Theme."
 msgid "_New"
-msgstr ""
+msgstr "_Создать"
 
 #: ../settings.ui.h:104
 msgctxt "Label of delete theme  button on preferences page Theme."
 msgid "_Delete"
-msgstr ""
+msgstr "_Удалить"
 
 #: ../settings.ui.h:105
 msgctxt "Label of customize theme button on preferences page Theme."
 msgid "C_ustomize theme"
-msgstr ""
+msgstr "Н_астроить тему"
 
 #: ../settings.ui.h:106
 msgid "Follow _system theme"
@@ -1781,12 +1781,12 @@ msgstr ""
 #: ../settings.ui.h:109
 msgctxt "Label of add snippet button on preferences page Snippets."
 msgid "_Add"
-msgstr ""
+msgstr "_Добавить"
 
 #: ../settings.ui.h:110
 msgctxt "Label of remove snippet button on preferences page Snippets."
 msgid "_Remove"
-msgstr ""
+msgstr "_Удалить"
 
 #: ../settings.ui.h:111
 msgid "Play sound"
@@ -1798,13 +1798,15 @@ msgstr "Воспроизводить звук щелчка при нажатии
 
 #: ../settings.ui.h:113
 msgid "Place sound in space"
-msgstr ""
+msgstr "Пространственное позиционирование звука"
 
 #: ../settings.ui.h:114
 msgid ""
 "Place sound in space between speakers depending on the key's position on "
 "screen"
 msgstr ""
+"Размещать звук в пространстве между динамиками в зависимости от положения "
+"клавиши на экране"
 
 #: ../settings.ui.h:115
 msgid "Show label popups"
@@ -1816,7 +1818,7 @@ msgstr "Показывать нажатые клавиши в всплывающ
 
 #: ../settings.ui.h:117
 msgid "Popup size:"
-msgstr ""
+msgstr "Размер всплывающего сообщения:"
 
 #: ../settings.ui.h:118
 msgid "Key-press Feedback"
@@ -1838,15 +1840,15 @@ msgstr "Метки клавиши"
 
 #: ../settings.ui.h:122
 msgid "Upper case on right click"
-msgstr ""
+msgstr "Верхний регистр при щелчке правой кнопкой мыши"
 
 #: ../settings.ui.h:123
 msgid "Temporarily enable SHIFT when clicking with the secondary button."
-msgstr ""
+msgstr "Временно включать SHIFT при щелчке правой кнопкой мыши."
 
 #: ../settings.ui.h:124
 msgid "Key Behaviour"
-msgstr ""
+msgstr "Поведение клавиши"
 
 #: ../settings.ui.h:125
 msgid "_Long press action:"
@@ -1883,7 +1885,7 @@ msgstr ""
 
 #: ../settings.ui.h:131
 msgid "Modifier auto-release after hide in seconds:"
-msgstr ""
+msgstr "Автоматическое освобождение модификатора после скрытия (сек.):"
 
 #: ../settings.ui.h:132
 msgid ""
@@ -1891,6 +1893,9 @@ msgid ""
 "and layer keys are released automatically. Leave at 0.0 to not automatically "
 "release them."
 msgstr ""
+"Время после скрытия клавиатуры в секундах, по истечении которого разово и "
+"постоянно зафиксированные модификаторы и клавиши раскладки отпускаются "
+"автоматически. Укажите 0.0, чтобы отключить автоматическое отпускание."
 
 #: ../settings.ui.h:133
 msgid "0,00"
@@ -1982,15 +1987,15 @@ msgstr "Генерация нажатий клавиш"
 
 #: ../settings.ui.h:151
 msgid "Popup time [s]:"
-msgstr ""
+msgstr "Время всплывания [с]:"
 
 #: ../settings.ui.h:152
 msgid "Affects how long a key popup stays open."
-msgstr ""
+msgstr "Определяет, как долго остаётся открытым всплывающее окно клавиши."
 
 #: ../settings.ui.h:153
 msgid "0.15"
-msgstr ""
+msgstr "0.15"
 
 #: ../settings.ui.h:154
 #, fuzzy
@@ -2006,18 +2011,20 @@ msgid ""
 "Show Onboard when there is a recognized text entry in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
+"Показывать экранную клавиатуру, когда в фокусе находится распознанное "
+"текстовое поле. Требуется Gnome Accessibility."
 
 #: ../settings.ui.h:157
 msgid "Keyboard movement strategy:"
-msgstr ""
+msgstr "Стратегия перемещения клавиатуры:"
 
 #: ../settings.ui.h:158
 msgid "Chose how the keyboard window moves when a text entry is activated."
-msgstr ""
+msgstr "Выберите, как окно клавиатуры перемещается при активации текстового поля."
 
 #: ../settings.ui.h:159
 msgid "_Hide when typing on a physical keyboard"
-msgstr ""
+msgstr "_Скрывать при наборе на физической клавиатуре"
 
 #: ../settings.ui.h:160
 msgid ""
@@ -2041,12 +2048,12 @@ msgstr ""
 
 #: ../settings.ui.h:163
 msgid "Auto-show only in tablet mode"
-msgstr ""
+msgstr "Авто-отображение только в режиме планшета"
 
 #: ../settings.ui.h:164
 msgid ""
 "Requires driver support for SW_TABLET_MODE and a running instance of acpid."
-msgstr ""
+msgstr "Требуется поддержка драйвером флага SW_TABLET_MODE и запущенный acpid."
 
 #: ../settings.ui.h:165
 msgid ""
@@ -2054,44 +2061,49 @@ msgid ""
 "tablet mode. Run 'xinput test-xi2 3 ' to find these key presses and enter "
 "their 'detail' values below."
 msgstr ""
+"Некоторые устройства генерируют клавиатурные события при входе в режим "
+"планшета и выходе из него. Выполните команду «xinput test-xi2 3», чтобы "
+"найти соответствующие события, и введите их значения «detail» ниже."
 
 #: ../settings.ui.h:166
 msgid "Hotkey received when entering tablet mode:"
-msgstr ""
+msgstr "Клавиша, получаемая при входе в режим планшета:"
 
 #: ../settings.ui.h:167
 msgid "Hotkey received when leaving tablet mode:"
-msgstr ""
+msgstr "Клавиша, получаемая при выходе из режима планшета:"
 
 #: ../settings.ui.h:168
 msgid "File that contains the current device state:"
-msgstr ""
+msgstr "Файл, содержащий текущее состояние устройства:"
 
 #: ../settings.ui.h:169
 msgid "Regular expression to match for tablet-mode:"
-msgstr ""
+msgstr "Регулярное выражение для определения режима планшета:"
 
 #: ../settings.ui.h:170
 msgid "Convertible Devices"
-msgstr ""
+msgstr "Устройства-трансформеры"
 
 #: ../settings.ui.h:171
 msgid "Don't auto-show while external keyboards are connected"
-msgstr ""
+msgstr "Не показывать автоматически, пока подключены внешние клавиатуры"
 
 #: ../settings.ui.h:172
 msgid "Detected keyboard devices:"
-msgstr ""
+msgstr "Обнаруженные клавиатурные устройства:"
 
 #: ../settings.ui.h:173
 msgid ""
 "Check 'Ignore' for devices that are always connected and should not block "
 "auto-show."
 msgstr ""
+"Установите флажок «Игнорировать» для устройств, которые постоянно подключены "
+"и не должны блокировать авто-отображение."
 
 #: ../settings.ui.h:174
 msgid "External Keyboards"
-msgstr ""
+msgstr "Внешние клавиатуры"
 
 #: ../settings.ui.h:175
 msgid "Show _suggestions"
@@ -2139,11 +2151,11 @@ msgstr "Параметры"
 
 #: ../settings.ui.h:184
 msgid "Show more suggestions arrow"
-msgstr ""
+msgstr "Показывать стрелку дополнительных предложений"
 
 #: ../settings.ui.h:185
 msgid "Step forward and backward through the available suggestions."
-msgstr ""
+msgstr "Переходить вперёд и назад по доступным предложениям."
 
 #: ../settings.ui.h:186
 msgid "Show button to pause learning"
@@ -2214,7 +2226,7 @@ msgctxt ""
 "Label of keyboard scanning settings button on preferences page Universal "
 "Access."
 msgid "Sc_anner Settings"
-msgstr ""
+msgstr "На_стройки сканера"
 
 #: ../settings.ui.h:203
 msgid "Keyboard Scanning"
@@ -2320,7 +2332,7 @@ msgstr "Параметры прикрепления"
 #: ../settings_docking_dialog.ui.h:15
 msgctxt "Label of the close button of the docking settings dialog."
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #: ../settings_docking_dialog.ui.h:16
 msgid "Shrink workarea"
@@ -2373,7 +2385,7 @@ msgstr "Настройки сканера"
 #: ../settings_scanner_dialog.ui.h:6
 msgctxt "Label of the close button of the scanner settings dialog."
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #: ../settings_scanner_dialog.ui.h:7
 msgid "Select a scanning _profile:"
@@ -2480,12 +2492,12 @@ msgstr "Настроить тему"
 #: ../settings_theme_dialog.ui.h:2
 msgctxt "Label of the revert button of the theme settings dialog."
 msgid "_Revert"
-msgstr ""
+msgstr "_Отменить"
 
 #: ../settings_theme_dialog.ui.h:3
 msgctxt "Label of the close button of the theme settings dialog."
 msgid "_Close"
-msgstr ""
+msgstr "_Закрыть"
 
 #: ../settings_theme_dialog.ui.h:4
 msgid "Color Sche_me"
@@ -3103,13 +3115,13 @@ msgstr "Метки"
 #~ msgstr "Н_астроить тему"
 
 #~ msgid "Sc_anner Settings"
-#~ msgstr "Параметры ск_анера"
+#~ msgstr "На_стройки сканера"
 
 #~ msgid "Flexible onscreen keyboard for GNOME"
-#~ msgstr "Гибкая экранная клавиатура для среды GNOME"
+#~ msgstr "Удобная экранная клавиатура для среды GNOME"
 
 #~ msgid "User layouts"
 #~ msgstr "Раскладки пользователя"
 
 #~ msgid "_Window handles:"
-#~ msgstr "_Элементы управления окном:"
+#~ msgstr "_Оконные ручки окна клавиатуры:"
