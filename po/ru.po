@@ -1708,11 +1708,11 @@ msgstr "Когда неактивно"
 
 #: ../settings.ui.h:94
 msgid "_Window handles of the keyboard window:"
-msgstr "_Оконные ручки окна клавиатуры:"
+msgstr "_Элементы управления окна клавиатуры:"
 
 #: ../settings.ui.h:95
 msgid "_Window handles of the floating icon:"
-msgstr "_Оконные ручки плавающего значка:"
+msgstr "_Элементы управления плавающего значка:"
 
 #: ../settings.ui.h:96
 msgid "Resize Protection"
@@ -3124,4 +3124,4 @@ msgstr "Метки"
 #~ msgstr "Раскладки пользователя"
 
 #~ msgid "_Window handles:"
-#~ msgstr "_Оконные ручки окна клавиатуры:"
+#~ msgstr "_Элементы управления окна клавиатуры:"
