@@ -146,10 +146,16 @@ def get_pkg_version(package):
               .format(repr(package), status), file=sys.stderr)
         sys.exit(2)
 
-    version = re.search(r'(?:(?:\d+)\.)+\d+', output).group()
-    components = version.split(".")
-    major, minor = int(components[0]), int(components[1])
-    revision = int(components[2]) if len(components) >= 3 else 0
+    match = re.match(r'(\d+)(?:\.(\d+))?(?:\.(\d+))?', output.strip())
+    if not match:
+        print("setup.py: get_pkg_version({}): "
+              "unable to parse version from pkg-config output {!r}" \
+              .format(repr(package), output), file=sys.stderr)
+        sys.exit(2)
+
+    major = int(match.group(1))
+    minor = int(match.group(2)) if match.group(2) else 0
+    revision = int(match.group(3)) if match.group(3) else 0
     return major, minor, revision
 
 def clean_before_build(command):
